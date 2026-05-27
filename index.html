@@ -3,114 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Orbit Stroller — VNTANA Store</title>
+  <title>VNTANA Store — Shop in 3D</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <header>
-    <a href="#" class="logo">VNTANA<span>STORE</span></a>
+    <a href="index.html" class="logo">VNTANA<span>STORE</span></a>
     <nav>
       <a href="#">New Arrivals</a>
       <a href="#">Furniture</a>
-      <a href="#">Footwear</a>
+      <a href="#">Baby</a>
       <a href="#">Industrial</a>
     </nav>
     <div class="header-actions">
-      <a href="#" aria-label="Search">&#9906;</a>
-      <a href="#" aria-label="Cart">Cart (0)</a>
+      <a href="#">Cart (0)</a>
     </div>
   </header>
 
-  <main class="product-page">
-
-    <!-- LEFT: 3D viewer -->
-    <div class="viewer-column">
-      <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
-      <vntana-viewer
-        enable-auto-rotate
-        shadow-intensity="0.45"
-        shadow-radius="3"
-        loading="eager"
-        role="application"
-        aria-label="Interactive 3D Orbit Stroller viewer"
-      >
-        <vntana-fs-button></vntana-fs-button>
-        <vntana-qr-button class="expandable"></vntana-qr-button>
-        <vntana-ar-button class="expandable"></vntana-ar-button>
-        <vntana-center-button></vntana-center-button>
-        <div class="button-container zoom-buttons">
-          <vntana-zoom-in-button></vntana-zoom-in-button>
-          <vntana-zoom-out-button></vntana-zoom-out-button>
-        </div>
-      </vntana-viewer>
-      <div class="viewer-hint">
-        Drag to rotate &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Tap AR to view in your space
-      </div>
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Every product in 3D</p>
+      <h1>See it. Rotate it.<br>Place it. Buy it.</h1>
+      <p class="hero-sub">Interactive 3D and AR on every product page — no app required.</p>
     </div>
+  </section>
 
-    <!-- RIGHT: product details -->
-    <div class="product-column">
-
-      <div class="breadcrumb">Home &rsaquo; Baby &rsaquo; Strollers</div>
-
-      <h1 class="product-name">Orbit Stroller</h1>
-      <p class="product-subtitle">Lightweight all-terrain frame with one-hand fold</p>
-
-      <div class="product-price">$899<span class="price-cents">.00</span></div>
-
-      <hr class="divider">
-
-      <div class="variant-group">
-        <div class="variant-label">Color <span class="variant-selected" id="finish-label">Midnight Black</span></div>
-        <div class="variant-buttons" id="variant-buttons">
-          <button class="variant-btn active" data-label="Midnight Black">Midnight Black</button>
-          <button class="variant-btn" data-label="Slate Grey">Slate Grey</button>
-          <button class="variant-btn" data-label="Sand Beige">Sand Beige</button>
-        </div>
-      </div>
-
-      <div class="variant-group">
-        <div class="variant-label">Fabric <span class="variant-selected">Carbon Mesh</span></div>
-        <div class="variant-buttons">
-          <button class="variant-btn active swatch" style="--swatch:#1a1a1a" aria-label="Carbon Mesh"></button>
-          <button class="variant-btn swatch" style="--swatch:#7a8a8e" aria-label="Slate Weave"></button>
-          <button class="variant-btn swatch" style="--swatch:#d4c4a8" aria-label="Sand Canvas"></button>
-        </div>
-      </div>
-
-      <button class="btn-primary">Add to Cart</button>
-      <button class="btn-secondary">Save to Wishlist</button>
-
-      <hr class="divider">
-
-      <p class="product-description">
-        The Orbit is engineered for parents who move fast. A featherlight aluminum chassis,
-        all-terrain wheels, and a one-hand fold that actually works — explore every detail
-        in 3D, or tap AR to see it parked in your hallway before you buy.
-      </p>
-
-      <ul class="feature-list">
-        <li>Aerospace-grade aluminum frame — 14.2 lbs</li>
-        <li>All-terrain foam-filled tires, no flats ever</li>
-        <li>One-hand fold, self-stands when folded</li>
-        <li>UPF 50+ canopy with peek-a-boo window</li>
-      </ul>
-
-      <hr class="divider">
-
-      <div class="ar-callout">
-        <div class="ar-callout-icon">&#x25A6;</div>
-        <div>
-          <strong>See it in your space</strong>
-          <p>Tap the AR button on the viewer to place the Orbit in your home at true 1:1 scale.</p>
-        </div>
-      </div>
-
+  <section class="catalog">
+    <div class="catalog-header">
+      <h2>Featured Products</h2>
     </div>
-  </main>
+    <div class="product-grid" id="product-grid">
+      <!-- injected by catalog.js -->
+    </div>
+  </section>
 
-  <script type="module" src="main.js"></script>
-
+  <script type="module" src="catalog.js"></script>
 </body>
 </html>

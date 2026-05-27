@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product — VNTANA Store</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">VNTANA<span>STORE</span></a>
+    <nav>
+      <a href="#">New Arrivals</a>
+      <a href="#">Furniture</a>
+      <a href="#">Baby</a>
+      <a href="#">Industrial</a>
+    </nav>
+    <div class="header-actions">
+      <a href="#">Cart (0)</a>
+    </div>
+  </header>
+
+  <main class="product-page">
+
+    <!-- LEFT: 3D viewer -->
+    <div class="viewer-column">
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+      <vntana-viewer
+        enable-auto-rotate
+        shadow-intensity="0.45"
+        shadow-radius="3"
+        loading="eager"
+        role="application"
+        aria-label="Interactive 3D product viewer"
+      >
+        <vntana-fs-button></vntana-fs-button>
+        <vntana-qr-button class="expandable"></vntana-qr-button>
+        <vntana-ar-button class="expandable"></vntana-ar-button>
+        <vntana-center-button></vntana-center-button>
+        <div class="button-container zoom-buttons">
+          <vntana-zoom-in-button></vntana-zoom-in-button>
+          <vntana-zoom-out-button></vntana-zoom-out-button>
+        </div>
+      </vntana-viewer>
+      <div class="viewer-hint">
+        Drag to rotate &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Tap AR to view in your space
+      </div>
+    </div>
+
+    <!-- RIGHT: product details -->
+    <div class="product-column">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span id="breadcrumb-path"></span>
+      </div>
+
+      <h1 class="product-name" id="product-name">Loading…</h1>
+      <p class="product-subtitle" id="product-subtitle"></p>
+
+      <div class="product-price" id="product-price"></div>
+
+      <hr class="divider">
+
+      <div class="variant-group" id="variant-group">
+        <div class="variant-label">Color <span class="variant-selected" id="variant-selected"></span></div>
+        <div class="variant-buttons" id="variant-buttons"></div>
+      </div>
+
+      <button class="btn-primary">Add to Cart</button>
+      <button class="btn-secondary">Save to Wishlist</button>
+
+      <hr class="divider">
+
+      <p class="product-description" id="product-description"></p>
+
+      <ul class="feature-list" id="feature-list"></ul>
+
+      <hr class="divider">
+
+      <div class="ar-callout">
+        <div class="ar-callout-icon">&#x25A6;</div>
+        <div>
+          <strong>See it in your space</strong>
+          <p>Tap the AR button on the viewer to place this product in your home at true 1:1 scale.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module" src="product.js"></script>
+
+</body>
+</html>
