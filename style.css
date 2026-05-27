@@ -428,6 +428,124 @@ vntana-ar-button {
   line-height: 1.5;
 }
 
+/* ─── Viewer controls (camera / env / bg) ────────────────── */
+
+.viewer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.vc-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.vc-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.vc-buttons {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.vc-btn {
+  padding: 0.35rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--text);
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+  font-family: inherit;
+}
+
+.vc-btn:hover {
+  border-color: var(--text);
+}
+
+.vc-btn.active {
+  border-color: var(--text);
+  background: var(--text);
+  color: white;
+}
+
+/* Background colour swatches */
+.bg-swatches .vc-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--bg-color) !important;
+  border: 1.5px solid rgba(0,0,0,0.1);
+}
+
+.bg-swatches .vc-btn.active {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+  border-color: transparent;
+  background: var(--bg-color) !important;
+}
+
+/* ─── Render gallery ──────────────────────────────────────── */
+
+.render-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.gallery-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gallery-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.gallery-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  display: block;
+}
+
+.gallery-grid img:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
+}
+
+.render-placeholder {
+  aspect-ratio: 1;
+  background: var(--bg);
+  border-radius: 6px;
+  border: 1.5px dashed var(--border);
+}
+
 /* ─── Mobile ──────────────────────────────────────────────── */
 
 @media (max-width: 900px) {

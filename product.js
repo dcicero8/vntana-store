@@ -37,6 +37,90 @@ config.features?.forEach(f => {
 const viewer = document.querySelector("vntana-viewer");
 const qrButton = viewer.querySelector("vntana-qr-button");
 
+// ── Viewer controls: env, background, camera presets ─────────
+
+const ENV_BASE = "https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/";
+const ENVIRONMENTS = {
+  studio:  `${ENV_BASE}Indoor_Studio_2.hdr`,
+  neutral: `${ENV_BASE}khronos_Neutral_512.hdr`,
+  dim:     `${ENV_BASE}Studio_A_dim.hdr`,
+};
+
+// Quaternion presets for Y-axis camera snap (Y-up, front = model default).
+// Tune if a specific model is oriented differently.
+const CAM_ROTATIONS = {
+  front:  { x:  0,     y:  0,      z: 0,    w: 1     },  // identity
+  side:   { x:  0,     y:  0.7071, z: 0,    w: 0.7071 }, // 90° Y
+  detail: { x: -0.17,  y:  0.44,   z: 0.08, w: 0.88  },  // elevated side angle
+};
+
+const BG_VALUES = {
+  light: "#f0f0ef",
+  white: "#ffffff",
+  dark:  "radial-gradient(#484848, #000000)",
+};
+
+let savedViewerConfig = null;
+
+// Call after viewerConfig is applied so env/bg buttons reflect platform defaults
+// and Reset Camera knows what to snap back to.
+const initViewerControls = (viewerConfig) => {
+  savedViewerConfig = viewerConfig;
+
+  // Sync the active env pill to whatever the platform configured
+  const envSrcLower = (viewerConfig.environmentSrc ?? "").toLowerCase();
+  let activeEnv = "studio";
+  if (envSrcLower.includes("neutral")) activeEnv = "neutral";
+  else if (envSrcLower.includes("dim"))     activeEnv = "dim";
+  document.querySelectorAll("#env-buttons .vc-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.env === activeEnv);
+  });
+};
+
+// Camera preset buttons
+document.getElementById("camera-presets").addEventListener("click", e => {
+  const btn = e.target.closest("[data-preset]");
+  if (!btn) return;
+  document.querySelectorAll("#camera-presets .vc-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  const preset = btn.dataset.preset;
+  if (preset === "reset" && savedViewerConfig) {
+    // Restore only camera props from the platform config
+    const vc = savedViewerConfig;
+    const rot    = vc.cameraRotation  ?? vc.rotation;
+    const dist   = vc.cameraDistance  ?? vc.distance;
+    const target = vc.cameraTarget    ?? vc.target;
+    const fov    = vc.fieldOfView     ?? vc.fov;
+    const ortho  = vc.orthographicSize;
+    if (rot    !== undefined) viewer.setCameraRotation(rot);
+    if (dist   !== undefined) viewer.setCameraDistance(dist);
+    if (target !== undefined) viewer.setCameraTarget(target);
+    if (fov    !== undefined) viewer.setFieldOfView(fov);
+    if (ortho  !== undefined) viewer.setOrthographicSize(ortho);
+  } else if (CAM_ROTATIONS[preset]) {
+    viewer.setCameraRotation(CAM_ROTATIONS[preset]);
+  }
+});
+
+// Lighting / environment switcher
+document.getElementById("env-buttons").addEventListener("click", e => {
+  const btn = e.target.closest("[data-env]");
+  if (!btn) return;
+  document.querySelectorAll("#env-buttons .vc-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  viewer.environmentSrc = ENVIRONMENTS[btn.dataset.env];
+});
+
+// Background picker
+document.getElementById("bg-buttons").addEventListener("click", e => {
+  const btn = e.target.closest("[data-bg]");
+  if (!btn) return;
+  document.querySelectorAll("#bg-buttons .vc-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  viewer.background = BG_VALUES[btn.dataset.bg];
+});
+
 const modelUrl = (models, productUuid, format) => {
   const blob = models.find(m => m.conversionFormat === format);
   return blob
@@ -166,6 +250,7 @@ if (variantGroupUuid) {
 
   const viewerConfig = JSON.parse(firstData.response.viewerSettings.config);
   loadVariant(variants[0], viewerConfig);
+  initViewerControls(viewerConfig);
 
   // Load hotspots for first variant
   loadHotspots(variants[0].uuid);
@@ -209,6 +294,7 @@ if (variantGroupUuid) {
   const viewerConfig = JSON.parse(product.response.viewerSettings.config);
 
   Object.assign(viewer, viewerConfig);
+  initViewerControls(viewerConfig);
   Object.assign(viewer, {
     src: modelUrl(models, uuid, "GLB"),
     usdzSrc: modelUrl(models, uuid, "USDZ"),

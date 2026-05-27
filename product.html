@@ -83,6 +83,68 @@
         </div>
       </div>
 
+      <hr class="divider">
+
+      <!-- Viewer controls: camera, lighting, background -->
+      <div class="viewer-controls">
+
+        <div class="vc-section">
+          <div class="vc-label">Camera</div>
+          <div class="vc-buttons" id="camera-presets">
+            <button class="vc-btn active" data-preset="front">Front</button>
+            <button class="vc-btn" data-preset="side">Side</button>
+            <button class="vc-btn" data-preset="detail">Detail</button>
+            <button class="vc-btn" data-preset="reset">Reset ↺</button>
+          </div>
+        </div>
+
+        <div class="vc-section">
+          <div class="vc-label">Lighting</div>
+          <div class="vc-buttons" id="env-buttons">
+            <button class="vc-btn active" data-env="studio">Studio</button>
+            <button class="vc-btn" data-env="neutral">Neutral</button>
+            <button class="vc-btn" data-env="dim">Dim</button>
+          </div>
+        </div>
+
+        <div class="vc-section">
+          <div class="vc-label">Background</div>
+          <div class="vc-buttons bg-swatches" id="bg-buttons">
+            <button class="vc-btn bg-swatch active" data-bg="light"  title="Light"  style="--bg-color: #f0f0ef"></button>
+            <button class="vc-btn bg-swatch"        data-bg="white"  title="White"  style="--bg-color: #ffffff"></button>
+            <button class="vc-btn bg-swatch"        data-bg="dark"   title="Dark"   style="--bg-color: #484848"></button>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="divider">
+
+      <!-- Image gallery: platform renders + AI-enhanced renders -->
+      <div class="render-gallery">
+
+        <div class="gallery-section">
+          <div class="gallery-label">Platform Renders</div>
+          <div class="gallery-grid" id="platform-renders">
+            <!-- TODO: replace placeholders with <img src="URL" alt="render"> when you have URLs -->
+            <div class="render-placeholder"></div>
+            <div class="render-placeholder"></div>
+            <div class="render-placeholder"></div>
+          </div>
+        </div>
+
+        <div class="gallery-section">
+          <div class="gallery-label">AI Enhanced</div>
+          <div class="gallery-grid" id="ai-renders">
+            <!-- TODO: replace placeholders with <img src="URL" alt="render"> when you have URLs -->
+            <div class="render-placeholder"></div>
+            <div class="render-placeholder"></div>
+            <div class="render-placeholder"></div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </main>
 
