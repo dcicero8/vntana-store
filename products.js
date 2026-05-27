@@ -1,8 +1,33 @@
-// Central product registry — add new Live Public products here
+// Central product registry — add new Live Public products here.
+// type: "product"       → single product, uuid = product UUID
+// type: "variant-group" → multiple colorways, uuid = variant group UUID
 export const BASE_URL = "https://api.vntana.com";
 
 export const PRODUCTS = [
   {
+    type: "variant-group",
+    uuid: "080a7f32-c744-4cc9-8fb3-a0fa7755c69d",
+    org: "DCicero",
+    workspace: "example-files",
+    catalogThumbnailUuid: "b026d841-8699-4d85-9f62-4f859fe35cb1", // Blue jacket
+    name: "VNTANA Full-Zip Jacket",
+    subtitle: "Performance technical jacket in three colorways",
+    price: "$189.00",
+    category: "Apparel",
+    breadcrumb: "Apparel › Jackets",
+    description:
+      "Engineered for movement. The VNTANA Full-Zip is built from recycled performance fabric with a 4-way stretch that moves with you. Rotate it in 3D or try AR to see how it fits before you buy.",
+    features: [
+      "Recycled 94% polyester / 6% elastane shell",
+      "4-way stretch with moisture-wicking lining",
+      "YKK water-resistant front zip",
+      "Available in Blue, White, and Black",
+    ],
+    // Color swatches mapped by the name fragment in each variant's product name
+    colorMap: { Blue: "#1a5fa8", White: "#f0f0f0", Black: "#1a1a1a" },
+  },
+  {
+    type: "product",
     uuid: "ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d",
     org: "DCicero",
     workspace: "example-files",
@@ -26,6 +51,7 @@ export const PRODUCTS = [
     ],
   },
   {
+    type: "product",
     uuid: "bd018ea1-c331-431d-bce8-5d9e6967f8ca",
     org: "DCicero",
     workspace: "example-files",
