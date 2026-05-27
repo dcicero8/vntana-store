@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aria Lounge Chair — VNTANA Store</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="#" class="logo">VNTANA<span>STORE</span></a>
+    <nav>
+      <a href="#">New Arrivals</a>
+      <a href="#">Furniture</a>
+      <a href="#">Footwear</a>
+      <a href="#">Industrial</a>
+    </nav>
+    <div class="header-actions">
+      <a href="#" aria-label="Search">&#9906;</a>
+      <a href="#" aria-label="Cart">Cart (0)</a>
+    </div>
+  </header>
+
+  <main class="product-page">
+
+    <!-- LEFT: 3D viewer -->
+    <div class="viewer-column">
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+      <vntana-viewer
+        enable-auto-rotate
+        shadow-intensity="0.45"
+        shadow-radius="3"
+        loading="eager"
+        role="application"
+        aria-label="Interactive 3D product viewer"
+      >
+        <vntana-fs-button></vntana-fs-button>
+        <vntana-qr-button class="expandable"></vntana-qr-button>
+        <vntana-ar-button class="expandable"></vntana-ar-button>
+        <vntana-center-button></vntana-center-button>
+        <div class="button-container zoom-buttons">
+          <vntana-zoom-in-button></vntana-zoom-in-button>
+          <vntana-zoom-out-button></vntana-zoom-out-button>
+        </div>
+      </vntana-viewer>
+      <div class="viewer-hint">
+        Drag to rotate &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Tap AR to view in your space
+      </div>
+    </div>
+
+    <!-- RIGHT: product details -->
+    <div class="product-column">
+
+      <div class="breadcrumb">Home &rsaquo; Furniture &rsaquo; Lounge Chairs</div>
+
+      <h1 class="product-name">Aria Lounge Chair</h1>
+      <p class="product-subtitle">Scandinavian-inspired with premium solid oak frame</p>
+
+      <div class="product-price">$1,299<span class="price-cents">.00</span></div>
+
+      <hr class="divider">
+
+      <div class="variant-group">
+        <div class="variant-label">Finish <span class="variant-selected" id="finish-label">Natural Oak</span></div>
+        <div class="variant-buttons" id="variant-buttons">
+          <button class="variant-btn active" data-label="Natural Oak">Natural Oak</button>
+          <button class="variant-btn" data-label="Walnut">Walnut</button>
+          <button class="variant-btn" data-label="Matte Black">Matte Black</button>
+        </div>
+      </div>
+
+      <div class="variant-group">
+        <div class="variant-label">Upholstery <span class="variant-selected">Ivory Boucle</span></div>
+        <div class="variant-buttons">
+          <button class="variant-btn active swatch" style="--swatch:#f5f0e8" aria-label="Ivory Boucle"></button>
+          <button class="variant-btn swatch" style="--swatch:#c8b8a2" aria-label="Sand Linen"></button>
+          <button class="variant-btn swatch" style="--swatch:#3d3d3d" aria-label="Charcoal"></button>
+          <button class="variant-btn swatch" style="--swatch:#6b4c3b" aria-label="Cognac"></button>
+        </div>
+      </div>
+
+      <button class="btn-primary">Add to Cart</button>
+      <button class="btn-secondary">Save to Wishlist</button>
+
+      <hr class="divider">
+
+      <p class="product-description">
+        The Aria brings warmth and precision together. Hand-finished solid wood meets
+        sumptuous upholstery in a chair designed to define the room — not just fill it.
+        Explore every angle in 3D, or tap AR to see it in your space before you buy.
+      </p>
+
+      <ul class="feature-list">
+        <li>Solid FSC-certified oak or walnut frame</li>
+        <li>Premium upholstery in 12 colors &amp; materials</li>
+        <li>Ships fully assembled within 5–7 business days</li>
+        <li>10-year structural warranty</li>
+      </ul>
+
+      <hr class="divider">
+
+      <div class="ar-callout">
+        <div class="ar-callout-icon">&#x25A6;</div>
+        <div>
+          <strong>See it in your room</strong>
+          <p>Use the AR button on the viewer to place the Aria in your space at true scale.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module" src="main.js"></script>
+
+</body>
+</html>
