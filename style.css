@@ -724,127 +724,173 @@ body.landing .header-actions a { color: rgba(255,255,255,0.7); }
   line-height: 1.6;
 }
 
-/* Comparison cards */
+/* ─── Demo cards (landing) ────────────────────────────────── */
 
-.comparison {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  max-width: 900px;
+.demo-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  max-width: 1100px;
   margin: 2rem auto 4rem;
   padding: 0 2rem;
 }
 
-.compare-card {
-  flex: 1;
+.demo-card {
+  display: flex;
+  flex-direction: column;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 14px;
   text-decoration: none;
   color: white;
-  display: block;
-  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s;
+  overflow: hidden;
 }
 
-.compare-card:hover {
+.demo-card:hover {
   background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.22);
   transform: translateY(-3px);
 }
 
-.compare-card--featured {
+.demo-card--featured {
   background: #0047FF;
   border-color: #0047FF;
 }
 
-.compare-card--featured:hover {
+.demo-card--featured:hover {
   background: #0040ee;
   border-color: #0040ee;
+  transform: translateY(-3px);
 }
 
-.compare-card-inner {
-  padding: 2rem;
+.demo-step {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: rgba(255,255,255,0.08);
+  padding: 1.25rem 1.5rem 0;
+  line-height: 1;
 }
 
-.compare-label {
-  font-size: 0.72rem;
+.demo-card--featured .demo-step { color: rgba(255,255,255,0.15); }
+
+.demo-card-body {
+  flex: 1;
+  padding: 0.5rem 1.5rem 1.25rem;
+}
+
+.demo-tag {
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 0.6rem;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 0.5rem;
 }
 
-.compare-card--featured .compare-label {
-  color: rgba(255,255,255,0.7);
-}
+.demo-card--featured .demo-tag { color: rgba(255,255,255,0.65); }
 
-.compare-card h2 {
-  font-size: 1.6rem;
+.demo-card h2 {
+  font-size: 1.4rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.2;
 }
 
-.compare-desc {
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.65);
-  margin-bottom: 1.5rem;
+.demo-card p {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.55);
 }
 
-.compare-desc code {
+.demo-card--featured p { color: rgba(255,255,255,0.8); }
+
+.demo-card p code {
   background: rgba(255,255,255,0.12);
-  padding: 0.1em 0.35em;
+  padding: 0.1em 0.3em;
   border-radius: 3px;
   font-size: 0.85em;
 }
 
-.compare-features {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-.compare-features li {
+.demo-card-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.75);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.compare-features li::before {
-  content: "✓";
-  font-weight: 700;
-  color: rgba(255,255,255,0.5);
-  flex-shrink: 0;
-}
-
-.compare-card--featured .compare-features li::before { color: rgba(255,255,255,0.8); }
-.compare-card--featured .compare-features li { color: rgba(255,255,255,0.9); }
-
-.compare-cta {
-  font-size: 0.9rem;
   font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.demo-card--featured .demo-card-footer {
+  border-top-color: rgba(255,255,255,0.2);
   color: rgba(255,255,255,0.9);
 }
 
-.compare-divider {
+.demo-card:hover .demo-card-footer span { transform: translateX(3px); }
+.demo-card-footer span { display: inline-block; transition: transform 0.15s; }
+
+/* ─── Demo nav (step tabs) ────────────────────────────────── */
+
+nav.demo-nav {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 1.5rem;
-  flex-shrink: 0;
+  gap: 0.25rem;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 3px;
 }
 
-.compare-divider span {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.3);
-  font-style: italic;
+nav.demo-nav a {
+  padding: 0.3rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
 }
+
+nav.demo-nav a:hover { color: var(--text); }
+
+nav.demo-nav a.active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* ─── Embed info col extras ───────────────────────────────── */
+
+.embed-step-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.next-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1.25rem;
+  background: var(--text);
+  color: white;
+  text-decoration: none;
+  border-radius: 7px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.next-link:hover { background: #333; }
+
+/* ─── Landing footer ──────────────────────────────────────── */
 
 .landing-footer {
   text-align: center;

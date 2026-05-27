@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Basic Embed — VNTANA 3D</title>
+  <title>Variants Embed — VNTANA 3D</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,8 +11,8 @@
   <header>
     <a href="index.html" class="logo">VNTANA<span>3D</span></a>
     <nav class="demo-nav">
-      <a href="embed.html" class="active">01 Basic Embed</a>
-      <a href="variants.html">02 Variants</a>
+      <a href="embed.html">01 Basic Embed</a>
+      <a href="variants.html" class="active">02 Variants</a>
       <a href="product.html?uuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&org=DCicero&workspace=example-files">03 Custom</a>
     </nav>
   </header>
@@ -21,8 +21,8 @@
 
     <div class="embed-viewer-col">
       <iframe
-        src="https://embed.vntana.com/v2?productUuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&clientSlug=example-files&organizationSlug=DCicero"
-        title="Orbit Stroller — VNTANA 3D Embed"
+        src="https://embed.vntana.com/v2/variant?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d&clientSlug=example-files&organizationSlug=DCicero"
+        title="VNTANA Jackets — Variant Group Embed"
         allow="xr-spatial-tracking"
         allowfullscreen
         frameborder="0"
@@ -31,21 +31,22 @@
 
     <div class="embed-info-col">
 
-      <div class="embed-step-label">Step 01 — Basic Embed</div>
-      <h1 class="embed-title">3D out of the box.<br>One link.</h1>
+      <div class="embed-step-label">Step 02 — Variants</div>
+      <h1 class="embed-title">3 colorways.<br>Still one link.</h1>
       <p class="embed-desc">
-        Everything you see — rotation, zoom, AR — comes from a single <code>&lt;iframe&gt;</code>.
-        No SDK, no JavaScript, no build step. Works in Shopify, Webflow, WordPress, or any static page.
+        Group products into a Variant Group in the VNTANA platform and the embed handles
+        color switching automatically — including swapping the full 3D model per colorway.
+        No extra code on your end.
       </p>
 
       <div class="code-block">
         <div class="code-block-header">
           <span>HTML</span>
-          <button class="copy-btn" onclick="copyCode(this, 'code-stroller')">Copy</button>
+          <button class="copy-btn" onclick="copyCode(this, 'code-variants')">Copy</button>
         </div>
-        <pre><code id="code-stroller">&lt;iframe
-  src="https://embed.vntana.com/v2
-    ?productUuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d
+        <pre><code id="code-variants">&lt;iframe
+  src="https://embed.vntana.com/v2/variant
+    ?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d
     &amp;clientSlug=example-files
     &amp;organizationSlug=DCicero"
   allow="xr-spatial-tracking"
@@ -56,14 +57,14 @@
       </div>
 
       <ul class="embed-feature-list">
-        <li>Drag to rotate, pinch to zoom</li>
-        <li>Native AR on iOS &amp; Android</li>
-        <li>QR code for desktop AR sharing</li>
-        <li>Hosted &amp; updated by VNTANA</li>
+        <li>Full 3D model swap per color</li>
+        <li>Managed in the VNTANA platform</li>
+        <li>AR works for every variant</li>
+        <li>Add or remove colors without touching code</li>
       </ul>
 
-      <a href="variants.html" class="next-link">
-        Next: Variants out of the box &rarr;
+      <a href="product.html?uuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&org=DCicero&workspace=example-files" class="next-link">
+        Next: See the custom viewer &rarr;
       </a>
 
     </div>
