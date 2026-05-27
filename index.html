@@ -3,41 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VNTANA Store — Shop in 3D</title>
+  <title>VNTANA 3D — Integration Demo</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="landing">
 
   <header>
-    <a href="index.html" class="logo">VNTANA<span>STORE</span></a>
-    <nav>
-      <a href="#">New Arrivals</a>
-      <a href="#">Furniture</a>
-      <a href="#">Baby</a>
-      <a href="#">Industrial</a>
-    </nav>
+    <a href="index.html" class="logo">VNTANA<span>3D</span></a>
     <div class="header-actions">
-      <a href="#">Cart (0)</a>
+      <a href="https://vntana.com" target="_blank">vntana.com</a>
     </div>
   </header>
 
-  <section class="hero">
-    <div class="hero-content">
-      <p class="hero-eyebrow">Every product in 3D</p>
-      <h1>See it. Rotate it.<br>Place it. Buy it.</h1>
-      <p class="hero-sub">Interactive 3D and AR on every product page — no app required.</p>
-    </div>
+  <section class="landing-hero">
+    <p class="hero-eyebrow">Developer Demo</p>
+    <h1>Two ways to add 3D<br>to any product page</h1>
+    <p class="hero-sub">From zero-code embed to fully custom viewer — pick the right fit for your stack.</p>
   </section>
 
-  <section class="catalog">
-    <div class="catalog-header">
-      <h2>Featured Products</h2>
+  <section class="comparison">
+
+    <a href="embed.html" class="compare-card">
+      <div class="compare-card-inner">
+        <div class="compare-label">Option A</div>
+        <h2>The Embed</h2>
+        <p class="compare-desc">Drop one <code>&lt;iframe&gt;</code> onto any page. Zero setup, works in any CMS, no SDK needed.</p>
+        <ul class="compare-features">
+          <li>One link, any platform</li>
+          <li>Variants &amp; AR included</li>
+          <li>Hosted &amp; maintained by VNTANA</li>
+          <li>Live in under 5 minutes</li>
+        </ul>
+        <div class="compare-cta">See the embed demo &rarr;</div>
+      </div>
+    </a>
+
+    <div class="compare-divider">
+      <span>or</span>
     </div>
-    <div class="product-grid" id="product-grid">
-      <!-- injected by catalog.js -->
-    </div>
+
+    <a href="product.html?uuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&org=DCicero&workspace=example-files" class="compare-card compare-card--featured">
+      <div class="compare-card-inner">
+        <div class="compare-label">Option B</div>
+        <h2>The Custom Viewer</h2>
+        <p class="compare-desc">Full control with the <code>&lt;vntana-viewer&gt;</code> SDK. Build exactly the experience your brand needs.</p>
+        <ul class="compare-features">
+          <li>Hotspots with camera snap</li>
+          <li>Live model swapping for variants</li>
+          <li>Custom lighting, shadows &amp; AR</li>
+          <li>Fits any design system</li>
+        </ul>
+        <div class="compare-cta">Explore the custom demo &rarr;</div>
+      </div>
+    </a>
+
   </section>
 
-  <script type="module" src="catalog.js"></script>
+  <footer class="landing-footer">
+    <p>Powered by <strong>VNTANA</strong> · <a href="https://vntana.com" target="_blank">Learn more</a></p>
+  </footer>
+
 </body>
 </html>

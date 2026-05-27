@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Embed Demo — VNTANA 3D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">VNTANA<span>3D</span></a>
+    <nav>
+      <a href="embed.html" class="active">Embed</a>
+      <a href="product.html?uuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&org=DCicero&workspace=example-files">Custom Viewer</a>
+    </nav>
+    <div class="header-actions">
+      <span class="nav-badge">Option A</span>
+    </div>
+  </header>
+
+  <main class="embed-page">
+
+    <div class="embed-viewer-col">
+      <iframe
+        src="https://embed.vntana.com/v2/variant?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d&clientSlug=example-files&organizationSlug=DCicero"
+        title="VNTANA Full-Zip Jacket — 3D Viewer"
+        allow="xr-spatial-tracking"
+        allowfullscreen
+        frameborder="0"
+      ></iframe>
+    </div>
+
+    <div class="embed-info-col">
+
+      <div class="embed-badge">Option A — The Embed</div>
+      <h1 class="embed-title">Zero code.<br>Drop in a link.</h1>
+      <p class="embed-desc">
+        Everything you see on the left — 3D rotation, variant color switching, AR — is delivered
+        by a single <code>&lt;iframe&gt;</code>. No SDK, no JavaScript, no build step.
+        Works in any CMS, email, or static page.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span>HTML</span>
+          <button class="copy-btn" onclick="copyCode()">Copy</button>
+        </div>
+        <pre><code id="embed-code">&lt;iframe
+  src="https://embed.vntana.com/v2/variant
+    ?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d
+    &amp;clientSlug=example-files
+    &amp;organizationSlug=DCicero"
+  allow="xr-spatial-tracking"
+  allowfullscreen
+  width="100%"
+  height="500"
+&gt;&lt;/iframe&gt;</code></pre>
+      </div>
+
+      <ul class="embed-feature-list">
+        <li>Variants &amp; color switching built in</li>
+        <li>AR launches natively on mobile</li>
+        <li>QR code for desktop AR sharing</li>
+        <li>Hosted and updated by VNTANA</li>
+        <li>Live in under 5 minutes</li>
+      </ul>
+
+      <a href="product.html?uuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&org=DCicero&workspace=example-files" class="compare-link">
+        Compare: See the Custom Viewer &rarr;
+      </a>
+
+    </div>
+  </main>
+
+  <script>
+    function copyCode() {
+      const code = `<iframe\n  src="https://embed.vntana.com/v2/variant?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d&clientSlug=example-files&organizationSlug=DCicero"\n  allow="xr-spatial-tracking"\n  allowfullscreen\n  width="100%"\n  height="500"\n></iframe>`;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+      });
+    }
+  </script>
+
+</body>
+</html>
