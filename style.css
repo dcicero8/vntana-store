@@ -432,6 +432,91 @@ vntana-ar-button {
   nav { display: none; }
 }
 
+/* ─── Hotspots ────────────────────────────────────────────── */
+
+vntana-hotspot {
+  cursor: pointer;
+  z-index: 10;
+}
+
+vntana-hotspot.hide {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.hotspot-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--text);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 2.5px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: transform 0.15s, background 0.15s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+vntana-hotspot:hover .hotspot-pin,
+vntana-hotspot.open .hotspot-pin {
+  background: #0047FF;
+  transform: scale(1.15);
+}
+
+.hotspot-popup {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  padding: 0.85rem 1rem;
+  min-width: 180px;
+  max-width: 240px;
+  z-index: 20;
+  border: 1px solid var(--border);
+}
+
+vntana-hotspot.open .hotspot-popup {
+  display: block;
+}
+
+.hotspot-popup img {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.hotspot-text {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.hotspot-text p { margin: 0; }
+
+.hotspot-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.hotspot-close:hover { color: var(--text); }
+
 /* ─── Hero ────────────────────────────────────────────────── */
 
 .hero {

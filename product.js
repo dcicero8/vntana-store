@@ -57,6 +57,87 @@ const loadVariant = (variantProduct, viewerConfig) => {
   }
 };
 
+// ── Hotspot loader ───────────────────────────────────────────
+const loadHotspots = async (productUuid) => {
+  const data = await fetch(
+    `${BASE_URL}/hotspots/search/organizations/${org}/clients/${workspace}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productUuid, page: 1, size: 100 }),
+    }
+  ).then(r => r.json());
+
+  if (!data.success || data.response.totalCount === 0) return;
+
+  // Close all other hotspots when one opens
+  const closeAll = () =>
+    viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+
+  data.response.grid.forEach((hs, idx) => {
+    const dimensions = JSON.parse(hs.config.dimensions);
+    const camera = hs.config.camera ? JSON.parse(hs.config.camera) : null;
+    const explode = hs.config.explodedView ? JSON.parse(hs.config.explodedView) : null;
+
+    const hotspot = document.createElement("vntana-hotspot");
+    hotspot.position = dimensions.position;
+    hotspot.normal = dimensions.normal;
+
+    // Build popup content
+    let contentHtml = "";
+    if (hs.type === "IMAGE" && hs.blobId) {
+      const imgUrl = `${BASE_URL}/assets/hotspots/organizations/${org}/clients/${workspace}/${hs.blobId}`;
+      contentHtml = `
+        <img src="${imgUrl}" alt="Hotspot image" onerror="this.style.display='none'">
+        <div class="hotspot-text">${hs.description ?? ""}</div>
+      `;
+    } else {
+      contentHtml = `<div class="hotspot-text">${hs.text ?? ""}</div>`;
+    }
+
+    hotspot.innerHTML = `
+      <span class="hotspot-pin">${idx + 1}</span>
+      <div class="hotspot-popup">
+        <button class="hotspot-close" aria-label="Close">✕</button>
+        ${contentHtml}
+      </div>
+    `;
+
+    hotspot.addEventListener("click", e => {
+      if (e.target.closest(".hotspot-popup")) return; // ignore clicks inside popup
+
+      const isOpen = hotspot.classList.contains("open");
+      closeAll();
+
+      if (!isOpen) {
+        hotspot.classList.add("open");
+
+        // Snap camera
+        if (camera) {
+          viewer.setCameraRotation(camera.cameraRotation);
+          viewer.setCameraDistance(camera.cameraDistance);
+          viewer.setCameraTarget(camera.cameraTarget);
+          viewer.setFieldOfView(camera.fieldOfView);
+          viewer.setOrthographicSize(camera.orthographicSize);
+        }
+      }
+    });
+
+    // Close button inside popup
+    hotspot.querySelector(".hotspot-close").addEventListener("click", e => {
+      e.stopPropagation();
+      hotspot.classList.remove("open");
+    });
+
+    viewer.append(hotspot);
+  });
+
+  // Click on viewer background closes all hotspots
+  viewer.addEventListener("click", e => {
+    if (!e.target.closest("vntana-hotspot")) closeAll();
+  });
+};
+
 // ── Variant button helpers ───────────────────────────────────
 const variantButtons = document.getElementById("variant-buttons");
 const variantSelected = document.getElementById("variant-selected");
@@ -68,7 +149,6 @@ const setActiveVariant = btn => {
 
 // ── VARIANT GROUP FLOW ───────────────────────────────────────
 if (variantGroupUuid) {
-  // Fetch the variant group
   const groupData = await fetch(
     `${BASE_URL}/variant-groups/organizations/${org}/clients/${workspace}`,
     {
@@ -80,17 +160,16 @@ if (variantGroupUuid) {
 
   const variants = groupData.response.products.grid;
 
-  // Fetch viewer settings from the first variant
   const firstData = await fetch(
     `${BASE_URL}/products/${variants[0].uuid}/organizations/${org}/clients/${workspace}`
   ).then(r => r.json());
 
   const viewerConfig = JSON.parse(firstData.response.viewerSettings.config);
-
-  // Load first variant into viewer
   loadVariant(variants[0], viewerConfig);
 
-  // Extract color name from variant product name e.g. "VNTANA Jacket (Blue)" → "Blue"
+  // Load hotspots for first variant
+  loadHotspots(variants[0].uuid);
+
   const colorName = v => (v.name.match(/\(([^)]+)\)/) ?? [])[1] ?? v.name;
   const colorMap = config.colorMap ?? {};
 
@@ -109,7 +188,10 @@ if (variantGroupUuid) {
     btn.addEventListener("click", () => {
       setActiveVariant(btn);
       variantSelected.textContent = name;
-      loadVariant(variant, null); // keep existing viewer config, just swap model
+      loadVariant(variant, null);
+      // Clear old hotspots and load new ones for this variant
+      viewer.querySelectorAll("vntana-hotspot").forEach(h => h.remove());
+      loadHotspots(variant.uuid);
     });
 
     variantButtons.appendChild(btn);
@@ -137,7 +219,10 @@ if (variantGroupUuid) {
     qrButton.url = `https://embed.vntana.com?productUuid=${uuid}&clientSlug=${workspace}&organizationSlug=${org}&autoAR=true`;
   }
 
-  // Render static variants from config (label-only, no model swap)
+  // Load hotspots
+  loadHotspots(uuid);
+
+  // Render static variants from config
   if (config.variants?.length > 0) {
     variantSelected.textContent = config.variants[0].label;
     config.variants.forEach((v, i) => {
