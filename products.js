@@ -49,6 +49,20 @@ export const PRODUCTS = [
       { label: "Slate Grey" },
       { label: "Sand Beige" },
     ],
+
+    // ── Gallery renders ─────────────────────────────────────────
+    // The product thumbnail loads automatically from the API.
+    // To add more platform render angles, get their blobIds from the admin API:
+    //   POST https://api-platform.vntana.com/v1/attachments/search
+    //   body: { productUuid: "ca4aebfc-...", entityType: "RENDER", page: 1, size: 20 }
+    // then paste each result's blobId into the array below.
+    platformRenders: [
+      // "your-blob-id-here",
+    ],
+    // Paste full image URLs from your n8n / Gemini pipeline here.
+    aiRenders: [
+      // "https://storage.googleapis.com/your-bucket/stroller_ai_1.png",
+    ],
   },
   {
     type: "product",

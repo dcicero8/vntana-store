@@ -46,12 +46,13 @@ const ENVIRONMENTS = {
   dim:     `${ENV_BASE}Studio_A_dim.hdr`,
 };
 
-// Quaternion presets for Y-axis camera snap (Y-up, front = model default).
-// Tune if a specific model is oriented differently.
+// Camera rotation presets — Euler angle strings in the same "Xrad Yrad Zrad" format
+// that VNTANA uses in viewerSettings.config.cameraRotation.
+// Tune these values if a specific model's default orientation looks off.
 const CAM_ROTATIONS = {
-  front:  { x:  0,     y:  0,      z: 0,    w: 1     },  // identity
-  side:   { x:  0,     y:  0.7071, z: 0,    w: 0.7071 }, // 90° Y
-  detail: { x: -0.17,  y:  0.44,   z: 0.08, w: 0.88  },  // elevated side angle
+  front:  "0rad 0rad 0rad",             // identity — straight on
+  side:   "0rad 1.5707963rad 0rad",     // 90° Y — profile view
+  detail: "-0.5236rad 0.7854rad 0rad",  // ~-30° X tilt + 45° Y — elevated angle
 };
 
 const BG_VALUES = {
@@ -141,6 +142,70 @@ const loadVariant = (variantProduct, viewerConfig) => {
   }
 };
 
+// ── Gallery loader ───────────────────────────────────────────
+// Pulls the product thumbnail from the public API and fills in any extra
+// renders stored in products.js config (platformRenders / aiRenders).
+//
+// Platform render blobIds come from the admin API:
+//   POST https://api-platform.vntana.com/v1/attachments/search
+//   body: { productUuid, entityType: "RENDER", page: 1, size: 20 }
+//   Grab the blobId from each result and paste into products.js > platformRenders.
+//
+// AI render URLs are whatever your n8n / Gemini pipeline outputs — paste full URLs
+// into products.js > aiRenders.
+const loadGallery = (thumbnailBlobId, galleryConfig) => {
+  const platformGrid = document.getElementById("platform-renders");
+  const aiGrid       = document.getElementById("ai-renders");
+
+  // ── Platform renders ────────────────────────────────────────
+  const platformUrls = [];
+  if (thumbnailBlobId) {
+    platformUrls.push(
+      `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${thumbnailBlobId}`
+    );
+  }
+  (galleryConfig?.platformRenders ?? []).forEach(blobId => {
+    platformUrls.push(
+      `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${blobId}`
+    );
+  });
+
+  if (platformUrls.length > 0) {
+    platformGrid.innerHTML = "";
+    platformUrls.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = "Platform render";
+      img.onerror = () => img.replaceWith(Object.assign(document.createElement("div"), { className: "render-placeholder" }));
+      platformGrid.appendChild(img);
+    });
+    // Pad to 3 slots so the grid stays consistent
+    while (platformGrid.children.length < 3) {
+      const ph = document.createElement("div");
+      ph.className = "render-placeholder";
+      platformGrid.appendChild(ph);
+    }
+  }
+
+  // ── AI renders ──────────────────────────────────────────────
+  const aiUrls = galleryConfig?.aiRenders ?? [];
+  if (aiUrls.length > 0) {
+    aiGrid.innerHTML = "";
+    aiUrls.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = "AI enhanced render";
+      img.onerror = () => img.replaceWith(Object.assign(document.createElement("div"), { className: "render-placeholder" }));
+      aiGrid.appendChild(img);
+    });
+    while (aiGrid.children.length < 3) {
+      const ph = document.createElement("div");
+      ph.className = "render-placeholder";
+      aiGrid.appendChild(ph);
+    }
+  }
+};
+
 // ── Hotspot loader ───────────────────────────────────────────
 const loadHotspots = async (productUuid) => {
   const data = await fetch(
@@ -170,7 +235,7 @@ const loadHotspots = async (productUuid) => {
     // Build popup content
     let contentHtml = "";
     if (hs.type === "IMAGE" && hs.blobId) {
-      const imgUrl = `${BASE_URL}/assets/hotspots/organizations/${org}/clients/${workspace}/${hs.blobId}`;
+      const imgUrl = `${BASE_URL}/hotspots/images/products/${productUuid}/organizations/${org}/clients/${workspace}/${hs.blobId}`;
       contentHtml = `
         <img src="${imgUrl}" alt="Hotspot image" onerror="this.style.display='none'">
         <div class="hotspot-text">${hs.description ?? ""}</div>
@@ -251,6 +316,7 @@ if (variantGroupUuid) {
   const viewerConfig = JSON.parse(firstData.response.viewerSettings.config);
   loadVariant(variants[0], viewerConfig);
   initViewerControls(viewerConfig);
+  loadGallery(firstData.response.asset?.thumbnailBlobId, config);
 
   // Load hotspots for first variant
   loadHotspots(variants[0].uuid);
@@ -295,6 +361,7 @@ if (variantGroupUuid) {
 
   Object.assign(viewer, viewerConfig);
   initViewerControls(viewerConfig);
+  loadGallery(product.response.asset?.thumbnailBlobId, config);
   Object.assign(viewer, {
     src: modelUrl(models, uuid, "GLB"),
     usdzSrc: modelUrl(models, uuid, "USDZ"),
