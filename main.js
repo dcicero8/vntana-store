@@ -1,7 +1,6 @@
-// Placeholder demo asset — swap for your Live Public products
-const organizationSlug = "asset-library";
-const workspaceSlug = "viewer-demo";
-const productUuid = "db656517-2842-4e64-a3de-743acee9ff9d";
+const organizationSlug = "DCicero";
+const workspaceSlug = "example-files";
+const productUuid = "ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d";
 
 const baseUrl = "https://api.vntana.com";
 
