@@ -407,13 +407,12 @@ const loadOptimizationCallout = (optimizationData) => {
   const statsEl  = document.getElementById("opt-stats");
   if (!callout || !statsEl) return;
 
-  const { originalMB, optimizedMB, polygons, formats } = optimizationData;
+  const { sourceMB, sourceFormat, formats } = optimizationData;
 
   const stats = [
-    { label: "Source file",   value: `${originalMB} MB` },
-    { label: "Web-ready GLB", value: `${optimizedMB} MB` },
-    { label: "Polygons",      value: polygons },
-    { label: "Formats",       value: (formats ?? []).join(" · ") },
+    { label: "Source",    value: `${sourceMB} MB ${sourceFormat}` },
+    { label: "Web-ready", value: (formats ?? []).join(" + ") },
+    { label: "AR",        value: "iOS + Web" },
   ];
 
   stats.forEach(({ label, value }) => {
