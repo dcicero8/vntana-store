@@ -44,6 +44,14 @@ export const PRODUCTS = [
       "One-hand fold, self-stands when folded",
       "UPF 50+ canopy with peek-a-boo window",
     ],
+    // ── VNTANA optimization stats (from platform dashboard) ─────
+    optimization: {
+      originalMB:   89,      // source file size before processing
+      optimizedMB:  77.2,    // web-ready GLB served to the viewer
+      polygons:     "358K",  // polygon count of the optimized mesh
+      formats:      ["GLB", "USDZ", "FBX"],
+    },
+
     // ── Gallery renders ─────────────────────────────────────────
     // Platform renders from VNTANA Render Studio
     platformRenders: [

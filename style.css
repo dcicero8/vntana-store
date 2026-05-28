@@ -1609,3 +1609,56 @@ nav.demo-nav a.active {
 }
 
 .lightbox-close:hover { background: rgba(255, 255, 255, 0.28); }
+
+/* ─── Optimization callout ────────────────────────────────── */
+
+.opt-callout {
+  padding: 0.9rem 1rem;
+  background: linear-gradient(135deg, #0047FF09 0%, #0047FF04 100%);
+  border: 1px solid #0047FF22;
+  border-radius: 9px;
+}
+
+.opt-callout-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #0047FF;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.opt-callout-label::before {
+  content: "✦";
+  font-size: 0.55rem;
+}
+
+.opt-callout-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem 0.75rem;
+}
+
+.opt-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.opt-stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.opt-stat-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}

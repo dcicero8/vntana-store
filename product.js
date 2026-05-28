@@ -397,6 +397,39 @@ const loadGallery = (thumbnailBlobId, galleryConfig) => {
   }
 };
 
+// ── Optimization callout ─────────────────────────────────────
+// Reads config.optimization and populates the "Optimized by VNTANA" strip.
+// Hidden by default in HTML; revealed here only when data is present.
+const loadOptimizationCallout = (optimizationData) => {
+  if (!optimizationData) return;
+  const callout  = document.getElementById("opt-callout");
+  const divider  = document.getElementById("opt-divider");
+  const statsEl  = document.getElementById("opt-stats");
+  if (!callout || !statsEl) return;
+
+  const { originalMB, optimizedMB, polygons, formats } = optimizationData;
+
+  const stats = [
+    { label: "Source file",   value: `${originalMB} MB` },
+    { label: "Web-ready GLB", value: `${optimizedMB} MB` },
+    { label: "Polygons",      value: polygons },
+    { label: "Formats",       value: (formats ?? []).join(" · ") },
+  ];
+
+  stats.forEach(({ label, value }) => {
+    const el = document.createElement("div");
+    el.className = "opt-stat";
+    el.innerHTML = `
+      <div class="opt-stat-label">${label}</div>
+      <div class="opt-stat-value">${value}</div>
+    `;
+    statsEl.appendChild(el);
+  });
+
+  callout.hidden = false;
+  if (divider) divider.hidden = false;
+};
+
 // ── Hotspot loader ───────────────────────────────────────────
 const loadHotspots = async (productUuid) => {
   const data = await fetch(
@@ -524,6 +557,7 @@ if (variantGroupUuid) {
   initViewerControls(viewerConfig);
   initShadowSlider();
   loadGallery(firstThumbBlobId, config);
+  loadOptimizationCallout(config.optimization);
 
   // Load hotspots for first variant
   loadHotspots(variants[0].uuid);
@@ -573,6 +607,7 @@ if (variantGroupUuid) {
   initViewerControls(viewerConfig);
   initShadowSlider();
   loadGallery(thumbBlobId, config);
+  loadOptimizationCallout(config.optimization);
   const posterUrl = thumbBlobId
     ? `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${thumbBlobId}`
     : `${BASE_URL}/assets/thumbnail/products/${uuid}/organizations/${org}/clients/${workspace}`;
