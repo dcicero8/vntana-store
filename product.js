@@ -225,6 +225,20 @@ const loadGallery = (thumbnailBlobId, galleryConfig) => {
     platformUrls.forEach(url => platformGrid.appendChild(makeImg(url, "Platform render")));
   }
 
+  // ── Platform turntable video ────────────────────────────────
+  const platformVideoSrc = galleryConfig?.platformVideo;
+  if (platformVideoSrc) {
+    const platformSection = platformGrid.closest(".gallery-section");
+    const vid = document.createElement("video");
+    vid.className = "render-video";
+    vid.src = platformVideoSrc;
+    vid.autoplay = true;
+    vid.muted = true;
+    vid.loop = true;
+    vid.playsInline = true;
+    platformSection.appendChild(vid);
+  }
+
   // ── AI renders ──────────────────────────────────────────────
   const aiUrls = galleryConfig?.aiRenders ?? [];
   if (aiUrls.length > 0) {
