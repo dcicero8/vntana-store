@@ -357,6 +357,7 @@ if (variantGroupUuid) {
   const firstThumbBlobId = firstData.response.asset?.thumbnailBlobId;
   initLoadingOverlay(firstThumbBlobId);
   loadVariant(variants[0], viewerConfig);
+  viewer.enableAutoRotate = false;   // override platform config — no auto-spin on custom PDP
   initViewerControls(viewerConfig);
   loadGallery(firstThumbBlobId, config);
 
@@ -404,6 +405,7 @@ if (variantGroupUuid) {
   const thumbBlobId = product.response.asset?.thumbnailBlobId;
   initLoadingOverlay(thumbBlobId);
   Object.assign(viewer, viewerConfig);
+  viewer.enableAutoRotate = false;   // override platform config — no auto-spin on custom PDP
   initViewerControls(viewerConfig);
   loadGallery(thumbBlobId, config);
   const posterUrl = thumbBlobId
