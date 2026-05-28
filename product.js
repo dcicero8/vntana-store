@@ -185,8 +185,10 @@ const tourBtn   = document.getElementById("tour-btn");
 let tourActive  = false;
 let tourResolve = null;   // resolves the per-step await
 
-const tourCloseAll = () =>
+const tourCloseAll = () => {
   viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+  viewer.explode = 0;
+};
 
 const stopTour = () => {
   tourActive = false;
@@ -194,7 +196,7 @@ const stopTour = () => {
   tourResolve = null;
   tourBtn.textContent = "▶ Guided Tour";
   tourBtn.classList.remove("active");
-  tourCloseAll();
+  tourCloseAll();           // also resets viewer.explode = 0
 };
 
 const runTour = async (hotspots) => {
@@ -213,6 +215,12 @@ const runTour = async (hotspots) => {
       if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
       if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
       if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+    }
+
+    // Apply exploded view (tourCloseAll already reset it to 0)
+    const explodeData = hs._explode;
+    if (explodeData?.explodedStrength !== undefined) {
+      viewer.explode = explodeData.explodedStrength;
     }
 
     tourBtn.textContent = `⏹ Stop  (${i + 1} / ${hotspots.length})`;
@@ -402,9 +410,11 @@ const loadHotspots = async (productUuid) => {
 
   if (!data.success || data.response.totalCount === 0) return;
 
-  // Close all other hotspots when one opens
-  const closeAll = () =>
+  // Close all other hotspots when one opens and reset explode state
+  const closeAll = () => {
     viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+    viewer.explode = 0;
+  };
 
   data.response.grid.forEach((hs, idx) => {
     const dimensions = JSON.parse(hs.config.dimensions);
@@ -415,6 +425,7 @@ const loadHotspots = async (productUuid) => {
     hotspot.position = dimensions.position;
     hotspot.normal   = dimensions.normal;
     hotspot._camera  = camera;   // stored for guided tour
+    hotspot._explode = explode;  // stored for guided tour
 
     // Build popup content
     let contentHtml = "";
@@ -452,6 +463,11 @@ const loadHotspots = async (productUuid) => {
           viewer.setCameraTarget(camera.cameraTarget);
           viewer.setFieldOfView(camera.fieldOfView);
           viewer.setOrthographicSize(camera.orthographicSize);
+        }
+
+        // Apply exploded view if configured for this hotspot
+        if (explode?.explodedStrength !== undefined) {
+          viewer.explode = explode.explodedStrength;
         }
       }
     });
