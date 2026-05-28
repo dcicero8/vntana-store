@@ -135,7 +135,15 @@ let autoRotating = false;
 
 autoRotateBtn.addEventListener("click", () => {
   autoRotating = !autoRotating;
+  if (autoRotating) {
+    // Zero out the inactivity delay so rotation starts on the very next frame
+    // rather than waiting the default 5-second countdown.
+    viewer.autoRotateDelay = 0;
+  }
   viewer.enableAutoRotate = autoRotating;
+  // requestUpdate() is LitElement's built-in re-render trigger — it wakes the
+  // render loop if it went quiet after the model finished loading.
+  viewer.requestUpdate?.();
   autoRotateBtn.textContent = autoRotating ? "⏸ Auto-rotate" : "▶ Auto-rotate";
   autoRotateBtn.classList.toggle("active", autoRotating);
 });
