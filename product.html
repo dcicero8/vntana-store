@@ -220,6 +220,20 @@ viewer.append(h)</div>
             <div class="behind-code">GET /assets/organizations/{org}/clients/{ws}/thumbnail/{blobId}</div>
           </div>
 
+          <div class="behind-feature">
+            <span class="behind-tag">Render Studio</span>
+            <p class="behind-feature-name">360° Turntable</p>
+            <p class="behind-feature-desc">VNTANA's Render Studio generates a 120-frame 4K turntable directly from the 3D model — no photography needed. Exported as MP4 and GIF and attached to the product automatically.</p>
+            <div class="behind-code">storeType=ATTACHMENT&amp;blobId=turntable-mp4-{uuid}.mp4</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">Gemini AI</span>
+            <p class="behind-feature-name">AI enhanced renders</p>
+            <p class="behind-feature-desc">A custom n8n pipeline listens for Live Public events and fires Gemini to generate lifestyle renders from the platform thumbnail — automatically, no manual prompting required.</p>
+            <div class="behind-code">VNTANA webhook → n8n → Gemini imageGenerate → gallery</div>
+          </div>
+
         </div>
 
         <div class="behind-footer">
@@ -246,6 +260,12 @@ viewer.append(h)</div>
         p.classList.toggle("active", p.id === `tab-${target}`));
     });
   </script>
+
+  <!-- Lightbox overlay -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">✕</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  </div>
 
   <script type="module" src="product.js"></script>
 

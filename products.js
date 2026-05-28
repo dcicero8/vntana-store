@@ -61,8 +61,6 @@ export const PRODUCTS = [
       "renders/ai/studio_render_2.png",
       "renders/ai/studio_render_3.png",
     ],
-    // AI-generated turntable from Veo
-    turntableVideo: "veo_turntable.mp4",
   },
   {
     type: "product",

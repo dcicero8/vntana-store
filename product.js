@@ -184,6 +184,27 @@ const initLoadingOverlay = (thumbnailBlobId) => {
   loadingBgEl.style.backgroundImage = `url(${thumbUrl})`;
 };
 
+// ── Lightbox ─────────────────────────────────────────────────
+const lightbox    = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+
+const openLightbox = (src, alt) => {
+  lightboxImg.src = src;
+  lightboxImg.alt = alt;
+  lightbox.hidden = false;
+  document.body.style.overflow = "hidden";
+};
+
+const closeLightbox = () => {
+  lightbox.hidden = true;
+  lightboxImg.src = "";
+  document.body.style.overflow = "";
+};
+
+document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
+lightbox.addEventListener("click", e => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeLightbox(); });
+
 // ── Gallery loader ───────────────────────────────────────────
 // Pulls the product thumbnail from the public API and fills in any extra
 // renders stored in products.js config (platformRenders / aiRenders).
@@ -214,6 +235,7 @@ const loadGallery = (thumbnailBlobId, galleryConfig) => {
     img.src = url;
     img.alt = alt;
     img.loading = "lazy";
+    img.addEventListener("click", () => openLightbox(url, alt));
     img.onerror = () => img.replaceWith(
       Object.assign(document.createElement("div"), { className: "render-placeholder" })
     );
