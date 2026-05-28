@@ -129,6 +129,113 @@ document.getElementById("bg-buttons").addEventListener("click", e => {
   viewer.background = BG_VALUES[btn.dataset.bg];
 });
 
+// ── Auto-rotate toggle ────────────────────────────────────────
+const autoRotateBtn = document.getElementById("autorotate-btn");
+let autoRotating = false;
+
+autoRotateBtn.addEventListener("click", () => {
+  autoRotating = !autoRotating;
+  viewer.enableAutoRotate = autoRotating;
+  autoRotateBtn.textContent = autoRotating ? "⏸ Auto-rotate" : "▶ Auto-rotate";
+  autoRotateBtn.classList.toggle("active", autoRotating);
+});
+
+// ── Shadow intensity slider ───────────────────────────────────
+const shadowSlider = document.getElementById("shadow-slider");
+const shadowValueEl = document.getElementById("shadow-value");
+
+shadowSlider.addEventListener("input", () => {
+  const val = parseFloat(shadowSlider.value);
+  viewer.shadowIntensity = val;
+  shadowValueEl.textContent = val.toFixed(2);
+});
+
+// Sync slider to viewer after platform config is applied
+const initShadowSlider = () => {
+  const val = viewer.shadowIntensity ?? 0.45;
+  shadowSlider.value = val;
+  shadowValueEl.textContent = Number(val).toFixed(2);
+};
+
+// ── Capture view ─────────────────────────────────────────────
+document.getElementById("capture-btn").addEventListener("click", () => {
+  const canvas = viewer.shadowRoot?.querySelector("canvas")
+              ?? viewer.querySelector("canvas");
+  if (!canvas) {
+    alert("Capture not available — try a different browser.");
+    return;
+  }
+  const btn = document.getElementById("capture-btn");
+  btn.textContent = "Saving…";
+  canvas.toBlob(blob => {
+    if (!blob) { btn.textContent = "Save View"; return; }
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = `${(config.name ?? "product").replace(/\s+/g, "-").toLowerCase()}-view.png`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    btn.textContent = "Saved ✓";
+    setTimeout(() => { btn.textContent = "Save View"; }, 2000);
+  }, "image/png");
+});
+
+// ── Guided tour ───────────────────────────────────────────────
+const tourBtn   = document.getElementById("tour-btn");
+let tourActive  = false;
+let tourResolve = null;   // resolves the per-step await
+
+const tourCloseAll = () =>
+  viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+
+const stopTour = () => {
+  tourActive = false;
+  tourResolve?.();          // unblock any pending await
+  tourResolve = null;
+  tourBtn.textContent = "▶ Guided Tour";
+  tourBtn.classList.remove("active");
+  tourCloseAll();
+};
+
+const runTour = async (hotspots) => {
+  for (let i = 0; i < hotspots.length; i++) {
+    if (!tourActive) break;
+
+    const hs = hotspots[i];
+    tourCloseAll();
+    hs.classList.add("open");
+
+    // Snap camera using stored data
+    const cam = hs._camera;
+    if (cam) {
+      if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
+      if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
+      if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
+      if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
+      if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+    }
+
+    tourBtn.textContent = `⏹ Stop  (${i + 1} / ${hotspots.length})`;
+
+    // Wait 4 s (or until stopTour fires tourResolve)
+    await new Promise(resolve => {
+      tourResolve = resolve;
+      setTimeout(resolve, 4000);
+    });
+    tourResolve = null;
+  }
+  if (tourActive) stopTour();
+};
+
+tourBtn.addEventListener("click", () => {
+  if (tourActive) { stopTour(); return; }
+  const hotspots = [...viewer.querySelectorAll("vntana-hotspot")];
+  if (!hotspots.length) return;
+  tourActive = true;
+  tourBtn.classList.add("active");
+  runTour(hotspots);
+});
+
 const modelUrl = (models, productUuid, format) => {
   const blob = models.find(m => m.conversionFormat === format);
   return blob
@@ -306,7 +413,8 @@ const loadHotspots = async (productUuid) => {
 
     const hotspot = document.createElement("vntana-hotspot");
     hotspot.position = dimensions.position;
-    hotspot.normal = dimensions.normal;
+    hotspot.normal   = dimensions.normal;
+    hotspot._camera  = camera;   // stored for guided tour
 
     // Build popup content
     let contentHtml = "";
@@ -361,6 +469,9 @@ const loadHotspots = async (productUuid) => {
   viewer.addEventListener("click", e => {
     if (!e.target.closest("vntana-hotspot")) closeAll();
   });
+
+  // Enable the guided tour button now that hotspots are in the DOM
+  document.getElementById("tour-btn").disabled = false;
 };
 
 // ── Variant button helpers ───────────────────────────────────
@@ -395,6 +506,7 @@ if (variantGroupUuid) {
   loadVariant(variants[0], viewerConfig);
   viewer.enableAutoRotate = false;   // override platform config — no auto-spin on custom PDP
   initViewerControls(viewerConfig);
+  initShadowSlider();
   loadGallery(firstThumbBlobId, config);
 
   // Load hotspots for first variant
@@ -443,6 +555,7 @@ if (variantGroupUuid) {
   Object.assign(viewer, viewerConfig);
   viewer.enableAutoRotate = false;   // override platform config — no auto-spin on custom PDP
   initViewerControls(viewerConfig);
+  initShadowSlider();
   loadGallery(thumbBlobId, config);
   const posterUrl = thumbBlobId
     ? `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${thumbBlobId}`

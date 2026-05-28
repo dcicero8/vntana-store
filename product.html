@@ -107,7 +107,7 @@
 
         <hr class="divider">
 
-        <!-- Viewer controls: camera, lighting, background -->
+        <!-- Viewer controls: camera, shadow, lighting, background, tour, capture -->
         <div class="viewer-controls">
 
           <div class="vc-section">
@@ -118,6 +118,15 @@
               <button class="vc-btn" data-preset="detail">Detail</button>
               <button class="vc-btn" data-preset="reset">Reset ↺</button>
             </div>
+            <div class="vc-buttons vc-row2">
+              <button class="vc-btn" id="autorotate-btn">▶ Auto-rotate</button>
+              <button class="vc-btn" id="tour-btn" disabled>▶ Guided Tour</button>
+            </div>
+          </div>
+
+          <div class="vc-section">
+            <div class="vc-label">Shadow <span class="vc-slider-value" id="shadow-value">0.45</span></div>
+            <input type="range" class="vc-slider" id="shadow-slider" min="0" max="1" step="0.05" value="0.45">
           </div>
 
           <div class="vc-section">
@@ -135,6 +144,13 @@
               <button class="vc-btn bg-swatch active" data-bg="light"  title="Light"  style="--bg-color: #f0f0ef"></button>
               <button class="vc-btn bg-swatch"        data-bg="white"  title="White"  style="--bg-color: #ffffff"></button>
               <button class="vc-btn bg-swatch"        data-bg="dark"   title="Dark"   style="--bg-color: #484848"></button>
+            </div>
+          </div>
+
+          <div class="vc-section">
+            <div class="vc-label">Capture</div>
+            <div class="vc-buttons">
+              <button class="vc-btn" id="capture-btn">Save View</button>
             </div>
           </div>
 
