@@ -46,13 +46,17 @@ const ENVIRONMENTS = {
   dim:     `${ENV_BASE}Studio_A_dim.hdr`,
 };
 
-// Camera rotation presets — Euler angle strings in the same "Xrad Yrad Zrad" format
-// that VNTANA uses in viewerSettings.config.cameraRotation.
-// Tune these values if a specific model's default orientation looks off.
-const CAM_ROTATIONS = {
-  front:  "0rad 0rad 0rad",             // identity — straight on
-  side:   "0rad 1.5707963rad 0rad",     // 90° Y — profile view
-  detail: "-0.5236rad 0.7854rad 0rad",  // ~-30° X tilt + 45° Y — elevated angle
+// Camera presets — each entry can set rotation, distance, and target.
+// rotation: Euler string "Xrad Yrad Zrad" (same format as viewerSettings.config.cameraRotation)
+// distance/target: from VNTANA hotspot camera data (HS 6 for the stroller seat detail)
+const CAM_PRESETS = {
+  front:  { rotation: "0rad 0rad 0rad" },                           // identity — straight on
+  side:   { rotation: "0rad 1.5707963rad 0rad" },                   // 90° Y — profile view
+  detail: {                                                          // seat close-up (HS 6 data)
+    rotation: "0.026515221286261603rad 11.267925603813422rad 0rad",
+    distance: "1.1833123623055604r",
+    target:   "-0.01667298911498733r -0.23363647988724365r 0.011750897210179535r",
+  },
 };
 
 const BG_VALUES = {
@@ -99,8 +103,11 @@ document.getElementById("camera-presets").addEventListener("click", e => {
     if (target !== undefined) viewer.setCameraTarget(target);
     if (fov    !== undefined) viewer.setFieldOfView(fov);
     if (ortho  !== undefined) viewer.setOrthographicSize(ortho);
-  } else if (CAM_ROTATIONS[preset]) {
-    viewer.setCameraRotation(CAM_ROTATIONS[preset]);
+  } else if (CAM_PRESETS[preset]) {
+    const p = CAM_PRESETS[preset];
+    if (p.rotation) viewer.setCameraRotation(p.rotation);
+    if (p.distance) viewer.setCameraDistance(p.distance);
+    if (p.target)   viewer.setCameraTarget(p.target);
   }
 });
 

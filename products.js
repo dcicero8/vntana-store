@@ -44,12 +44,6 @@ export const PRODUCTS = [
       "One-hand fold, self-stands when folded",
       "UPF 50+ canopy with peek-a-boo window",
     ],
-    variants: [
-      { label: "Midnight Black" },
-      { label: "Slate Grey" },
-      { label: "Sand Beige" },
-    ],
-
     // ── Gallery renders ─────────────────────────────────────────
     // Platform renders from VNTANA Render Studio (renders/platform/)
     platformRenders: [
