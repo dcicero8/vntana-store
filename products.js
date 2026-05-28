@@ -51,19 +51,26 @@ export const PRODUCTS = [
     ],
 
     // ── Gallery renders ─────────────────────────────────────────
-    // The product thumbnail loads automatically from the API.
-    // To add more platform render angles, get their blobIds from the admin API:
-    //   POST https://api-platform.vntana.com/v1/attachments/search
-    //   body: { productUuid: "ca4aebfc-...", entityType: "RENDER", page: 1, size: 20 }
-    // then paste each result's blobId into the array below.
+    // Platform renders from VNTANA Render Studio (renders/platform/)
     platformRenders: [
-      // "your-blob-id-here",
+      "renders/platform/render-0.png",
+      "renders/platform/render-1.png",
+      "renders/platform/render-2.png",
+      "renders/platform/render-3.png",
+      "renders/platform/render-4.png",
+      "renders/platform/render-5.png",
     ],
-    // Paste full image URLs from your n8n / Gemini pipeline here.
+    // AI enhanced renders from Gemini / n8n pipeline (renders/ai/)
     aiRenders: [
-      // "https://storage.googleapis.com/your-bucket/stroller_ai_1.png",
+      "renders/ai/ai-1.png",
+      "renders/ai/ai-2.png",
+      "renders/ai/ai-3.png",
+      "renders/ai/ai-4.png",
+      "renders/ai/ai-5.png",
+      "renders/ai/ai-6.png",
+      "renders/ai/ai-7.png",
     ],
-    // AI-generated turntable video (shown below the render rows)
+    // AI-generated turntable video
     turntableVideo: "veo_turntable.mp4",
   },
   {

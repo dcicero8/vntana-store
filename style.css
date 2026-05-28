@@ -780,6 +780,7 @@ vntana-ar-button {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
+  /* rows add automatically as images are appended */
 }
 
 .gallery-grid img {

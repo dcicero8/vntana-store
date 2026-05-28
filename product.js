@@ -193,51 +193,36 @@ const loadGallery = (thumbnailBlobId, galleryConfig) => {
   const aiGrid       = document.getElementById("ai-renders");
 
   // ── Platform renders ────────────────────────────────────────
-  const platformUrls = [];
-  if (thumbnailBlobId) {
-    platformUrls.push(
-      `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${thumbnailBlobId}`
+  // If platformRenders has entries, use them directly (local paths or full URLs).
+  // Fall back to the VNTANA public thumbnail when the list is empty.
+  const configuredRenders = galleryConfig?.platformRenders ?? [];
+  const platformUrls = configuredRenders.length > 0
+    ? configuredRenders
+    : thumbnailBlobId
+      ? [`${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${thumbnailBlobId}`]
+      : [];
+
+  const makeImg = (url, alt) => {
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = alt;
+    img.loading = "lazy";
+    img.onerror = () => img.replaceWith(
+      Object.assign(document.createElement("div"), { className: "render-placeholder" })
     );
-  }
-  (galleryConfig?.platformRenders ?? []).forEach(blobId => {
-    platformUrls.push(
-      `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${blobId}`
-    );
-  });
+    return img;
+  };
 
   if (platformUrls.length > 0) {
     platformGrid.innerHTML = "";
-    platformUrls.forEach(url => {
-      const img = document.createElement("img");
-      img.src = url;
-      img.alt = "Platform render";
-      img.onerror = () => img.replaceWith(Object.assign(document.createElement("div"), { className: "render-placeholder" }));
-      platformGrid.appendChild(img);
-    });
-    // Pad to 3 slots so the grid stays consistent
-    while (platformGrid.children.length < 3) {
-      const ph = document.createElement("div");
-      ph.className = "render-placeholder";
-      platformGrid.appendChild(ph);
-    }
+    platformUrls.forEach(url => platformGrid.appendChild(makeImg(url, "Platform render")));
   }
 
   // ── AI renders ──────────────────────────────────────────────
   const aiUrls = galleryConfig?.aiRenders ?? [];
   if (aiUrls.length > 0) {
     aiGrid.innerHTML = "";
-    aiUrls.forEach(url => {
-      const img = document.createElement("img");
-      img.src = url;
-      img.alt = "AI enhanced render";
-      img.onerror = () => img.replaceWith(Object.assign(document.createElement("div"), { className: "render-placeholder" }));
-      aiGrid.appendChild(img);
-    });
-    while (aiGrid.children.length < 3) {
-      const ph = document.createElement("div");
-      ph.className = "render-placeholder";
-      aiGrid.appendChild(ph);
-    }
+    aiUrls.forEach(url => aiGrid.appendChild(makeImg(url, "AI enhanced render")));
   }
 
   // ── Turntable video ─────────────────────────────────────────
