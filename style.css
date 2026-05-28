@@ -842,8 +842,10 @@ vntana-hotspot {
 }
 
 vntana-hotspot.hide {
-  opacity: 0.4;
-  pointer-events: none;
+  /* Viewer adds .hide when a hotspot is behind geometry.
+     Keep hotspots fully visible and clickable regardless of occlusion,
+     matching the default embed's always-on-top behaviour. */
+  opacity: 1;
 }
 
 .hotspot-pin {
