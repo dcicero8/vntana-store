@@ -117,11 +117,70 @@ nav a.active {
   background: var(--viewer-bg);
   display: flex;
   flex-direction: column;
+  /* needed so the absolute loading overlay is contained here */
+  overflow: hidden;
 }
 
 vntana-viewer {
   flex: 1;
   width: 100%;
+}
+
+/* ─── Custom loading overlay ──────────────────────────────── */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.viewer-loading {
+  position: absolute;
+  inset: 0;
+  /* sits below the viewer-hint strip at the bottom */
+  bottom: 37px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.65s ease;
+}
+
+.viewer-loading-bg {
+  position: absolute;
+  inset: -20px; /* oversize to prevent blur-edge clipping */
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px) brightness(0.45) saturate(1.1);
+}
+
+.viewer-loading-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.viewer-loading-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.viewer-loading-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+.viewer-loading--done {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Button positioning — matches VNTANA viewer-demo defaults */

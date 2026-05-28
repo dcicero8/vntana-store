@@ -21,6 +21,16 @@
 
     <!-- LEFT: 3D viewer -->
     <div class="viewer-column">
+
+      <!-- Custom loading screen — shown while the 3D model loads, fades out on ready -->
+      <div class="viewer-loading" id="viewer-loading">
+        <div class="viewer-loading-bg" id="viewer-loading-bg"></div>
+        <div class="viewer-loading-inner">
+          <div class="viewer-loading-spinner"></div>
+          <div class="viewer-loading-text">Loading 3D model…</div>
+        </div>
+      </div>
+
       <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
       <vntana-viewer
         enable-auto-rotate
@@ -87,6 +97,7 @@
         <div class="custom-ui-callout-badge">Custom UI Overlays</div>
         <p class="custom-ui-callout-desc">Render your own UI on top of the viewer. Build fully branded experiences while VNTANA handles the 3D heavy lifting.</p>
         <ul class="custom-ui-feature-list">
+          <li>Branded loading screen with product thumbnail</li>
           <li>Numbered hotspots with camera snap</li>
           <li>Camera angle presets &amp; lighting switcher</li>
           <li>Background color toggle</li>

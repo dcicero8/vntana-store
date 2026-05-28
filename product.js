@@ -132,14 +132,49 @@ const modelUrl = (models, productUuid, format) => {
 const loadVariant = (variantProduct, viewerConfig) => {
   const { uuid: vid, asset: { models } } = variantProduct;
   if (viewerConfig) Object.assign(viewer, viewerConfig);
+  // Use thumbnailBlobId if available; fall back to the slug-based endpoint (no trailing slash)
+  const thumbBlobId = variantProduct.asset?.thumbnailBlobId;
+  const posterUrl = thumbBlobId
+    ? `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${thumbBlobId}`
+    : `${BASE_URL}/assets/thumbnail/products/${vid}/organizations/${org}/clients/${workspace}`;
   Object.assign(viewer, {
     src: modelUrl(models, vid, "GLB"),
     usdzSrc: modelUrl(models, vid, "USDZ"),
-    poster: `${BASE_URL}/assets/thumbnail/products/${vid}/organizations/${org}/clients/${workspace}/`,
+    poster: posterUrl,
   });
   if (qrButton) {
     qrButton.url = `https://embed.vntana.com?productUuid=${vid}&clientSlug=${workspace}&organizationSlug=${org}&autoAR=true`;
   }
+};
+
+// ── Loading overlay ──────────────────────────────────────────
+// Shows a blurred product thumbnail + spinner while the 3D model loads,
+// then fades out when the viewer signals it's ready.
+const loadingEl  = document.getElementById("viewer-loading");
+const loadingBgEl = document.getElementById("viewer-loading-bg");
+let loadingDone = false;
+
+const hideLoadingOverlay = () => {
+  if (loadingDone) return;
+  loadingDone = true;
+  if (loadingEl) {
+    loadingEl.classList.add("viewer-loading--done");
+    loadingEl.addEventListener("transitionend", () => {
+      loadingEl.style.display = "none";
+    }, { once: true });
+  }
+};
+
+// VNTANA viewer fires "load" when the model is fully ready
+viewer.addEventListener("load",       hideLoadingOverlay, { once: true });
+viewer.addEventListener("model-load", hideLoadingOverlay, { once: true });
+// Safety valve — hide after 14 s regardless
+setTimeout(hideLoadingOverlay, 14000);
+
+const initLoadingOverlay = (thumbnailBlobId) => {
+  if (!loadingBgEl || !thumbnailBlobId) return;
+  const thumbUrl = `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${thumbnailBlobId}`;
+  loadingBgEl.style.backgroundImage = `url(${thumbUrl})`;
 };
 
 // ── Gallery loader ───────────────────────────────────────────
@@ -314,9 +349,11 @@ if (variantGroupUuid) {
   ).then(r => r.json());
 
   const viewerConfig = JSON.parse(firstData.response.viewerSettings.config);
+  const firstThumbBlobId = firstData.response.asset?.thumbnailBlobId;
+  initLoadingOverlay(firstThumbBlobId);
   loadVariant(variants[0], viewerConfig);
   initViewerControls(viewerConfig);
-  loadGallery(firstData.response.asset?.thumbnailBlobId, config);
+  loadGallery(firstThumbBlobId, config);
 
   // Load hotspots for first variant
   loadHotspots(variants[0].uuid);
@@ -359,13 +396,18 @@ if (variantGroupUuid) {
   const { models } = product.response.asset;
   const viewerConfig = JSON.parse(product.response.viewerSettings.config);
 
+  const thumbBlobId = product.response.asset?.thumbnailBlobId;
+  initLoadingOverlay(thumbBlobId);
   Object.assign(viewer, viewerConfig);
   initViewerControls(viewerConfig);
-  loadGallery(product.response.asset?.thumbnailBlobId, config);
+  loadGallery(thumbBlobId, config);
+  const posterUrl = thumbBlobId
+    ? `${BASE_URL}/assets/organizations/${org}/clients/${workspace}/thumbnail/${thumbBlobId}`
+    : `${BASE_URL}/assets/thumbnail/products/${uuid}/organizations/${org}/clients/${workspace}`;
   Object.assign(viewer, {
     src: modelUrl(models, uuid, "GLB"),
     usdzSrc: modelUrl(models, uuid, "USDZ"),
-    poster: `${BASE_URL}/assets/thumbnail/products/${uuid}/organizations/${org}/clients/${workspace}/`,
+    poster: posterUrl,
   });
 
   if (qrButton) {
