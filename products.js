@@ -45,25 +45,26 @@ export const PRODUCTS = [
       "UPF 50+ canopy with peek-a-boo window",
     ],
     // ── Gallery renders ─────────────────────────────────────────
-    // Platform renders from VNTANA Render Studio (renders/platform/)
-    platformRenders: [
-      "renders/platform/render-0.png",
-      "renders/platform/render-1.png",
-      "renders/platform/render-2.png",
-      "renders/platform/render-3.png",
-      "renders/platform/render-4.png",
-      "renders/platform/render-5.png",
-    ],
-    // AI enhanced renders from Gemini / n8n pipeline (renders/ai/)
-    aiRenders: [
-      "renders/ai/ai-1.png",
-      "renders/ai/ai-2.png",
-      "renders/ai/ai-3.png",
-      "renders/ai/ai-4.png",
-      "renders/ai/ai-5.png",
-      "renders/ai/ai-6.png",
-      "renders/ai/ai-7.png",
-    ],
+    // TODO: add stroller renders once we have the correct files.
+    //
+    // Platform renders (VNTANA Render Studio): download the PNGs from the
+    // stroller's attachment panel in the VNTANA platform, drop them in
+    // renders/platform/, then populate platformRenders like so:
+    //   platformRenders: [
+    //     "renders/platform/stroller-0.png",
+    //     ...
+    //   ],
+    //
+    // Alternatively, if the render blobIds are discoverable via the admin API
+    // (POST api-platform.vntana.com/v1/attachments/search), hardcode the
+    // public CDN URLs directly:
+    //   platformRenders: [
+    //     `${BASE_URL}/assets/products/{uuid}/organizations/DCicero/clients/example-files/{blobId}`,
+    //     ...
+    //   ],
+    //
+    // AI renders: paste Gemini / n8n pipeline output URLs or local paths.
+
     // AI-generated turntable video
     turntableVideo: "veo_turntable.mp4",
   },
