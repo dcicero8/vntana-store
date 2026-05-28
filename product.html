@@ -202,7 +202,7 @@
           <div class="behind-feature">
             <span class="behind-tag">viewer.poster</span>
             <p class="behind-feature-name">Branded loading screen</p>
-            <p class="behind-feature-desc">Product thumbnail fills the viewer as a blurred overlay while the model downloads. Fades out when the viewer fires its <code>load</code> event — 14 s safety fallback.</p>
+            <p class="behind-feature-desc">Product thumbnail shown clearly at 35% opacity against the viewer background — a clean "preview while loading" rather than a blurred overlay. Fades out when the viewer fires its <code>load</code> event, with a 14 s safety fallback.</p>
             <div class="behind-code">viewer.poster = thumbnailUrl</div>
           </div>
 
@@ -286,7 +286,7 @@ viewer.enableAutoRotate = false // pause</div>
           </div>
 
           <div class="behind-feature">
-            <span class="behind-tag">explodedView</span>
+            <span class="behind-tag">scene.explodedStrength</span>
             <p class="behind-feature-name">Guided tour</p>
             <p class="behind-feature-desc">Hotspot camera angles and explode states are stored in the platform and fetched at runtime. The tour steps through every pin in sequence — camera snap, popup, explode if configured — all from a single async loop.</p>
             <div class="behind-code">viewer.setCameraRotation(hotspot._camera.cameraRotation)

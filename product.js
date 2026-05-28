@@ -278,8 +278,8 @@ const loadVariant = (variantProduct, viewerConfig) => {
 };
 
 // ── Loading overlay ──────────────────────────────────────────
-// Shows a blurred product thumbnail + spinner while the 3D model loads,
-// then fades out when the viewer signals it's ready.
+// Shows the product thumbnail at 35% opacity against the viewer background
+// while the 3D model loads, then fades out when the viewer signals it's ready.
 const loadingEl  = document.getElementById("viewer-loading");
 const loadingBgEl = document.getElementById("viewer-loading-bg");
 let loadingDone = false;
