@@ -250,6 +250,41 @@ viewer.append(h)</div>
             <div class="behind-code">VNTANA webhook → n8n → Gemini imageGenerate → gallery</div>
           </div>
 
+          <div class="behind-feature">
+            <span class="behind-tag">enableAutoRotate</span>
+            <p class="behind-feature-name">Auto-rotate toggle</p>
+            <p class="behind-feature-desc">One boolean flips the spin on or off at any time — useful for drawing attention on page load or letting a user pause to inspect a detail. Platform config is intentionally overridden here so the PDP starts still.</p>
+            <div class="behind-code">viewer.enableAutoRotate = true  // start spinning
+viewer.enableAutoRotate = false // pause</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">shadowIntensity</span>
+            <p class="behind-feature-name">Shadow intensity slider</p>
+            <p class="behind-feature-desc">Live range input drives the ground shadow from invisible to full. Any numeric property on the viewer can be wired to a UI control this way — no reload, no re-fetch.</p>
+            <div class="behind-code">viewer.shadowIntensity = 0.45  // 0 – 1</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">canvas.toBlob()</span>
+            <p class="behind-feature-name">Capture view</p>
+            <p class="behind-feature-desc">Grabs the current frame directly from the WebGL canvas in the viewer's shadow DOM and triggers a PNG download — whatever angle, lighting, and background the shopper has set.</p>
+            <div class="behind-code">viewer.shadowRoot.querySelector("canvas").toBlob(blob => {
+  const a = document.createElement("a")
+  a.href = URL.createObjectURL(blob)
+  a.download = "product-view.png"
+  a.click()
+})</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">explodedView</span>
+            <p class="behind-feature-name">Guided tour</p>
+            <p class="behind-feature-desc">Hotspot camera angles and explode states are stored in the platform and fetched at runtime. The tour steps through every pin in sequence — camera snap, popup, explode if configured — all from a single async loop.</p>
+            <div class="behind-code">viewer.setCameraRotation(hotspot._camera.cameraRotation)
+viewer.explodedView = hotspot._explode.explodedStrength</div>
+          </div>
+
         </div>
 
         <div class="behind-footer">

@@ -187,7 +187,7 @@ let tourResolve = null;   // resolves the per-step await
 
 const tourCloseAll = () => {
   viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
-  viewer.explode = 0;
+  viewer.explodedView = 0;
 };
 
 const stopTour = () => {
@@ -196,7 +196,7 @@ const stopTour = () => {
   tourResolve = null;
   tourBtn.textContent = "▶ Guided Tour";
   tourBtn.classList.remove("active");
-  tourCloseAll();           // also resets viewer.explode = 0
+  tourCloseAll();           // also resets viewer.explodedView = 0
 };
 
 const runTour = async (hotspots) => {
@@ -220,7 +220,7 @@ const runTour = async (hotspots) => {
     // Apply exploded view (tourCloseAll already reset it to 0)
     const explodeData = hs._explode;
     if (explodeData?.explodedStrength !== undefined) {
-      viewer.explode = explodeData.explodedStrength;
+      viewer.explodedView = explodeData.explodedStrength;
     }
 
     tourBtn.textContent = `⏹ Stop  (${i + 1} / ${hotspots.length})`;
@@ -413,7 +413,7 @@ const loadHotspots = async (productUuid) => {
   // Close all other hotspots when one opens and reset explode state
   const closeAll = () => {
     viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
-    viewer.explode = 0;
+    viewer.explodedView = 0;
   };
 
   data.response.grid.forEach((hs, idx) => {
@@ -467,7 +467,7 @@ const loadHotspots = async (productUuid) => {
 
         // Apply exploded view if configured for this hotspot
         if (explode?.explodedStrength !== undefined) {
-          viewer.explode = explode.explodedStrength;
+          viewer.explodedView = explode.explodedStrength;
         }
       }
     });
