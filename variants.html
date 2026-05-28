@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Variants Embed — VNTANA 3D</title>
+  <title>Full-Zip Jacket — VNTANA Store</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,67 +18,182 @@
     </nav>
   </header>
 
-  <main class="embed-page">
+  <main class="product-page">
 
-    <div class="embed-viewer-col">
+    <!-- LEFT: variant embed -->
+    <div class="viewer-column">
       <iframe
+        id="variant-iframe"
         src="https://embed.vntana.com/v2/variant?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d&clientSlug=example-files&organizationSlug=DCicero"
-        title="VNTANA Jackets — Variant Group Embed"
+        title="VNTANA Full-Zip Jacket — Variant Embed"
         allow="xr-spatial-tracking"
         allowfullscreen
         frameborder="0"
+        style="width:100%;height:100%;border:none;display:block;"
       ></iframe>
+      <div class="viewer-hint">
+        Use the color swatches inside the viewer to switch between colorways
+      </div>
     </div>
 
-    <div class="embed-info-col">
+    <!-- RIGHT: product details -->
+    <div class="product-column">
 
-      <div class="embed-step-label">Step 02 — Variants</div>
-      <h1 class="embed-title">3 colorways.<br>Still one link.</h1>
-      <p class="embed-desc">
-        Group products into a Variant Group in the VNTANA platform and the embed handles
-        color switching automatically — including swapping the full 3D model per colorway.
-        No extra code on your end.
-      </p>
+      <div class="embed-step-label" style="margin-bottom: 0.75rem;">Step 02 — Variants</div>
 
-      <div class="code-block">
-        <div class="code-block-header">
-          <span>HTML</span>
-          <button class="copy-btn" onclick="copyCode(this, 'code-variants')">Copy</button>
+      <div class="pdp-tabs" id="pdp-tabs">
+        <button class="pdp-tab active" data-tab="pdp">Store PDP</button>
+        <button class="pdp-tab" data-tab="behind">Behind the scenes</button>
+      </div>
+
+      <!-- ── Tab: Store PDP ──────────────────────────────────── -->
+      <div class="pdp-tab-content active" id="tab-pdp">
+
+        <div class="breadcrumb">
+          <a href="index.html">Home</a>
+          <span> › Apparel › Jackets</span>
         </div>
-        <pre><code id="code-variants">&lt;iframe
+
+        <h1 class="product-name">VNTANA Full-Zip Jacket</h1>
+        <p class="product-subtitle">Performance technical jacket in three colorways</p>
+
+        <div class="product-price">$189.00</div>
+
+        <hr class="divider">
+
+        <div class="variant-group">
+          <div class="variant-label">Color <span class="variant-selected" id="color-selected">Blue</span></div>
+          <div class="variant-buttons" id="color-buttons">
+            <button class="variant-btn swatch active" style="--swatch:#1a5fa8" aria-label="Blue"  title="Blue"  data-color="Blue"></button>
+            <button class="variant-btn swatch"        style="--swatch:#f0f0f0" aria-label="White" title="White" data-color="White"></button>
+            <button class="variant-btn swatch"        style="--swatch:#1a1a1a" aria-label="Black" title="Black" data-color="Black"></button>
+          </div>
+          <p class="variant-note">Switch colors in the viewer above — each is a full 3D model swap.</p>
+        </div>
+
+        <button class="btn-primary">Add to Cart</button>
+        <button class="btn-secondary">Save to Wishlist</button>
+
+        <hr class="divider">
+
+        <p class="product-description">Engineered for movement. The VNTANA Full-Zip is built from recycled performance fabric with a 4-way stretch that moves with you. Rotate it in 3D or try AR to see how it fits before you buy.</p>
+
+        <ul class="feature-list">
+          <li>Recycled 94% polyester / 6% elastane shell</li>
+          <li>4-way stretch with moisture-wicking lining</li>
+          <li>YKK water-resistant front zip</li>
+          <li>Available in Blue, White, and Black</li>
+        </ul>
+
+        <hr class="divider">
+
+        <div class="ar-callout">
+          <div class="ar-callout-icon">&#x25A6;</div>
+          <div>
+            <strong>3 colors, one embed</strong>
+            <p>Each colorway is a complete 3D model swap managed in the VNTANA platform. AR works for every variant — no extra code.</p>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span>Embed — all 3 colorways, one URL</span>
+            <button class="copy-btn" id="copy-btn">Copy</button>
+          </div>
+          <pre><code id="embed-code">&lt;iframe
   src="https://embed.vntana.com/v2/variant
     ?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d
     &amp;clientSlug=example-files
     &amp;organizationSlug=DCicero"
   allow="xr-spatial-tracking"
   allowfullscreen
-  width="100%"
-  height="500"
 &gt;&lt;/iframe&gt;</code></pre>
-      </div>
+        </div>
 
-      <ul class="embed-feature-list">
-        <li>Full 3D model swap per color</li>
-        <li>Managed in the VNTANA platform</li>
-        <li>AR works for every variant</li>
-        <li>Add or remove colors without touching code</li>
-      </ul>
+      </div><!-- /tab-pdp -->
 
-      <a href="product.html?uuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&org=DCicero&workspace=example-files" class="next-link">
-        Next: See the custom viewer &rarr;
-      </a>
+      <!-- ── Tab: Behind the scenes ──────────────────────────── -->
+      <div class="pdp-tab-content" id="tab-behind">
+
+        <h2 class="behind-title">How variant groups work</h2>
+        <p class="behind-intro">The viewer on the left is a single <code>&lt;iframe&gt;</code>. VNTANA handles the 3D model swap, color switching, and AR for every colorway automatically — nothing changes in your code when you add or remove a color.</p>
+
+        <div class="behind-features">
+
+          <div class="behind-feature">
+            <span class="behind-tag">Variant Group UUID</span>
+            <p class="behind-feature-name">One URL, all colors</p>
+            <p class="behind-feature-desc">A Variant Group is a container in the VNTANA platform that links multiple products as colorways. The embed points to the group UUID — not individual product UUIDs — so the iframe knows to show the color switcher.</p>
+            <div class="behind-code">?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d  // group, not product</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">/v2/variant</span>
+            <p class="behind-feature-name">Full 3D model swap</p>
+            <p class="behind-feature-desc">Each colorway is a separately optimized GLB — not a texture swap. Switching from Blue to Black loads a completely different model, including any colorway-specific geometry or materials.</p>
+            <div class="behind-code">embed.vntana.com/v2/variant?uuid={groupUuid}&amp;clientSlug=...</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">Platform managed</span>
+            <p class="behind-feature-name">Add colors without touching code</p>
+            <p class="behind-feature-desc">Add a new product to the Variant Group in the VNTANA platform and the embed picks it up instantly — no code changes, no redeployment. Remove a color the same way.</p>
+            <div class="behind-code">// No code change needed — update in the platform, done.</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">AR built in</span>
+            <p class="behind-feature-name">AR works for every variant</p>
+            <p class="behind-feature-desc">VNTANA generates a USDZ and WebXR model for every colorway. Tapping the AR button always places the currently selected color in the shopper's space — no extra configuration.</p>
+            <div class="behind-code">allow="xr-spatial-tracking"  // all that's needed on the iframe</div>
+          </div>
+
+        </div>
+
+        <div class="behind-footer">
+          <div class="behind-footer-row">✓ One embed URL covers all colorways</div>
+          <div class="behind-footer-row">✓ Full model swap per color — not a texture change</div>
+          <div class="behind-footer-row">✓ AR works for every variant out of the box</div>
+          <div class="behind-footer-row">✓ Add or remove colors in the platform — zero code changes</div>
+        </div>
+
+      </div><!-- /tab-behind -->
 
     </div>
   </main>
 
   <script>
-    function copyCode(btn, id) {
-      const raw = document.getElementById(id).textContent;
+    // Tab switching
+    document.getElementById("pdp-tabs").addEventListener("click", e => {
+      const btn = e.target.closest(".pdp-tab");
+      if (!btn) return;
+      const target = btn.dataset.tab;
+      document.querySelectorAll(".pdp-tab").forEach(b =>
+        b.classList.toggle("active", b.dataset.tab === target));
+      document.querySelectorAll(".pdp-tab-content").forEach(p =>
+        p.classList.toggle("active", p.id === `tab-${target}`));
+    });
+
+    // Color swatch — visual selection only (iframe handles the actual swap)
+    const colorSelected = document.getElementById("color-selected");
+    document.getElementById("color-buttons").addEventListener("click", e => {
+      const btn = e.target.closest("[data-color]");
+      if (!btn) return;
+      document.querySelectorAll("#color-buttons .variant-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      colorSelected.textContent = btn.dataset.color;
+    });
+
+    // Copy embed code
+    document.getElementById("copy-btn").addEventListener("click", function () {
+      const raw = document.getElementById("embed-code").textContent;
       navigator.clipboard.writeText(raw).then(() => {
-        btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = 'Copy', 2000);
+        this.textContent = "Copied!";
+        setTimeout(() => this.textContent = "Copy", 2000);
       });
-    }
+    });
   </script>
 
 </body>

@@ -121,9 +121,11 @@ nav a.active {
   overflow: hidden;
 }
 
-vntana-viewer {
+vntana-viewer,
+.viewer-column iframe {
   flex: 1;
   width: 100%;
+  border: none;
 }
 
 /* ─── PDP tabs ────────────────────────────────────────────── */
@@ -532,6 +534,12 @@ vntana-ar-button {
   outline: 2px solid var(--text);
   outline-offset: 2px;
   background: var(--swatch) !important;
+}
+
+.variant-note {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
 }
 
 /* ─── CTA buttons ─────────────────────────────────────────── */
