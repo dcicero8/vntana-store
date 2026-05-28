@@ -64,11 +64,11 @@
         <div class="variant-group">
           <div class="variant-label">Color <span class="variant-selected" id="color-selected">Blue</span></div>
           <div class="variant-buttons" id="color-buttons">
-            <button class="variant-btn swatch active" style="--swatch:#1a5fa8" aria-label="Blue"  title="Blue"  data-color="Blue"></button>
-            <button class="variant-btn swatch"        style="--swatch:#f0f0f0" aria-label="White" title="White" data-color="White"></button>
-            <button class="variant-btn swatch"        style="--swatch:#1a1a1a" aria-label="Black" title="Black" data-color="Black"></button>
+            <button class="variant-btn swatch active" style="--swatch:#1a5fa8" aria-label="Blue"  title="Blue"  data-color="Blue"  data-uuid="b026d841-8699-4d85-9f62-4f859fe35cb1"></button>
+            <button class="variant-btn swatch"        style="--swatch:#f0f0f0" aria-label="White" title="White" data-color="White" data-uuid="6775746d-950b-426c-b74c-0352e6a9672b"></button>
+            <button class="variant-btn swatch"        style="--swatch:#1a1a1a" aria-label="Black" title="Black" data-color="Black" data-uuid="51e29ee4-6723-4118-88ae-5b44126d1c13"></button>
           </div>
-          <p class="variant-note">Switch colors in the viewer above — each is a full 3D model swap.</p>
+          <p class="variant-note">Click a color to swap — each loads a full 3D model.</p>
         </div>
 
         <button class="btn-primary">Add to Cart</button>
@@ -124,9 +124,14 @@
 
           <div class="behind-feature">
             <span class="behind-tag">Variant Group UUID</span>
-            <p class="behind-feature-name">One URL, all colors</p>
-            <p class="behind-feature-desc">A Variant Group is a container in the VNTANA platform that links multiple products as colorways. The embed points to the group UUID — not individual product UUIDs — so the iframe knows to show the color switcher.</p>
-            <div class="behind-code">?uuid=080a7f32-c744-4cc9-8fb3-a0fa7755c69d  // group, not product</div>
+            <p class="behind-feature-name">Two ways to embed</p>
+            <p class="behind-feature-desc">Point to the Variant Group UUID and VNTANA shows all colors with its built-in switcher. Or point to an individual product UUID to load a specific colorway — which is how the swatches above work, swapping the iframe src on click.</p>
+            <div class="behind-code">// Group embed — VNTANA handles the switcher:
+embed.vntana.com/v2/variant?uuid={groupUuid}
+
+// Per-color — your UI controls the swap:
+embed.vntana.com?productUuid={blueUuid}
+embed.vntana.com?productUuid={whiteUuid}</div>
           </div>
 
           <div class="behind-feature">
@@ -176,14 +181,19 @@
         p.classList.toggle("active", p.id === `tab-${target}`));
     });
 
-    // Color swatch — visual selection only (iframe handles the actual swap)
+    // Color swatches — swap the iframe src to the individual product embed
+    const iframe        = document.getElementById("variant-iframe");
     const colorSelected = document.getElementById("color-selected");
+    const ORG       = "DCicero";
+    const WORKSPACE = "example-files";
+
     document.getElementById("color-buttons").addEventListener("click", e => {
       const btn = e.target.closest("[data-color]");
       if (!btn) return;
       document.querySelectorAll("#color-buttons .variant-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       colorSelected.textContent = btn.dataset.color;
+      iframe.src = `https://embed.vntana.com?productUuid=${btn.dataset.uuid}&clientSlug=${WORKSPACE}&organizationSlug=${ORG}`;
     });
 
     // Copy embed code
