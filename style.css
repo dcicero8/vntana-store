@@ -291,15 +291,17 @@ vntana-viewer,
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background: var(--viewer-bg);
   transition: opacity 0.65s ease;
 }
 
 .viewer-loading-bg {
   position: absolute;
-  inset: -20px; /* oversize to prevent blur-edge clipping */
-  background-size: cover;
+  inset: 0;
+  background-size: contain;
   background-position: center;
-  filter: blur(22px) brightness(0.45) saturate(1.1);
+  background-repeat: no-repeat;
+  opacity: 0.35;
 }
 
 .viewer-loading-inner {
