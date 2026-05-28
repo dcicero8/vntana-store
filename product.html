@@ -11,6 +11,7 @@
   <header>
     <a href="index.html" class="logo">VNTANA<span>3D</span></a>
     <nav class="demo-nav">
+      <a href="index.html" class="demo-nav-home">← Demos</a>
       <a href="embed.html">01 Basic Embed</a>
       <a href="variants.html">02 Variants</a>
       <a href="#" class="active">03 Custom</a>
@@ -57,118 +58,195 @@
     <!-- RIGHT: product details -->
     <div class="product-column">
 
-      <div class="breadcrumb">
-        <a href="index.html">Home</a>
-        <span id="breadcrumb-path"></span>
+      <!-- Step label -->
+      <div class="embed-step-label" style="margin-bottom: 0.75rem;">Step 03 — Custom Viewer</div>
+
+      <!-- Tab switcher — sticks to the top of the scrollable column -->
+      <div class="pdp-tabs" id="pdp-tabs">
+        <button class="pdp-tab active" data-tab="pdp">Store PDP</button>
+        <button class="pdp-tab" data-tab="behind">Behind the scenes</button>
       </div>
 
-      <h1 class="product-name" id="product-name">Loading…</h1>
-      <p class="product-subtitle" id="product-subtitle"></p>
+      <!-- ── Tab: Store PDP ──────────────────────────────────── -->
+      <div class="pdp-tab-content active" id="tab-pdp">
 
-      <div class="product-price" id="product-price"></div>
-
-      <hr class="divider">
-
-      <div class="variant-group" id="variant-group">
-        <div class="variant-label">Color <span class="variant-selected" id="variant-selected"></span></div>
-        <div class="variant-buttons" id="variant-buttons"></div>
-      </div>
-
-      <button class="btn-primary">Add to Cart</button>
-      <button class="btn-secondary">Save to Wishlist</button>
-
-      <hr class="divider">
-
-      <p class="product-description" id="product-description"></p>
-
-      <ul class="feature-list" id="feature-list"></ul>
-
-      <hr class="divider">
-
-      <div class="ar-callout">
-        <div class="ar-callout-icon">&#x25A6;</div>
-        <div>
-          <strong>See it in your space</strong>
-          <p>Tap the AR button on the viewer to place this product in your home at true 1:1 scale.</p>
+        <div class="breadcrumb">
+          <a href="index.html">Home</a>
+          <span id="breadcrumb-path"></span>
         </div>
-      </div>
 
-      <div class="custom-ui-callout">
-        <div class="custom-ui-callout-badge">Custom UI Overlays</div>
-        <p class="custom-ui-callout-desc">Render your own UI on top of the viewer. Build fully branded experiences while VNTANA handles the 3D heavy lifting.</p>
-        <ul class="custom-ui-feature-list">
-          <li>Branded loading screen with product thumbnail</li>
-          <li>Numbered hotspots with camera snap</li>
-          <li>Camera angle presets &amp; lighting switcher</li>
-          <li>Background color toggle</li>
-          <li>Your design system, not ours</li>
-        </ul>
-      </div>
+        <h1 class="product-name" id="product-name">Loading…</h1>
+        <p class="product-subtitle" id="product-subtitle"></p>
 
-      <hr class="divider">
+        <div class="product-price" id="product-price"></div>
 
-      <!-- Viewer controls: camera, lighting, background -->
-      <div class="viewer-controls">
+        <hr class="divider">
 
-        <div class="vc-section">
-          <div class="vc-label">Camera</div>
-          <div class="vc-buttons" id="camera-presets">
-            <button class="vc-btn active" data-preset="front">Front</button>
-            <button class="vc-btn" data-preset="side">Side</button>
-            <button class="vc-btn" data-preset="detail">Detail</button>
-            <button class="vc-btn" data-preset="reset">Reset ↺</button>
+        <div class="variant-group" id="variant-group">
+          <div class="variant-label">Color <span class="variant-selected" id="variant-selected"></span></div>
+          <div class="variant-buttons" id="variant-buttons"></div>
+        </div>
+
+        <button class="btn-primary">Add to Cart</button>
+        <button class="btn-secondary">Save to Wishlist</button>
+
+        <hr class="divider">
+
+        <p class="product-description" id="product-description"></p>
+
+        <ul class="feature-list" id="feature-list"></ul>
+
+        <hr class="divider">
+
+        <div class="ar-callout">
+          <div class="ar-callout-icon">&#x25A6;</div>
+          <div>
+            <strong>See it in your space</strong>
+            <p>Tap the AR button on the viewer to place this product in your home at true 1:1 scale.</p>
           </div>
         </div>
 
-        <div class="vc-section">
-          <div class="vc-label">Lighting</div>
-          <div class="vc-buttons" id="env-buttons">
-            <button class="vc-btn active" data-env="studio">Studio</button>
-            <button class="vc-btn" data-env="neutral">Neutral</button>
-            <button class="vc-btn" data-env="dim">Dim</button>
+        <hr class="divider">
+
+        <!-- Viewer controls: camera, lighting, background -->
+        <div class="viewer-controls">
+
+          <div class="vc-section">
+            <div class="vc-label">Camera</div>
+            <div class="vc-buttons" id="camera-presets">
+              <button class="vc-btn active" data-preset="front">Front</button>
+              <button class="vc-btn" data-preset="side">Side</button>
+              <button class="vc-btn" data-preset="detail">Detail</button>
+              <button class="vc-btn" data-preset="reset">Reset ↺</button>
+            </div>
           </div>
+
+          <div class="vc-section">
+            <div class="vc-label">Lighting</div>
+            <div class="vc-buttons" id="env-buttons">
+              <button class="vc-btn active" data-env="studio">Studio</button>
+              <button class="vc-btn" data-env="neutral">Neutral</button>
+              <button class="vc-btn" data-env="dim">Dim</button>
+            </div>
+          </div>
+
+          <div class="vc-section">
+            <div class="vc-label">Background</div>
+            <div class="vc-buttons bg-swatches" id="bg-buttons">
+              <button class="vc-btn bg-swatch active" data-bg="light"  title="Light"  style="--bg-color: #f0f0ef"></button>
+              <button class="vc-btn bg-swatch"        data-bg="white"  title="White"  style="--bg-color: #ffffff"></button>
+              <button class="vc-btn bg-swatch"        data-bg="dark"   title="Dark"   style="--bg-color: #484848"></button>
+            </div>
+          </div>
+
         </div>
 
-        <div class="vc-section">
-          <div class="vc-label">Background</div>
-          <div class="vc-buttons bg-swatches" id="bg-buttons">
-            <button class="vc-btn bg-swatch active" data-bg="light"  title="Light"  style="--bg-color: #f0f0ef"></button>
-            <button class="vc-btn bg-swatch"        data-bg="white"  title="White"  style="--bg-color: #ffffff"></button>
-            <button class="vc-btn bg-swatch"        data-bg="dark"   title="Dark"   style="--bg-color: #484848"></button>
+        <hr class="divider">
+
+        <!-- Image gallery: platform renders + AI-enhanced renders -->
+        <div class="render-gallery">
+
+          <div class="gallery-section">
+            <div class="gallery-label">Platform Renders</div>
+            <div class="gallery-grid" id="platform-renders">
+              <div class="render-placeholder"></div>
+              <div class="render-placeholder"></div>
+              <div class="render-placeholder"></div>
+            </div>
           </div>
+
+          <div class="gallery-section">
+            <div class="gallery-label">AI Enhanced</div>
+            <div class="gallery-grid" id="ai-renders">
+              <div class="render-placeholder"></div>
+              <div class="render-placeholder"></div>
+              <div class="render-placeholder"></div>
+            </div>
+          </div>
+
         </div>
 
-      </div>
+      </div><!-- /tab-pdp -->
 
-      <hr class="divider">
+      <!-- ── Tab: Behind the scenes ──────────────────────────── -->
+      <div class="pdp-tab-content" id="tab-behind">
 
-      <!-- Image gallery: platform renders + AI-enhanced renders -->
-      <div class="render-gallery">
+        <h2 class="behind-title">What we built on top of VNTANA</h2>
+        <p class="behind-intro">The viewer on the left is a single <code>&lt;vntana-viewer&gt;</code> element. Everything else — the product page, controls, and interactions — is our code. VNTANA handles the 3D, AR, and CDN hosting.</p>
 
-        <div class="gallery-section">
-          <div class="gallery-label">Platform Renders</div>
-          <div class="gallery-grid" id="platform-renders">
-            <!-- TODO: replace placeholders with <img src="URL" alt="render"> when you have URLs -->
-            <div class="render-placeholder"></div>
-            <div class="render-placeholder"></div>
-            <div class="render-placeholder"></div>
+        <div class="behind-features">
+
+          <div class="behind-feature">
+            <span class="behind-tag">viewer.poster</span>
+            <p class="behind-feature-name">Branded loading screen</p>
+            <p class="behind-feature-desc">Product thumbnail fills the viewer as a blurred overlay while the model downloads. Fades out when the viewer fires its <code>load</code> event — 14 s safety fallback.</p>
+            <div class="behind-code">viewer.poster = thumbnailUrl</div>
           </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">&lt;vntana-hotspot&gt;</span>
+            <p class="behind-feature-name">Custom hotspot pins</p>
+            <p class="behind-feature-desc">38 px pins in brand blue with a pulsing ring animation. Clicking any pin snaps the camera to the platform-configured angle via <code>setCameraRotation()</code>.</p>
+            <div class="behind-code">const h = document.createElement("vntana-hotspot")
+h.position = dimensions.position
+h.normal   = dimensions.normal
+viewer.append(h)</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">setCameraRotation()</span>
+            <p class="behind-feature-name">Camera angle presets</p>
+            <p class="behind-feature-desc">Front, Side, and Detail snap to Euler angle strings — the same format VNTANA uses internally. Reset re-applies the exact camera state from the platform.</p>
+            <div class="behind-code">viewer.setCameraRotation("0rad 1.5707963rad 0rad") // side view</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">viewer.environmentSrc</span>
+            <p class="behind-feature-name">Lighting switcher</p>
+            <p class="behind-feature-desc">One property swap exchanges the HDR environment map live — Studio, Neutral, or Dim — no model reload. All HDRs are hosted on VNTANA's CDN.</p>
+            <div class="behind-code">viewer.environmentSrc = "https://storage.googleapis.com/.../Indoor_Studio_2.hdr"</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">viewer.background</span>
+            <p class="behind-feature-name">Background toggle</p>
+            <p class="behind-feature-desc">Accepts any hex colour or CSS gradient. Switches the canvas background without touching the model or lighting rig.</p>
+            <div class="behind-code">viewer.background = "radial-gradient(#484848, #000000)"</div>
+          </div>
+
+          <div class="behind-feature">
+            <span class="behind-tag">Public API</span>
+            <p class="behind-feature-name">Render gallery</p>
+            <p class="behind-feature-desc">Thumbnail pulled from VNTANA's public CDN — no auth token required. AI renders from the Gemini pipeline load as plain <code>&lt;img&gt;</code> tags.</p>
+            <div class="behind-code">GET /assets/organizations/{org}/clients/{ws}/thumbnail/{blobId}</div>
+          </div>
+
         </div>
 
-        <div class="gallery-section">
-          <div class="gallery-label">AI Enhanced</div>
-          <div class="gallery-grid" id="ai-renders">
-            <!-- TODO: replace placeholders with <img src="URL" alt="render"> when you have URLs -->
-            <div class="render-placeholder"></div>
-            <div class="render-placeholder"></div>
-            <div class="render-placeholder"></div>
-          </div>
+        <div class="behind-footer">
+          <div class="behind-footer-row">✓ Zero re-hosting — models stay on VNTANA's CDN</div>
+          <div class="behind-footer-row">✓ AR works on every customized viewer</div>
+          <div class="behind-footer-row">✓ All viewer settings inherit from the platform config</div>
+          <div class="behind-footer-row">✓ Static site — HTML / CSS / JS only, no backend</div>
         </div>
 
-      </div>
+      </div><!-- /tab-behind -->
 
     </div>
   </main>
+
+  <script>
+    // Tab switching
+    document.getElementById("pdp-tabs").addEventListener("click", e => {
+      const btn = e.target.closest(".pdp-tab");
+      if (!btn) return;
+      const target = btn.dataset.tab;
+      document.querySelectorAll(".pdp-tab").forEach(b =>
+        b.classList.toggle("active", b.dataset.tab === target));
+      document.querySelectorAll(".pdp-tab-content").forEach(p =>
+        p.classList.toggle("active", p.id === `tab-${target}`));
+    });
+  </script>
 
   <script type="module" src="product.js"></script>
 
