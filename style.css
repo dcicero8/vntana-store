@@ -805,6 +805,27 @@ vntana-ar-button {
   border: 1.5px dashed var(--border);
 }
 
+.render-video {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: block;
+  background: #000;
+}
+
+.gallery-label-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #0047FF;
+  background: #0047FF14;
+  padding: 0.12rem 0.45rem;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 0.3rem;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+}
+
 /* ─── Mobile ──────────────────────────────────────────────── */
 
 @media (max-width: 900px) {
@@ -843,9 +864,16 @@ vntana-hotspot {
 
 vntana-hotspot.hide {
   /* Viewer adds .hide when a hotspot is behind geometry.
-     Keep hotspots fully visible and clickable regardless of occlusion,
-     matching the default embed's always-on-top behaviour. */
-  opacity: 1;
+     Keep the element in the pointer-events flow (clickable) but
+     give the pin a clear "behind" look via its child. */
+}
+
+vntana-hotspot.hide .hotspot-pin {
+  opacity: 0.45;
+  transform: scale(0.72);
+  animation: none;           /* stop the pulse — background pins shouldn't demand attention */
+  background: #4a78cc;       /* muted blue — distinct from the active #0047FF */
+  box-shadow: none;
 }
 
 .hotspot-pin {

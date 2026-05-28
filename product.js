@@ -239,6 +239,19 @@ const loadGallery = (thumbnailBlobId, galleryConfig) => {
       aiGrid.appendChild(ph);
     }
   }
+
+  // ── Turntable video ─────────────────────────────────────────
+  const videoSrc = galleryConfig?.turntableVideo;
+  if (videoSrc) {
+    const gallery = document.querySelector(".render-gallery");
+    const section = document.createElement("div");
+    section.className = "gallery-section";
+    section.innerHTML = `
+      <div class="gallery-label">AI Turntable <span class="gallery-label-tag">Veo</span></div>
+      <video class="render-video" src="${videoSrc}" autoplay muted loop playsinline></video>
+    `;
+    gallery.appendChild(section);
+  }
 };
 
 // ── Hotspot loader ───────────────────────────────────────────

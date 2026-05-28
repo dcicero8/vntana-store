@@ -63,6 +63,8 @@ export const PRODUCTS = [
     aiRenders: [
       // "https://storage.googleapis.com/your-bucket/stroller_ai_1.png",
     ],
+    // AI-generated turntable video (shown below the render rows)
+    turntableVideo: "veo_turntable.mp4",
   },
   {
     type: "product",
