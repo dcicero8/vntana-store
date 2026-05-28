@@ -187,7 +187,7 @@ let tourResolve = null;   // resolves the per-step await
 
 const tourCloseAll = () => {
   viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
-  viewer.explodedView = 0;
+  if (viewer.scene) viewer.scene.explodedStrength = 0;
 };
 
 const stopTour = () => {
@@ -196,7 +196,7 @@ const stopTour = () => {
   tourResolve = null;
   tourBtn.textContent = "▶ Guided Tour";
   tourBtn.classList.remove("active");
-  tourCloseAll();           // also resets viewer.explodedView = 0
+  tourCloseAll();           // also resets viewer.scene.explodedStrength = 0
 };
 
 const runTour = async (hotspots) => {
@@ -220,7 +220,7 @@ const runTour = async (hotspots) => {
     // Apply exploded view (tourCloseAll already reset it to 0)
     const explodeData = hs._explode;
     if (explodeData?.explodedStrength !== undefined) {
-      viewer.explodedView = explodeData.explodedStrength;
+      if (viewer.scene) viewer.scene.explodedStrength = explodeData.explodedStrength;
     }
 
     tourBtn.textContent = `⏹ Stop  (${i + 1} / ${hotspots.length})`;
@@ -407,12 +407,13 @@ const loadOptimizationCallout = (optimizationData) => {
   const statsEl  = document.getElementById("opt-stats");
   if (!callout || !statsEl) return;
 
-  const { sourceMB, sourceFormat, formats } = optimizationData;
+  const { sourceMB, sourceFormat, optimizedMB, formats } = optimizationData;
+  const pctReduction = Math.round((1 - optimizedMB / sourceMB) * 100);
 
   const stats = [
-    { label: "Source",    value: `${sourceMB} MB ${sourceFormat}` },
-    { label: "Web-ready", value: (formats ?? []).join(" + ") },
-    { label: "AR",        value: "iOS + Web" },
+    { label: "Source",   value: `${sourceMB} MB ${sourceFormat}` },
+    { label: "Web GLB",  value: `${optimizedMB} MB (−${pctReduction}%)` },
+    { label: "Formats",  value: (formats ?? []).join(" · ") },
   ];
 
   stats.forEach(({ label, value }) => {
@@ -445,7 +446,7 @@ const loadHotspots = async (productUuid) => {
   // Close all other hotspots when one opens and reset explode state
   const closeAll = () => {
     viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
-    viewer.explodedView = 0;
+    if (viewer.scene) viewer.scene.explodedStrength = 0;
   };
 
   data.response.grid.forEach((hs, idx) => {
@@ -498,8 +499,8 @@ const loadHotspots = async (productUuid) => {
         }
 
         // Apply exploded view if configured for this hotspot
-        if (explode?.explodedStrength !== undefined) {
-          viewer.explodedView = explode.explodedStrength;
+        if (explode?.explodedStrength !== undefined && viewer.scene) {
+          viewer.scene.explodedStrength = explode.explodedStrength;
         }
       }
     });
