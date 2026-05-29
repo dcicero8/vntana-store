@@ -46,11 +46,21 @@ const PARTS_DATA = {
   // renders added as they're produced in Figurement
 };
 
-// Map render filenames to parts that have them
+// Figurement renders — one per part
 const RENDERS = {
-  "Gasket_Head": "renders/parts/Gasket_Head.jpg",
-  "Back_Plate":  "renders/parts/Back_Plate.jpg",
-  "Main_Dowel":  "renders/parts/Main_Dowel.jpg",
+  "Booster":      "renders/parts/Booster.jpg",
+  "Bolts":        "renders/parts/Bolts.jpg",
+  "Fetzer_Valve": "renders/parts/Fetzer_Valve.jpg",
+  "Long_Bolt":    "renders/parts/Long_Bolt.jpg",
+  "Mandrel":      "renders/parts/Mandrel.jpg",
+  "Gasket_Head":  "renders/parts/Gasket_Head.jpg",
+  "Outer_Ring":   "renders/parts/Outer_Ring.jpg",
+  "O-Ring":       "renders/parts/O-Ring.jpg",
+  "Core_Winder":  "renders/parts/Core_Winder.jpg",
+  "Back_Plate":   "renders/parts/Back_Plate.jpg",
+  "Casing":       "renders/parts/Casing.jpg",
+  "Back_Housing": "renders/parts/Back_Housing.jpg",
+  "Main_Dowel":   "renders/parts/Main_Dowel.jpg",
 };
 
 // Normalize a scene-graph label to a PARTS_DATA key:
