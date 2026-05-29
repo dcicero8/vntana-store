@@ -45,17 +45,15 @@ const showPart = (num) => {
 };
 
 // ── Selection detection ───────────────────────────────────────
-// Two confirmed paths (from bundle source analysis):
-//
-// 1. Canvas click  → PointerService fires Three.js "select" on viewer.selection
-//    e.intersections[0].mesh.uuid is a stable Three.js UUID per mesh.
-//
-// 2. Scene-graph click → viewer fires CustomEvent "scene-graph-highlight"
-//    The selected row gets attribute `highlighted` (Lit ?attr binding).
-//    Find it in shadow DOM and read its sibling index for the part number.
+// Two paths:
+// 1. Canvas click → Three.js "select" event on viewer.selection
+//    carries e.intersections[0].mesh.uuid (stable per mesh).
+// 2. Scene-graph click → sets [highlighted] attr on the row element
+//    (Lit ?attr binding, confirmed in bundle). scene-graph-highlight
+//    CustomEvent is NOT composed so it can't cross the shadow boundary —
+//    we use polling instead.
 
-// mesh uuid → part number (assigned on first encounter, 1-based)
-const meshPartMap = new Map();
+const meshPartMap = new Map();  // mesh uuid → part number
 let nextPartNum = 1;
 let lastPartNum = null;
 
@@ -71,7 +69,7 @@ const partNumForUuid = (uuid) => {
   return meshPartMap.get(uuid);
 };
 
-// Recursively search shadow roots for the first element matching selector.
+// Recursively search shadow roots for first element matching selector.
 const deepQuery = (root, selector) => {
   if (!root) return null;
   const hit = root.querySelector(selector);
@@ -85,36 +83,37 @@ const deepQuery = (root, selector) => {
   return null;
 };
 
-// When a scene-graph row has [highlighted], find its 1-based sibling index.
-const partNumFromSceneGraph = () => {
-  const el = deepQuery(viewer.shadowRoot, "[highlighted]");
-  if (!el) return null;
-  const siblings = Array.from(el.parentElement?.children ?? []);
-  const idx = siblings.indexOf(el);
-  console.log("[parts] scene-graph highlighted index:", idx, el);
-  return idx >= 0 ? idx + 1 : null;
+// Path 1: canvas click — attach to viewer.selection Three.js EventDispatcher.
+// Try immediately (selection may exist before load) and again after load.
+const attachSelectListener = () => {
+  const sel = viewer.selection;
+  if (!sel?.addEventListener) return false;
+  sel.addEventListener("select", (e) => {
+    const uuid = e.intersections?.[0]?.mesh?.uuid;
+    console.log("[parts] canvas select, uuid:", uuid);
+    if (uuid) handlePartNum(partNumForUuid(uuid));
+  });
+  console.log("[parts] attached viewer.selection select listener");
+  return true;
 };
 
-viewer.addEventListener("load", () => {
-  // Path 1: canvas click via Three.js EventDispatcher on viewer.selection
-  const sel = viewer.selection;
-  console.log("[parts] viewer.selection:", sel);
-  if (sel?.addEventListener) {
-    sel.addEventListener("select", (e) => {
-      const uuid = e.intersections?.[0]?.mesh?.uuid;
-      console.log("[parts] select event, mesh uuid:", uuid);
-      if (uuid) handlePartNum(partNumForUuid(uuid));
-    });
-  }
+if (!attachSelectListener()) {
+  viewer.addEventListener("load", attachSelectListener, { once: true });
+  setTimeout(attachSelectListener, 5000); // last-resort fallback
+}
 
-  // Path 2: scene-graph row click fires this CustomEvent on the viewer element
-  viewer.addEventListener("scene-graph-highlight", () => {
-    requestAnimationFrame(() => {
-      const num = partNumFromSceneGraph();
-      if (num !== null) handlePartNum(num);
-    });
-  });
-}, { once: true });
+// Path 2: scene-graph click — poll for [highlighted] attribute.
+// The event doesn't cross the shadow boundary so polling is the only option.
+let pollHighlighted = null;
+setInterval(() => {
+  try {
+    const el = deepQuery(viewer.shadowRoot, "[highlighted]");
+    if (!el) return;
+    // Use the element reference itself as the stable key via WeakMap.
+    if (!meshPartMap.has(el)) meshPartMap.set(el, nextPartNum++);
+    handlePartNum(meshPartMap.get(el));
+  } catch (_) {}
+}, 300);
 
 // ── Model URL builder ─────────────────────────────────────────
 const modelUrl = (models, format) => {
