@@ -45,93 +45,76 @@ const showPart = (num) => {
 };
 
 // ── Selection detection ───────────────────────────────────────
-// Strategy: find all scene-graph row elements, then return the 1-based index
-// of whichever one is currently marked selected. Index = part number.
-// This is more reliable than WeakMap on a DOM reference, because the viewer
-// may reuse a single "selected" container element rather than per-row nodes.
+// Two confirmed paths (from bundle source analysis):
+//
+// 1. Canvas click  → PointerService fires Three.js "select" on viewer.selection
+//    e.intersections[0].mesh.uuid is a stable Three.js UUID per mesh.
+//
+// 2. Scene-graph click → viewer fires CustomEvent "scene-graph-highlight"
+//    The selected row gets attribute `highlighted` (Lit ?attr binding).
+//    Find it in shadow DOM and read its sibling index for the part number.
 
+// mesh uuid → part number (assigned on first encounter, 1-based)
+const meshPartMap = new Map();
+let nextPartNum = 1;
 let lastPartNum = null;
 
-// Row selectors tried in order — first one that returns >1 results wins.
-const ROW_SELECTORS = [
-  '[role="treeitem"]',
-  '[class*="scene-graph-item"]',
-  '[class*="tree-item"]',
-  '[class*="node-row"]',
-  '[class*="mesh-row"]',
-  '[class*="mesh-item"]',
-  '[class*="SceneGraph"] li',
-];
-
-const findSelectedPartNum = () => {
-  const search = (root) => {
-    if (!root) return null;
-
-    for (const sel of ROW_SELECTORS) {
-      const items = root.querySelectorAll(sel);
-      if (items.length > 0) {
-        for (let i = 0; i < items.length; i++) {
-          const el   = items[i];
-          const cls  = el.getAttribute("class") ?? "";
-          const isSelected =
-            cls.includes("selected") ||
-            cls.includes("active")   ||
-            el.getAttribute("aria-selected") === "true" ||
-            el.getAttribute("aria-current")  === "true";
-          if (isSelected) {
-            console.log(`[parts] found selected at index ${i} via "${sel}"`);
-            return i + 1; // 1-based part number
-          }
-        }
-      }
-    }
-
-    // Recurse into nested shadow roots
-    for (const el of root.querySelectorAll("*")) {
-      if (el.shadowRoot) {
-        const result = search(el.shadowRoot);
-        if (result !== null) return result;
-      }
-    }
-    return null;
-  };
-
-  return search(viewer.shadowRoot) ?? search(document.body);
+const handlePartNum = (num) => {
+  if (num !== null && num !== lastPartNum) {
+    lastPartNum = num;
+    showPart(num);
+  }
 };
 
-const checkSelection = () => {
-  try {
-    const num = findSelectedPartNum();
-    if (num !== null && num !== lastPartNum) {
-      lastPartNum = num;
-      showPart(num);
+const partNumForUuid = (uuid) => {
+  if (!meshPartMap.has(uuid)) meshPartMap.set(uuid, nextPartNum++);
+  return meshPartMap.get(uuid);
+};
+
+// Recursively search shadow roots for the first element matching selector.
+const deepQuery = (root, selector) => {
+  if (!root) return null;
+  const hit = root.querySelector(selector);
+  if (hit) return hit;
+  for (const el of root.querySelectorAll("*")) {
+    if (el.shadowRoot) {
+      const found = deepQuery(el.shadowRoot, selector);
+      if (found) return found;
     }
-  } catch (_) {}
+  }
+  return null;
+};
+
+// When a scene-graph row has [highlighted], find its 1-based sibling index.
+const partNumFromSceneGraph = () => {
+  const el = deepQuery(viewer.shadowRoot, "[highlighted]");
+  if (!el) return null;
+  const siblings = Array.from(el.parentElement?.children ?? []);
+  const idx = siblings.indexOf(el);
+  console.log("[parts] scene-graph highlighted index:", idx, el);
+  return idx >= 0 ? idx + 1 : null;
 };
 
 viewer.addEventListener("load", () => {
-  const selLayer = viewer.selection;
-  console.log("[parts] viewer.selection:", selLayer);
-
-  if (selLayer?.background) {
-    selLayer.background.addEventListener("change", () =>
-      requestAnimationFrame(checkSelection)
-    );
-  }
-  if (selLayer?.highlight) {
-    selLayer.highlight.addEventListener("change", () =>
-      requestAnimationFrame(checkSelection)
-    );
+  // Path 1: canvas click via Three.js EventDispatcher on viewer.selection
+  const sel = viewer.selection;
+  console.log("[parts] viewer.selection:", sel);
+  if (sel?.addEventListener) {
+    sel.addEventListener("select", (e) => {
+      const uuid = e.intersections?.[0]?.mesh?.uuid;
+      console.log("[parts] select event, mesh uuid:", uuid);
+      if (uuid) handlePartNum(partNumForUuid(uuid));
+    });
   }
 
-  // Polling fallback — catches scene-graph clicks viewer events may miss
-  setInterval(checkSelection, 250);
+  // Path 2: scene-graph row click fires this CustomEvent on the viewer element
+  viewer.addEventListener("scene-graph-highlight", () => {
+    requestAnimationFrame(() => {
+      const num = partNumFromSceneGraph();
+      if (num !== null) handlePartNum(num);
+    });
+  });
 }, { once: true });
-
-// Capture-phase click: check after two frames so scene graph has updated
-viewer.addEventListener("click", () =>
-  requestAnimationFrame(() => requestAnimationFrame(checkSelection))
-, true);
 
 // ── Model URL builder ─────────────────────────────────────────
 const modelUrl = (models, format) => {
