@@ -65,63 +65,94 @@ const selectionId = (sel) => {
   return null;
 };
 
-// ── Primary: post-click selection read ───────────────────────
-// Fires on any click inside the viewer (capture phase) then
-// reads viewer.scene.selection after two animation frames
-// to ensure the selection has been committed.
+// ── Selection detection ───────────────────────────────────────
+// Bundle analysis: "select" fires on a Three.js EventDispatcher (not DOM),
+// so we can't catch it with addEventListener on the viewer element.
+// Confirmed path: viewer.selection.background fires a DOM "change" event
+// when the selection changes. After that, we scrape the scene graph's
+// shadow DOM to find which row is now highlighted.
+
 let lastId = null;
 
-const readSelection = () => {
-  const scene = viewer.scene;
-  if (!scene) return;
-
-  const sel = scene.selection;
-  console.log("[parts] scene.selection:", sel);
-
-  const id = selectionId(sel);
-  console.log("[parts] selection id:", id);
-
-  if (id && id !== lastId) {
-    lastId = id;
-    showPart(id);
+// Walk shadow roots recursively to find a selected/active scene-graph row
+const findSelectedName = () => {
+  const roots = [viewer.shadowRoot, document.body];
+  for (const root of roots) {
+    if (!root) continue;
+    // Direct query for highlighted row
+    const hit = root.querySelector?.('[class*="selected"],[class*="active"],[aria-selected="true"]');
+    if (hit) {
+      const txt = hit.textContent?.trim();
+      if (txt && txt.length > 1) return txt;
+    }
+    // Also dive into nested custom elements
+    root.querySelectorAll?.("*")?.forEach(el => {
+      if (el.shadowRoot) {
+        const inner = el.shadowRoot.querySelector('[class*="selected"],[class*="active"],[aria-selected="true"]');
+        if (inner?.textContent?.trim()?.length > 1) return; // handled below
+      }
+    });
   }
+  // Deep shadow search
+  const deepSearch = (root) => {
+    if (!root) return null;
+    const els = root.querySelectorAll?.("*") ?? [];
+    for (const el of els) {
+      if (el.shadowRoot) {
+        const found = el.shadowRoot.querySelector('[class*="selected"],[class*="active"],[aria-selected="true"]');
+        if (found?.textContent?.trim()?.length > 1) return found.textContent.trim();
+        const deeper = deepSearch(el.shadowRoot);
+        if (deeper) return deeper;
+      }
+    }
+    return null;
+  };
+  return deepSearch(viewer.shadowRoot) ?? deepSearch(document.body);
 };
 
-viewer.addEventListener("click", () => {
-  requestAnimationFrame(() => requestAnimationFrame(readSelection));
-}, true); // capture so it fires even if the viewer stops propagation
-
-// ── Backup: event name probe on scene + viewer ────────────────
-// Logs whatever events fire so we can confirm the right name in DevTools.
 viewer.addEventListener("load", () => {
-  const scene = viewer.scene;
-  if (!scene) return;
+  // Primary: viewer.selection.background "change" — confirmed in bundle
+  const selLayer = viewer.selection;
+  console.log("[parts] viewer.selection:", selLayer);
 
-  const evts = [
-    "selection-change", "select", "selected", "object-selected",
-    "mesh-selected", "node-selected", "scene-graph-selection",
-    "mesh-click", "click",
-  ];
-
-  evts.forEach(name => {
-    scene.addEventListener(name, (e) => {
-      console.log(`[parts] scene "${name}":`, e);
-      const id = selectionId(e.detail ?? e.object ?? e.target);
-      if (id && id !== lastId) { lastId = id; showPart(id); }
+  if (selLayer?.background) {
+    selLayer.background.addEventListener("change", () => {
+      // Give the scene graph DOM a frame to update before reading it
+      requestAnimationFrame(() => {
+        const name = findSelectedName();
+        console.log("[parts] background change → name:", name);
+        if (name && name !== lastId) { lastId = name; showPart(name); }
+      });
     });
-    viewer.addEventListener(name, (e) => {
-      console.log(`[parts] viewer "${name}":`, e);
-    });
-  });
+    console.log("[parts] hooked viewer.selection.background change");
+  }
 
-  // Polling fallback — covers cases where neither click nor event fires
+  if (selLayer?.highlight) {
+    selLayer.highlight.addEventListener("change", () => {
+      requestAnimationFrame(() => {
+        const name = findSelectedName();
+        if (name && name !== lastId) { lastId = name; showPart(name); }
+      });
+    });
+  }
+
+  // Polling fallback every 250ms
   setInterval(() => {
     try {
-      const id = selectionId(viewer.scene?.selection);
-      if (id && id !== lastId) { lastId = id; showPart(id); }
+      const name = findSelectedName();
+      if (name && name !== lastId) { lastId = name; showPart(name); }
     } catch (_) {}
-  }, 150);
+  }, 250);
 }, { once: true });
+
+// Capture-phase click fallback: read after two frames
+viewer.addEventListener("click", () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const name = findSelectedName();
+    console.log("[parts] post-click name:", name);
+    if (name && name !== lastId) { lastId = name; showPart(name); }
+  }));
+}, true);
 
 // ── Model URL builder ─────────────────────────────────────────
 const modelUrl = (models, format) => {
