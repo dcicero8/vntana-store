@@ -1,7 +1,7 @@
 import { BASE_URL } from "./products.js";
 
 // ── Asset config ─────────────────────────────────────────────
-const UUID      = "209dc3ab-e55d-4350-b758-da7503b70f65";
+const UUID      = "7b28ac78-89ca-4bd8-9948-5076439eb496";
 const ORG       = "DCicero";
 const WORKSPACE = "figurement";
 
@@ -26,19 +26,41 @@ document.getElementById("qty-plus").addEventListener("click", () => {
   qty++; document.getElementById("qty-value").textContent = qty;
 });
 
-const showPart = (num) => {
+// ── Parts catalog data ────────────────────────────────────────
+const PARTS_DATA = {
+  "Booster":      { sku: "DH-001", price: "$18.00", avail: "In Stock",       lead: "Ships in 1–2 days",  desc: "Primary booster assembly for the 3-Layer Die Head 110mm. Maintains extrusion pressure across all three material layers." },
+  "Bolts":        { sku: "DH-002", price: "$2.50",  avail: "In Stock",       lead: "Ships in 1–2 days",  desc: "High-tensile fastener set. Sold as a complete set of 16. Grade 8.8, M12 × 40mm, zinc-plated." },
+  "Fetzer Valve": { sku: "DH-003", price: "$34.00", avail: "In Stock",       lead: "Ships in 3–5 days",  desc: "Precision flow-control valve for material channel regulation. Compatible with all Ø110mm die head configurations." },
+  "Long Bolt":    { sku: "DH-004", price: "$4.00",  avail: "In Stock",       lead: "Ships in 1–2 days",  desc: "Extended M12 through-bolt, 120mm. Used for deep-channel flange attachment. Sold individually." },
+  "Mandrel":      { sku: "DH-005", price: "$62.00", avail: "In Stock",       lead: "Ships in 5–7 days",  desc: "Core mandrel — sets the inner diameter of the extruded tube. Precision-ground to ±0.01mm tolerance." },
+  "Gasket Head":  { sku: "DH-006", price: "$11.00", avail: "In Stock",       lead: "Ships in 1–2 days",  desc: "High-temp silicone gasket for head-to-body seal. Rated to 280°C continuous. Sold individually." },
+  "Outer Ring":   { sku: "DH-007", price: "$27.00", avail: "In Stock",       lead: "Ships in 3–5 days",  desc: "Hardened steel outer ring. Maintains concentricity of die head assembly under thermal load." },
+  "O-Ring":       { sku: "DH-008", price: "$3.50",  avail: "In Stock",       lead: "Ships in 1–2 days",  desc: "Viton O-ring set (qty 4). Chemical-resistant, rated to 200°C. Fits all Ø110mm die head variants." },
+  "Core Winder":  { sku: "DH-009", price: "$45.00", avail: "Low Stock",      lead: "Ships in 7–10 days", desc: "Internal winding guide for multi-layer co-extrusion. Precision-machined from tool steel." },
+  "Back Plate":   { sku: "DH-010", price: "$38.00", avail: "In Stock",       lead: "Ships in 3–5 days",  desc: "Rear closure plate for die head body. Includes integral inlet ports for up to 3 material feeds." },
+  "Casing":       { sku: "DH-011", price: "$89.00", avail: "In Stock",       lead: "Ships in 5–7 days",  desc: "Main outer casing — full die head body shell. Machined from 316 stainless. OEM specification." },
+  "Back Housing": { sku: "DH-012", price: "$54.00", avail: "Out of Stock",   lead: "Est. 3–4 weeks",     desc: "Rear housing assembly. Houses the material distribution channels and primary inlet connections." },
+  "Main Dowel":   { sku: "DH-013", price: "$8.00",  avail: "In Stock",       lead: "Ships in 1–2 days",  desc: "Alignment dowel pin, 12mm × 50mm. Ensures repeatable head positioning on disassembly and reassembly." },
+};
+
+const showPart = (name) => {
+  const data = PARTS_DATA[name] ?? {
+    sku: "DH-???", price: "—", avail: "Contact us", lead: "—",
+    desc: `Component of the 3-Layer Die Head 110mm Assembly. Contact sales for pricing and availability.`,
+  };
 
   qty = 1;
   document.getElementById("qty-value").textContent = "1";
 
-  partNameEl.textContent   = `Part #${num}`;
-  partNumberEl.textContent = `SKU-${String(num).padStart(3, "0")}`;
-  partDescEl.textContent   =
-    `Replacement component for the 3-Layer Die Head 110mm Assembly. ` +
-    `Compatible with all Ø110mm configurations. OEM specification.`;
-  partAvailEl.textContent  = "In Stock";
-  partLeadEl.textContent   = "Ships in 1–2 days";
-  partPriceEl.textContent  = "$5.00";
+  partNameEl.textContent  = name;
+  partNumberEl.textContent = data.sku;
+  partDescEl.textContent  = data.desc;
+  partAvailEl.textContent = data.avail;
+  partLeadEl.textContent  = data.lead;
+  partPriceEl.textContent = data.price;
+
+  // Grey out add-to-cart if out of stock
+  document.querySelector(".btn-primary").disabled = data.avail === "Out of Stock";
 
   partDefault.hidden  = true;
   partSelected.hidden = false;
@@ -50,23 +72,39 @@ const showPart = (num) => {
 // This works for scene-graph row clicks without any shadow DOM traversal.
 // For 3D canvas clicks we fall back to viewer.selection.background "change".
 
-const meshPartMap = new WeakMap();
-let nextPartNum = 1;
-let lastPartNum = null;
+let lastPartName = null;
 
-const handlePartNum = (num) => {
-  if (num !== null && num !== lastPartNum) {
-    lastPartNum = num;
-    showPart(num);
+const handlePartName = (name) => {
+  if (name && name !== lastPartName) {
+    lastPartName = name;
+    showPart(name);
   }
 };
 
-// Scene-graph click: viewer capture → composedPath has the row element.
-// Find the element with the most siblings (the list row).
+// Read the part name from an element: prefer text content that matches a known
+// part name, otherwise return the trimmed text of the element itself.
+const partNameFromEl = (el) => {
+  // Walk up a couple levels to find meaningful text
+  for (const candidate of [el, el.parentElement, el.parentElement?.parentElement]) {
+    if (!candidate) continue;
+    const text = candidate.textContent?.trim();
+    if (text && PARTS_DATA[text]) return text;
+    // Also check first text node child (ignores icon spans etc.)
+    for (const node of candidate.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const t = node.textContent?.trim();
+        if (t && PARTS_DATA[t]) return t;
+      }
+    }
+  }
+  return el.textContent?.trim() || null;
+};
+
+// Scene-graph click: use composedPath() read synchronously to pierce shadow DOM.
+// Find the element with the most siblings (the list row) and read its part name.
 let lastPath = [];
 viewer.addEventListener("click", (e) => {
-  lastPath = e.composedPath(); // must read synchronously
-
+  lastPath = e.composedPath();
   requestAnimationFrame(() => {
     let bestEl = null, bestCount = 0;
     for (const el of lastPath) {
@@ -75,33 +113,27 @@ viewer.addEventListener("click", (e) => {
       if (n > bestCount) { bestCount = n; bestEl = el; }
     }
     if (bestEl && bestCount > 3) {
-      const siblings = Array.from(bestEl.parentElement.children);
-      const idx = siblings.indexOf(bestEl);
-      console.log("[parts] composedPath best row: idx", idx, "of", bestCount, bestEl.tagName);
-      if (idx >= 0) {
-        if (!meshPartMap.has(bestEl)) meshPartMap.set(bestEl, nextPartNum++);
-        handlePartNum(meshPartMap.get(bestEl));
-      }
+      const name = partNameFromEl(bestEl);
+      console.log("[parts] scene-graph click →", name, "(siblings:", bestCount, ")");
+      if (name) handlePartName(name);
     }
   });
 }, true);
 
-// 3D canvas click fallback: viewer.selection.background fires "change".
-// After change, check if composedPath already handled it (scene-graph case);
-// if not, assign a new part number for the 3D selection.
+// 3D canvas click fallback via viewer.selection.background "change".
 const attach3DListener = () => {
   const sel = viewer.selection;
   if (!sel?.background?.addEventListener) return false;
   sel.background.addEventListener("change", () => {
+    // scene-graph clicks also trigger this; the composedPath handler above
+    // runs first and sets lastPartName, so skip if already handled.
     requestAnimationFrame(() => {
-      // If composedPath found a list row (scene-graph click), already handled.
-      // For pure 3D clicks the path won't have a list row, so we use a
-      // per-change counter keyed on the change event object itself.
-      if (lastPartNum !== null) return; // something already selected
-      handlePartNum(nextPartNum++);
+      if (lastPartName) return;
+      // For a pure 3D canvas click we don't know the name — show a generic prompt.
+      partDefault.hidden  = false;
+      partSelected.hidden = true;
     });
   });
-  console.log("[parts] attached selection.background change listener");
   return true;
 };
 if (!attach3DListener()) {
