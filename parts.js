@@ -176,15 +176,17 @@ const attach3DListener = () => {
   const sel = viewer.selection;
   if (!sel?.background?.addEventListener) return false;
   sel.background.addEventListener("change", () => {
-    // If a doc click just fired it was a scene-graph row click — already handled.
     if (recentDocClick) return;
-    // Wait a frame for the scene graph DOM to mark the highlighted node.
-    requestAnimationFrame(() => {
-      const el = deepQuery(viewer.shadowRoot, "[highlighted]");
-      if (!el) return;
+    // Try at 100ms, 300ms, 600ms — scene graph DOM update timing is unpredictable
+    const tryFind = () => {
+      const el = deepQuery(viewer.shadowRoot, "[highlighted]")
+               ?? deepQuery(document.body, "[highlighted]");
+      if (!el) return false;
       const key = normalizePartName(el.textContent);
-      if (PARTS_DATA[key]) handlePartName(key);
-    });
+      if (PARTS_DATA[key]) { handlePartName(key); return true; }
+      return false;
+    };
+    setTimeout(() => { if (!tryFind()) setTimeout(() => { if (!tryFind()) setTimeout(tryFind, 300); }, 200); }, 100);
   });
   return true;
 };
