@@ -145,43 +145,37 @@ const handlePartName = (name) => {
 };
 
 // Find a PARTS_DATA key near el.
-// The scene graph renders as a FLAT list with CSS depth — siblings, not nested DOM.
-// So "Mesh_41" and "Casing (1)" are siblings; we scan previous siblings to find
-// the owning named group. Also tries DOM ancestors as a fallback.
-const partNameFromEl = (startEl) => {
-  // Pass 1: check the element and DOM ancestors (text nodes + short textContent)
-  let node = startEl;
-  while (node && node.nodeType === Node.ELEMENT_NODE) {
-    for (const child of node.childNodes) {
-      if (child.nodeType === Node.TEXT_NODE) {
-        const key = normalizePartName(child.textContent);
-        if (PARTS_DATA[key]) return key;
-      }
+// At each DOM level: check the element, then scan previous siblings.
+// This handles both nested DOM and flat virtualised lists (CSS depth indentation).
+const tryKeyFromEl = (el) => {
+  if (!(el instanceof Element)) return null;
+  for (const child of el.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      const k = normalizePartName(child.textContent);
+      if (PARTS_DATA[k]) return k;
     }
-    if ((node.textContent?.length ?? 999) < 50) {
-      const key = normalizePartName(node.textContent);
-      if (PARTS_DATA[key]) return key;
+  }
+  if ((el.textContent?.length ?? 999) < 60) {
+    const k = normalizePartName(el.textContent);
+    if (PARTS_DATA[k]) return k;
+  }
+  return null;
+};
+
+const partNameFromEl = (startEl) => {
+  let node = startEl instanceof Element ? startEl : startEl?.parentElement;
+  while (node) {
+    // Check this node
+    const k = tryKeyFromEl(node);
+    if (k) return k;
+    // Scan previous siblings at this level (for flat scene-graph lists)
+    let sib = node.previousElementSibling;
+    while (sib) {
+      const k2 = tryKeyFromEl(sib);
+      if (k2) return k2;
+      sib = sib.previousElementSibling;
     }
     node = node.parentElement;
-  }
-
-  // Pass 2: flat-list scan — walk previous siblings to find the named group row
-  if (startEl.parentElement) {
-    const siblings = Array.from(startEl.parentElement.children);
-    const idx = siblings.indexOf(startEl);
-    for (let i = idx - 1; i >= 0; i--) {
-      const sib = siblings[i];
-      for (const child of sib.childNodes) {
-        if (child.nodeType === Node.TEXT_NODE) {
-          const key = normalizePartName(child.textContent);
-          if (PARTS_DATA[key]) return key;
-        }
-      }
-      if ((sib.textContent?.length ?? 999) < 50) {
-        const key = normalizePartName(sib.textContent);
-        if (PARTS_DATA[key]) return key;
-      }
-    }
   }
   return null;
 };
@@ -239,50 +233,8 @@ const attach3DListener = () => {
   if (!sel?.background?.addEventListener) return false;
   sel.background.addEventListener("change", () => {
     if (clickHandled) { clickHandled = false; return; }
-
-    // Use MutationObserver to react the instant Lit sets [highlighted]
-    // on a scene-graph row — works regardless of timing, no polling needed.
-    const observers = [];
-    let resolved = false;
-
-    const resolve = (el) => {
-      if (resolved) return;
-      // el might be a mesh row ("Mesh_34") — walk up to find named parent group
-      const key = partNameFromEl(el);
-      if (!key) return;
-      resolved = true;
-      observers.forEach(o => o.disconnect());
-      handlePartName(key);
-    };
-
-    // Attach a MutationObserver to every accessible shadow root in the tree.
-    const watchRoot = (root) => {
-      if (!root) return;
-      // Check if already highlighted before we even start observing
-      const existing = root.querySelector("[highlighted]");
-      if (existing) { resolve(existing); return; }
-
-      const mo = new MutationObserver((muts) => {
-        for (const m of muts) {
-          if (m.attributeName === "highlighted" && m.target.hasAttribute("highlighted")) {
-            resolve(m.target);
-          }
-        }
-      });
-      mo.observe(root, { subtree: true, attributes: true, attributeFilter: ["highlighted"] });
-      observers.push(mo);
-
-      // Recurse into any nested open shadow roots
-      for (const el of root.querySelectorAll("*")) {
-        if (el.shadowRoot) watchRoot(el.shadowRoot);
-      }
-    };
-
-    watchRoot(viewer.shadowRoot);
-    watchRoot(document.body);
-
-    // Give up after 3s so we don't leak observers
-    setTimeout(() => { resolved = true; observers.forEach(o => o.disconnect()); }, 3000);
+    // 3D canvas click — the permanent MutationObserver will fire when
+    // Lit sets [highlighted] on the scene-graph row. Nothing else needed here.
   });
   return true;
 };
@@ -290,6 +242,41 @@ if (!attach3DListener()) {
   viewer.addEventListener("load", attach3DListener, { once: true });
   setTimeout(attach3DListener, 5000);
 }
+
+// Permanent MutationObserver — watches ALL accessible shadow roots for [highlighted].
+// Set up once so it catches every selection without per-click setup/teardown.
+const watchedRoots = new WeakSet();
+const observeRoot = (root) => {
+  if (!root || watchedRoots.has(root)) return;
+  watchedRoots.add(root);
+  const mo = new MutationObserver((muts) => {
+    for (const m of muts) {
+      if (m.attributeName === "highlighted" && m.target.hasAttribute?.("highlighted")) {
+        if (!clickHandled) {
+          const key = partNameFromEl(m.target);
+          if (key) handlePartName(key);
+        }
+      }
+      // Watch for new custom elements being added that might have shadow roots
+      for (const node of m.addedNodes ?? []) {
+        if (node.shadowRoot) observeRoot(node.shadowRoot);
+      }
+    }
+  });
+  mo.observe(root, { subtree: true, attributes: true, attributeFilter: ["highlighted"], childList: true });
+  // Recurse into nested open shadow roots
+  for (const el of root.querySelectorAll("*")) {
+    if (el.shadowRoot) observeRoot(el.shadowRoot);
+  }
+};
+
+// Attach after load so viewer shadow DOM is populated
+const startObserving = () => {
+  if (viewer.shadowRoot) observeRoot(viewer.shadowRoot);
+  observeRoot(document.body);
+};
+viewer.addEventListener("load", startObserving, { once: true });
+setTimeout(startObserving, 5000);
 
 // ── Model URL builder ─────────────────────────────────────────
 const modelUrl = (models, format) => {
