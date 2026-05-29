@@ -15,7 +15,8 @@ const partNumberEl = document.getElementById("part-number");
 const partDescEl   = document.getElementById("part-description");
 const partAvailEl  = document.getElementById("part-availability");
 const partLeadEl   = document.getElementById("part-lead-time");
-const partPriceEl  = document.getElementById("part-price");
+const partPriceEl   = document.getElementById("part-price");
+const partRenderEl  = document.getElementById("part-render");
 
 // ── Quantity control ─────────────────────────────────────────
 let qty = 1;
@@ -41,7 +42,15 @@ const PARTS_DATA = {
   "Back_Plate":   { sku: "DH-010", price: "$38.00", qty: 1,  avail: "In Stock",     lead: "Ships in 3–5 days",  desc: "Rear closure plate for die head body. Includes integral inlet ports for up to 3 material feeds." },
   "Casing":       { sku: "DH-011", price: "$89.00", qty: 1,  avail: "In Stock",     lead: "Ships in 5–7 days",  desc: "Main outer casing — full die head body shell. Machined from 316 stainless. OEM specification." },
   "Back_Housing": { sku: "DH-012", price: "$54.00", qty: 1,  avail: "Out of Stock", lead: "Est. 3–4 weeks",     desc: "Rear housing assembly. Houses the material distribution channels and primary inlet connections." },
-  "Main_Dowel":   { sku: "DH-013", price: "$8.00",  qty: 1,  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Alignment dowel pin, 12mm × 50mm. Ensures repeatable head positioning on disassembly and reassembly." },
+  "Main_Dowel":   { sku: "DH-013", price: "$8.00",  qty: 1,  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Alignment dowel pin, 12mm × 50mm. Ensures repeatable head positioning on disassembly and reassembly.", render: "renders/parts/Main_Dowel.jpg" },
+  // renders added as they're produced in Figurement
+};
+
+// Map render filenames to parts that have them
+const RENDERS = {
+  "Gasket_Head": "renders/parts/Gasket_Head.jpg",
+  "Back_Plate":  "renders/parts/Back_Plate.jpg",
+  "Main_Dowel":  "renders/parts/Main_Dowel.jpg",
 };
 
 // Normalize a scene-graph label to a PARTS_DATA key:
@@ -67,6 +76,16 @@ const showPart = (name) => {
     ? `${data.price} <span class="part-price-note">/ set of ${data.qty}</span>`
     : data.price;
   partPriceEl.innerHTML = partPriceEl.textContent; // allow the span
+
+  // Part render image
+  const renderSrc = RENDERS[name];
+  if (renderSrc) {
+    partRenderEl.src    = renderSrc;
+    partRenderEl.alt    = name.replace(/_/g, " ");
+    partRenderEl.hidden = false;
+  } else {
+    partRenderEl.hidden = true;
+  }
 
   // Grey out add-to-cart if out of stock
   document.querySelector(".btn-primary").disabled = data.avail === "Out of Stock";
