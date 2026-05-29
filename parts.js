@@ -29,19 +29,19 @@ document.getElementById("qty-plus").addEventListener("click", () => {
 // ── Parts catalog data ────────────────────────────────────────
 // Keys match scene graph node names (underscores, no count suffix).
 const PARTS_DATA = {
-  "Booster":      { sku: "DH-001", price: "$18.00", avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Primary booster assembly for the 3-Layer Die Head 110mm. Maintains extrusion pressure across all three material layers." },
-  "Bolts":        { sku: "DH-002", price: "$2.50",  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "High-tensile fastener set (27-piece). Grade 8.8, M12 × 40mm, zinc-plated." },
-  "Fetzer_Valve": { sku: "DH-003", price: "$34.00", avail: "In Stock",     lead: "Ships in 3–5 days",  desc: "Precision flow-control valve for material channel regulation. Compatible with all Ø110mm die head configurations." },
-  "Long_Bolt":    { sku: "DH-004", price: "$4.00",  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Extended M12 through-bolt, 120mm. Used for deep-channel flange attachment. Sold as set of 6." },
-  "Mandrel":      { sku: "DH-005", price: "$62.00", avail: "In Stock",     lead: "Ships in 5–7 days",  desc: "Core mandrel — sets the inner diameter of the extruded tube. Precision-ground to ±0.01mm tolerance." },
-  "Gasket_Head":  { sku: "DH-006", price: "$11.00", avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "High-temp silicone gasket for head-to-body seal. Rated to 280°C continuous. Sold individually." },
-  "Outer_Ring":   { sku: "DH-007", price: "$27.00", avail: "In Stock",     lead: "Ships in 3–5 days",  desc: "Hardened steel outer ring. Maintains concentricity of die head assembly under thermal load." },
-  "O-Ring":       { sku: "DH-008", price: "$3.50",  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Viton O-ring. Chemical-resistant, rated to 200°C. Fits all Ø110mm die head variants." },
-  "Core_Winder":  { sku: "DH-009", price: "$45.00", avail: "Low Stock",    lead: "Ships in 7–10 days", desc: "Internal winding guide for multi-layer co-extrusion. Precision-machined from tool steel." },
-  "Back_Plate":   { sku: "DH-010", price: "$38.00", avail: "In Stock",     lead: "Ships in 3–5 days",  desc: "Rear closure plate for die head body. Includes integral inlet ports for up to 3 material feeds." },
-  "Casing":       { sku: "DH-011", price: "$89.00", avail: "In Stock",     lead: "Ships in 5–7 days",  desc: "Main outer casing — full die head body shell. Machined from 316 stainless. OEM specification." },
-  "Back_Housing": { sku: "DH-012", price: "$54.00", avail: "Out of Stock", lead: "Est. 3–4 weeks",     desc: "Rear housing assembly. Houses the material distribution channels and primary inlet connections." },
-  "Main_Dowel":   { sku: "DH-013", price: "$8.00",  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Alignment dowel pin, 12mm × 50mm. Ensures repeatable head positioning on disassembly and reassembly." },
+  "Booster":      { sku: "DH-001", price: "$18.00", qty: 1,  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Primary booster assembly for the 3-Layer Die Head 110mm. Maintains extrusion pressure across all three material layers." },
+  "Bolts":        { sku: "DH-002", price: "$67.50", qty: 27, avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "High-tensile fastener set. Complete set of 27. Grade 8.8, M12 × 40mm, zinc-plated. Priced per set." },
+  "Fetzer_Valve": { sku: "DH-003", price: "$34.00", qty: 1,  avail: "In Stock",     lead: "Ships in 3–5 days",  desc: "Precision flow-control valve for material channel regulation. Compatible with all Ø110mm die head configurations." },
+  "Long_Bolt":    { sku: "DH-004", price: "$24.00", qty: 6,  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Extended M12 through-bolt, 120mm. Used for deep-channel flange attachment. Priced per set of 6." },
+  "Mandrel":      { sku: "DH-005", price: "$62.00", qty: 1,  avail: "In Stock",     lead: "Ships in 5–7 days",  desc: "Core mandrel — sets the inner diameter of the extruded tube. Precision-ground to ±0.01mm tolerance." },
+  "Gasket_Head":  { sku: "DH-006", price: "$11.00", qty: 1,  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "High-temp silicone gasket for head-to-body seal. Rated to 280°C continuous. Sold individually." },
+  "Outer_Ring":   { sku: "DH-007", price: "$27.00", qty: 1,  avail: "In Stock",     lead: "Ships in 3–5 days",  desc: "Hardened steel outer ring. Maintains concentricity of die head assembly under thermal load." },
+  "O-Ring":       { sku: "DH-008", price: "$3.50",  qty: 1,  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Viton O-ring. Chemical-resistant, rated to 200°C. Fits all Ø110mm die head variants." },
+  "Core_Winder":  { sku: "DH-009", price: "$45.00", qty: 1,  avail: "Low Stock",    lead: "Ships in 7–10 days", desc: "Internal winding guide for multi-layer co-extrusion. Precision-machined from tool steel." },
+  "Back_Plate":   { sku: "DH-010", price: "$38.00", qty: 1,  avail: "In Stock",     lead: "Ships in 3–5 days",  desc: "Rear closure plate for die head body. Includes integral inlet ports for up to 3 material feeds." },
+  "Casing":       { sku: "DH-011", price: "$89.00", qty: 1,  avail: "In Stock",     lead: "Ships in 5–7 days",  desc: "Main outer casing — full die head body shell. Machined from 316 stainless. OEM specification." },
+  "Back_Housing": { sku: "DH-012", price: "$54.00", qty: 1,  avail: "Out of Stock", lead: "Est. 3–4 weeks",     desc: "Rear housing assembly. Houses the material distribution channels and primary inlet connections." },
+  "Main_Dowel":   { sku: "DH-013", price: "$8.00",  qty: 1,  avail: "In Stock",     lead: "Ships in 1–2 days",  desc: "Alignment dowel pin, 12mm × 50mm. Ensures repeatable head positioning on disassembly and reassembly." },
 };
 
 // Normalize a scene-graph label to a PARTS_DATA key:
@@ -55,15 +55,18 @@ const showPart = (name) => {
     desc: `Component of the 3-Layer Die Head 110mm Assembly. Contact sales for pricing and availability.`,
   };
 
-  qty = 1;
-  document.getElementById("qty-value").textContent = "1";
+  qty = data.qty ?? 1;
+  document.getElementById("qty-value").textContent = qty;
 
-  partNameEl.textContent  = name.replace(/_/g, " ");
+  partNameEl.textContent   = name.replace(/_/g, " ");
   partNumberEl.textContent = data.sku;
-  partDescEl.textContent  = data.desc;
-  partAvailEl.textContent = data.avail;
-  partLeadEl.textContent  = data.lead;
-  partPriceEl.textContent = data.price;
+  partDescEl.textContent   = data.desc;
+  partAvailEl.textContent  = data.avail;
+  partLeadEl.textContent   = data.lead;
+  partPriceEl.textContent  = data.qty > 1
+    ? `${data.price} <span class="part-price-note">/ set of ${data.qty}</span>`
+    : data.price;
+  partPriceEl.innerHTML = partPriceEl.textContent; // allow the span
 
   // Grey out add-to-cart if out of stock
   document.querySelector(".btn-primary").disabled = data.avail === "Out of Stock";
