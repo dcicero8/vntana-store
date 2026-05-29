@@ -120,10 +120,13 @@ const handlePartName = (name) => {
   }
 };
 
-// Walk UP the DOM from el looking for a PARTS_DATA key in text content.
-// This handles mesh-level elements (Mesh_34) by finding their named parent group.
-const partNameFromEl = (el) => {
-  let node = el;
+// Find a PARTS_DATA key near el.
+// The scene graph renders as a FLAT list with CSS depth — siblings, not nested DOM.
+// So "Mesh_41" and "Casing (1)" are siblings; we scan previous siblings to find
+// the owning named group. Also tries DOM ancestors as a fallback.
+const partNameFromEl = (startEl) => {
+  // Pass 1: check the element and DOM ancestors (text nodes + short textContent)
+  let node = startEl;
   while (node && node.nodeType === Node.ELEMENT_NODE) {
     for (const child of node.childNodes) {
       if (child.nodeType === Node.TEXT_NODE) {
@@ -131,25 +134,62 @@ const partNameFromEl = (el) => {
         if (PARTS_DATA[key]) return key;
       }
     }
-    const key = normalizePartName(node.textContent);
-    if (PARTS_DATA[key]) return key;
+    if ((node.textContent?.length ?? 999) < 50) {
+      const key = normalizePartName(node.textContent);
+      if (PARTS_DATA[key]) return key;
+    }
     node = node.parentElement;
+  }
+
+  // Pass 2: flat-list scan — walk previous siblings to find the named group row
+  if (startEl.parentElement) {
+    const siblings = Array.from(startEl.parentElement.children);
+    const idx = siblings.indexOf(startEl);
+    for (let i = idx - 1; i >= 0; i--) {
+      const sib = siblings[i];
+      for (const child of sib.childNodes) {
+        if (child.nodeType === Node.TEXT_NODE) {
+          const key = normalizePartName(child.textContent);
+          if (PARTS_DATA[key]) return key;
+        }
+      }
+      if ((sib.textContent?.length ?? 999) < 50) {
+        const key = normalizePartName(sib.textContent);
+        if (PARTS_DATA[key]) return key;
+      }
+    }
   }
   return null;
 };
 
+// Track whether the click handler itself found and handled a part name.
+// Only suppress background.change when this is true (not on ALL clicks).
+let clickHandled = false;
+
 document.addEventListener("click", (e) => {
+  clickHandled = false;
   const path = e.composedPath();
+
+  // Pass 1: direct text scan of composedPath (handles clicking named rows)
   for (const el of path) {
     if (!(el instanceof Element)) continue;
     for (const node of el.childNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
         const key = normalizePartName(node.textContent);
-        if (PARTS_DATA[key]) { handlePartName(key); return; }
+        if (PARTS_DATA[key]) { clickHandled = true; handlePartName(key); return; }
       }
     }
-    const key = normalizePartName(el.textContent);
-    if (key && PARTS_DATA[key]) { handlePartName(key); return; }
+    if ((el.textContent?.length ?? 999) < 50) {
+      const key = normalizePartName(el.textContent);
+      if (key && PARTS_DATA[key]) { clickHandled = true; handlePartName(key); return; }
+    }
+  }
+
+  // Pass 2: flat-list sibling scan on innermost element (handles Mesh_N rows)
+  const firstEl = path.find(el => el instanceof Element);
+  if (firstEl) {
+    const key = partNameFromEl(firstEl);
+    if (key) { clickHandled = true; handlePartName(key); }
   }
 }, true);
 
@@ -169,14 +209,12 @@ const deepQuery = (root, selector) => {
 
 // 3D canvas click: viewer.selection.background fires "change".
 // After it fires, the scene graph highlights the selected node — read its text.
-let recentDocClick = false;
-document.addEventListener("click", () => { recentDocClick = true; setTimeout(() => { recentDocClick = false; }, 200); }, true);
 
 const attach3DListener = () => {
   const sel = viewer.selection;
   if (!sel?.background?.addEventListener) return false;
   sel.background.addEventListener("change", () => {
-    if (recentDocClick) return;
+    if (clickHandled) { clickHandled = false; return; }
 
     // Use MutationObserver to react the instant Lit sets [highlighted]
     // on a scene-graph row — works regardless of timing, no polling needed.
