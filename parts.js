@@ -44,33 +44,13 @@ const showPart = (num) => {
   partSelected.hidden = false;
 };
 
-// ── Debug overlay ────────────────────────────────────────────
-const dbg = Object.assign(document.createElement("div"), {
-  id: "parts-debug",
-  innerHTML: "waiting for click…",
-});
-Object.assign(dbg.style, {
-  position:"fixed", bottom:"12px", left:"12px", zIndex:9999,
-  background:"rgba(0,0,0,0.8)", color:"#0f0", fontFamily:"monospace",
-  fontSize:"11px", padding:"8px 12px", borderRadius:"6px",
-  maxWidth:"360px", whiteSpace:"pre-wrap", pointerEvents:"none",
-});
-document.body.appendChild(dbg);
-const log = (...args) => {
-  console.log("[parts]", ...args);
-  dbg.textContent = args.map(a => typeof a === "object" ? JSON.stringify(a) : a).join(" ");
-};
-
 // ── Selection detection ───────────────────────────────────────
-// Two paths:
-// 1. Canvas click → Three.js "select" event on viewer.selection
-//    carries e.intersections[0].mesh.uuid (stable per mesh).
-// 2. Scene-graph click → sets [highlighted] attr on the row element
-//    (Lit ?attr binding, confirmed in bundle). scene-graph-highlight
-//    CustomEvent is NOT composed so it can't cross the shadow boundary —
-//    we use polling instead.
+// e.composedPath() returns the full click path through ALL shadow boundaries —
+// read it synchronously, store it, then find the most list-like element in it.
+// This works for scene-graph row clicks without any shadow DOM traversal.
+// For 3D canvas clicks we fall back to viewer.selection.background "change".
 
-const meshPartMap = new Map();  // mesh uuid → part number
+const meshPartMap = new WeakMap();
 let nextPartNum = 1;
 let lastPartNum = null;
 
@@ -81,80 +61,52 @@ const handlePartNum = (num) => {
   }
 };
 
-const partNumForUuid = (uuid) => {
-  if (!meshPartMap.has(uuid)) meshPartMap.set(uuid, nextPartNum++);
-  return meshPartMap.get(uuid);
-};
+// Scene-graph click: viewer capture → composedPath has the row element.
+// Find the element with the most siblings (the list row).
+let lastPath = [];
+viewer.addEventListener("click", (e) => {
+  lastPath = e.composedPath(); // must read synchronously
 
-// Recursively search shadow roots for first element matching selector.
-const deepQuery = (root, selector) => {
-  if (!root) return null;
-  const hit = root.querySelector(selector);
-  if (hit) return hit;
-  for (const el of root.querySelectorAll("*")) {
-    if (el.shadowRoot) {
-      const found = deepQuery(el.shadowRoot, selector);
-      if (found) return found;
+  requestAnimationFrame(() => {
+    let bestEl = null, bestCount = 0;
+    for (const el of lastPath) {
+      if (!(el instanceof Element)) continue;
+      const n = el.parentElement?.childElementCount ?? 0;
+      if (n > bestCount) { bestCount = n; bestEl = el; }
     }
-  }
-  return null;
-};
+    if (bestEl && bestCount > 3) {
+      const siblings = Array.from(bestEl.parentElement.children);
+      const idx = siblings.indexOf(bestEl);
+      console.log("[parts] composedPath best row: idx", idx, "of", bestCount, bestEl.tagName);
+      if (idx >= 0) {
+        if (!meshPartMap.has(bestEl)) meshPartMap.set(bestEl, nextPartNum++);
+        handlePartNum(meshPartMap.get(bestEl));
+      }
+    }
+  });
+}, true);
 
-// Path 1: canvas click — attach to viewer.selection Three.js EventDispatcher.
-// Try immediately (selection may exist before load) and again after load.
-// viewer.selection = {background: EventDispatcher, highlight: EventDispatcher}
-// These fire "change" when selection changes. Attach to both.
-// Use MutationObserver on shadow DOM to catch what attribute actually changes.
-
-let observerAttached = false;
-const attachListeners = () => {
+// 3D canvas click fallback: viewer.selection.background fires "change".
+// After change, check if composedPath already handled it (scene-graph case);
+// if not, assign a new part number for the 3D selection.
+const attach3DListener = () => {
   const sel = viewer.selection;
-  if (!sel?.background?.addEventListener) {
-    log("not ready — sel:", JSON.stringify(sel)?.slice(0,80));
-    return false;
-  }
-
-  // MutationObserver: log every attribute change in the full shadow tree
-  // so we can see what selector to use for "selected" state
-  if (!observerAttached && viewer.shadowRoot) {
-    observerAttached = true;
-    const mo = new MutationObserver((muts) => {
-      for (const m of muts) {
-        if (m.type === "attributes") {
-          log(`attr [${m.attributeName}] on <${m.target.tagName?.toLowerCase()}> = "${m.target.getAttribute(m.attributeName)}"`);
-        }
-      }
-    });
-    mo.observe(viewer.shadowRoot, { subtree: true, attributes: true });
-    log("MutationObserver attached to shadowRoot");
-  }
-
-  const onSelChange = () => {
-    log("selection.background changed — checking shadow DOM");
+  if (!sel?.background?.addEventListener) return false;
+  sel.background.addEventListener("change", () => {
     requestAnimationFrame(() => {
-      // Try every plausible selected-state selector and log what we find
-      for (const sel of ["[highlighted]","[selected]","[active]","[aria-selected='true']",".highlighted",".selected",".active"]) {
-        const el = deepQuery(viewer.shadowRoot, sel);
-        if (el) {
-          log(`found "${sel}" → <${el.tagName?.toLowerCase()}> "${el.textContent?.trim().slice(0,30)}"`);
-          if (!meshPartMap.has(el)) meshPartMap.set(el, nextPartNum++);
-          handlePartNum(meshPartMap.get(el));
-          return;
-        }
-      }
-      log("no selected element found in shadow DOM");
+      // If composedPath found a list row (scene-graph click), already handled.
+      // For pure 3D clicks the path won't have a list row, so we use a
+      // per-change counter keyed on the change event object itself.
+      if (lastPartNum !== null) return; // something already selected
+      handlePartNum(nextPartNum++);
     });
-  };
-
-  sel.background.addEventListener("change", onSelChange);
-  sel.highlight.addEventListener("change", onSelChange);
-  log("attached background+highlight change listeners");
+  });
+  console.log("[parts] attached selection.background change listener");
   return true;
 };
-
-if (!attachListeners()) {
-  viewer.addEventListener("load", () => { log("load fired"); attachListeners(); }, { once: true });
-  setTimeout(() => attachListeners(), 5000);
+if (!attach3DListener()) {
+  viewer.addEventListener("load", attach3DListener, { once: true });
+  setTimeout(attach3DListener, 5000);
 }
 
 // ── Model URL builder ─────────────────────────────────────────
