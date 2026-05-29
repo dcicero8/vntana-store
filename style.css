@@ -1575,6 +1575,7 @@ vntana-scene-graph-button {
   gap: 1rem;
   color: var(--muted);
 }
+.part-placeholder[hidden] { display: none; }
 
 .part-exploded-preview {
   width: 100%;
