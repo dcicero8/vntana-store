@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive Parts Catalog — VNTANA</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">VNTANA<span>3D</span></a>
+    <nav class="demo-nav">
+      <a href="index.html" class="demo-nav-home">← Industry Use Cases</a>
+      <a href="#" class="active">Industrial / Mechanical</a>
+    </nav>
+  </header>
+
+  <main class="product-page">
+
+    <!-- LEFT: 3D viewer -->
+    <div class="viewer-column">
+
+      <div class="viewer-loading" id="viewer-loading">
+        <div class="viewer-loading-bg" id="viewer-loading-bg"></div>
+        <div class="viewer-loading-inner">
+          <div class="viewer-loading-spinner"></div>
+          <div class="viewer-loading-text">Loading 3D model…</div>
+        </div>
+      </div>
+
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+      <vntana-viewer
+        shadow-intensity="0.3"
+        shadow-radius="3"
+        loading="eager"
+        role="application"
+        aria-label="Interactive 3D parts viewer"
+      >
+        <vntana-fs-button></vntana-fs-button>
+        <vntana-qr-button class="expandable"></vntana-qr-button>
+        <vntana-ar-button class="expandable"></vntana-ar-button>
+        <vntana-center-button></vntana-center-button>
+        <vntana-scene-graph-button></vntana-scene-graph-button>
+        <div class="button-container zoom-buttons">
+          <vntana-zoom-in-button></vntana-zoom-in-button>
+          <vntana-zoom-out-button></vntana-zoom-out-button>
+        </div>
+      </vntana-viewer>
+
+      <div class="viewer-hint">
+        Click a part to select &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom
+      </div>
+    </div>
+
+    <!-- RIGHT: part details -->
+    <div class="product-column">
+
+      <div class="embed-step-label" style="margin-bottom: 0.75rem;">Industry Use Case — Industrial / Mechanical</div>
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span> › Industrial Parts</span>
+      </div>
+
+      <h1 class="product-name" id="assembly-name">Loading…</h1>
+      <p class="product-subtitle" id="assembly-subtitle">Click any part in the scene graph or 3D model to view specifications and ordering details.</p>
+
+      <hr class="divider">
+
+      <!-- Default state: no part selected -->
+      <div id="part-default" class="part-placeholder">
+        <div class="part-placeholder-icon">⚙</div>
+        <p class="part-placeholder-text">Open the scene graph (top-left of viewer) and click any part — or click directly on the 3D model — to view part details, specs, and pricing.</p>
+      </div>
+
+      <!-- Selected state (hidden until a part is selected) -->
+      <div id="part-selected" hidden>
+
+        <div class="part-selected-eyebrow">Part Selected</div>
+        <h2 class="part-name" id="part-name"></h2>
+        <div class="part-number-badge" id="part-number"></div>
+
+        <hr class="divider">
+
+        <p class="product-description" id="part-description"></p>
+
+        <div class="part-meta">
+          <div class="part-meta-row">
+            <span class="part-meta-label">Availability</span>
+            <span class="part-meta-value" id="part-availability">—</span>
+          </div>
+          <div class="part-meta-row">
+            <span class="part-meta-label">Lead time</span>
+            <span class="part-meta-value" id="part-lead-time">—</span>
+          </div>
+        </div>
+
+        <div class="product-price" id="part-price"></div>
+
+        <div class="qty-control">
+          <button class="qty-btn" id="qty-minus" aria-label="Decrease quantity">−</button>
+          <span class="qty-value" id="qty-value">1</span>
+          <button class="qty-btn" id="qty-plus" aria-label="Increase quantity">+</button>
+        </div>
+
+        <button class="btn-primary">Add to Cart</button>
+        <button class="btn-secondary">Add to Quote</button>
+
+        <hr class="divider">
+
+        <div class="ar-callout">
+          <div class="ar-callout-icon">&#x25A6;</div>
+          <div>
+            <strong>See it in your space</strong>
+            <p>Tap the AR button to place this assembly at true 1:1 scale in your facility.</p>
+          </div>
+        </div>
+
+      </div><!-- /part-selected -->
+
+    </div><!-- /product-column -->
+
+  </main>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">✕</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  </div>
+
+  <script type="module" src="parts.js"></script>
+
+</body>
+</html>

@@ -1546,6 +1546,126 @@ nav.demo-nav a.active {
   .embed-info-col { height: auto; overflow-y: visible; }
 }
 
+/* ─── Parts catalog ───────────────────────────────────────── */
+
+vntana-scene-graph-button {
+  position: absolute;
+  top: 64px;
+  left: 19px;
+  z-index: 4;
+}
+
+.part-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2.5rem 1rem;
+  color: var(--muted);
+}
+
+.part-placeholder-icon {
+  font-size: 2.5rem;
+  opacity: 0.25;
+}
+
+.part-placeholder-text {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  max-width: 300px;
+}
+
+.part-selected-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #0047FF;
+  margin-bottom: 0.4rem;
+}
+
+.part-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.part-number-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.2rem 0.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.part-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+  background: var(--bg);
+  border-radius: 7px;
+  border: 1px solid var(--border);
+}
+
+.part-meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.part-meta-label {
+  color: var(--muted);
+}
+
+.part-meta-value {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.qty-btn {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.12s;
+  font-family: inherit;
+}
+
+.qty-btn:hover { background: var(--bg); }
+
+.qty-value {
+  min-width: 40px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-left: 1.5px solid var(--border);
+  border-right: 1.5px solid var(--border);
+  line-height: 40px;
+}
+
 /* ─── Lightbox ────────────────────────────────────────────── */
 
 /* ─── Viewer control extras ───────────────────────────────── */
