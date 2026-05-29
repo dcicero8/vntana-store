@@ -178,40 +178,49 @@ const attach3DListener = () => {
   if (!sel?.background?.addEventListener) return false;
   sel.background.addEventListener("change", () => {
     if (recentDocClick) return;
-    setTimeout(() => {
-      // Strategy 1: walk Three.js scene — find which named group contains
-      // a mesh that now has the selection material applied.
-      try {
-        const bgMat = sel.background;
-        let found = null;
-        const walkThree = (obj) => {
-          if (found) return;
-          if (obj.isMesh) {
-            const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-            if (mats.some(m => m === bgMat)) {
-              // Walk up to find the named group
-              let o = obj;
-              while (o && o !== viewer.scene?.modelRoots) {
-                const key = normalizePartName(o.name ?? "");
-                if (PARTS_DATA[key]) { found = key; return; }
-                o = o.parent;
-              }
-            }
-          }
-          obj.children?.forEach(walkThree);
-        };
-        viewer.scene?.modelRoots?.children?.forEach(walkThree);
-        if (found) { handlePartName(found); return; }
-      } catch (_) {}
 
-      // Strategy 2: deepQuery shadow DOM for [highlighted] (works if shadow is open)
-      const el = deepQuery(viewer.shadowRoot, "[highlighted]")
-               ?? deepQuery(document.body, "[highlighted]");
-      if (el) {
-        const key = normalizePartName(el.textContent);
-        if (PARTS_DATA[key]) handlePartName(key);
+    // Use MutationObserver to react the instant Lit sets [highlighted]
+    // on a scene-graph row — works regardless of timing, no polling needed.
+    const observers = [];
+    let resolved = false;
+
+    const resolve = (el) => {
+      if (resolved) return;
+      const key = normalizePartName(el.textContent);
+      if (!PARTS_DATA[key]) return;
+      resolved = true;
+      observers.forEach(o => o.disconnect());
+      handlePartName(key);
+    };
+
+    // Attach a MutationObserver to every accessible shadow root in the tree.
+    const watchRoot = (root) => {
+      if (!root) return;
+      // Check if already highlighted before we even start observing
+      const existing = root.querySelector("[highlighted]");
+      if (existing) { resolve(existing); return; }
+
+      const mo = new MutationObserver((muts) => {
+        for (const m of muts) {
+          if (m.attributeName === "highlighted" && m.target.hasAttribute("highlighted")) {
+            resolve(m.target);
+          }
+        }
+      });
+      mo.observe(root, { subtree: true, attributes: true, attributeFilter: ["highlighted"] });
+      observers.push(mo);
+
+      // Recurse into any nested open shadow roots
+      for (const el of root.querySelectorAll("*")) {
+        if (el.shadowRoot) watchRoot(el.shadowRoot);
       }
-    }, 150);
+    };
+
+    watchRoot(viewer.shadowRoot);
+    watchRoot(document.body);
+
+    // Give up after 3s so we don't leak observers
+    setTimeout(() => { resolved = true; observers.forEach(o => o.disconnect()); }, 3000);
   });
   return true;
 };
