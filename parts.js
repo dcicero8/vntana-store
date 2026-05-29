@@ -171,9 +171,8 @@ viewer.disableRotation  = false;  // override any platform lock
 
 const glbUrl  = modelUrl(models, "GLB");
 const usdzUrl = modelUrl(models, "USDZ");
-const posterUrl = thumbBlobId
-  ? `${BASE_URL}/assets/organizations/${ORG}/clients/${WORKSPACE}/thumbnail/${thumbBlobId}`
-  : null;
+// Use the exploded view render as the loading poster — more evocative than thumbnail
+const posterUrl = "3-Layer Die Head 110mm Assembly_2560x1440.png";
 
 Object.assign(viewer, {
   ...(glbUrl   && { src:     glbUrl }),

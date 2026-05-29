@@ -1187,17 +1187,12 @@ body.landing .header-actions a { color: rgba(255,255,255,0.7); }
 
 .use-cases-logo {
   padding: 1.25rem 1.5rem 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: rgba(255,255,255,0.35);
+  opacity: 0.4;
   line-height: 1;
 }
 
-.use-cases-logo span {
-  font-weight: 300;
-  letter-spacing: 0.05em;
-  margin-left: 1px;
+.use-cases-logo img {
+  display: block;
 }
 
 /* ─── Demo cards (landing) ────────────────────────────────── */
@@ -1224,20 +1219,14 @@ body.landing .header-actions a { color: rgba(255,255,255,0.7); }
 }
 
 .demo-card:hover {
-  background: rgba(255,255,255,0.28);
-  border-color: rgba(255,255,255,0.4);
+  background: #0047FF;
+  border-color: #0047FF;
   transform: translateY(-3px);
 }
 
 .demo-card--featured {
   background: rgba(255,255,255,0.22);
   border-color: rgba(255,255,255,0.28);
-}
-
-.demo-card--featured:hover {
-  background: #0047FF;
-  border-color: #0047FF;
-  transform: translateY(-3px);
 }
 
 .demo-step {
@@ -1569,13 +1558,14 @@ vntana-scene-graph-button {
   align-items: center;
   text-align: center;
   gap: 1rem;
-  padding: 2.5rem 1rem;
   color: var(--muted);
 }
 
-.part-placeholder-icon {
-  font-size: 2.5rem;
-  opacity: 0.25;
+.part-exploded-preview {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+  margin-bottom: 0.25rem;
 }
 
 .part-placeholder-text {
