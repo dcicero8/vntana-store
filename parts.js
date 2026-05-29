@@ -102,42 +102,60 @@ const deepQuery = (root, selector) => {
 
 // Path 1: canvas click — attach to viewer.selection Three.js EventDispatcher.
 // Try immediately (selection may exist before load) and again after load.
-const attachSelectListener = () => {
+// viewer.selection = {background: EventDispatcher, highlight: EventDispatcher}
+// These fire "change" when selection changes. Attach to both.
+// Use MutationObserver on shadow DOM to catch what attribute actually changes.
+
+let observerAttached = false;
+const attachListeners = () => {
   const sel = viewer.selection;
-  if (!sel?.addEventListener) {
-    log("viewer.selection not ready yet, sel=", sel);
+  if (!sel?.background?.addEventListener) {
+    log("not ready — sel:", JSON.stringify(sel)?.slice(0,80));
     return false;
   }
-  sel.addEventListener("select", (e) => {
-    const uuid = e.intersections?.[0]?.mesh?.uuid;
-    log("canvas select — uuid:", uuid ?? "none", "intersections:", e.intersections?.length ?? 0);
-    if (uuid) handlePartNum(partNumForUuid(uuid));
-  });
-  log("attached viewer.selection listener");
+
+  // MutationObserver: log every attribute change in the full shadow tree
+  // so we can see what selector to use for "selected" state
+  if (!observerAttached && viewer.shadowRoot) {
+    observerAttached = true;
+    const mo = new MutationObserver((muts) => {
+      for (const m of muts) {
+        if (m.type === "attributes") {
+          log(`attr [${m.attributeName}] on <${m.target.tagName?.toLowerCase()}> = "${m.target.getAttribute(m.attributeName)}"`);
+        }
+      }
+    });
+    mo.observe(viewer.shadowRoot, { subtree: true, attributes: true });
+    log("MutationObserver attached to shadowRoot");
+  }
+
+  const onSelChange = () => {
+    log("selection.background changed — checking shadow DOM");
+    requestAnimationFrame(() => {
+      // Try every plausible selected-state selector and log what we find
+      for (const sel of ["[highlighted]","[selected]","[active]","[aria-selected='true']",".highlighted",".selected",".active"]) {
+        const el = deepQuery(viewer.shadowRoot, sel);
+        if (el) {
+          log(`found "${sel}" → <${el.tagName?.toLowerCase()}> "${el.textContent?.trim().slice(0,30)}"`);
+          if (!meshPartMap.has(el)) meshPartMap.set(el, nextPartNum++);
+          handlePartNum(meshPartMap.get(el));
+          return;
+        }
+      }
+      log("no selected element found in shadow DOM");
+    });
+  };
+
+  sel.background.addEventListener("change", onSelChange);
+  sel.highlight.addEventListener("change", onSelChange);
+  log("attached background+highlight change listeners");
   return true;
 };
 
-if (!attachSelectListener()) {
-  viewer.addEventListener("load", () => {
-    log("load fired, attaching now");
-    attachSelectListener();
-  }, { once: true });
-  setTimeout(() => { log("5s timeout attach"); attachSelectListener(); }, 5000);
+if (!attachListeners()) {
+  viewer.addEventListener("load", () => { log("load fired"); attachListeners(); }, { once: true });
+  setTimeout(() => attachListeners(), 5000);
 }
-
-// Path 2: poll for [highlighted] in shadow DOM (scene-graph clicks).
-setInterval(() => {
-  try {
-    const el = deepQuery(viewer.shadowRoot, "[highlighted]");
-    if (!el) return;
-    const tag = el.tagName + (el.textContent?.trim().slice(0,20) || "");
-    if (!meshPartMap.has(el)) {
-      meshPartMap.set(el, nextPartNum++);
-      log("poll found [highlighted]:", tag, "→ Part #" + meshPartMap.get(el));
-    }
-    handlePartNum(meshPartMap.get(el));
-  } catch (_) {}
-}, 300);
 
 // ── Model URL builder ─────────────────────────────────────────
 const modelUrl = (models, format) => {
