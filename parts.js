@@ -74,38 +74,39 @@ const selectionId = (sel) => {
 
 let lastId = null;
 
-// Find the INDEX of the selected scene-graph row across all shadow roots.
-// All parts in this assembly share the same name so we use position, not text.
-const findSelectedId = () => {
-  let allItems = [];
-  let selectedIndex = -1;
-
-  const scanRoot = (root) => {
-    if (!root) return;
-    // Collect every tree-item-like element at this level
-    const nodes = Array.from(
-      root.querySelectorAll?.('[role="treeitem"],[class*="node"],[class*="item"],[class*="row"]') ?? []
+// Find the selected scene-graph element across all shadow roots.
+// Returns the DOM element reference — not its text — so a WeakMap
+// can assign stable unique IDs per node even when all names are identical.
+const findSelectedElement = () => {
+  const search = (root) => {
+    if (!root) return null;
+    const hit = root.querySelector(
+      '[class*="selected"],[class*="active"],[aria-selected="true"]'
     );
-    nodes.forEach(el => {
-      const idx = allItems.length;
-      allItems.push(el);
-      if (selectedIndex !== -1) return; // already found
-      const cls = el.className?.toString() ?? "";
-      if (cls.includes("selected") || cls.includes("active") ||
-          el.getAttribute?.("aria-selected") === "true") {
-        selectedIndex = idx;
+    if (hit) return hit;
+    for (const el of root.querySelectorAll?.("*") ?? []) {
+      if (el.shadowRoot) {
+        const found = search(el.shadowRoot);
+        if (found) return found;
       }
-    });
-    // Recurse into shadow roots of all children
-    root.querySelectorAll?.("*")?.forEach(child => {
-      if (child.shadowRoot) scanRoot(child.shadowRoot);
-    });
+    }
+    return null;
   };
+  return search(viewer.shadowRoot) ?? search(document.body);
+};
 
-  scanRoot(viewer.shadowRoot);
-  if (selectedIndex === -1) scanRoot(document.body);
+// Stable ID per element reference — different DOM nodes get different IDs
+// even if their textContent is identical.
+const elementIds = new WeakMap();
+let elIdCounter = 0;
+const getElementId = (el) => {
+  if (!elementIds.has(el)) elementIds.set(el, `el-${elIdCounter++}`);
+  return elementIds.get(el);
+};
 
-  return selectedIndex >= 0 ? `part-${selectedIndex}` : null;
+const findSelectedId = () => {
+  const el = findSelectedElement();
+  return el ? getElementId(el) : null;
 };
 
 viewer.addEventListener("load", () => {
