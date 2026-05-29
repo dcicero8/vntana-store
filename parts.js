@@ -37,9 +37,33 @@ document.getElementById("btn-add-to-cart").addEventListener("click", () => {
   addToCart(qty);
 });
 
-document.getElementById("btn-add-all").addEventListener("click", () => {
+const addAllToCart = () => {
   const total = Object.values(PARTS_DATA).reduce((sum, p) => sum + (p.qty ?? 1), 0);
   addToCart(total);
+};
+document.getElementById("btn-add-all").addEventListener("click", addAllToCart);
+document.getElementById("btn-add-all-top").addEventListener("click", addAllToCart);
+
+// ── Build parts catalog table ─────────────────────────────────
+const tbody = document.getElementById("parts-table-body");
+Object.entries(PARTS_DATA).forEach(([key, data]) => {
+  const tr = document.createElement("tr");
+  tr.dataset.partKey = key;
+  tr.innerHTML = `
+    <td class="parts-table-sku">${data.sku}</td>
+    <td class="parts-table-name">${key.replace(/_/g, " ")}</td>
+    <td class="parts-table-qty">${data.qty ?? 1}</td>
+    <td class="parts-table-price">${data.price}${data.qty > 1 ? `<span class="part-price-note"> /set</span>` : ""}</td>
+    <td class="parts-table-avail ${data.avail === "Out of Stock" ? "avail-out" : data.avail === "Low Stock" ? "avail-low" : "avail-in"}">${data.avail}</td>
+    <td><button class="btn-table-cart" ${data.avail === "Out of Stock" ? "disabled" : ""}>Add</button></td>
+  `;
+  tr.querySelector(".btn-table-cart").addEventListener("click", (e) => {
+    e.stopPropagation();
+    addToCart(data.qty ?? 1);
+  });
+  // Clicking a row highlights the part name (triggers PDP if scene graph is open)
+  tr.addEventListener("click", () => handlePartName(key));
+  tbody.appendChild(tr);
 });
 
 // ── Quantity control ─────────────────────────────────────────

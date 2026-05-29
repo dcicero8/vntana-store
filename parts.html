@@ -72,10 +72,25 @@
 
       <hr class="divider">
 
-      <!-- Default state: no part selected -->
-      <div id="part-default" class="part-placeholder">
-        <img src="renders/3-Layer Die Head 110mm Assembly_2560x1440.png" class="part-exploded-preview" alt="Assembly exploded view">
-        <p class="part-placeholder-text">Expand the Scene Graph and select a part — or click directly on the 3D model — to view part details, specs, and pricing.</p>
+      <!-- Default state: full parts catalog -->
+      <div id="part-default">
+        <div class="parts-catalog-header">
+          <p class="product-subtitle">Click any part in the 3D model or scene graph to view details — or order directly from the list below.</p>
+          <button class="btn-primary" id="btn-add-all-top">Add All Parts to Cart</button>
+        </div>
+        <table class="parts-table" id="parts-table">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Part</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Availability</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="parts-table-body"></tbody>
+        </table>
       </div>
 
       <!-- Selected state (hidden until a part is selected) -->
