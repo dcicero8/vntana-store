@@ -112,9 +112,16 @@ const selectPart = (meshName) => {
 };
 
 // ── Model URL builder ─────────────────────────────────────────
+// Handles both field-name variants:
+//   example-files workspace: { type, blobId }
+//   figurement workspace:    { conversionFormat, modelBlobId }
 const modelUrl = (models, format) => {
-  const m = models.find(m => m.type === format);
-  return m ? `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${m.blobId}` : null;
+  const m = models.find(m => (m.conversionFormat ?? m.type) === format);
+  if (!m) return null;
+  const blobId = m.modelBlobId ?? m.blobId;
+  return blobId
+    ? `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`
+    : null;
 };
 
 // ── Loading overlay ───────────────────────────────────────────
@@ -162,12 +169,16 @@ Object.assign(viewer, viewerConfig);
 viewer.enableAutoRotate = false;
 viewer.disableRotation  = false;  // override any platform lock
 
+const glbUrl  = modelUrl(models, "GLB");
+const usdzUrl = modelUrl(models, "USDZ");
+const posterUrl = thumbBlobId
+  ? `${BASE_URL}/assets/organizations/${ORG}/clients/${WORKSPACE}/thumbnail/${thumbBlobId}`
+  : null;
+
 Object.assign(viewer, {
-  src: modelUrl(models, "GLB"),
-  usdzSrc: modelUrl(models, "USDZ"),
-  poster: thumbBlobId
-    ? `${BASE_URL}/assets/organizations/${ORG}/clients/${WORKSPACE}/thumbnail/${thumbBlobId}`
-    : null,
+  ...(glbUrl   && { src:     glbUrl }),
+  ...(usdzUrl  && { usdzSrc: usdzUrl }),
+  ...(posterUrl && { poster:  posterUrl }),
 });
 
 // ── Selection detection ───────────────────────────────────────
