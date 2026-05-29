@@ -100,8 +100,9 @@ const showPart = (name) => {
   // Grey out add-to-cart if out of stock
   document.querySelector(".btn-primary").disabled = data.avail === "Out of Stock";
 
-  partDefault.hidden  = true;
-  partSelected.hidden = false;
+  partDefault.hidden       = true;
+  partDefault.style.display = "none";   // belt-and-suspenders: override any CSS display rule
+  partSelected.hidden       = false;
 };
 
 // ── Selection detection ───────────────────────────────────────
@@ -177,16 +178,40 @@ const attach3DListener = () => {
   if (!sel?.background?.addEventListener) return false;
   sel.background.addEventListener("change", () => {
     if (recentDocClick) return;
-    // Try at 100ms, 300ms, 600ms — scene graph DOM update timing is unpredictable
-    const tryFind = () => {
+    setTimeout(() => {
+      // Strategy 1: walk Three.js scene — find which named group contains
+      // a mesh that now has the selection material applied.
+      try {
+        const bgMat = sel.background;
+        let found = null;
+        const walkThree = (obj) => {
+          if (found) return;
+          if (obj.isMesh) {
+            const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+            if (mats.some(m => m === bgMat)) {
+              // Walk up to find the named group
+              let o = obj;
+              while (o && o !== viewer.scene?.modelRoots) {
+                const key = normalizePartName(o.name ?? "");
+                if (PARTS_DATA[key]) { found = key; return; }
+                o = o.parent;
+              }
+            }
+          }
+          obj.children?.forEach(walkThree);
+        };
+        viewer.scene?.modelRoots?.children?.forEach(walkThree);
+        if (found) { handlePartName(found); return; }
+      } catch (_) {}
+
+      // Strategy 2: deepQuery shadow DOM for [highlighted] (works if shadow is open)
       const el = deepQuery(viewer.shadowRoot, "[highlighted]")
                ?? deepQuery(document.body, "[highlighted]");
-      if (!el) return false;
-      const key = normalizePartName(el.textContent);
-      if (PARTS_DATA[key]) { handlePartName(key); return true; }
-      return false;
-    };
-    setTimeout(() => { if (!tryFind()) setTimeout(() => { if (!tryFind()) setTimeout(tryFind, 300); }, 200); }, 100);
+      if (el) {
+        const key = normalizePartName(el.textContent);
+        if (PARTS_DATA[key]) handlePartName(key);
+      }
+    }, 150);
   });
   return true;
 };
