@@ -74,40 +74,38 @@ const selectionId = (sel) => {
 
 let lastId = null;
 
-// Walk shadow roots recursively to find a selected/active scene-graph row
-const findSelectedName = () => {
-  const roots = [viewer.shadowRoot, document.body];
-  for (const root of roots) {
-    if (!root) continue;
-    // Direct query for highlighted row
-    const hit = root.querySelector?.('[class*="selected"],[class*="active"],[aria-selected="true"]');
-    if (hit) {
-      const txt = hit.textContent?.trim();
-      if (txt && txt.length > 1) return txt;
-    }
-    // Also dive into nested custom elements
-    root.querySelectorAll?.("*")?.forEach(el => {
-      if (el.shadowRoot) {
-        const inner = el.shadowRoot.querySelector('[class*="selected"],[class*="active"],[aria-selected="true"]');
-        if (inner?.textContent?.trim()?.length > 1) return; // handled below
+// Find the INDEX of the selected scene-graph row across all shadow roots.
+// All parts in this assembly share the same name so we use position, not text.
+const findSelectedId = () => {
+  let allItems = [];
+  let selectedIndex = -1;
+
+  const scanRoot = (root) => {
+    if (!root) return;
+    // Collect every tree-item-like element at this level
+    const nodes = Array.from(
+      root.querySelectorAll?.('[role="treeitem"],[class*="node"],[class*="item"],[class*="row"]') ?? []
+    );
+    nodes.forEach(el => {
+      const idx = allItems.length;
+      allItems.push(el);
+      if (selectedIndex !== -1) return; // already found
+      const cls = el.className?.toString() ?? "";
+      if (cls.includes("selected") || cls.includes("active") ||
+          el.getAttribute?.("aria-selected") === "true") {
+        selectedIndex = idx;
       }
     });
-  }
-  // Deep shadow search
-  const deepSearch = (root) => {
-    if (!root) return null;
-    const els = root.querySelectorAll?.("*") ?? [];
-    for (const el of els) {
-      if (el.shadowRoot) {
-        const found = el.shadowRoot.querySelector('[class*="selected"],[class*="active"],[aria-selected="true"]');
-        if (found?.textContent?.trim()?.length > 1) return found.textContent.trim();
-        const deeper = deepSearch(el.shadowRoot);
-        if (deeper) return deeper;
-      }
-    }
-    return null;
+    // Recurse into shadow roots of all children
+    root.querySelectorAll?.("*")?.forEach(child => {
+      if (child.shadowRoot) scanRoot(child.shadowRoot);
+    });
   };
-  return deepSearch(viewer.shadowRoot) ?? deepSearch(document.body);
+
+  scanRoot(viewer.shadowRoot);
+  if (selectedIndex === -1) scanRoot(document.body);
+
+  return selectedIndex >= 0 ? `part-${selectedIndex}` : null;
 };
 
 viewer.addEventListener("load", () => {
@@ -119,7 +117,7 @@ viewer.addEventListener("load", () => {
     selLayer.background.addEventListener("change", () => {
       // Give the scene graph DOM a frame to update before reading it
       requestAnimationFrame(() => {
-        const name = findSelectedName();
+        const name = findSelectedId();
         console.log("[parts] background change → name:", name);
         if (name && name !== lastId) { lastId = name; showPart(name); }
       });
@@ -130,7 +128,7 @@ viewer.addEventListener("load", () => {
   if (selLayer?.highlight) {
     selLayer.highlight.addEventListener("change", () => {
       requestAnimationFrame(() => {
-        const name = findSelectedName();
+        const name = findSelectedId();
         if (name && name !== lastId) { lastId = name; showPart(name); }
       });
     });
@@ -139,7 +137,7 @@ viewer.addEventListener("load", () => {
   // Polling fallback every 250ms
   setInterval(() => {
     try {
-      const name = findSelectedName();
+      const name = findSelectedId();
       if (name && name !== lastId) { lastId = name; showPart(name); }
     } catch (_) {}
   }, 250);
@@ -148,7 +146,7 @@ viewer.addEventListener("load", () => {
 // Capture-phase click fallback: read after two frames
 viewer.addEventListener("click", () => {
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    const name = findSelectedName();
+    const name = findSelectedId();
     console.log("[parts] post-click name:", name);
     if (name && name !== lastId) { lastId = name; showPart(name); }
   }));
