@@ -44,6 +44,23 @@ const showPart = (num) => {
   partSelected.hidden = false;
 };
 
+// ── Debug overlay ────────────────────────────────────────────
+const dbg = Object.assign(document.createElement("div"), {
+  id: "parts-debug",
+  innerHTML: "waiting for click…",
+});
+Object.assign(dbg.style, {
+  position:"fixed", bottom:"12px", left:"12px", zIndex:9999,
+  background:"rgba(0,0,0,0.8)", color:"#0f0", fontFamily:"monospace",
+  fontSize:"11px", padding:"8px 12px", borderRadius:"6px",
+  maxWidth:"360px", whiteSpace:"pre-wrap", pointerEvents:"none",
+});
+document.body.appendChild(dbg);
+const log = (...args) => {
+  console.log("[parts]", ...args);
+  dbg.textContent = args.map(a => typeof a === "object" ? JSON.stringify(a) : a).join(" ");
+};
+
 // ── Selection detection ───────────────────────────────────────
 // Two paths:
 // 1. Canvas click → Three.js "select" event on viewer.selection
@@ -87,30 +104,37 @@ const deepQuery = (root, selector) => {
 // Try immediately (selection may exist before load) and again after load.
 const attachSelectListener = () => {
   const sel = viewer.selection;
-  if (!sel?.addEventListener) return false;
+  if (!sel?.addEventListener) {
+    log("viewer.selection not ready yet, sel=", sel);
+    return false;
+  }
   sel.addEventListener("select", (e) => {
     const uuid = e.intersections?.[0]?.mesh?.uuid;
-    console.log("[parts] canvas select, uuid:", uuid);
+    log("canvas select — uuid:", uuid ?? "none", "intersections:", e.intersections?.length ?? 0);
     if (uuid) handlePartNum(partNumForUuid(uuid));
   });
-  console.log("[parts] attached viewer.selection select listener");
+  log("attached viewer.selection listener");
   return true;
 };
 
 if (!attachSelectListener()) {
-  viewer.addEventListener("load", attachSelectListener, { once: true });
-  setTimeout(attachSelectListener, 5000); // last-resort fallback
+  viewer.addEventListener("load", () => {
+    log("load fired, attaching now");
+    attachSelectListener();
+  }, { once: true });
+  setTimeout(() => { log("5s timeout attach"); attachSelectListener(); }, 5000);
 }
 
-// Path 2: scene-graph click — poll for [highlighted] attribute.
-// The event doesn't cross the shadow boundary so polling is the only option.
-let pollHighlighted = null;
+// Path 2: poll for [highlighted] in shadow DOM (scene-graph clicks).
 setInterval(() => {
   try {
     const el = deepQuery(viewer.shadowRoot, "[highlighted]");
     if (!el) return;
-    // Use the element reference itself as the stable key via WeakMap.
-    if (!meshPartMap.has(el)) meshPartMap.set(el, nextPartNum++);
+    const tag = el.tagName + (el.textContent?.trim().slice(0,20) || "");
+    if (!meshPartMap.has(el)) {
+      meshPartMap.set(el, nextPartNum++);
+      log("poll found [highlighted]:", tag, "→ Part #" + meshPartMap.get(el));
+    }
     handlePartNum(meshPartMap.get(el));
   } catch (_) {}
 }, 300);
