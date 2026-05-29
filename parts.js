@@ -128,39 +128,19 @@ const partNameFromEl = (el) => {
   return null;
 };
 
-// Debug overlay
-const dbg = Object.assign(document.createElement("div"), { id: "parts-debug" });
-Object.assign(dbg.style, {
-  position:"fixed", bottom:"8px", left:"8px", zIndex:99999,
-  background:"rgba(0,0,0,0.85)", color:"#0f0", fontFamily:"monospace",
-  fontSize:"10px", padding:"8px", borderRadius:"6px",
-  maxWidth:"400px", whiteSpace:"pre-wrap", pointerEvents:"none",
-});
-document.body.appendChild(dbg);
-const dbgLog = (msg) => { dbg.textContent = msg; console.log("[parts]", msg); };
-
 document.addEventListener("click", (e) => {
   const path = e.composedPath();
-  // Log first 6 elements of the path with their tag + text snippet
-  const summary = path.slice(0, 6).map(el => {
-    if (!(el instanceof Element)) return el?.nodeName ?? "?";
-    const txt = el.textContent?.trim().slice(0, 30).replace(/\s+/g, " ");
-    return `<${el.tagName.toLowerCase()}> "${txt}"`;
-  }).join("\n");
-  dbgLog(`CLICK (${path.length} deep):\n${summary}`);
-
   for (const el of path) {
     if (!(el instanceof Element)) continue;
     for (const node of el.childNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
         const key = normalizePartName(node.textContent);
-        if (PARTS_DATA[key]) { handlePartName(key); dbgLog(`✓ matched: ${key}`); return; }
+        if (PARTS_DATA[key]) { handlePartName(key); return; }
       }
     }
     const key = normalizePartName(el.textContent);
-    if (key && PARTS_DATA[key]) { handlePartName(key); dbgLog(`✓ matched: ${key}`); return; }
+    if (key && PARTS_DATA[key]) { handlePartName(key); return; }
   }
-  dbgLog(`no match\n${summary}`);
 }, true);
 
 // 3D canvas click fallback via viewer.selection.background "change".
