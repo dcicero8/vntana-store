@@ -128,24 +128,24 @@ const partNameFromEl = (el) => {
   return null;
 };
 
-// Scene-graph click: use composedPath() read synchronously to pierce shadow DOM.
-// Find the element with the most siblings (the list row) and read its part name.
-let lastPath = [];
-viewer.addEventListener("click", (e) => {
-  lastPath = e.composedPath();
-  requestAnimationFrame(() => {
-    let bestEl = null, bestCount = 0;
-    for (const el of lastPath) {
-      if (!(el instanceof Element)) continue;
-      const n = el.parentElement?.childElementCount ?? 0;
-      if (n > bestCount) { bestCount = n; bestEl = el; }
+// Scene-graph panel is portalled to document.body (outside the viewer element),
+// so listen on document with capture to catch all clicks everywhere.
+// Walk composedPath looking for any element whose text matches a known part name.
+document.addEventListener("click", (e) => {
+  const path = e.composedPath();
+  for (const el of path) {
+    if (!(el instanceof Element)) continue;
+    // Check direct text node children first (avoids pulling in child element text)
+    for (const node of el.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const key = normalizePartName(node.textContent);
+        if (PARTS_DATA[key]) { handlePartName(key); return; }
+      }
     }
-    if (bestEl && bestCount > 3) {
-      const name = partNameFromEl(bestEl);
-      console.log("[parts] scene-graph click →", name, "(siblings:", bestCount, ")");
-      if (name) handlePartName(name);
-    }
-  });
+    // Also try the element's own trimmed textContent (works for simple label els)
+    const key = normalizePartName(el.textContent);
+    if (key && PARTS_DATA[key]) { handlePartName(key); return; }
+  }
 }, true);
 
 // 3D canvas click fallback via viewer.selection.background "change".
