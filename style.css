@@ -1151,6 +1151,47 @@ body.landing .header-actions a { color: rgba(255,255,255,0.7); }
   line-height: 1.6;
 }
 
+/* ─── Industry use cases section ─────────────────────────── */
+
+.use-cases-label {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.3);
+  margin: 0 auto 1.25rem;
+  padding: 0 2rem;
+  max-width: 1100px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.use-cases-label::before,
+.use-cases-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+}
+
+.use-cases-cards {
+  margin-top: 0;
+}
+
+.use-cases-cards .demo-card {
+  max-width: 380px;
+}
+
+.use-cases-icon {
+  font-size: 2.5rem;
+  color: rgba(255,255,255,0.12);
+  padding: 1.25rem 1.5rem 0;
+  line-height: 1;
+}
+
 /* ─── Demo cards (landing) ────────────────────────────────── */
 
 .demo-cards {
