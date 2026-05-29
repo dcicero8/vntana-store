@@ -26,15 +26,7 @@ document.getElementById("qty-plus").addEventListener("click", () => {
   qty++; document.getElementById("qty-value").textContent = qty;
 });
 
-// ── Parts map: selection ID → sequential part number ─────────
-// Each unique part clicked gets a stable number (Part #1, Part #2…)
-// so clicking the same part twice shows the same number.
-const partMap = new Map();
-let nextPartNum = 1;
-
-const showPart = (selectionId) => {
-  if (!partMap.has(selectionId)) partMap.set(selectionId, nextPartNum++);
-  const num = partMap.get(selectionId);
+const showPart = (num) => {
 
   qty = 1;
   document.getElementById("qty-value").textContent = "1";
@@ -52,106 +44,94 @@ const showPart = (selectionId) => {
   partSelected.hidden = false;
 };
 
-// ── Extract a stable ID from a selection object ───────────────
-const selectionId = (sel) => {
-  if (!sel) return null;
-  // Three.js objects carry uuid and numeric id — prefer uuid for stability
-  if (sel.uuid)   return sel.uuid;
-  if (sel.id !== undefined && sel.id !== null) return String(sel.id);
-  if (sel.name)   return sel.name;
-  // Array of selected objects
-  if (Array.isArray(sel) && sel.length > 0)
-    return sel[0]?.uuid ?? sel[0]?.id ?? sel[0]?.name ?? null;
-  return null;
-};
-
 // ── Selection detection ───────────────────────────────────────
-// Bundle analysis: "select" fires on a Three.js EventDispatcher (not DOM),
-// so we can't catch it with addEventListener on the viewer element.
-// Confirmed path: viewer.selection.background fires a DOM "change" event
-// when the selection changes. After that, we scrape the scene graph's
-// shadow DOM to find which row is now highlighted.
+// Strategy: find all scene-graph row elements, then return the 1-based index
+// of whichever one is currently marked selected. Index = part number.
+// This is more reliable than WeakMap on a DOM reference, because the viewer
+// may reuse a single "selected" container element rather than per-row nodes.
 
-let lastId = null;
+let lastPartNum = null;
 
-// Find the selected scene-graph element across all shadow roots.
-// Returns the DOM element reference — not its text — so a WeakMap
-// can assign stable unique IDs per node even when all names are identical.
-const findSelectedElement = () => {
+// Row selectors tried in order — first one that returns >1 results wins.
+const ROW_SELECTORS = [
+  '[role="treeitem"]',
+  '[class*="scene-graph-item"]',
+  '[class*="tree-item"]',
+  '[class*="node-row"]',
+  '[class*="mesh-row"]',
+  '[class*="mesh-item"]',
+  '[class*="SceneGraph"] li',
+];
+
+const findSelectedPartNum = () => {
   const search = (root) => {
     if (!root) return null;
-    const hit = root.querySelector(
-      '[class*="selected"],[class*="active"],[aria-selected="true"]'
-    );
-    if (hit) return hit;
-    for (const el of root.querySelectorAll?.("*") ?? []) {
+
+    for (const sel of ROW_SELECTORS) {
+      const items = root.querySelectorAll(sel);
+      if (items.length > 0) {
+        for (let i = 0; i < items.length; i++) {
+          const el   = items[i];
+          const cls  = el.getAttribute("class") ?? "";
+          const isSelected =
+            cls.includes("selected") ||
+            cls.includes("active")   ||
+            el.getAttribute("aria-selected") === "true" ||
+            el.getAttribute("aria-current")  === "true";
+          if (isSelected) {
+            console.log(`[parts] found selected at index ${i} via "${sel}"`);
+            return i + 1; // 1-based part number
+          }
+        }
+      }
+    }
+
+    // Recurse into nested shadow roots
+    for (const el of root.querySelectorAll("*")) {
       if (el.shadowRoot) {
-        const found = search(el.shadowRoot);
-        if (found) return found;
+        const result = search(el.shadowRoot);
+        if (result !== null) return result;
       }
     }
     return null;
   };
+
   return search(viewer.shadowRoot) ?? search(document.body);
 };
 
-// Stable ID per element reference — different DOM nodes get different IDs
-// even if their textContent is identical.
-const elementIds = new WeakMap();
-let elIdCounter = 0;
-const getElementId = (el) => {
-  if (!elementIds.has(el)) elementIds.set(el, `el-${elIdCounter++}`);
-  return elementIds.get(el);
-};
-
-const findSelectedId = () => {
-  const el = findSelectedElement();
-  return el ? getElementId(el) : null;
+const checkSelection = () => {
+  try {
+    const num = findSelectedPartNum();
+    if (num !== null && num !== lastPartNum) {
+      lastPartNum = num;
+      showPart(num);
+    }
+  } catch (_) {}
 };
 
 viewer.addEventListener("load", () => {
-  // Primary: viewer.selection.background "change" — confirmed in bundle
   const selLayer = viewer.selection;
   console.log("[parts] viewer.selection:", selLayer);
 
   if (selLayer?.background) {
-    selLayer.background.addEventListener("change", () => {
-      // Give the scene graph DOM a frame to update before reading it
-      requestAnimationFrame(() => {
-        const name = findSelectedId();
-        console.log("[parts] background change → name:", name);
-        if (name && name !== lastId) { lastId = name; showPart(name); }
-      });
-    });
-    console.log("[parts] hooked viewer.selection.background change");
+    selLayer.background.addEventListener("change", () =>
+      requestAnimationFrame(checkSelection)
+    );
   }
-
   if (selLayer?.highlight) {
-    selLayer.highlight.addEventListener("change", () => {
-      requestAnimationFrame(() => {
-        const name = findSelectedId();
-        if (name && name !== lastId) { lastId = name; showPart(name); }
-      });
-    });
+    selLayer.highlight.addEventListener("change", () =>
+      requestAnimationFrame(checkSelection)
+    );
   }
 
-  // Polling fallback every 250ms
-  setInterval(() => {
-    try {
-      const name = findSelectedId();
-      if (name && name !== lastId) { lastId = name; showPart(name); }
-    } catch (_) {}
-  }, 250);
+  // Polling fallback — catches scene-graph clicks viewer events may miss
+  setInterval(checkSelection, 250);
 }, { once: true });
 
-// Capture-phase click fallback: read after two frames
-viewer.addEventListener("click", () => {
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    const name = findSelectedId();
-    console.log("[parts] post-click name:", name);
-    if (name && name !== lastId) { lastId = name; showPart(name); }
-  }));
-}, true);
+// Capture-phase click: check after two frames so scene graph has updated
+viewer.addEventListener("click", () =>
+  requestAnimationFrame(() => requestAnimationFrame(checkSelection))
+, true);
 
 // ── Model URL builder ─────────────────────────────────────────
 const modelUrl = (models, format) => {
