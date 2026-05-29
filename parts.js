@@ -143,18 +143,37 @@ document.addEventListener("click", (e) => {
   }
 }, true);
 
-// 3D canvas click fallback via viewer.selection.background "change".
+// Recursively search all nested shadow roots for first match.
+const deepQuery = (root, selector) => {
+  if (!root) return null;
+  const hit = root.querySelector(selector);
+  if (hit) return hit;
+  for (const el of root.querySelectorAll("*")) {
+    if (el.shadowRoot) {
+      const found = deepQuery(el.shadowRoot, selector);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+// 3D canvas click: viewer.selection.background fires "change".
+// After it fires, the scene graph highlights the selected node — read its text.
+let recentDocClick = false;
+document.addEventListener("click", () => { recentDocClick = true; setTimeout(() => { recentDocClick = false; }, 200); }, true);
+
 const attach3DListener = () => {
   const sel = viewer.selection;
   if (!sel?.background?.addEventListener) return false;
   sel.background.addEventListener("change", () => {
-    // scene-graph clicks also trigger this; the composedPath handler above
-    // runs first and sets lastPartName, so skip if already handled.
+    // If a doc click just fired it was a scene-graph row click — already handled.
+    if (recentDocClick) return;
+    // Wait a frame for the scene graph DOM to mark the highlighted node.
     requestAnimationFrame(() => {
-      if (lastPartName) return;
-      // For a pure 3D canvas click we don't know the name — show a generic prompt.
-      partDefault.hidden  = false;
-      partSelected.hidden = true;
+      const el = deepQuery(viewer.shadowRoot, "[highlighted]");
+      if (!el) return;
+      const key = normalizePartName(el.textContent);
+      if (PARTS_DATA[key]) handlePartName(key);
     });
   });
   return true;
