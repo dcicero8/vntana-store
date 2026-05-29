@@ -128,24 +128,39 @@ const partNameFromEl = (el) => {
   return null;
 };
 
-// Scene-graph panel is portalled to document.body (outside the viewer element),
-// so listen on document with capture to catch all clicks everywhere.
-// Walk composedPath looking for any element whose text matches a known part name.
+// Debug overlay
+const dbg = Object.assign(document.createElement("div"), { id: "parts-debug" });
+Object.assign(dbg.style, {
+  position:"fixed", bottom:"8px", left:"8px", zIndex:99999,
+  background:"rgba(0,0,0,0.85)", color:"#0f0", fontFamily:"monospace",
+  fontSize:"10px", padding:"8px", borderRadius:"6px",
+  maxWidth:"400px", whiteSpace:"pre-wrap", pointerEvents:"none",
+});
+document.body.appendChild(dbg);
+const dbgLog = (msg) => { dbg.textContent = msg; console.log("[parts]", msg); };
+
 document.addEventListener("click", (e) => {
   const path = e.composedPath();
+  // Log first 6 elements of the path with their tag + text snippet
+  const summary = path.slice(0, 6).map(el => {
+    if (!(el instanceof Element)) return el?.nodeName ?? "?";
+    const txt = el.textContent?.trim().slice(0, 30).replace(/\s+/g, " ");
+    return `<${el.tagName.toLowerCase()}> "${txt}"`;
+  }).join("\n");
+  dbgLog(`CLICK (${path.length} deep):\n${summary}`);
+
   for (const el of path) {
     if (!(el instanceof Element)) continue;
-    // Check direct text node children first (avoids pulling in child element text)
     for (const node of el.childNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
         const key = normalizePartName(node.textContent);
-        if (PARTS_DATA[key]) { handlePartName(key); return; }
+        if (PARTS_DATA[key]) { handlePartName(key); dbgLog(`✓ matched: ${key}`); return; }
       }
     }
-    // Also try the element's own trimmed textContent (works for simple label els)
     const key = normalizePartName(el.textContent);
-    if (key && PARTS_DATA[key]) { handlePartName(key); return; }
+    if (key && PARTS_DATA[key]) { handlePartName(key); dbgLog(`✓ matched: ${key}`); return; }
   }
+  dbgLog(`no match\n${summary}`);
 }, true);
 
 // 3D canvas click fallback via viewer.selection.background "change".
