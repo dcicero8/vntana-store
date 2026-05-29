@@ -120,21 +120,20 @@ const handlePartName = (name) => {
   }
 };
 
-// Extract and normalize a part name from a clicked element.
-// Walks up a few levels, checks text nodes and full textContent.
+// Walk UP the DOM from el looking for a PARTS_DATA key in text content.
+// This handles mesh-level elements (Mesh_34) by finding their named parent group.
 const partNameFromEl = (el) => {
-  for (const candidate of [el, el.parentElement, el.parentElement?.parentElement]) {
-    if (!candidate) continue;
-    // Check direct text node children first (avoids pulling in icon text)
-    for (const node of candidate.childNodes) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const key = normalizePartName(node.textContent);
+  let node = el;
+  while (node && node.nodeType === Node.ELEMENT_NODE) {
+    for (const child of node.childNodes) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const key = normalizePartName(child.textContent);
         if (PARTS_DATA[key]) return key;
       }
     }
-    // Fall back to full textContent normalized
-    const key = normalizePartName(candidate.textContent);
+    const key = normalizePartName(node.textContent);
     if (PARTS_DATA[key]) return key;
+    node = node.parentElement;
   }
   return null;
 };
@@ -186,8 +185,9 @@ const attach3DListener = () => {
 
     const resolve = (el) => {
       if (resolved) return;
-      const key = normalizePartName(el.textContent);
-      if (!PARTS_DATA[key]) return;
+      // el might be a mesh row ("Mesh_34") — walk up to find named parent group
+      const key = partNameFromEl(el);
+      if (!key) return;
       resolved = true;
       observers.forEach(o => o.disconnect());
       handlePartName(key);
