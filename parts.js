@@ -18,6 +18,30 @@ const partLeadEl   = document.getElementById("part-lead-time");
 const partPriceEl   = document.getElementById("part-price");
 const partRenderEl  = document.getElementById("part-render");
 
+// ── Cart ──────────────────────────────────────────────────────
+let cartCount = 0;
+const cartBtn   = document.getElementById("cart-btn");
+const cartLabel = document.getElementById("cart-label");
+
+const addToCart = (n = 1) => {
+  cartCount += n;
+  cartLabel.textContent = `Cart (${cartCount} item${cartCount === 1 ? "" : "s"})`;
+  cartBtn.hidden = false;
+  // Flash the button
+  cartBtn.classList.add("cart-flash");
+  setTimeout(() => cartBtn.classList.remove("cart-flash"), 600);
+};
+
+document.getElementById("btn-add-to-cart").addEventListener("click", () => {
+  if (!lastPartName) return;
+  addToCart(qty);
+});
+
+document.getElementById("btn-add-all").addEventListener("click", () => {
+  const total = Object.values(PARTS_DATA).reduce((sum, p) => sum + (p.qty ?? 1), 0);
+  addToCart(total);
+});
+
 // ── Quantity control ─────────────────────────────────────────
 let qty = 1;
 document.getElementById("qty-minus").addEventListener("click", () => {

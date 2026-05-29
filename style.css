@@ -1315,6 +1315,24 @@ body.landing .header-actions a { color: rgba(255,255,255,0.7); }
 
 /* ─── Demo nav (step tabs) ────────────────────────────────── */
 
+.cart-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background 0.2s;
+}
+.cart-btn:hover { background: #333; }
+.cart-btn.cart-flash { background: #1a6b3c; }
+
 nav.demo-nav {
   display: flex;
   gap: 0.25rem;

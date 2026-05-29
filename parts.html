@@ -14,6 +14,10 @@
       <a href="index.html" class="demo-nav-home">← Industry Use Cases</a>
       <a href="#" class="active">Industrial / Mechanical</a>
     </nav>
+    <button class="cart-btn" id="cart-btn" hidden>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span id="cart-label">Cart (0 items)</span>
+    </button>
   </header>
 
   <main class="product-page">
@@ -106,8 +110,12 @@
           <button class="qty-btn" id="qty-plus" aria-label="Increase quantity">+</button>
         </div>
 
-        <button class="btn-primary">Add to Cart</button>
+        <button class="btn-primary" id="btn-add-to-cart">Add to Cart</button>
         <button class="btn-secondary">Add to Quote</button>
+
+        <hr class="divider">
+
+        <button class="btn-secondary" id="btn-add-all">Add All Parts to Cart</button>
 
         <hr class="divider">
 
