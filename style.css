@@ -458,14 +458,10 @@ vntana-ar-button {
 }
 
 .parts-catalog-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
-.parts-catalog-header .product-subtitle { margin: 0; flex: 1; }
-.parts-catalog-header .btn-primary { white-space: nowrap; flex-shrink: 0; }
+.parts-catalog-header .product-subtitle { margin: 0 0 1rem; }
+.parts-catalog-header .btn-primary { width: 100%; }
 
 .parts-table {
   width: 100%;

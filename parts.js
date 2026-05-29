@@ -294,60 +294,10 @@ const observeRoot = (root) => {
   }
 };
 
-// Auto-open and auto-expand the scene graph so named part rows exist in the DOM.
-// Without this, [highlighted] is never set because the rows aren't rendered.
-const autoExpandSceneGraph = () => {
-  // Open the scene graph panel by clicking the button inside the viewer shadow DOM
-  const deepClick = (root, selector) => {
-    if (!root) return false;
-    const el = root.querySelector(selector);
-    if (el) { el.click(); return true; }
-    for (const child of root.querySelectorAll("*")) {
-      if (child.shadowRoot && deepClick(child.shadowRoot, selector)) return true;
-    }
-    return false;
-  };
-
-  // Click the scene graph toggle button to open the panel
-  deepClick(viewer.shadowRoot, "vntana-scene-graph-button button, [class*='scene-graph'] button, button[aria-label*='scene'], button[aria-label*='Scene']");
-
-  // After panel opens, click all "+" expand buttons repeatedly to expand the tree
-  const expandAll = () => {
-    const clickExpanders = (root) => {
-      if (!root) return 0;
-      let count = 0;
-      // Look for collapsed row expand buttons (aria-expanded=false or "+" text)
-      root.querySelectorAll("[aria-expanded='false'], [aria-expanded='0']").forEach(el => {
-        el.click(); count++;
-      });
-      root.querySelectorAll("*").forEach(el => {
-        if (el.shadowRoot) count += clickExpanders(el.shadowRoot);
-      });
-      return count;
-    };
-    return clickExpanders(viewer.shadowRoot) + clickExpanders(document.body);
-  };
-
-  // Expand in waves — each expansion may reveal more collapsed nodes
-  setTimeout(() => {
-    expandAll();
-    setTimeout(() => {
-      expandAll();
-      setTimeout(() => {
-        expandAll();
-        // Now start observing — scene graph rows should be in DOM
-        if (viewer.shadowRoot) observeRoot(viewer.shadowRoot);
-        observeRoot(document.body);
-      }, 300);
-    }, 300);
-  }, 500);
-};
-
 // Attach after load so viewer shadow DOM is populated
 const startObserving = () => {
   if (viewer.shadowRoot) observeRoot(viewer.shadowRoot);
   observeRoot(document.body);
-  autoExpandSceneGraph();
 };
 viewer.addEventListener("load", startObserving, { once: true });
 setTimeout(startObserving, 5000);
