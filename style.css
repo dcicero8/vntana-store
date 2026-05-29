@@ -1558,7 +1558,7 @@ nav.demo-nav a.active {
 
 vntana-scene-graph-button {
   position: absolute;
-  top: 64px;
+  top: 110px;
   left: 19px;
   z-index: 4;
 }

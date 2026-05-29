@@ -160,6 +160,7 @@ if (thumbBlobId && loadingBgEl) {
 // Apply viewer config and set src
 Object.assign(viewer, viewerConfig);
 viewer.enableAutoRotate = false;
+viewer.disableRotation  = false;  // override any platform lock
 
 Object.assign(viewer, {
   src: modelUrl(models, "GLB"),
