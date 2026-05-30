@@ -457,6 +457,47 @@ vntana-ar-button {
   margin-bottom: 1.5rem;
 }
 
+.custom-tree {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  min-width: 200px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  font-size: 0.8rem;
+}
+.custom-tree-header {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding: 10px 14px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.custom-tree-list { padding: 4px 0; }
+.custom-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-radius: 0;
+}
+.custom-tree-row:hover { background: #f2f2f2; }
+.custom-tree-row--active { background: #e8f0fe; }
+.custom-tree-row--active .custom-tree-name { color: #1a56db; font-weight: 600; }
+.custom-tree-icon { font-size: 0.65rem; color: var(--muted); flex-shrink: 0; }
+.custom-tree-name { flex: 1; font-weight: 500; }
+.custom-tree-count { color: var(--muted); font-size: 0.72rem; }
+.custom-tree-avail { color: #991b1b; font-size: 0.68rem; }
+
 .parts-catalog-header {
   margin-bottom: 1.25rem;
 }

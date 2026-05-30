@@ -301,6 +301,63 @@ const startObserving = () => {
 viewer.addEventListener("load", startObserving, { once: true });
 setTimeout(startObserving, 5000);
 
+// ── Custom parts tree ─────────────────────────────────────────
+// Our own tree panel that updates the PDP reliably on click,
+// then proxies the click to the viewer's (hidden) scene graph
+// so the 3D mesh highlight fires natively.
+
+const treeList = document.getElementById("custom-tree-list");
+let activeTreeRow = null;
+
+// Find a scene-graph row in the shadow DOM by part name text and click it.
+const proxyClickToViewer = (partKey) => {
+  const displayName = partKey.replace(/_/g, " ");
+  const search = (root) => {
+    if (!root) return false;
+    for (const el of root.querySelectorAll("*")) {
+      const txt = el.textContent?.trim() ?? "";
+      // Match "Booster", "Booster (1)", "Bolts (27)" etc.
+      if (txt === partKey || txt === displayName ||
+          txt.startsWith(partKey + " (") || txt.startsWith(displayName + " (")) {
+        // Found the row — click it to trigger 3D highlight
+        el.click();
+        return true;
+      }
+    }
+    for (const el of root.querySelectorAll("*")) {
+      if (el.shadowRoot && search(el.shadowRoot)) return true;
+    }
+    return false;
+  };
+  search(viewer.shadowRoot);
+};
+
+// Build the tree rows from PARTS_DATA
+Object.entries(PARTS_DATA).forEach(([key, data]) => {
+  const row = document.createElement("div");
+  row.className = "custom-tree-row";
+  row.dataset.key = key;
+  const avail = data.avail === "Out of Stock" ? " · Out of Stock" :
+                data.avail === "Low Stock"    ? " · Low Stock"    : "";
+  row.innerHTML = `
+    <span class="custom-tree-icon">⬡</span>
+    <span class="custom-tree-name">${key.replace(/_/g, " ")}</span>
+    <span class="custom-tree-count">${data.qty > 1 ? `(${data.qty})` : ""}</span>
+    ${avail ? `<span class="custom-tree-avail">${avail}</span>` : ""}
+  `;
+  row.addEventListener("click", () => {
+    // Update active style
+    activeTreeRow?.classList.remove("custom-tree-row--active");
+    row.classList.add("custom-tree-row--active");
+    activeTreeRow = row;
+    // Update PDP immediately
+    handlePartName(key);
+    // Proxy click to viewer's scene graph for 3D highlight
+    proxyClickToViewer(key);
+  });
+  treeList.appendChild(row);
+});
+
 // ── Shadow-root event listener for scene-graph-highlight ──────
 // This event fires inside the viewer shadow DOM (bubbles:true but not composed)
 // for BOTH scene-graph clicks AND 3D canvas clicks. By listening directly on
