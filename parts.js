@@ -301,6 +301,35 @@ const startObserving = () => {
 viewer.addEventListener("load", startObserving, { once: true });
 setTimeout(startObserving, 5000);
 
+// ── Shadow-root event listener for scene-graph-highlight ──────
+// This event fires inside the viewer shadow DOM (bubbles:true but not composed)
+// for BOTH scene-graph clicks AND 3D canvas clicks. By listening directly on
+// viewer.shadowRoot we catch it before it disappears at the shadow boundary.
+const attachShadowHighlightListener = () => {
+  if (!viewer.shadowRoot) return false;
+  viewer.shadowRoot.addEventListener("scene-graph-highlight", (e) => {
+    if (clickHandled) return; // already handled by composedPath click listener
+
+    // Try direct name match (works for named group clicks)
+    const directKey = normalizePartName(e.detail?.name ?? "");
+    if (PARTS_DATA[directKey]) { handlePartName(directKey); return; }
+
+    // Mesh click: detail.name is "Mesh_41" etc — scan siblings for parent group
+    const highlighted = viewer.shadowRoot.querySelector("[highlighted]")
+      ?? deepQuery(viewer.shadowRoot, "[highlighted]");
+    if (highlighted) {
+      const key = partNameFromEl(highlighted);
+      if (key) handlePartName(key);
+    }
+  });
+  console.log("[parts] shadow highlight listener attached");
+  return true;
+};
+viewer.addEventListener("load", () => {
+  setTimeout(attachShadowHighlightListener, 500);
+}, { once: true });
+setTimeout(attachShadowHighlightListener, 6000);
+
 // ── Model URL builder ─────────────────────────────────────────
 const modelUrl = (models, format) => {
   const m = models.find(m => (m.conversionFormat ?? m.type) === format);
