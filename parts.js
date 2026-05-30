@@ -164,6 +164,10 @@ const handlePartName = (name) => {
   if (name && name !== lastPartName) {
     lastPartName = name;
     showPart(name);
+    // Sync custom tree highlight so 3D clicks also light up the right row
+    activeTreeRow?.classList.remove("custom-tree-row--active");
+    activeTreeRow = treeList?.querySelector(`[data-key="${name}"]`) ?? null;
+    activeTreeRow?.classList.add("custom-tree-row--active");
   }
 };
 
@@ -365,19 +369,22 @@ Object.entries(PARTS_DATA).forEach(([key, data]) => {
 const attachShadowHighlightListener = () => {
   if (!viewer.shadowRoot) return false;
   viewer.shadowRoot.addEventListener("scene-graph-highlight", (e) => {
-    if (clickHandled) return; // already handled by composedPath click listener
+    if (clickHandled) return;
 
-    // Try direct name match (works for named group clicks)
+    // Try direct name match first (named group row clicked)
     const directKey = normalizePartName(e.detail?.name ?? "");
     if (PARTS_DATA[directKey]) { handlePartName(directKey); return; }
 
-    // Mesh click: detail.name is "Mesh_41" etc — scan siblings for parent group
-    const highlighted = viewer.shadowRoot.querySelector("[highlighted]")
-      ?? deepQuery(viewer.shadowRoot, "[highlighted]");
-    if (highlighted) {
-      const key = partNameFromEl(highlighted);
-      if (key) handlePartName(key);
-    }
+    // Mesh clicked (detail.name = "Mesh_41") — find parent group via sibling scan.
+    // Try immediately, then retry after a frame in case DOM hasn't updated yet.
+    const tryFind = () => {
+      const el = deepQuery(viewer.shadowRoot, "[highlighted]");
+      if (!el) return false;
+      const key = partNameFromEl(el);
+      if (key) { handlePartName(key); return true; }
+      return false;
+    };
+    if (!tryFind()) requestAnimationFrame(() => { if (!tryFind()) setTimeout(tryFind, 150); });
   });
   console.log("[parts] shadow highlight listener attached");
   return true;
