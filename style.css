@@ -406,29 +406,6 @@ vntana-ar-button {
   opacity: 1;
 }
 
-.explode-control {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem;
-  background: var(--viewer-bg);
-  border-top: 1px solid var(--border);
-}
-
-.explode-control label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--muted);
-  white-space: nowrap;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.explode-control input[type="range"] {
-  flex: 1;
-  accent-color: var(--accent);
-}
-
 .viewer-hint {
   padding: 0.6rem 1rem;
   font-size: 0.75rem;
