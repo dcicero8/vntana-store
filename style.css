@@ -1670,6 +1670,12 @@ vntana-scene-graph {
   display: none;
 }
 
+.parts-default-hero {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 .part-placeholder {
   display: flex;
   flex-direction: column;
