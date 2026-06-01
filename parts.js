@@ -167,10 +167,15 @@ const handlePartName = (name) => {
 const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
   viewer.selection.highlight.addEventListener("change", (event) => {
-    event.changes.forEach((value, key) => {
+    event.changes.forEach((value, node) => {
       if (value !== 0) return; // 0 = selected, 1 = deselected
-      const name = normalizePartName(key.name ?? "");
-      if (PARTS_DATA[name]) handlePartName(name);
+      // Walk up the scene graph until we find a matching PARTS_DATA key
+      let n = node;
+      while (n) {
+        const name = normalizePartName(n.name ?? "");
+        if (PARTS_DATA[name]) { handlePartName(name); return; }
+        n = n.parent;
+      }
     });
   });
   return true;
