@@ -79,6 +79,14 @@ const addAllToCart = () => {
 document.getElementById("btn-add-all").addEventListener("click", addAllToCart);
 document.getElementById("btn-add-all-top").addEventListener("click", addAllToCart);
 
+document.getElementById("breadcrumb-home").addEventListener("click", (e) => {
+  e.preventDefault();
+  lastPartName = null;
+  partDefault.hidden = false;
+  partDefault.style.display = "";
+  partSelected.hidden = true;
+});
+
 // ── Build parts catalog table ─────────────────────────────────
 const tbody = document.getElementById("parts-table-body");
 Object.entries(PARTS_DATA).forEach(([key, data]) => {
