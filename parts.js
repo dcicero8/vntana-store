@@ -153,11 +153,6 @@ const showPart = (name) => {
 };
 
 // ── Selection detection ───────────────────────────────────────
-// e.composedPath() returns the full click path through ALL shadow boundaries —
-// read it synchronously, store it, then find the most list-like element in it.
-// This works for scene-graph row clicks without any shadow DOM traversal.
-// For 3D canvas clicks we fall back to viewer.selection.background "change".
-
 let lastPartName = null;
 
 const handlePartName = (name) => {
@@ -167,171 +162,22 @@ const handlePartName = (name) => {
   }
 };
 
-// Find a PARTS_DATA key near el.
-// At each DOM level: check the element, then scan previous siblings.
-// This handles both nested DOM and flat virtualised lists (CSS depth indentation).
-const tryKeyFromEl = (el) => {
-  if (!(el instanceof Element)) return null;
-  for (const child of el.childNodes) {
-    if (child.nodeType === Node.TEXT_NODE) {
-      const k = normalizePartName(child.textContent);
-      if (PARTS_DATA[k]) return k;
-    }
-  }
-  if ((el.textContent?.length ?? 999) < 60) {
-    const k = normalizePartName(el.textContent);
-    if (PARTS_DATA[k]) return k;
-  }
-  return null;
-};
-
-const partNameFromEl = (startEl) => {
-  let node = startEl instanceof Element ? startEl : startEl?.parentElement;
-  while (node) {
-    // Check this node
-    const k = tryKeyFromEl(node);
-    if (k) return k;
-    // Scan previous siblings at this level (for flat scene-graph lists)
-    let sib = node.previousElementSibling;
-    while (sib) {
-      const k2 = tryKeyFromEl(sib);
-      if (k2) return k2;
-      sib = sib.previousElementSibling;
-    }
-    node = node.parentElement;
-  }
-  return null;
-};
-
-// Track whether the click handler itself found and handled a part name.
-// Only suppress background.change when this is true (not on ALL clicks).
-let clickHandled = false;
-
-document.addEventListener("click", (e) => {
-  clickHandled = false;
-  const path = e.composedPath();
-
-  // Pass 1: direct text scan of composedPath (handles clicking named rows)
-  for (const el of path) {
-    if (!(el instanceof Element)) continue;
-    for (const node of el.childNodes) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const key = normalizePartName(node.textContent);
-        if (PARTS_DATA[key]) { clickHandled = true; handlePartName(key); return; }
-      }
-    }
-    if ((el.textContent?.length ?? 999) < 50) {
-      const key = normalizePartName(el.textContent);
-      if (key && PARTS_DATA[key]) { clickHandled = true; handlePartName(key); return; }
-    }
-  }
-
-  // Pass 2: flat-list sibling scan on innermost element (handles Mesh_N rows)
-  const firstEl = path.find(el => el instanceof Element);
-  if (firstEl) {
-    const key = partNameFromEl(firstEl);
-    if (key) { clickHandled = true; handlePartName(key); }
-  }
-}, true);
-
-// Recursively search all nested shadow roots for first match.
-const deepQuery = (root, selector) => {
-  if (!root) return null;
-  const hit = root.querySelector(selector);
-  if (hit) return hit;
-  for (const el of root.querySelectorAll("*")) {
-    if (el.shadowRoot) {
-      const found = deepQuery(el.shadowRoot, selector);
-      if (found) return found;
-    }
-  }
-  return null;
-};
-
-// 3D canvas click: viewer.selection.background fires "change".
-// After it fires, the scene graph highlights the selected node — read its text.
-
-const attach3DListener = () => {
-  const sel = viewer.selection;
-  if (!sel?.background?.addEventListener) return false;
-  sel.background.addEventListener("change", () => {
-    if (clickHandled) { clickHandled = false; return; }
-    // 3D canvas click — the permanent MutationObserver will fire when
-    // Lit sets [highlighted] on the scene-graph row. Nothing else needed here.
+// viewer.selection.highlight fires "change" for both viewport clicks and
+// scene graph row clicks. key.name is the mesh/node name; value 0 = selected.
+const attachSelectionListener = () => {
+  if (!viewer.selection?.highlight?.addEventListener) return false;
+  viewer.selection.highlight.addEventListener("change", (event) => {
+    event.changes.forEach((value, key) => {
+      if (value !== 0) return; // 0 = selected, 1 = deselected
+      const name = normalizePartName(key.name ?? "");
+      if (PARTS_DATA[name]) handlePartName(name);
+    });
   });
   return true;
 };
-if (!attach3DListener()) {
-  viewer.addEventListener("load", attach3DListener, { once: true });
-  setTimeout(attach3DListener, 5000);
+if (!attachSelectionListener()) {
+  viewer.addEventListener("load", attachSelectionListener, { once: true });
 }
-
-// Permanent MutationObserver — watches ALL accessible shadow roots for [highlighted].
-// Set up once so it catches every selection without per-click setup/teardown.
-const watchedRoots = new WeakSet();
-const observeRoot = (root) => {
-  if (!root || watchedRoots.has(root)) return;
-  watchedRoots.add(root);
-  const mo = new MutationObserver((muts) => {
-    for (const m of muts) {
-      if (m.attributeName === "highlighted" && m.target.hasAttribute?.("highlighted")) {
-        if (!clickHandled) {
-          const key = partNameFromEl(m.target);
-          if (key) handlePartName(key);
-        }
-      }
-      // Watch for new custom elements being added that might have shadow roots
-      for (const node of m.addedNodes ?? []) {
-        if (node.shadowRoot) observeRoot(node.shadowRoot);
-      }
-    }
-  });
-  mo.observe(root, { subtree: true, attributes: true, attributeFilter: ["highlighted"], childList: true });
-  // Recurse into nested open shadow roots
-  for (const el of root.querySelectorAll("*")) {
-    if (el.shadowRoot) observeRoot(el.shadowRoot);
-  }
-};
-
-// Attach after load so viewer shadow DOM is populated
-const startObserving = () => {
-  if (viewer.shadowRoot) observeRoot(viewer.shadowRoot);
-  observeRoot(document.body);
-};
-viewer.addEventListener("load", startObserving, { once: true });
-setTimeout(startObserving, 5000);
-
-// ── Shadow-root event listener for scene-graph-highlight ──────
-// This event fires inside the viewer shadow DOM (bubbles:true but not composed)
-// for BOTH scene-graph clicks AND 3D canvas clicks. By listening directly on
-// viewer.shadowRoot we catch it before it disappears at the shadow boundary.
-const attachShadowHighlightListener = () => {
-  if (!viewer.shadowRoot) return false;
-  viewer.shadowRoot.addEventListener("scene-graph-highlight", (e) => {
-    if (clickHandled) return;
-
-    // Try direct name match first (named group row clicked)
-    const directKey = normalizePartName(e.detail?.name ?? "");
-    if (PARTS_DATA[directKey]) { handlePartName(directKey); return; }
-
-    // Mesh clicked (detail.name = "Mesh_41") — find parent group via sibling scan.
-    // Try immediately, then retry after a frame in case DOM hasn't updated yet.
-    const tryFind = () => {
-      const el = deepQuery(viewer.shadowRoot, "[highlighted]");
-      if (!el) return false;
-      const key = partNameFromEl(el);
-      if (key) { handlePartName(key); return true; }
-      return false;
-    };
-    if (!tryFind()) requestAnimationFrame(() => { if (!tryFind()) setTimeout(tryFind, 150); });
-  });
-  console.log("[parts] shadow highlight listener attached");
-  return true;
-};
-viewer.addEventListener("load", () => {
-  setTimeout(attachShadowHighlightListener, 500);
-}, { once: true });
-setTimeout(attachShadowHighlightListener, 6000);
 
 // ── Model URL builder ─────────────────────────────────────────
 const modelUrl = (models, format) => {
