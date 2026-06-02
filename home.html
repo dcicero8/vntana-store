@@ -416,34 +416,82 @@
       { title: "Coatings and Paints",         img: `${IMG_BASE}/5f46c675-da96-4cc5-a07a-239d9dab996f.jpg` },
     ];
 
-    // Hotspots with real camera data from the platform
-    const HOTSPOT_CAMERAS = [
-      {"cameraTarget":"-0.007321339928015182r 0.06702349880198888r -0.023092745850383328r","cameraDistance":"0.8550062825936721r","cameraRotation":"-0.11131006360416174rad -4.71238898038469rad 0rad","fieldOfView":"0.3891340607058784rad","orthographicSize":"0.16848752493774422r"},
-      {"cameraTarget":"-0.004457000673570444r -0.011489459222084336r -0.2004939219834498r","cameraDistance":"1.0620042058306787r","cameraRotation":"-0.061675526008882375rad -4.686829147638774rad 0rad","fieldOfView":"0.4223311436868355rad","orthographicSize":"0.22765257153449553r"},
-      {"cameraTarget":"0.08359363081946972r 0.04987364837087058r 0.13768948913694182r","cameraDistance":"1.0107794279205802r","cameraRotation":"-0.16332862229654044rad -4.226810781681885rad 0rad","fieldOfView":"0.42087105568603544rad","orthographicSize":"0.21590026251853398r"},
-      {"cameraTarget":"0.049250055228847595r -0.009293940163339539r -0.2272621744419832r","cameraDistance":"0.22270243504218135r","cameraRotation":"-0.1375733779852919rad -5.15190867313788rad 0rad","fieldOfView":"0.31699803015003997rad","orthographicSize":"0.035596703093160376r"},
-      {"cameraTarget":"0.06513923466421671r -0.011578063893279169r -0.2603118049568653r","cameraDistance":"0.19954377867351203r","cameraRotation":"-0.1375733779852919rad -5.15190867313788rad 0rad","fieldOfView":"0.3141592653589793rad","orthographicSize":"0.03160462970544734r"},
-      {"cameraTarget":"0.06513923466421671r -0.011578063893279169r -0.2603118049568653r","cameraDistance":"0.19954377867351203r","cameraRotation":"-0.1375733779852919rad -5.15190867313788rad 0rad","fieldOfView":"0.3141592653589793rad","orthographicSize":"0.03160462970544734r"},
-    ];
-
-    const hotspots = LABELS.map((l, i) => ({ ...l, camera: HOTSPOT_CAMERAS[i] }));
-    let current = 0;
-    let paused  = false;
-    let timer   = null;
-
-    // Build dots immediately
-    buildDots();
+    let hotspotEls = []; // vntana-hotspot elements in the viewer
+    let current    = 0;
+    let paused     = false;
+    let timer      = null;
 
     // ── Load viewer ────────────────────────────────────────────
-    const product = await fetch(`${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r => r.json());
-    const config  = JSON.parse(product.response.viewerSettings.config);
+    const [product, hsData] = await Promise.all([
+      fetch(`${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r => r.json()),
+      fetch(`${BASE_URL}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productUuid: UUID, page: 1, size: 100 })
+      }).then(r => r.json())
+    ]);
 
+    const config = JSON.parse(product.response.viewerSettings.config);
     Object.assign(viewer, config);
     viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB_BLOB}`;
 
+    // ── Inject hotspots after viewer loads ─────────────────────
+    viewer.addEventListener("load", () => {
+      const grid = hsData.response?.grid ?? [];
+      hotspotEls = grid.map((hs, idx) => {
+        const dims   = JSON.parse(hs.config.dimensions);
+        const camera = hs.config.camera ? JSON.parse(hs.config.camera) : null;
+        const label  = LABELS[idx] ?? { title: `Stop ${idx + 1}` };
+        const imgUrl = hs.blobId
+          ? `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WS}/${hs.blobId}`
+          : null;
+
+        const el = document.createElement("vntana-hotspot");
+        el.position  = dims.position;
+        el.normal    = dims.normal;
+        el._camera   = camera;
+        el._label    = label;
+        el._imgUrl   = imgUrl;
+        el.innerHTML = `
+          <span class="hotspot-pin">${idx + 1}</span>
+          <div class="hotspot-popup">
+            <button class="hotspot-close" aria-label="Close">✕</button>
+            ${imgUrl ? `<img src="${imgUrl}" alt="" onerror="this.style.display='none'">` : ""}
+            <div class="hotspot-text"><strong>${label.title}</strong></div>
+          </div>`;
+
+        el.addEventListener("click", e => {
+          if (e.target.closest(".hotspot-popup")) return;
+          const isOpen = el.classList.contains("open");
+          closeAll();
+          if (!isOpen) { el.classList.add("open"); snapCamera(camera); }
+        });
+
+        el.querySelector(".hotspot-close").addEventListener("click", closeAll);
+        viewer.appendChild(el);
+        return el;
+      });
+
+      buildDots();
+      buildCards();
+    }, { once: true });
+
+    const closeAll = () => viewer.querySelectorAll("vntana-hotspot.open")
+      .forEach(h => h.classList.remove("open"));
+
+    function snapCamera(cam) {
+      if (!cam) return;
+      try {
+        if (cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
+        if (cam.cameraTarget)   viewer.cameraTarget   = cam.cameraTarget;
+        if (cam.cameraDistance) viewer.cameraDistance = cam.cameraDistance;
+        if (cam.fieldOfView)    viewer.fieldOfView    = cam.fieldOfView;
+      } catch(e) {}
+    }
+
     function buildDots() {
       dots.innerHTML = "";
-      hotspots.forEach(() => {
+      hotspotEls.forEach(() => {
         const d = document.createElement("div");
         d.className = "tour-dot";
         dots.appendChild(d);
@@ -452,42 +500,36 @@
 
     function buildCards() {
       cards.innerHTML = "";
-      hotspots.forEach((h, i) => {
-        const card = document.createElement("div");
-        card.className = "hotspot-card";
+      hotspotEls.forEach((el, i) => {
+        const label  = el._label ?? { title: `Stop ${i + 1}` };
+        const imgUrl = el._imgUrl;
+        const card   = document.createElement("div");
+        card.className    = "hotspot-card";
         card.dataset.index = i;
         card.innerHTML = `
           <div class="hotspot-num">${i + 1}</div>
-          ${h.img ? `<img class="hotspot-card-img" src="${h.img}" alt="">` : ""}
-          <div class="hotspot-text"><strong>${h.title}</strong></div>`;
+          ${imgUrl ? `<img class="hotspot-card-img" src="${imgUrl}" alt="">` : ""}
+          <div class="hotspot-text"><strong>${label.title}</strong></div>`;
         cards.appendChild(card);
       });
     }
 
-    buildCards();
-
     // ── Navigate to a hotspot ──────────────────────────────────
     function goTo(index) {
-      current = ((index % hotspots.length) + hotspots.length) % hotspots.length;
-      const h = hotspots[current];
+      if (!hotspotEls.length) return;
+      current = ((index % hotspotEls.length) + hotspotEls.length) % hotspotEls.length;
+      const el = hotspotEls[current];
 
-      // Snap camera to hotspot
-      try {
-        const cam = h.camera;
-        if (cam) {
-          if (cam.cameraRotation)  viewer.setCameraRotation(cam.cameraRotation);
-          if (cam.cameraTarget)    viewer.cameraTarget   = cam.cameraTarget;
-          if (cam.cameraDistance)  viewer.cameraDistance = cam.cameraDistance;
-          if (cam.fieldOfView)     viewer.fieldOfView    = cam.fieldOfView;
-        }
-      } catch(e) {}
+      closeAll();
+      el.classList.add("open");
+      snapCamera(el._camera);
 
       // Update UI
       document.querySelectorAll(".hotspot-card").forEach((c, i) =>
         c.classList.toggle("active", i === current));
       document.querySelectorAll(".tour-dot").forEach((d, i) =>
         d.classList.toggle("active", i === current));
-      fill.style.width = `${((current + 1) / hotspots.length) * 100}%`;
+      fill.style.width = `${((current + 1) / hotspotEls.length) * 100}%`;
     }
 
     // ── Tour timer ─────────────────────────────────────────────
@@ -517,8 +559,8 @@
       pauseBtn.classList.toggle("primary", paused);
     });
 
-    prevBtn.addEventListener("click", () => { goTo(current - 1); startTimer(); });
-    nextBtn.addEventListener("click", () => { goTo(current + 1); startTimer(); });
+    prevBtn.addEventListener("click", () => { goTo(current - 1); if (!paused) startTimer(); });
+    nextBtn.addEventListener("click", () => { goTo(current + 1); if (!paused) startTimer(); });
   </script>
 
 </body>
