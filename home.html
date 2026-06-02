@@ -221,6 +221,14 @@
       color: #fff;
     }
 
+    .hotspot-card-img {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
     .hotspot-text strong {
       font-size: 0.85rem;
       font-weight: 600;
@@ -345,12 +353,7 @@
       <div>
         <div class="hotspot-list-label">Tour Stops</div>
         <div class="hotspot-cards" id="hotspot-cards">
-          <div class="hotspot-card" data-index="0"><div class="hotspot-num">1</div><div class="hotspot-text"><strong>Building Material Solutions</strong></div></div>
-          <div class="hotspot-card" data-index="1"><div class="hotspot-num">2</div><div class="hotspot-text"><strong>Building Material Solutions</strong></div></div>
-          <div class="hotspot-card" data-index="2"><div class="hotspot-num">3</div><div class="hotspot-text"><strong>Building Material Solutions</strong></div></div>
-          <div class="hotspot-card" data-index="3"><div class="hotspot-num">4</div><div class="hotspot-text"><strong>Fire Protection Solutions</strong></div></div>
-          <div class="hotspot-card" data-index="4"><div class="hotspot-num">5</div><div class="hotspot-text"><strong>Fire Protection Solutions</strong></div></div>
-          <div class="hotspot-card" data-index="5"><div class="hotspot-num">6</div><div class="hotspot-text"><strong>Coatings and Paints</strong></div></div>
+          <!-- Cards populated by JS after load -->
         </div>
       </div>
 
@@ -402,13 +405,15 @@
     const pauseBtn = document.getElementById("tour-pause-btn");
     const nextBtn  = document.getElementById("tour-next-btn");
 
+    const IMG_BASE = `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WS}`;
+
     const LABELS = [
-      { title: "Building Material Solutions" },
-      { title: "Building Material Solutions" },
-      { title: "Building Material Solutions" },
-      { title: "Fire Protection Solutions"   },
-      { title: "Fire Protection Solutions"   },
-      { title: "Coatings and Paints"         },
+      { title: "Building Material Solutions", img: `${IMG_BASE}/a7b669f2-0590-4fc9-8d34-8b0d66e4adf3.jpg` },
+      { title: "Building Material Solutions", img: `${IMG_BASE}/cbe9af51-2ddb-45ee-956d-5196e1dd926a.jpg` },
+      { title: "Building Material Solutions", img: `${IMG_BASE}/01cc96e1-5ba2-47e6-a859-844c4fb29f72.jpg` },
+      { title: "Fire Protection Solutions",   img: `${IMG_BASE}/e4750e5a-5c86-4797-b06d-035f20435ea3.jpg` },
+      { title: "Fire Protection Solutions",   img: `${IMG_BASE}/5b17ccc0-6e07-4cbe-985e-35944e2cef61.jpg` },
+      { title: "Coatings and Paints",         img: `${IMG_BASE}/5f46c675-da96-4cc5-a07a-239d9dab996f.jpg` },
     ];
 
     // Hotspots with real camera data from the platform
@@ -444,6 +449,22 @@
         dots.appendChild(d);
       });
     }
+
+    function buildCards() {
+      cards.innerHTML = "";
+      hotspots.forEach((h, i) => {
+        const card = document.createElement("div");
+        card.className = "hotspot-card";
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div class="hotspot-num">${i + 1}</div>
+          ${h.img ? `<img class="hotspot-card-img" src="${h.img}" alt="">` : ""}
+          <div class="hotspot-text"><strong>${h.title}</strong></div>`;
+        cards.appendChild(card);
+      });
+    }
+
+    buildCards();
 
     // ── Navigate to a hotspot ──────────────────────────────────
     function goTo(index) {
