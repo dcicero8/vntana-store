@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home Product Explorer | VNTANA Store</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Page layout ── */
+    .home-page {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Viewer column ── */
+    .home-viewer-col {
+      position: sticky;
+      top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      background: #f5f4f2;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .home-viewer-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .home-viewer-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* ── Tour overlay ── */
+    .tour-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(20, 20, 20, 0.55);
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      z-index: 10;
+      transition: opacity 0.5s ease;
+    }
+
+    .tour-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tour-overlay-logo {
+      opacity: 0.9;
+    }
+
+    .tour-overlay-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      letter-spacing: -0.01em;
+    }
+
+    .tour-overlay-sub {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .tour-start-btn {
+      margin-top: 0.5rem;
+      padding: 0.75rem 2rem;
+      background: #fff;
+      color: #111;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .tour-start-btn:hover {
+      background: #f0f0f0;
+      transform: translateY(-1px);
+    }
+
+    /* ── Info column ── */
+    .home-info-col {
+      background: #fff;
+      border-left: 1px solid var(--border);
+      padding: 2rem 1.75rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .home-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .home-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .home-brand-logo {
+      height: 28px;
+      width: auto;
+    }
+
+    .home-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .home-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .home-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── Hotspot list ── */
+    .hotspot-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .hotspot-list-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .hotspot-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    .hotspot-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .hotspot-text strong {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+    }
+
+    .hotspot-text span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* ── Tour hint ── */
+    .tour-hint {
+      background: #f5f4f2;
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .tour-hint strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    /* ── CTA ── */
+    .home-cta {
+      margin-top: auto;
+      padding-top: 1rem;
+    }
+
+    .home-cta a {
+      display: block;
+      text-align: center;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .home-cta a:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 800px) {
+      .home-page {
+        grid-template-columns: 1fr;
+      }
+      .home-viewer-col {
+        position: relative;
+        top: 0;
+        height: 60vw;
+        min-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo"><img src="VNTANA-logo-black.png" alt="VNTANA" height="18"></a>
+    <nav class="demo-nav">
+      <a href="index.html" class="demo-nav-home">← Industry Use Cases</a>
+      <a href="#" class="active">Home / Building Materials</a>
+    </nav>
+  </header>
+
+  <main class="home-page">
+
+    <!-- LEFT: viewer -->
+    <div class="home-viewer-col">
+      <div class="home-viewer-wrap">
+
+        <iframe
+          id="home-viewer"
+          src="https://embed.vntana.com/v2?productUuid=ffa38aac-099a-430d-8b98-27d99c837a77&clientSlug=demo-room&organizationSlug=hexion"
+          allow="camera; microphone"
+          allowfullscreen
+          title="Hexion Building Material Solutions 3D viewer"
+        ></iframe>
+
+        <!-- Tour start overlay -->
+        <div class="tour-overlay" id="tour-overlay">
+          <div class="tour-overlay-logo">
+            <img src="VNTANA-logo-black.png" alt="VNTANA" height="20" style="filter: brightness(0) invert(1);">
+          </div>
+          <div class="tour-overlay-title">Building Material Solutions</div>
+          <div class="tour-overlay-sub">Explore material options and finishes in 3D. Click any hotspot to learn more.</div>
+          <button class="tour-start-btn" id="tour-start-btn">Begin Tour</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: info panel -->
+    <div class="home-info-col">
+
+      <div>
+        <div class="home-eyebrow">Industry Use Case — Home / Building Materials</div>
+        <div class="home-brand">
+          <span style="font-size: 1rem; font-weight: 700; color: var(--text);">Hexion</span>
+        </div>
+      </div>
+
+      <h1 class="home-title">Building Material Solutions</h1>
+
+      <p class="home-desc">Explore Hexion's full range of building material finishes and surfaces in an interactive 3D experience. Rotate the model, zoom into surface detail, and use the guided tour to walk through each material's key properties.</p>
+
+      <hr class="home-divider">
+
+      <div class="hotspot-list">
+        <div class="hotspot-list-label">Tour Stops</div>
+
+        <div class="hotspot-item">
+          <div class="hotspot-num">1</div>
+          <div class="hotspot-text">
+            <strong>Surface Finish</strong>
+            <span>High-gloss and matte coating options for interior applications.</span>
+          </div>
+        </div>
+
+        <div class="hotspot-item">
+          <div class="hotspot-num">2</div>
+          <div class="hotspot-text">
+            <strong>Core Material</strong>
+            <span>Engineered composite substrate for dimensional stability.</span>
+          </div>
+        </div>
+
+        <div class="hotspot-item">
+          <div class="hotspot-num">3</div>
+          <div class="hotspot-text">
+            <strong>Edge Profile</strong>
+            <span>Precision-machined edges for seamless installation.</span>
+          </div>
+        </div>
+
+        <div class="hotspot-item">
+          <div class="hotspot-num">4</div>
+          <div class="hotspot-text">
+            <strong>Adhesive Layer</strong>
+            <span>Moisture-resistant bonding system rated for wet environments.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="tour-hint">
+        <strong>How to explore</strong>
+        Click "Begin Tour" to start, then use the numbered hotspot pins in the viewer to jump between features. Drag to rotate, scroll to zoom.
+      </div>
+
+      <hr class="home-divider">
+
+      <div class="home-cta">
+        <a href="https://www.hexion.com/" target="_blank">Learn more at hexion.com →</a>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    document.getElementById("tour-start-btn").addEventListener("click", () => {
+      document.getElementById("tour-overlay").classList.add("hidden");
+    });
+  </script>
+
+</body>
+</html>
