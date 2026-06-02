@@ -413,11 +413,14 @@
       { title: "Coatings and Paints",         desc: "VeoVa™ monomers and Cardura™ glycidyl esters delivering moisture, UV, and scratch resistance across wood, architectural, and specialty coating applications." },
     ];
 
-    let hotspots   = [];
+    // Initialize immediately with LABELS so tour is always ready
+    let hotspots   = LABELS.map((l, i) => ({ _label: l.title, _desc: l.desc, index: i }));
     let current    = 0;
     let paused     = false;
     let timer      = null;
-    let tourActive = false;
+
+    // Build dots immediately from LABELS
+    buildDots();
 
     // ── Load viewer ────────────────────────────────────────────
     const product = await fetch(`${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r => r.json());
@@ -426,36 +429,14 @@
     Object.assign(viewer, config);
     viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB_BLOB}`;
 
-    // ── After load, collect hotspots ───────────────────────────
+    // ── After load, try to upgrade hotspots from viewer internals ──
     viewer.addEventListener("load", () => {
-      // Try to read hotspots from internal viewer state
       const internal = viewer._hotspots ?? viewer.hotspots ?? [];
-      hotspots = Array.isArray(internal) && internal.length
-        ? internal
-        : LABELS.map((l, i) => ({ _label: l.title, _desc: l.desc, index: i }));
-
-      buildCards();
-      buildDots();
+      if (Array.isArray(internal) && internal.length) {
+        hotspots = internal;
+        buildDots();
+      }
     }, { once: true });
-
-    // ── Build hotspot cards ────────────────────────────────────
-    function buildCards() {
-      cards.innerHTML = "";
-      hotspots.forEach((h, i) => {
-        const label = h.label ?? h._label ?? h.name ?? `Stop ${i + 1}`;
-        const desc  = h.description ?? h._desc ?? "";
-        const card  = document.createElement("div");
-        card.className = "hotspot-card";
-        card.dataset.index = i;
-        card.innerHTML = `
-          <div class="hotspot-num">${i + 1}</div>
-          <div class="hotspot-text">
-            <strong>${label}</strong>
-            ${desc ? `<span>${desc}</span>` : ""}
-          </div>`;
-        cards.appendChild(card);
-      });
-    }
 
     function buildDots() {
       dots.innerHTML = "";
@@ -498,7 +479,6 @@
 
     // ── Begin tour ─────────────────────────────────────────────
     function startTour() {
-      tourActive = true;
       overlay.classList.add("hidden");
       progress.style.display = "block";
       dots.style.display     = "flex";
