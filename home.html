@@ -315,7 +315,7 @@
         <div class="tour-overlay" id="tour-overlay">
           <div class="tour-overlay-eyebrow">Hexion</div>
           <div class="tour-overlay-title">Building Material Solutions</div>
-          <div class="tour-overlay-sub">An interactive guided tour through Hexion's specialty chemistries for home construction.</div>
+          <div class="tour-overlay-sub">An interactive guided tour through Hexion's building material solutions.</div>
           <button class="tour-start-btn" id="tour-start-btn">Begin Tour</button>
         </div>
 
@@ -338,20 +338,19 @@
         <h1 class="home-title">Home Product Explorer</h1>
       </div>
 
-      <p class="home-desc">Explore Hexion's specialty chemistries across building materials, coatings, and fire protection in an interactive 3D experience. The guided tour automatically walks through each hotspot — showing where and how each solution performs in real construction environments.</p>
+      <p class="home-desc">Explore Hexion's product solutions in an interactive 3D experience. The guided tour automatically walks through each hotspot in the model.</p>
 
       <hr class="home-divider">
 
       <div>
         <div class="hotspot-list-label">Tour Stops</div>
         <div class="hotspot-cards" id="hotspot-cards">
-          <!-- Pre-populated — JS will override with live hotspot data after load -->
-          <div class="hotspot-card" data-index="0"><div class="hotspot-num">1</div><div class="hotspot-text"><strong>Building Material Solutions</strong><span>Glass mat, insulation, and EcoBind® resin technologies.</span></div></div>
-          <div class="hotspot-card" data-index="1"><div class="hotspot-num">2</div><div class="hotspot-text"><strong>Building Material Solutions</strong><span>Engineered wood adhesives and Versatic™ monomers.</span></div></div>
-          <div class="hotspot-card" data-index="2"><div class="hotspot-num">3</div><div class="hotspot-text"><strong>Building Material Solutions</strong><span>Foam and insulation for thermal performance.</span></div></div>
-          <div class="hotspot-card" data-index="3"><div class="hotspot-num">4</div><div class="hotspot-text"><strong>Fire Protection Solutions</strong><span>ArmorBuilt™ Wildfire Shield for structure protection.</span></div></div>
-          <div class="hotspot-card" data-index="4"><div class="hotspot-num">5</div><div class="hotspot-text"><strong>Fire Protection Solutions</strong><span>Fire-retardant OSB, plywood, and structural components.</span></div></div>
-          <div class="hotspot-card" data-index="5"><div class="hotspot-num">6</div><div class="hotspot-text"><strong>Coatings and Paints</strong><span>VeoVa™ and Cardura™ technologies for UV and moisture resistance.</span></div></div>
+          <div class="hotspot-card" data-index="0"><div class="hotspot-num">1</div><div class="hotspot-text"><strong>Building Material Solutions</strong></div></div>
+          <div class="hotspot-card" data-index="1"><div class="hotspot-num">2</div><div class="hotspot-text"><strong>Building Material Solutions</strong></div></div>
+          <div class="hotspot-card" data-index="2"><div class="hotspot-num">3</div><div class="hotspot-text"><strong>Building Material Solutions</strong></div></div>
+          <div class="hotspot-card" data-index="3"><div class="hotspot-num">4</div><div class="hotspot-text"><strong>Fire Protection Solutions</strong></div></div>
+          <div class="hotspot-card" data-index="4"><div class="hotspot-num">5</div><div class="hotspot-text"><strong>Fire Protection Solutions</strong></div></div>
+          <div class="hotspot-card" data-index="5"><div class="hotspot-num">6</div><div class="hotspot-text"><strong>Coatings and Paints</strong></div></div>
         </div>
       </div>
 
@@ -403,14 +402,13 @@
     const pauseBtn = document.getElementById("tour-pause-btn");
     const nextBtn  = document.getElementById("tour-next-btn");
 
-    // Fallback hotspot labels if we can't read them from the viewer
     const LABELS = [
-      { title: "Building Material Solutions", desc: "Glass mat binders, insulation chemistries, and EcoBind® resins that strengthen weather resistance across roofing, flooring, and wall applications." },
-      { title: "Building Material Solutions", desc: "Engineered wood adhesives and Versatic™ monomers delivering structural integrity and moisture resistance for interior and exterior construction." },
-      { title: "Building Material Solutions", desc: "Foam and insulation solutions enabling consistent cell structure and improved thermal performance across residential and commercial applications." },
-      { title: "Fire Protection Solutions",   desc: "ArmorBuilt™ Wildfire Shield designed to protect structures in wildfire-prone areas, enhancing fire resistance of building materials." },
-      { title: "Fire Protection Solutions",   desc: "Fire-retardant OSB, plywood, and structural components that comply with modern building codes for residential construction." },
-      { title: "Coatings and Paints",         desc: "VeoVa™ monomers and Cardura™ glycidyl esters delivering moisture, UV, and scratch resistance across wood, architectural, and specialty coating applications." },
+      { title: "Building Material Solutions" },
+      { title: "Building Material Solutions" },
+      { title: "Building Material Solutions" },
+      { title: "Fire Protection Solutions"   },
+      { title: "Fire Protection Solutions"   },
+      { title: "Coatings and Paints"         },
     ];
 
     // Hotspots with real camera data from the platform
