@@ -413,13 +413,22 @@
       { title: "Coatings and Paints",         desc: "VeoVa™ monomers and Cardura™ glycidyl esters delivering moisture, UV, and scratch resistance across wood, architectural, and specialty coating applications." },
     ];
 
-    // Initialize immediately with LABELS so tour is always ready
-    let hotspots   = LABELS.map((l, i) => ({ _label: l.title, _desc: l.desc, index: i }));
-    let current    = 0;
-    let paused     = false;
-    let timer      = null;
+    // Hotspots with real camera data from the platform
+    const HOTSPOT_CAMERAS = [
+      {"cameraTarget":"-0.007321339928015182r 0.06702349880198888r -0.023092745850383328r","cameraDistance":"0.8550062825936721r","cameraRotation":"-0.11131006360416174rad -4.71238898038469rad 0rad","fieldOfView":"0.3891340607058784rad","orthographicSize":"0.16848752493774422r"},
+      {"cameraTarget":"-0.004457000673570444r -0.011489459222084336r -0.2004939219834498r","cameraDistance":"1.0620042058306787r","cameraRotation":"-0.061675526008882375rad -4.686829147638774rad 0rad","fieldOfView":"0.4223311436868355rad","orthographicSize":"0.22765257153449553r"},
+      {"cameraTarget":"0.08359363081946972r 0.04987364837087058r 0.13768948913694182r","cameraDistance":"1.0107794279205802r","cameraRotation":"-0.16332862229654044rad -4.226810781681885rad 0rad","fieldOfView":"0.42087105568603544rad","orthographicSize":"0.21590026251853398r"},
+      {"cameraTarget":"0.049250055228847595r -0.009293940163339539r -0.2272621744419832r","cameraDistance":"0.22270243504218135r","cameraRotation":"-0.1375733779852919rad -5.15190867313788rad 0rad","fieldOfView":"0.31699803015003997rad","orthographicSize":"0.035596703093160376r"},
+      {"cameraTarget":"0.06513923466421671r -0.011578063893279169r -0.2603118049568653r","cameraDistance":"0.19954377867351203r","cameraRotation":"-0.1375733779852919rad -5.15190867313788rad 0rad","fieldOfView":"0.3141592653589793rad","orthographicSize":"0.03160462970544734r"},
+      {"cameraTarget":"0.06513923466421671r -0.011578063893279169r -0.2603118049568653r","cameraDistance":"0.19954377867351203r","cameraRotation":"-0.1375733779852919rad -5.15190867313788rad 0rad","fieldOfView":"0.3141592653589793rad","orthographicSize":"0.03160462970544734r"},
+    ];
 
-    // Build dots immediately from LABELS
+    const hotspots = LABELS.map((l, i) => ({ ...l, camera: HOTSPOT_CAMERAS[i] }));
+    let current = 0;
+    let paused  = false;
+    let timer   = null;
+
+    // Build dots immediately
     buildDots();
 
     // ── Load viewer ────────────────────────────────────────────
@@ -428,15 +437,6 @@
 
     Object.assign(viewer, config);
     viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB_BLOB}`;
-
-    // ── After load, try to upgrade hotspots from viewer internals ──
-    viewer.addEventListener("load", () => {
-      const internal = viewer._hotspots ?? viewer.hotspots ?? [];
-      if (Array.isArray(internal) && internal.length) {
-        hotspots = internal;
-        buildDots();
-      }
-    }, { once: true });
 
     function buildDots() {
       dots.innerHTML = "";
@@ -452,12 +452,14 @@
       current = ((index % hotspots.length) + hotspots.length) % hotspots.length;
       const h = hotspots[current];
 
-      // Try to snap camera to hotspot
+      // Snap camera to hotspot
       try {
-        if (h._camera?.cameraRotation) {
-          viewer.setCameraRotation(h._camera.cameraRotation);
-        } else if (h.cameraRotation) {
-          viewer.setCameraRotation(h.cameraRotation);
+        const cam = h.camera;
+        if (cam) {
+          if (cam.cameraRotation)  viewer.setCameraRotation(cam.cameraRotation);
+          if (cam.cameraTarget)    viewer.cameraTarget   = cam.cameraTarget;
+          if (cam.cameraDistance)  viewer.cameraDistance = cam.cameraDistance;
+          if (cam.fieldOfView)     viewer.fieldOfView    = cam.fieldOfView;
         }
       } catch(e) {}
 
