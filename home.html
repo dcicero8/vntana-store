@@ -6,14 +6,12 @@
   <title>Home Product Explorer | VNTANA Store</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ── Page layout ── */
     .home-page {
       display: grid;
       grid-template-columns: 1fr 400px;
       min-height: calc(100vh - var(--header-h));
     }
 
-    /* ── Viewer column ── */
     .home-viewer-col {
       position: sticky;
       top: var(--header-h);
@@ -29,10 +27,9 @@
       flex: 1;
     }
 
-    .home-viewer-wrap iframe {
+    vntana-viewer {
       width: 100%;
       height: 100%;
-      border: none;
       display: block;
     }
 
@@ -40,58 +37,95 @@
     .tour-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(20, 20, 20, 0.55);
-      backdrop-filter: blur(6px);
+      background: rgba(15, 15, 15, 0.6);
+      backdrop-filter: blur(8px);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 1.25rem;
       z-index: 10;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.6s ease;
     }
-
     .tour-overlay.hidden {
       opacity: 0;
       pointer-events: none;
     }
-
-    .tour-overlay-logo {
-      opacity: 0.9;
+    .tour-overlay-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
     }
-
     .tour-overlay-title {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 700;
       color: #fff;
       text-align: center;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
+      max-width: 300px;
+      line-height: 1.2;
     }
-
     .tour-overlay-sub {
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
       text-align: center;
-      max-width: 280px;
+      max-width: 260px;
       line-height: 1.5;
     }
-
     .tour-start-btn {
       margin-top: 0.5rem;
-      padding: 0.75rem 2rem;
+      padding: 0.8rem 2.25rem;
       background: #fff;
       color: #111;
       border: none;
       border-radius: 8px;
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
+      letter-spacing: -0.01em;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .tour-start-btn:hover { background: #f0f0ee; transform: translateY(-2px); }
+
+    /* ── Tour progress bar ── */
+    .tour-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255,255,255,0.2);
+      z-index: 5;
+      display: none;
+    }
+    .tour-progress-fill {
+      height: 100%;
+      background: var(--accent, #2563eb);
+      transition: width 0.3s ease;
+      width: 0%;
     }
 
-    .tour-start-btn:hover {
-      background: #f0f0f0;
-      transform: translateY(-1px);
+    /* ── Tour stop indicator ── */
+    .tour-stop-indicator {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 6px;
+      z-index: 5;
+    }
+    .tour-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: background 0.3s;
+    }
+    .tour-dot.active {
+      background: #fff;
     }
 
     /* ── Info column ── */
@@ -113,29 +147,17 @@
       color: var(--muted);
     }
 
-    .home-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 0.25rem;
-    }
-
-    .home-brand-logo {
-      height: 28px;
-      width: auto;
-    }
-
     .home-title {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 700;
       line-height: 1.2;
       letter-spacing: -0.02em;
       color: var(--text);
-      margin: 0;
+      margin: 0.25rem 0 0;
     }
 
     .home-desc {
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       color: var(--muted);
       line-height: 1.65;
       margin: 0;
@@ -147,38 +169,44 @@
       margin: 0;
     }
 
-    /* ── Hotspot list ── */
-    .hotspot-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
+    /* ── Hotspot cards ── */
     .hotspot-list-label {
       font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--muted);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.5rem;
     }
 
-    .hotspot-item {
+    .hotspot-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .hotspot-card {
       display: flex;
       align-items: flex-start;
       gap: 0.75rem;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 0.875rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
       background: #fafafa;
+      cursor: default;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .hotspot-card.active {
+      border-color: var(--accent, #2563eb);
+      background: #eff6ff;
     }
 
     .hotspot-num {
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
+      background: #e5e7eb;
+      color: #6b7280;
       font-size: 0.75rem;
       font-weight: 700;
       display: flex;
@@ -186,6 +214,11 @@
       justify-content: center;
       flex-shrink: 0;
       margin-top: 1px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .hotspot-card.active .hotspot-num {
+      background: var(--accent, #2563eb);
+      color: #fff;
     }
 
     .hotspot-text strong {
@@ -194,63 +227,61 @@
       color: var(--text);
       display: block;
     }
-
     .hotspot-text span {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--muted);
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
-    /* ── Tour hint ── */
-    .tour-hint {
-      background: #f5f4f2;
-      border-radius: 8px;
-      padding: 1rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.5;
+    /* ── Tour controls ── */
+    .tour-controls {
+      display: flex;
+      gap: 0.5rem;
     }
-
-    .tour-hint strong {
-      color: var(--text);
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-
-    /* ── CTA ── */
-    .home-cta {
-      margin-top: auto;
-      padding-top: 1rem;
-    }
-
-    .home-cta a {
-      display: block;
-      text-align: center;
-      padding: 0.75rem;
+    .tour-ctrl-btn {
+      flex: 1;
+      padding: 0.6rem;
       border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 0.85rem;
+      background: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .tour-ctrl-btn:hover { background: #f5f5f5; border-color: #bbb; }
+    .tour-ctrl-btn.primary {
+      background: var(--accent, #2563eb);
+      color: #fff;
+      border-color: var(--accent, #2563eb);
+    }
+    .tour-ctrl-btn.primary:hover { opacity: 0.9; }
+    .tour-ctrl-btn:disabled { opacity: 0.4; cursor: default; }
+
+    /* ── Product links ── */
+    .product-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .product-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem;
       color: var(--muted);
       text-decoration: none;
       transition: border-color 0.15s, color 0.15s;
     }
+    .product-link:hover { border-color: var(--accent); color: var(--accent); }
 
-    .home-cta a:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* ── Responsive ── */
     @media (max-width: 800px) {
-      .home-page {
-        grid-template-columns: 1fr;
-      }
-      .home-viewer-col {
-        position: relative;
-        top: 0;
-        height: 60vw;
-        min-height: 320px;
-      }
+      .home-page { grid-template-columns: 1fr; }
+      .home-viewer-col { position: relative; top: 0; height: 65vw; min-height: 300px; }
     }
   </style>
 </head>
@@ -270,23 +301,31 @@
     <div class="home-viewer-col">
       <div class="home-viewer-wrap">
 
-        <iframe
-          id="home-viewer"
-          src="https://embed.vntana.com/v2?productUuid=ffa38aac-099a-430d-8b98-27d99c837a77&clientSlug=demo-room&organizationSlug=hexion"
-          allow="camera; microphone"
-          allowfullscreen
-          title="Hexion Building Material Solutions 3D viewer"
-        ></iframe>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+        <vntana-viewer id="home-viewer" loading="eager" role="application" aria-label="Hexion Building Material Solutions 3D viewer">
+          <vntana-fs-button></vntana-fs-button>
+          <vntana-center-button></vntana-center-button>
+          <div class="button-container zoom-buttons">
+            <vntana-zoom-in-button></vntana-zoom-in-button>
+            <vntana-zoom-out-button></vntana-zoom-out-button>
+          </div>
+        </vntana-viewer>
 
         <!-- Tour start overlay -->
         <div class="tour-overlay" id="tour-overlay">
-          <div class="tour-overlay-logo">
-            <img src="VNTANA-logo-black.png" alt="VNTANA" height="20" style="filter: brightness(0) invert(1);">
-          </div>
+          <div class="tour-overlay-eyebrow">Hexion</div>
           <div class="tour-overlay-title">Building Material Solutions</div>
-          <div class="tour-overlay-sub">Explore material options and finishes in 3D. Click any hotspot to learn more.</div>
+          <div class="tour-overlay-sub">An interactive guided tour through Hexion's specialty chemistries for home construction.</div>
           <button class="tour-start-btn" id="tour-start-btn">Begin Tour</button>
         </div>
+
+        <!-- Progress bar -->
+        <div class="tour-progress" id="tour-progress">
+          <div class="tour-progress-fill" id="tour-progress-fill"></div>
+        </div>
+
+        <!-- Dot indicators -->
+        <div class="tour-stop-indicator" id="tour-stop-indicator"></div>
 
       </div>
     </div>
@@ -296,67 +335,178 @@
 
       <div>
         <div class="home-eyebrow">Industry Use Case — Home / Building Materials</div>
-        <div class="home-brand">
-          <span style="font-size: 1rem; font-weight: 700; color: var(--text);">Hexion</span>
-        </div>
+        <h1 class="home-title">Home Product Explorer</h1>
       </div>
 
-      <h1 class="home-title">Building Material Solutions</h1>
-
-      <p class="home-desc">Explore Hexion's specialty chemistries across building materials, coatings, and fire protection in an interactive 3D experience. Use the guided tour to walk through each solution and learn how Hexion's technologies perform in real construction environments.</p>
+      <p class="home-desc">Explore Hexion's specialty chemistries across building materials, coatings, and fire protection in an interactive 3D experience. The guided tour automatically walks through each hotspot — showing where and how each solution performs in real construction environments.</p>
 
       <hr class="home-divider">
 
-      <div class="hotspot-list">
+      <div>
         <div class="hotspot-list-label">Tour Stops</div>
-
-        <div class="hotspot-item">
-          <div class="hotspot-num">1</div>
-          <div class="hotspot-text">
-            <strong>Building Material Solutions</strong>
-            <span>Glass mat binders, insulation chemistries, and EcoBind® resins that strengthen weather resistance and durability across roofing, flooring, and wall applications.</span>
-          </div>
-        </div>
-
-        <div class="hotspot-item">
-          <div class="hotspot-num">2</div>
-          <div class="hotspot-text">
-            <strong>Coatings and Paints</strong>
-            <span>VeoVa™ monomers and Cardura™ glycidyl esters delivering moisture, UV, and scratch resistance across wood, architectural, and specialty coating applications.</span>
-          </div>
-        </div>
-
-        <div class="hotspot-item">
-          <div class="hotspot-num">3</div>
-          <div class="hotspot-text">
-            <strong>Fire Protection Solutions</strong>
-            <span>ArmorBuilt™ Wildfire Shield and fire-retardant treatments for OSB, plywood, and structural assemblies — engineered to meet modern building code requirements.</span>
-          </div>
-        </div>
-
+        <div class="hotspot-cards" id="hotspot-cards"></div>
       </div>
 
-      <div class="tour-hint">
-        <strong>How to explore</strong>
-        Click "Begin Tour" to start, then use the numbered hotspot pins in the viewer to jump between features. Drag to rotate, scroll to zoom.
+      <div class="tour-controls" id="tour-controls" style="display:none">
+        <button class="tour-ctrl-btn" id="tour-prev-btn">← Prev</button>
+        <button class="tour-ctrl-btn" id="tour-pause-btn">Pause</button>
+        <button class="tour-ctrl-btn" id="tour-next-btn">Next →</button>
       </div>
 
       <hr class="home-divider">
 
-      <div class="home-cta" style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <a href="https://www.hexion.com/products/building-material-solutions" target="_blank">Building Material Solutions →</a>
-        <a href="https://www.hexion.com/products/coatings-and-paints" target="_blank">Coatings and Paints →</a>
-        <a href="https://www.hexion.com/products/fire-protection-solutions" target="_blank">Fire Protection Solutions →</a>
+      <div>
+        <div class="hotspot-list-label">Learn More</div>
+        <div class="product-links">
+          <a class="product-link" href="https://www.hexion.com/products/building-material-solutions" target="_blank">
+            Building Material Solutions <span>→</span>
+          </a>
+          <a class="product-link" href="https://www.hexion.com/products/coatings-and-paints" target="_blank">
+            Coatings and Paints <span>→</span>
+          </a>
+          <a class="product-link" href="https://www.hexion.com/products/fire-protection-solutions" target="_blank">
+            Fire Protection Solutions <span>→</span>
+          </a>
+        </div>
       </div>
 
     </div>
 
   </main>
 
-  <script>
-    document.getElementById("tour-start-btn").addEventListener("click", () => {
-      document.getElementById("tour-overlay").classList.add("hidden");
+  <script type="module">
+    const ORG      = "hexion";
+    const WS       = "demo-room";
+    const UUID     = "ffa38aac-099a-430d-8b98-27d99c837a77";
+    const BASE_URL = "https://api.vntana.com";
+    const GLB_BLOB = "3b2175bd-6b27-4cd1-a10e-9caa50931d80.glb";
+
+    const TOUR_INTERVAL = 5000; // ms per hotspot
+
+    const viewer   = document.getElementById("home-viewer");
+    const overlay  = document.getElementById("tour-overlay");
+    const startBtn = document.getElementById("tour-start-btn");
+    const progress = document.getElementById("tour-progress");
+    const fill     = document.getElementById("tour-progress-fill");
+    const dots     = document.getElementById("tour-stop-indicator");
+    const cards    = document.getElementById("hotspot-cards");
+    const controls = document.getElementById("tour-controls");
+    const prevBtn  = document.getElementById("tour-prev-btn");
+    const pauseBtn = document.getElementById("tour-pause-btn");
+    const nextBtn  = document.getElementById("tour-next-btn");
+
+    // Fallback hotspot labels if we can't read them from the viewer
+    const LABELS = [
+      { title: "Building Material Solutions", desc: "Glass mat binders, insulation chemistries, and EcoBind® resins that strengthen weather resistance across roofing, flooring, and wall applications." },
+      { title: "Coatings and Paints",         desc: "VeoVa™ monomers and Cardura™ glycidyl esters delivering moisture, UV, and scratch resistance across wood, architectural, and specialty coating applications." },
+      { title: "Fire Protection Solutions",   desc: "ArmorBuilt™ Wildfire Shield and fire-retardant treatments for OSB, plywood, and structural assemblies — engineered to meet modern building codes." },
+    ];
+
+    let hotspots   = [];
+    let current    = 0;
+    let paused     = false;
+    let timer      = null;
+    let tourActive = false;
+
+    // ── Load viewer ────────────────────────────────────────────
+    const product = await fetch(`${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r => r.json());
+    const config  = JSON.parse(product.response.viewerSettings.config);
+
+    Object.assign(viewer, config);
+    viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB_BLOB}`;
+
+    // ── After load, collect hotspots ───────────────────────────
+    viewer.addEventListener("load", () => {
+      // Try to read hotspots from internal viewer state
+      const internal = viewer._hotspots ?? viewer.hotspots ?? [];
+      hotspots = Array.isArray(internal) && internal.length
+        ? internal
+        : LABELS.map((l, i) => ({ _label: l.title, _desc: l.desc, index: i }));
+
+      buildCards();
+      buildDots();
+    }, { once: true });
+
+    // ── Build hotspot cards ────────────────────────────────────
+    function buildCards() {
+      cards.innerHTML = "";
+      hotspots.forEach((h, i) => {
+        const label = h.label ?? h._label ?? h.name ?? `Stop ${i + 1}`;
+        const desc  = h.description ?? h._desc ?? "";
+        const card  = document.createElement("div");
+        card.className = "hotspot-card";
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div class="hotspot-num">${i + 1}</div>
+          <div class="hotspot-text">
+            <strong>${label}</strong>
+            ${desc ? `<span>${desc}</span>` : ""}
+          </div>`;
+        cards.appendChild(card);
+      });
+    }
+
+    function buildDots() {
+      dots.innerHTML = "";
+      hotspots.forEach(() => {
+        const d = document.createElement("div");
+        d.className = "tour-dot";
+        dots.appendChild(d);
+      });
+    }
+
+    // ── Navigate to a hotspot ──────────────────────────────────
+    function goTo(index) {
+      current = ((index % hotspots.length) + hotspots.length) % hotspots.length;
+      const h = hotspots[current];
+
+      // Try to snap camera to hotspot
+      try {
+        if (h._camera?.cameraRotation) {
+          viewer.setCameraRotation(h._camera.cameraRotation);
+        } else if (h.cameraRotation) {
+          viewer.setCameraRotation(h.cameraRotation);
+        }
+      } catch(e) {}
+
+      // Update UI
+      document.querySelectorAll(".hotspot-card").forEach((c, i) =>
+        c.classList.toggle("active", i === current));
+      document.querySelectorAll(".tour-dot").forEach((d, i) =>
+        d.classList.toggle("active", i === current));
+      fill.style.width = `${((current + 1) / hotspots.length) * 100}%`;
+    }
+
+    // ── Tour timer ─────────────────────────────────────────────
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (!paused) goTo(current + 1);
+      }, TOUR_INTERVAL);
+    }
+
+    // ── Begin tour ─────────────────────────────────────────────
+    function startTour() {
+      tourActive = true;
+      overlay.classList.add("hidden");
+      progress.style.display = "block";
+      dots.style.display     = "flex";
+      controls.style.display = "flex";
+      goTo(0);
+      startTimer();
+    }
+
+    startBtn.addEventListener("click", startTour);
+
+    // ── Pause / prev / next ────────────────────────────────────
+    pauseBtn.addEventListener("click", () => {
+      paused = !paused;
+      pauseBtn.textContent = paused ? "Resume" : "Pause";
+      pauseBtn.classList.toggle("primary", paused);
     });
+
+    prevBtn.addEventListener("click", () => { goTo(current - 1); startTimer(); });
+    nextBtn.addEventListener("click", () => { goTo(current + 1); startTimer(); });
   </script>
 
 </body>
