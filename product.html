@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Product — VNTANA Store</title>
+  <title>Product | VNTANA Store</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,7 +23,7 @@
     <!-- LEFT: 3D viewer -->
     <div class="viewer-column">
 
-      <!-- Custom loading screen — shown while the 3D model loads, fades out on ready -->
+      <!-- Custom loading screen , shown while the 3D model loads, fades out on ready -->
       <div class="viewer-loading" id="viewer-loading">
         <div class="viewer-loading-bg" id="viewer-loading-bg"></div>
         <div class="viewer-loading-inner">
@@ -43,6 +43,7 @@
         <vntana-fs-button></vntana-fs-button>
         <vntana-qr-button class="expandable"></vntana-qr-button>
         <vntana-ar-button class="expandable"></vntana-ar-button>
+        <vntana-scene-graph-button active></vntana-scene-graph-button>
         <vntana-center-button></vntana-center-button>
         <div class="button-container zoom-buttons">
           <vntana-zoom-in-button></vntana-zoom-in-button>
@@ -58,9 +59,9 @@
     <div class="product-column">
 
       <!-- Step label -->
-      <div class="embed-step-label" style="margin-bottom: 0.75rem;">Step 03 — Custom Viewer</div>
+      <div class="embed-step-label" style="margin-bottom: 0.75rem;">Step 03: Custom Viewer</div>
 
-      <!-- Tab switcher — sticks to the top of the scrollable column -->
+      <!-- Tab switcher , sticks to the top of the scrollable column -->
       <div class="pdp-tabs" id="pdp-tabs">
         <button class="pdp-tab active" data-tab="pdp">Store PDP</button>
         <button class="pdp-tab" data-tab="behind">Behind the scenes</button>
@@ -195,14 +196,14 @@
       <div class="pdp-tab-content" id="tab-behind">
 
         <h2 class="behind-title">How to customize the VNTANA Viewer</h2>
-        <p class="behind-intro">The viewer on the left is a single <code>&lt;vntana-viewer&gt;</code> element. Everything else — the product page, controls, and interactions — is our code. VNTANA handles the 3D, AR, and CDN hosting.</p>
+        <p class="behind-intro">The viewer on the left is a single <code>&lt;vntana-viewer&gt;</code> element. Everything else , the product page, controls, and interactions , is our code. VNTANA handles the 3D, AR, and CDN hosting.</p>
 
         <div class="behind-features">
 
           <div class="behind-feature">
             <span class="behind-tag">viewer.poster</span>
             <p class="behind-feature-name">Branded loading screen</p>
-            <p class="behind-feature-desc">Product thumbnail shown clearly at 35% opacity against the viewer background — a clean "preview while loading" rather than a blurred overlay. Fades out when the viewer fires its <code>load</code> event, with a 14 s safety fallback.</p>
+            <p class="behind-feature-desc">Product thumbnail shown clearly at 35% opacity against the viewer background , a clean "preview while loading" rather than a blurred overlay. Fades out when the viewer fires its <code>load</code> event, with a 14 s safety fallback.</p>
             <div class="behind-code">viewer.poster = thumbnailUrl</div>
           </div>
 
@@ -219,14 +220,14 @@ viewer.append(h)</div>
           <div class="behind-feature">
             <span class="behind-tag">setCameraRotation()</span>
             <p class="behind-feature-name">Camera angle presets</p>
-            <p class="behind-feature-desc">Front, Side, and Detail snap to Euler angle strings — the same format VNTANA uses internally. Reset re-applies the exact camera state from the platform.</p>
+            <p class="behind-feature-desc">Front, Side, and Detail snap to Euler angle strings , the same format VNTANA uses internally. Reset re-applies the exact camera state from the platform.</p>
             <div class="behind-code">viewer.setCameraRotation("0rad 1.5707963rad 0rad") // side view</div>
           </div>
 
           <div class="behind-feature">
             <span class="behind-tag">viewer.environmentSrc</span>
             <p class="behind-feature-name">Lighting switcher</p>
-            <p class="behind-feature-desc">One property swap exchanges the HDR environment map live — Studio, Neutral, or Dim — no model reload. All HDRs are hosted on VNTANA's CDN.</p>
+            <p class="behind-feature-desc">One property swap exchanges the HDR environment map live , Studio, Neutral, or Dim , no model reload. All HDRs are hosted on VNTANA's CDN.</p>
             <div class="behind-code">viewer.environmentSrc = "https://storage.googleapis.com/.../Indoor_Studio_2.hdr"</div>
           </div>
 
@@ -240,28 +241,27 @@ viewer.append(h)</div>
           <div class="behind-feature">
             <span class="behind-tag">Public API</span>
             <p class="behind-feature-name">Render gallery</p>
-            <p class="behind-feature-desc">Thumbnail pulled from VNTANA's public CDN — no auth token required. AI renders from the Gemini pipeline load as plain <code>&lt;img&gt;</code> tags.</p>
+            <p class="behind-feature-desc">Thumbnail pulled from VNTANA's public CDN , no auth token required. AI renders from the Gemini pipeline load as plain <code>&lt;img&gt;</code> tags.</p>
             <div class="behind-code">GET /assets/organizations/{org}/clients/{ws}/thumbnail/{blobId}</div>
           </div>
 
           <div class="behind-feature">
-            <span class="behind-tag">Render Studio</span>
+            <span class="behind-tag">platform</span>
             <p class="behind-feature-name">360° Turntable</p>
-            <p class="behind-feature-desc">VNTANA's Render Studio generates a 120-frame 4K turntable directly from the 3D model — no photography needed. Exported as MP4 and GIF and attached to the product automatically.</p>
-            <div class="behind-code">storeType=ATTACHMENT&amp;blobId=turntable-mp4-{uuid}.mp4</div>
+            <p class="behind-feature-desc">The platform generates a 120-frame 4K turntable directly from the 3D model, no photography needed. Exported as MP4 and GIF and attached to the product automatically.</p>
           </div>
 
           <div class="behind-feature">
             <span class="behind-tag">Gemini AI</span>
             <p class="behind-feature-name">AI enhanced renders</p>
-            <p class="behind-feature-desc">A custom n8n pipeline listens for Live Public events and fires Gemini to generate lifestyle renders from the platform thumbnail — automatically, no manual prompting required.</p>
+            <p class="behind-feature-desc">A custom n8n pipeline listens for Live Public events and fires Gemini to generate lifestyle renders from the platform thumbnail , automatically, no manual prompting required.</p>
             <div class="behind-code">VNTANA webhook → n8n → Gemini imageGenerate → gallery</div>
           </div>
 
           <div class="behind-feature">
             <span class="behind-tag">enableAutoRotate</span>
             <p class="behind-feature-name">Auto-rotate toggle</p>
-            <p class="behind-feature-desc">One boolean flips the spin on or off at any time — useful for drawing attention on page load or letting a user pause to inspect a detail. Platform config is intentionally overridden here so the PDP starts still.</p>
+            <p class="behind-feature-desc">One boolean flips the spin on or off at any time , useful for drawing attention on page load or letting a user pause to inspect a detail. Platform config is intentionally overridden here so the PDP starts still.</p>
             <div class="behind-code">viewer.enableAutoRotate = true  // start spinning
 viewer.enableAutoRotate = false // pause</div>
           </div>
@@ -269,26 +269,20 @@ viewer.enableAutoRotate = false // pause</div>
           <div class="behind-feature">
             <span class="behind-tag">shadowIntensity</span>
             <p class="behind-feature-name">Shadow intensity slider</p>
-            <p class="behind-feature-desc">Live range input drives the ground shadow from invisible to full. Any numeric property on the viewer can be wired to a UI control this way — no reload, no re-fetch.</p>
+            <p class="behind-feature-desc">Live range input drives the ground shadow from invisible to full. Any numeric property on the viewer can be wired to a UI control this way , no reload, no re-fetch.</p>
             <div class="behind-code">viewer.shadowIntensity = 0.45  // 0 – 1</div>
           </div>
 
           <div class="behind-feature">
             <span class="behind-tag">canvas.toBlob()</span>
             <p class="behind-feature-name">Capture view</p>
-            <p class="behind-feature-desc">Grabs the current frame directly from the WebGL canvas in the viewer's shadow DOM and triggers a PNG download — whatever angle, lighting, and background the shopper has set.</p>
-            <div class="behind-code">viewer.shadowRoot.querySelector("canvas").toBlob(blob => {
-  const a = document.createElement("a")
-  a.href = URL.createObjectURL(blob)
-  a.download = "product-view.png"
-  a.click()
-})</div>
+            <p class="behind-feature-desc">Grabs the current frame directly from the WebGL canvas in the viewer's shadow DOM and triggers a PNG download, whatever angle, lighting, and background the shopper has set.</p>
           </div>
 
           <div class="behind-feature">
             <span class="behind-tag">scene.explodedStrength</span>
             <p class="behind-feature-name">Guided tour</p>
-            <p class="behind-feature-desc">Hotspot camera angles and explode states are stored in the platform and fetched at runtime. The tour steps through every pin in sequence — camera snap, popup, explode if configured — all from a single async loop.</p>
+            <p class="behind-feature-desc">Hotspot camera angles and explode states are stored in the platform and fetched at runtime. The tour steps through every pin in sequence , camera snap, popup, explode if configured , all from a single async loop.</p>
             <div class="behind-code">viewer.setCameraRotation(hotspot._camera.cameraRotation)
 viewer.scene.explodedStrength = hotspot._explode.explodedStrength</div>
           </div>
@@ -296,10 +290,10 @@ viewer.scene.explodedStrength = hotspot._explode.explodedStrength</div>
         </div>
 
         <div class="behind-footer">
-          <div class="behind-footer-row">✓ Zero re-hosting — models stay on VNTANA's CDN</div>
+          <div class="behind-footer-row">✓ Zero re-hosting , models stay on VNTANA's CDN</div>
           <div class="behind-footer-row">✓ AR works on every customized viewer</div>
           <div class="behind-footer-row">✓ All viewer settings inherit from the platform config</div>
-          <div class="behind-footer-row">✓ Static site — HTML / CSS / JS only, no backend</div>
+          <div class="behind-footer-row">✓ Static site , HTML / CSS / JS only, no backend</div>
         </div>
 
       </div><!-- /tab-behind -->
