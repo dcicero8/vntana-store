@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hotspot Translation Test — Internal</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Internal badge ── */
+    .internal-banner {
+      background: #fef3c7;
+      border-bottom: 1px solid #fcd34d;
+      padding: 0.4rem 1.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #92400e;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .internal-banner::before {
+      content: "⚙";
+      font-size: 0.9rem;
+    }
+
+    .page-wrap {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      min-height: calc(100vh - var(--header-h) - 32px);
+    }
+
+    /* ── Viewer column ── */
+    .viewer-col {
+      position: sticky;
+      top: calc(var(--header-h) + 32px);
+      height: calc(100vh - var(--header-h) - 32px);
+      background: #f5f4f2;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .viewer-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    vntana-viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── Right panel ── */
+    .panel {
+      background: #fff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-section {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── Language picker ── */
+    .lang-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .lang-btn {
+      padding: 0.35rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #fff;
+      color: var(--muted);
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .lang-btn:hover { border-color: #aaa; color: var(--text); }
+    .lang-btn.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+    .lang-btn.missing {
+      border-style: dashed;
+      opacity: 0.55;
+    }
+
+    /* ── Hotspot cards ── */
+    .hotspot-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .hs-card {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.875rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: #fafafa;
+      margin-bottom: 0.6rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .hs-card.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .hs-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #6b7280;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .hs-card.active .hs-num { background: #2563eb; color: #fff; }
+
+    .hs-card-img {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .hs-text strong {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+    }
+    .hs-text .hs-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-top: 0.2rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .hs-text .hs-missing {
+      font-size: 0.72rem;
+      color: #ef4444;
+      font-style: italic;
+    }
+
+    /* ── Translation JSON editor ── */
+    .json-panel {
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .json-panel-head {
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+    .json-panel-head:hover { background: #f9f9f9; }
+    .json-toggle-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .json-toggle-icon { font-size: 0.75rem; color: var(--muted); transition: transform 0.2s; }
+    .json-toggle-icon.open { transform: rotate(180deg); }
+
+    .json-body {
+      display: none;
+      padding: 0 1.5rem 1.25rem;
+    }
+    .json-body.open { display: block; }
+
+    .json-area {
+      width: 100%;
+      height: 160px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.72rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem;
+      resize: vertical;
+      color: var(--text);
+      background: #f8f8f8;
+      line-height: 1.5;
+    }
+    .json-area:focus { outline: none; border-color: #2563eb; }
+
+    .json-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .json-btn {
+      flex: 1;
+      padding: 0.45rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #fff;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .json-btn:hover { background: #f5f5f5; }
+    .json-btn.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .json-btn.primary:hover { background: #1d4ed8; }
+
+    .json-status {
+      font-size: 0.72rem;
+      margin-top: 0.4rem;
+      min-height: 1rem;
+    }
+    .json-status.ok { color: #16a34a; }
+    .json-status.err { color: #dc2626; }
+
+    @media (max-width: 860px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .viewer-col { position: relative; top: 0; height: 65vw; min-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="internal-banner">Internal Tool — Hotspot Translation Testing</div>
+
+  <header>
+    <a href="index.html" class="logo"><img src="VNTANA-logo-black.png" alt="VNTANA" height="18"></a>
+    <nav class="demo-nav">
+      <a href="index.html" class="demo-nav-home">← Use Cases</a>
+      <a href="home.html">Home Explorer (client)</a>
+      <a href="#" class="active">Translation Test</a>
+    </nav>
+  </header>
+
+  <div class="internal-banner" style="justify-content:center; font-size:0.7rem; letter-spacing:0.04em;">
+    Paste translated JSON below and switch languages to preview how hotspot text will appear in the viewer
+  </div>
+
+  <main class="page-wrap">
+
+    <!-- LEFT: viewer -->
+    <div class="viewer-col">
+      <div class="viewer-wrap">
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+        <vntana-viewer id="viewer" loading="eager" role="application" aria-label="Hexion Building Materials 3D viewer">
+          <vntana-fs-button></vntana-fs-button>
+          <vntana-center-button></vntana-center-button>
+          <div class="button-container zoom-buttons">
+            <vntana-zoom-in-button></vntana-zoom-in-button>
+            <vntana-zoom-out-button></vntana-zoom-out-button>
+          </div>
+        </vntana-viewer>
+      </div>
+    </div>
+
+    <!-- RIGHT: panel -->
+    <div class="panel">
+
+      <!-- Language picker -->
+      <div class="panel-section">
+        <div class="section-label">Language</div>
+        <div class="lang-row" id="lang-row">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- Hotspot cards -->
+      <div class="hotspot-scroll" id="hs-scroll">
+        <div style="color:var(--muted);font-size:0.82rem;">Loading hotspots…</div>
+      </div>
+
+      <!-- JSON editor (collapsible) -->
+      <div class="json-panel">
+        <div class="json-panel-head" id="json-toggle">
+          <span class="json-toggle-label">Paste Translations JSON</span>
+          <span class="json-toggle-icon" id="json-icon">▼</span>
+        </div>
+        <div class="json-body" id="json-body">
+          <textarea class="json-area" id="json-area" spellcheck="false" placeholder='Paste JSON here, e.g.:
+{
+  "fr": {
+    "11464f65-...": {
+      "title": "Solutions pour matériaux",
+      "description": "..."
+    }
+  }
+}'></textarea>
+          <div class="json-actions">
+            <button class="json-btn" id="json-export-btn">Export current</button>
+            <button class="json-btn primary" id="json-apply-btn">Apply JSON</button>
+          </div>
+          <div class="json-status" id="json-status"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    const ORG      = "hexion";
+    const WS       = "demo-room";
+    const UUID     = "ffa38aac-099a-430d-8b98-27d99c837a77";
+    const BASE_URL = "https://api.vntana.com";
+    const GLB_BLOB = "3b2175bd-6b27-4cd1-a10e-9caa50931d80.glb";
+
+    // ── Built-in English source text (from the VNTANA platform) ──────────────
+    const EN_SOURCE = {
+      "11464f65-ecae-450c-8e46-ceae8246c507": {
+        title: "Glass Mat Binders",
+        description: "Advanced binder technologies provide excellent fiber bonding, strength, and processability, supporting the production of durable, high-quality glass mat for roofing, flooring, and wall systems.",
+        category: "Building Material Solutions"
+      },
+      "81a0cbf2-b34d-4a0c-b37b-a19d9ecd0c82": {
+        title: "Insulation Chemistries",
+        description: "Specialty chemistries enhance thermal efficiency, structural integrity, and moisture resistance, helping insulation materials perform reliably across a wide range of building environments.",
+        category: "Building Material Solutions"
+      },
+      "806097f6-5403-49b2-b7b9-6f3f87a040f5": {
+        title: "Foam for Construction",
+        description: "Innovative solutions enable consistent cell structure, improved insulation performance, and mechanical strength, supporting the development of high-performance foam for construction applications.",
+        category: "Building Material Solutions"
+      },
+      "24c03d36-10e6-4464-8640-2fea33cca6d2": {
+        title: "Fire Performance",
+        description: "Support fire performance across a range of construction materials used in walls, roofs, and structural systems.",
+        category: "Fire Protection Solutions"
+      },
+      "08eb8cec-b2b4-478d-bcdf-2f78642a4e5d": {
+        title: "Fire-Retardant Panels",
+        description: "Enable fire-retardant OSB, plywood, and other structural components that meet evolving building codes without compromising performance or scalability.",
+        category: "Fire Protection Solutions"
+      },
+      "e1c6f0cb-45a9-46ac-b9fc-5403fcf9d720": {
+        title: "VeoVa Vinyl Esters",
+        description: "Our VeoVa Vinyl Esters help wood coatings resist moisture, wear, and environmental degradation for longer-lasting protection and appearance.",
+        category: "Coatings and Paints"
+      }
+    };
+
+    // ── Translation store: { locale: { uuid: { title, description } } } ──────
+    // "en" always falls back to EN_SOURCE above.
+    const translations = { en: {} };
+
+    const LANGS = [
+      { code: "en", label: "EN — English" },
+      { code: "fr", label: "FR — French" },
+      { code: "es", label: "ES — Spanish" },
+      { code: "de", label: "DE — German" },
+    ];
+
+    let activeLang = "en";
+    let hotspotEls = [];
+    let apiHotspots = [];
+
+    // ── Resolve text for a uuid in the active language ────────────────────────
+    function getText(uuid) {
+      const localeData = translations[activeLang]?.[uuid];
+      const enData = EN_SOURCE[uuid] ?? {};
+      return {
+        title:       localeData?.title       ?? enData.title       ?? `Hotspot`,
+        description: localeData?.description ?? enData.description ?? "",
+        category:    enData.category ?? "",
+        isMissing:   activeLang !== "en" && !localeData
+      };
+    }
+
+    // ── Check if a locale has any translations at all ─────────────────────────
+    function hasTranslations(lang) {
+      if (lang === "en") return true;
+      return Object.keys(translations[lang] ?? {}).length > 0;
+    }
+
+    // ── Rebuild hotspot popup HTML ────────────────────────────────────────────
+    function refreshHotspots() {
+      hotspotEls.forEach((el, i) => {
+        const hs   = apiHotspots[i];
+        const uuid = hs.uuid;
+        const { title, description } = getText(uuid);
+        const imgUrl = hs.blobId
+          ? `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WS}/${hs.blobId}`
+          : null;
+
+        el.innerHTML = `
+          <span class="hotspot-pin">${i + 1}</span>
+          <div class="hotspot-popup">
+            <button class="hotspot-close" aria-label="Close">✕</button>
+            ${imgUrl ? `<img src="${imgUrl}" alt="" onerror="this.style.display='none'">` : ""}
+            <div class="hotspot-text">
+              <strong>${title}</strong>
+              <p style="font-size:0.75rem;color:#555;margin-top:0.3rem;line-height:1.4">${description}</p>
+            </div>
+          </div>`;
+
+        el.querySelector(".hotspot-close").addEventListener("click", closeAll);
+      });
+      buildCards();
+    }
+
+    // ── Rebuild right-panel cards ─────────────────────────────────────────────
+    function buildCards() {
+      const scroll = document.getElementById("hs-scroll");
+      scroll.innerHTML = "";
+      apiHotspots.forEach((hs, i) => {
+        const uuid = hs.uuid;
+        const { title, description, category, isMissing } = getText(uuid);
+        const imgUrl = hs.blobId
+          ? `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WS}/${hs.blobId}`
+          : null;
+
+        const card = document.createElement("div");
+        card.className = "hs-card";
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div class="hs-num">${i + 1}</div>
+          ${imgUrl ? `<img class="hs-card-img" src="${imgUrl}" alt="">` : ""}
+          <div class="hs-text">
+            <strong>${title}</strong>
+            ${isMissing
+              ? `<div class="hs-missing">No ${activeLang.toUpperCase()} translation — showing English</div>`
+              : `<div class="hs-desc">${description}</div>`}
+            <div style="font-size:0.68rem;color:#9ca3af;margin-top:0.25rem">${uuid.slice(0,8)}…</div>
+          </div>`;
+
+        card.addEventListener("click", () => {
+          const el = hotspotEls[i];
+          const isOpen = el?.classList.contains("open");
+          closeAll();
+          if (!isOpen && el) {
+            el.classList.add("open");
+            snapCamera(el._camera);
+            document.querySelectorAll(".hs-card").forEach((c, ci) =>
+              c.classList.toggle("active", ci === i));
+          }
+        });
+        scroll.appendChild(card);
+      });
+    }
+
+    // ── Rebuild language buttons ──────────────────────────────────────────────
+    function buildLangRow() {
+      const row = document.getElementById("lang-row");
+      row.innerHTML = "";
+      LANGS.forEach(({ code, label }) => {
+        const btn = document.createElement("button");
+        btn.className = "lang-btn" + (code === activeLang ? " active" : "") +
+                        (!hasTranslations(code) && code !== "en" ? " missing" : "");
+        btn.textContent = label;
+        btn.title = hasTranslations(code) || code === "en"
+          ? "" : "No translations loaded yet";
+        btn.addEventListener("click", () => {
+          activeLang = code;
+          buildLangRow();
+          refreshHotspots();
+        });
+        row.appendChild(btn);
+      });
+    }
+
+    const viewer  = document.getElementById("viewer");
+    const closeAll = () => viewer.querySelectorAll("vntana-hotspot.open")
+      .forEach(h => h.classList.remove("open"));
+
+    function snapCamera(cam) {
+      if (!cam) return;
+      try {
+        if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
+        if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
+        if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+      } catch(e) {}
+    }
+
+    // ── Load viewer + hotspots ────────────────────────────────────────────────
+    const [product, hsData] = await Promise.all([
+      fetch(`${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r => r.json()),
+      fetch(`${BASE_URL}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productUuid: UUID, page: 1, size: 100 })
+      }).then(r => r.json())
+    ]);
+
+    const config = JSON.parse(product.response.viewerSettings.config);
+    Object.assign(viewer, config);
+    viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB_BLOB}`;
+
+    viewer.addEventListener("load", () => {
+      apiHotspots = hsData.response?.grid ?? [];
+      hotspotEls = apiHotspots.map((hs, idx) => {
+        const dims   = JSON.parse(hs.config.dimensions);
+        const camera = hs.config.camera ? JSON.parse(hs.config.camera) : null;
+
+        const el = document.createElement("vntana-hotspot");
+        el.position = dims.position;
+        el.normal   = dims.normal;
+        el._camera  = camera;
+        viewer.appendChild(el);
+
+        el.addEventListener("click", e => {
+          if (e.target.closest(".hotspot-popup")) return;
+          const isOpen = el.classList.contains("open");
+          closeAll();
+          if (!isOpen) {
+            el.classList.add("open");
+            snapCamera(camera);
+            document.querySelectorAll(".hs-card").forEach((c, ci) =>
+              c.classList.toggle("active", ci === idx));
+          }
+        });
+        return el;
+      });
+
+      buildLangRow();
+      refreshHotspots();
+    }, { once: true });
+
+    // ── JSON editor ───────────────────────────────────────────────────────────
+    const jsonToggle = document.getElementById("json-toggle");
+    const jsonIcon   = document.getElementById("json-icon");
+    const jsonBody   = document.getElementById("json-body");
+    const jsonArea   = document.getElementById("json-area");
+    const jsonStatus = document.getElementById("json-status");
+
+    jsonToggle.addEventListener("click", () => {
+      const open = jsonBody.classList.toggle("open");
+      jsonIcon.classList.toggle("open", open);
+    });
+
+    document.getElementById("json-apply-btn").addEventListener("click", () => {
+      jsonStatus.className = "json-status";
+      jsonStatus.textContent = "";
+      try {
+        const parsed = JSON.parse(jsonArea.value);
+        // Merge into translations store
+        for (const [lang, data] of Object.entries(parsed)) {
+          translations[lang] = { ...(translations[lang] ?? {}), ...data };
+        }
+        // Add any new languages to LANGS if not already there
+        for (const lang of Object.keys(parsed)) {
+          if (!LANGS.find(l => l.code === lang)) {
+            LANGS.push({ code: lang, label: lang.toUpperCase() });
+          }
+        }
+        buildLangRow();
+        refreshHotspots();
+        const count = Object.values(parsed).reduce((n, d) => n + Object.keys(d).length, 0);
+        jsonStatus.className = "json-status ok";
+        jsonStatus.textContent = `Applied — ${count} hotspot translation(s) loaded.`;
+      } catch(e) {
+        jsonStatus.className = "json-status err";
+        jsonStatus.textContent = "Invalid JSON: " + e.message;
+      }
+    });
+
+    document.getElementById("json-export-btn").addEventListener("click", () => {
+      // Export current non-English translations as JSON to copy
+      const out = {};
+      for (const [lang, data] of Object.entries(translations)) {
+        if (lang === "en") continue;
+        if (Object.keys(data).length) out[lang] = data;
+      }
+      jsonArea.value = JSON.stringify(out, null, 2);
+      jsonBody.classList.add("open");
+      jsonIcon.classList.add("open");
+      jsonStatus.className = "json-status ok";
+      jsonStatus.textContent = "Current translations exported to editor.";
+    });
+  </script>
+
+</body>
+</html>

@@ -482,10 +482,11 @@
     function snapCamera(cam) {
       if (!cam) return;
       try {
-        if (cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
-        if (cam.cameraTarget)   viewer.cameraTarget   = cam.cameraTarget;
-        if (cam.cameraDistance) viewer.cameraDistance = cam.cameraDistance;
-        if (cam.fieldOfView)    viewer.fieldOfView    = cam.fieldOfView;
+        if (cam.cameraRotation)    viewer.setCameraRotation(cam.cameraRotation);
+        if (cam.cameraDistance)    viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraTarget)      viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.fieldOfView)       viewer.setFieldOfView(cam.fieldOfView);
+        if (cam.orthographicSize)  viewer.setOrthographicSize(cam.orthographicSize);
       } catch(e) {}
     }
 
