@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bobcat S86 — VNTANA Demo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .demo-page {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .viewer-col {
+      position: sticky;
+      top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      background: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .viewer-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    vntana-viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── Info panel ── */
+    .info-col {
+      background: #fff;
+      border-left: 1px solid var(--border);
+      padding: 2rem 1.75rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin: 0.25rem 0 0;
+    }
+
+    .page-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── Feature cards ── */
+    .feature-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .feature-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .feature-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.875rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: #fafafa;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      text-align: left;
+      width: 100%;
+      font-family: inherit;
+    }
+    .feature-card:hover { border-color: #bbb; background: #f5f5f5; }
+    .feature-card.active {
+      border-color: #f59e0b;
+      background: #fffbeb;
+    }
+
+    .feature-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #6b7280;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .feature-card.active .feature-num {
+      background: #f59e0b;
+      color: #fff;
+    }
+
+    .feature-text strong {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+      line-height: 1.3;
+    }
+    .feature-text p {
+      font-size: 0.77rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0.2rem 0 0;
+    }
+
+    /* ── CTA ── */
+    .cta-block {
+      background: #f8f8f8;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .cta-block p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.65rem 1.25rem;
+      background: var(--text);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      transition: opacity 0.15s;
+    }
+    .cta-btn:hover { opacity: 0.8; }
+
+    @media (max-width: 820px) {
+      .demo-page { grid-template-columns: 1fr; }
+      .viewer-col { position: relative; top: 0; height: 70vw; min-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="personalized-demos.html" class="logo"><img src="VNTANA-logo-black.png" alt="VNTANA" height="18"></a>
+    <nav class="demo-nav">
+      <a href="personalized-demos.html" class="demo-nav-home">← Personalized Demos</a>
+      <a href="#" class="active">Bobcat S86</a>
+    </nav>
+  </header>
+
+  <main class="demo-page">
+
+    <!-- LEFT: viewer -->
+    <div class="viewer-col">
+      <div class="viewer-wrap">
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+        <vntana-viewer id="viewer" loading="eager" role="application" aria-label="Bobcat S86 skid steer 3D viewer">
+          <vntana-fs-button></vntana-fs-button>
+          <vntana-center-button></vntana-center-button>
+          <div class="button-container zoom-buttons">
+            <vntana-zoom-in-button></vntana-zoom-in-button>
+            <vntana-zoom-out-button></vntana-zoom-out-button>
+          </div>
+        </vntana-viewer>
+      </div>
+    </div>
+
+    <!-- RIGHT: info panel -->
+    <div class="info-col">
+
+      <div>
+        <div class="eyebrow">Construction Equipment</div>
+        <h1 class="page-title">Bobcat S86<br>Skid-Steer Loader</h1>
+      </div>
+
+      <p class="page-desc">
+        Explore the key features of the Bobcat S86 in an interactive 3D experience.
+        Click any feature to snap the camera to that area of the machine.
+      </p>
+
+      <hr class="divider">
+
+      <div>
+        <div class="feature-label">Key Features</div>
+        <div class="feature-cards" id="feature-cards">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="cta-block">
+        <p>Ready to see what VNTANA 3D can do for your product catalog or equipment configurator?</p>
+        <a class="cta-btn" href="https://vntana.com" target="_blank">Talk to VNTANA →</a>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    const ORG  = "DCicero";
+    const WS   = "figurement";
+    const UUID = "e5a84eb7-eaf2-44e6-82ed-6c10c9741e02";
+    const BASE = "https://api.vntana.com";
+    const GLB  = "99113ed0-e3b8-4316-be6c-6a5477d12d2f.glb";
+
+    const FEATURES = [
+      {
+        uuid: "9f6157ae-10a6-4c25-aa25-df2885ebbcae",
+        title: "Selectable Joystick Controls",
+        desc: "Low-effort hand control of all machine work group functions and the ability to switch between ISO and H control patterns.",
+        dims: {"position":"0.6293085111936879m 0.43696063921572464m -0.2652820648198517m","normal":"0.9534805882305541m 0.2026907327422m -0.22313949611833983m"},
+        cam: {"cameraTarget":"0r 0r 0r","cameraDistance":"2.176439668708029r","cameraRotation":"-0.14564675336358035rad 1.612555778307147rad 0rad","fieldOfView":"0.3959050905669924rad","orthographicSize":"0.4365488093301792r"}
+      },
+      {
+        uuid: "6d4f81d9-47d9-4e38-857a-1e8fee34de7b",
+        title: "Integrated In-Machine Cooling System",
+        desc: "A high-capacity radiator, large reversible fan and oil cooler keeps your loader running longer at lower temperatures. Run high and super-flow attachments efficiently without overheating.",
+        dims: {"position":"-1.9041365108138133m 0.44405335513587674m -0.0001405699781816816m","normal":"-0.6439437284608202m 0.7564976774696907m -0.11422669810049478m"},
+        cam: {"cameraTarget":"0r 0r 0r","cameraDistance":"2.176439668708029r","cameraRotation":"-0.1371854325845434rad 4.7279828232984835rad 0rad","fieldOfView":"0.3959050905669924rad","orthographicSize":"0.4365488093301792r"}
+      },
+      {
+        uuid: "6fac5a12-01ee-44df-92ed-9d37e91f4df2",
+        title: "Super Flow Hydraulics",
+        desc: "This auxiliary hydraulic option tackles the most demanding jobs with attachments that require the highest flow possible at 42 gpm and 4,061 psi.",
+        dims: {"position":"0.8737988328879692m 0.13335461258380268m -0.5814802740992924m","normal":"0.9800712980953769m 0.1986457572183087m 0.000337325966709584m"},
+        cam: {"cameraTarget":"0r 0r 0r","cameraDistance":"2.08842710011709r","cameraRotation":"-0.07838609257501661rad 1.7116294419323723rad 0rad","fieldOfView":"0.3530664253343655rad","orthographicSize":"0.37255490714388967r"}
+      },
+      {
+        uuid: "02bdfbd9-fc81-40bb-84c0-bdb27ac6f683",
+        title: "Jobsite Companion",
+        desc: "Optional voice-activated machine functions, attachment-specific settings and real-time job insights help operators work faster without stopping the machine.",
+        dims: {"position":"0.5269581495003125m 0.943177023063472m -0.2418768787444152m","normal":"0.9569177017571057m 0.20333107067881231m -0.20727997433545478m"},
+        cam: {"cameraTarget":"0r 0r 0r","cameraDistance":"2.2224770122786746r","cameraRotation":"-0.2679157697941619rad 1.4444041263357328rad 0rad","fieldOfView":"0.42003839582158237rad","orthographicSize":"0.47374878842449397r"}
+      },
+      {
+        uuid: "2fba9efa-159a-437e-a5de-95ab86d0f22e",
+        title: "360° People Detection",
+        desc: "Option that detects people around the machine and helps give operators added awareness in busy jobsite conditions.",
+        dims: {"position":"0.6562082640148114m 1.1693785518387276m 0.21590587985227083m","normal":"0.3917762395849866m 0.8808936098696819m 0.2655895822268038m"},
+        cam: {"cameraTarget":"0r 0r 0r","cameraDistance":"2.4634960462661715r","cameraRotation":"-0.4440206724747404rad 1.5471124450762037rad 0rad","fieldOfView":"0.5672207574255906rad","orthographicSize":"0.7180285830464684r"}
+      }
+    ];
+
+    const viewer = document.getElementById("viewer");
+    const cardsEl = document.getElementById("feature-cards");
+
+    let hotspotEls = [];
+    let activeIdx  = null;
+
+    const closeAll = () => {
+      viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+      cardsEl.querySelectorAll(".feature-card").forEach(c => c.classList.remove("active"));
+      activeIdx = null;
+    };
+
+    function snapCamera(cam) {
+      if (!cam) return;
+      try {
+        if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
+        if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
+        if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+      } catch(e) {}
+    }
+
+    function goTo(idx) {
+      closeAll();
+      activeIdx = idx;
+      const el = hotspotEls[idx];
+      if (el) { el.classList.add("open"); snapCamera(FEATURES[idx].cam); }
+      cardsEl.querySelectorAll(".feature-card")[idx]?.classList.add("active");
+    }
+
+    // Load viewer
+    const product = await fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r => r.json());
+    const config  = JSON.parse(product.response.viewerSettings.config);
+    Object.assign(viewer, config);
+    viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB}`;
+
+    // Build right-panel cards (before viewer loads so they're immediately visible)
+    FEATURES.forEach((f, i) => {
+      const card = document.createElement("button");
+      card.className = "feature-card";
+      card.innerHTML = `
+        <div class="feature-num">${i + 1}</div>
+        <div class="feature-text">
+          <strong>${f.title}</strong>
+          <p>${f.desc}</p>
+        </div>`;
+      card.addEventListener("click", () => {
+        if (activeIdx === i) { closeAll(); return; }
+        goTo(i);
+      });
+      cardsEl.appendChild(card);
+    });
+
+    // Inject hotspots after model loads
+    viewer.addEventListener("load", () => {
+      hotspotEls = FEATURES.map((f, idx) => {
+        const el = document.createElement("vntana-hotspot");
+        el.position = f.dims.position;
+        el.normal   = f.dims.normal;
+        el.innerHTML = `
+          <span class="hotspot-pin">${idx + 1}</span>
+          <div class="hotspot-popup">
+            <button class="hotspot-close" aria-label="Close">✕</button>
+            <div class="hotspot-text">
+              <strong>${f.title}</strong>
+              <p style="font-size:0.75rem;color:#555;margin-top:0.3rem;line-height:1.4">${f.desc}</p>
+            </div>
+          </div>`;
+
+        el.addEventListener("click", e => {
+          if (e.target.closest(".hotspot-popup")) return;
+          const isOpen = el.classList.contains("open");
+          closeAll();
+          if (!isOpen) { goTo(idx); }
+        });
+
+        el.querySelector(".hotspot-close").addEventListener("click", closeAll);
+        viewer.appendChild(el);
+        return el;
+      });
+    }, { once: true });
+  </script>
+
+</body>
+</html>
