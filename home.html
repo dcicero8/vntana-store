@@ -387,9 +387,9 @@
   <script type="module">
     const ORG      = "hexion";
     const WS       = "demo-room";
-    const UUID     = "ffa38aac-099a-430d-8b98-27d99c837a77";
+    const UUID     = "1d946378-c041-424f-86d0-7ddad134cf6c";
     const BASE_URL = "https://api.vntana.com";
-    const GLB_BLOB = "3b2175bd-6b27-4cd1-a10e-9caa50931d80.glb";
+    const GLB_BLOB = "40dd1c77-200a-43b2-a3d2-5423ff6e0801.glb";
 
     const TOUR_INTERVAL = 5000; // ms per hotspot
 
@@ -408,12 +408,9 @@
     const IMG_BASE = `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WS}`;
 
     const LABELS = [
-      { title: "Building Material Solutions", img: `${IMG_BASE}/a7b669f2-0590-4fc9-8d34-8b0d66e4adf3.jpg` },
-      { title: "Building Material Solutions", img: `${IMG_BASE}/cbe9af51-2ddb-45ee-956d-5196e1dd926a.jpg` },
-      { title: "Building Material Solutions", img: `${IMG_BASE}/01cc96e1-5ba2-47e6-a859-844c4fb29f72.jpg` },
-      { title: "Fire Protection Solutions",   img: `${IMG_BASE}/e4750e5a-5c86-4797-b06d-035f20435ea3.jpg` },
-      { title: "Fire Protection Solutions",   img: `${IMG_BASE}/5b17ccc0-6e07-4cbe-985e-35944e2cef61.jpg` },
-      { title: "Coatings and Paints",         img: `${IMG_BASE}/5f46c675-da96-4cc5-a07a-239d9dab996f.jpg` },
+      { title: "Glass Mat",  desc: "Advanced binder technologies provide excellent fiber bonding, strength, and processability, supporting the production of durable, high-quality glass mat for roofing, flooring, and wall systems.", img: `${IMG_BASE}/2f45e626-8157-41a6-ac40-021a8e99fa96.jpg` },
+      { title: "Foam",       desc: "Innovative solutions enable consistent cell structure, improved insulation performance, and mechanical strength, supporting the development of high-performance foam for construction applications.", img: `${IMG_BASE}/1817ac44-0714-4b12-b026-4fe74c91e9d8.jpg` },
+      { title: "Insulation", desc: "Specialty chemistries enhance thermal efficiency, structural integrity, and moisture resistance, helping insulation materials perform reliably across a wide range of building environments.", img: `${IMG_BASE}/10871916-56c2-43b6-8cee-08ab36dc373d.jpg` },
     ];
 
     let hotspotEls = []; // vntana-hotspot elements in the viewer
@@ -457,7 +454,10 @@
           <div class="hotspot-popup">
             <button class="hotspot-close" aria-label="Close">✕</button>
             ${imgUrl ? `<img src="${imgUrl}" alt="" onerror="this.style.display='none'">` : ""}
-            <div class="hotspot-text"><strong>${label.title}</strong></div>
+            <div class="hotspot-text">
+              <strong>${label.title}</strong>
+              ${label.desc ? `<p style="font-size:0.75rem;color:#555;margin-top:0.3rem;line-height:1.4">${label.desc}</p>` : ""}
+            </div>
           </div>`;
 
         el.addEventListener("click", e => {
@@ -510,7 +510,10 @@
         card.innerHTML = `
           <div class="hotspot-num">${i + 1}</div>
           ${imgUrl ? `<img class="hotspot-card-img" src="${imgUrl}" alt="">` : ""}
-          <div class="hotspot-text"><strong>${label.title}</strong></div>`;
+          <div class="hotspot-text">
+            <strong>${label.title}</strong>
+            ${label.desc ? `<span>${label.desc}</span>` : ""}
+          </div>`;
         cards.appendChild(card);
       });
     }
