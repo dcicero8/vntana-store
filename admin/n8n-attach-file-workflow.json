@@ -1,0 +1,118 @@
+{
+  "name": "VNTANA: Attach File to Product",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vntana-attach-file",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "vntana-attach-file"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/auth/login",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "email": "={{ $vars.VNTANA_EMAIL }}",
+          "password": "={{ $vars.VNTANA_PASSWORD }}"
+        },
+        "options": {}
+      },
+      "id": "auth",
+      "name": "Auth",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api-platform.vntana.com/v1/attachments/upload/product-attachment?clientUuid={{ $json.body.clientUuid }}&productUuid={{ $json.body.productUuid }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipartFormData",
+        "bodyParameters": {
+          "parameters": [
+            { "name": "file", "parameterType": "formBinaryData", "inputDataFieldName": "file" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "upload",
+      "name": "Upload to VNTANA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "notes": "Uploads the xlsx to VNTANA GCS and returns blobId"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/attachments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "productUuid", "value": "={{ $node['Webhook'].json.body.productUuid }}" },
+            { "name": "blobId",      "value": "={{ $json.response.blobId }}" },
+            { "name": "name",        "value": "={{ $node['Webhook'].json.body.name }}" },
+            { "name": "entityType",  "value": "PRODUCT" },
+            { "name": "entityUuid",  "value": "={{ $node['Webhook'].json.body.productUuid }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "register",
+      "name": "Register Attachment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300],
+      "notes": "Creates the attachment record in VNTANA linking blobId to the product"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, blobId: $node['Upload to VNTANA'].json.response.blobId, attachmentUuid: $json.response.uuid }) }}"
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Webhook":             { "main": [[{ "node": "Auth",                "type": "main", "index": 0 }]] },
+    "Auth":                { "main": [[{ "node": "Upload to VNTANA",    "type": "main", "index": 0 }]] },
+    "Upload to VNTANA":    { "main": [[{ "node": "Register Attachment", "type": "main", "index": 0 }]] },
+    "Register Attachment": { "main": [[{ "node": "Respond",             "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": null,
+  "meta": {
+    "templateId": "vntana-attach-file",
+    "description": "Receives an xlsx file from the admin UI, uploads it to VNTANA as a product attachment, and registers it. Requires VNTANA_EMAIL and VNTANA_PASSWORD n8n variables."
+  }
+}

@@ -16,6 +16,12 @@
       font-size: 14px;
       -webkit-font-smoothing: antialiased;
     }
+    .page-header {
+      max-width: 960px; margin: 0 auto 1.5rem;
+    }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    .page-header p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; margin-top: 0.3rem; }
+
     .card {
       background: #fff;
       border: 1px solid #e2e2e0;
@@ -24,9 +30,20 @@
       max-width: 960px;
       margin: 0 auto 1.5rem;
     }
-    h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
-    h2 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
-    p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; margin-top: 0.4rem; }
+    .card-header {
+      display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem;
+    }
+    .card-badge {
+      padding: 0.2rem 0.6rem; border-radius: 4px;
+      font-size: 0.68rem; font-weight: 700; white-space: nowrap; margin-top: 3px;
+    }
+    .badge-primary   { background: #111; color: #fff; }
+    .badge-secondary { background: #e8f5e9; color: #1b5e20; }
+    .card-badge-wrap { display: flex; flex-direction: column; gap: 0.2rem; flex-shrink: 0; }
+
+    h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+    p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; }
+    a  { color: #2563eb; font-size: 0.8rem; }
 
     /* Drop zone */
     .drop-zone {
@@ -40,7 +57,7 @@
     }
     .drop-zone:hover, .drop-zone.drag-over { border-color: #111; background: #f9f9f9; }
     .drop-zone input { display: none; }
-    .drop-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .drop-icon  { font-size: 2rem; margin-bottom: 0.5rem; }
     .drop-label { font-size: 0.9rem; font-weight: 600; }
     .drop-sub   { font-size: 0.78rem; color: #9ca3af; margin-top: 0.25rem; }
 
@@ -62,25 +79,28 @@
     .ok      { color: #16a34a; }
 
     /* Status + button */
-    .actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
-    .publish-btn {
+    .actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .primary-btn {
       padding: 0.7rem 1.75rem;
-      background: #111;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.15s;
+      background: #111; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s;
     }
-    .publish-btn:hover   { opacity: 0.8; }
-    .publish-btn:disabled { opacity: 0.35; cursor: default; }
+    .primary-btn:hover   { opacity: 0.8; }
+    .primary-btn:disabled { opacity: 0.35; cursor: default; }
+    .secondary-btn {
+      padding: 0.65rem 1.4rem;
+      background: #fff; color: #111;
+      border: 1.5px solid #ccc; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 700;
+      cursor: pointer; transition: border-color 0.15s;
+    }
+    .secondary-btn:hover   { border-color: #111; }
+    .secondary-btn:disabled { opacity: 0.35; cursor: default; }
     .status {
-      font-size: 0.82rem;
-      font-weight: 600;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
+      font-size: 0.82rem; font-weight: 600;
+      padding: 0.5rem 1rem; border-radius: 6px;
     }
     .status.idle    { display: none; }
     .status.loading { background: #f3f4f6; color: #6b7280; }
@@ -88,61 +108,131 @@
     .status.err     { background: #fee2e2; color: #991b1b; }
 
     .badge {
-      display: inline-block;
-      padding: 0.15rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      margin-right: 0.25rem;
+      display: inline-block; padding: 0.15rem 0.5rem;
+      border-radius: 4px; font-size: 0.68rem; font-weight: 700; margin-right: 0.25rem;
     }
     .badge-en { background: #dbeafe; color: #1d4ed8; }
     .badge-fr { background: #fef9c3; color: #854d0e; }
     .badge-es { background: #dcfce7; color: #166534; }
     .badge-de { background: #ffedd5; color: #9a3412; }
 
-    a { color: #2563eb; font-size: 0.8rem; }
+    /* Sync card */
+    .sync-trigger {
+      display: flex; align-items: center; gap: 1rem;
+      background: #f8f9fa; border: 1px solid #e2e2e0; border-radius: 8px;
+      padding: 1rem 1.25rem; margin-top: 1.25rem;
+    }
+    .sync-trigger .sync-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .sync-trigger .sync-info h3 { font-size: 0.88rem; font-weight: 700; }
+    .sync-trigger .sync-info p  { font-size: 0.78rem; color: #6b6b6b; margin-top: 0.15rem; line-height: 1.4; }
+    .sync-trigger .sync-btn-wrap { margin-left: auto; }
   </style>
 </head>
 <body>
 
-  <div class="card">
+  <div class="page-header">
     <h1>VNTANA Translation Publisher</h1>
-    <p>Upload a completed translation spreadsheet to publish hotspot text to the VNTANA platform. The translations will be live immediately.</p>
+    <p>Two ways to publish hotspot translations to VNTANA product attributes.</p>
+  </div>
+
+  <!-- ── Option 1: Upload and Publish ─────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-badge-wrap">
+        <span class="card-badge badge-primary">Option 1</span>
+      </div>
+      <div>
+        <h2>Upload and Publish</h2>
+        <p>Drop in your completed spreadsheet. Translations are parsed locally, previewed, then sent to VNTANA attributes via n8n.</p>
+      </div>
+    </div>
 
     <div class="drop-zone" id="drop-zone">
       <input type="file" id="file-input" accept=".xlsx,.xls">
       <div class="drop-icon">📄</div>
       <div class="drop-label">Drop your spreadsheet here, or click to browse</div>
-      <div class="drop-sub">Accepts .xlsx — use the <a href="hotspot-translations-template.xlsx" download>template</a> &nbsp;·&nbsp; <a href="n8n-translation-workflow.json" download>download n8n workflow</a></div>
+      <div class="drop-sub">Accepts .xlsx — use the <a href="hotspot-translations-template.xlsx" download>template</a> &nbsp;·&nbsp; <a href="n8n-translation-workflow.json" download>n8n workflow</a></div>
     </div>
   </div>
 
+  <!-- Preview table (shown after file is loaded) -->
   <div class="card" id="preview-card" style="display:none">
     <h2>Preview</h2>
     <div class="preview-wrap">
       <table id="preview-table"></table>
     </div>
     <div class="actions">
-      <button class="publish-btn" id="publish-btn" disabled>Publish to VNTANA</button>
+      <button class="primary-btn" id="publish-btn" disabled>Publish to VNTANA</button>
+      <button class="secondary-btn" id="attach-btn" disabled>Also attach file to product</button>
       <div class="status idle" id="status"></div>
     </div>
   </div>
 
+  <!-- ── Option 2: Attach File to Product ────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-badge-wrap">
+        <span class="card-badge badge-secondary">Option 2</span>
+      </div>
+      <div>
+        <h2>Attach File to Product</h2>
+        <p>Upload the spreadsheet directly to VNTANA as a product attachment. Once attached, use "Sync from Attachment" below to write attributes any time without re-uploading. Good for keeping the source file alongside the asset in VNTANA.</p>
+      </div>
+    </div>
+
+    <div class="drop-zone" id="attach-drop-zone">
+      <input type="file" id="attach-file-input" accept=".xlsx,.xls">
+      <div class="drop-icon">📎</div>
+      <div class="drop-label">Drop spreadsheet here to attach it to the product</div>
+      <div class="drop-sub">Accepts .xlsx — <a href="n8n-attach-file-workflow.json" download>n8n attach workflow</a> &nbsp;·&nbsp; <a href="n8n-sync-attachment-workflow.json" download>n8n sync workflow</a></div>
+    </div>
+    <div class="actions" id="attach-actions" style="display:none">
+      <span id="attach-file-name" style="font-size:.82rem;color:#555;"></span>
+      <button class="primary-btn" id="do-attach-btn">Attach to Product</button>
+      <div class="status idle" id="attach-status"></div>
+    </div>
+  </div>
+
+  <!-- ── Sync from Attachment ─────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2>Sync from Attachment</h2>
+        <p>Trigger n8n to read the spreadsheet already attached to this product and re-write attributes. No upload needed — update the attachment in VNTANA and sync here.</p>
+      </div>
+    </div>
+
+    <div class="sync-trigger">
+      <div class="sync-icon">🔄</div>
+      <div class="sync-info">
+        <h3>Re-process attached spreadsheet</h3>
+        <p>n8n reads the .xlsx attached to product <code style="font-size:.75rem;background:#eee;padding:1px 4px;border-radius:3px;">f047fcd9</code>, parses translations, and writes attributes.</p>
+      </div>
+      <div class="sync-btn-wrap">
+        <button class="secondary-btn" id="sync-btn">Sync Now</button>
+      </div>
+    </div>
+    <div class="status idle" id="sync-status" style="margin-top:.75rem;display:inline-block;"></div>
+  </div>
+
   <script>
     // ── Config ────────────────────────────────────────────────────────────────
-    // Replace with your actual n8n webhook URL after creating the workflow
-    const WEBHOOK_URL = "https://vntana.app.n8n.cloud/webhook/vntana-translations";
+    const PUBLISH_WEBHOOK = "https://vntana.app.n8n.cloud/webhook/vntana-translations";
+    const ATTACH_WEBHOOK  = "https://vntana.app.n8n.cloud/webhook/vntana-attach-file";
+    const SYNC_WEBHOOK    = "https://vntana.app.n8n.cloud/webhook/vntana-sync-attachment";
 
     const PRODUCT_UUID = "f047fcd9-eceb-465b-9abd-625efaa99ac2";
+    const CLIENT_UUID  = "b577b1c8-80bd-4dab-b1b1-b22f9de4671a"; // n8n-work workspace UUID
     const ORG          = "DCicero";
     const WS           = "n8n-work";
 
     const LANGS = ["fr", "es", "de"];
     const LANG_LABELS = { en: "EN", fr: "FR", es: "ES", de: "DE" };
 
-    let parsed = null; // { fr: { uuid: { title, description } }, ... }
+    let parsed     = null;
+    let rawFileRef = null;
 
-    // ── Drop zone ─────────────────────────────────────────────────────────────
+    // ── Option 1: Drop zone ───────────────────────────────────────────────────
     const dropZone  = document.getElementById("drop-zone");
     const fileInput = document.getElementById("file-input");
 
@@ -152,15 +242,14 @@
     dropZone.addEventListener("drop", e => {
       e.preventDefault();
       dropZone.classList.remove("drag-over");
-      const file = e.dataTransfer.files[0];
-      if (file) handleFile(file);
+      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
     });
     fileInput.addEventListener("change", () => {
       if (fileInput.files[0]) handleFile(fileInput.files[0]);
     });
 
-    // ── Parse xlsx ────────────────────────────────────────────────────────────
     function handleFile(file) {
+      rawFileRef = file;
       const reader = new FileReader();
       reader.onload = e => {
         const wb   = XLSX.read(e.target.result, { type: "array" });
@@ -187,7 +276,7 @@
     }
 
     function renderPreview(rows, translations) {
-      const table = document.getElementById("preview-table");
+      const table   = document.getElementById("preview-table");
       const locales = Object.keys(translations);
 
       let html = "<tr><th>#</th><th>UUID</th>";
@@ -220,40 +309,123 @@
 
       table.innerHTML = html;
       document.getElementById("preview-card").style.display = "block";
-      document.getElementById("publish-btn").disabled = !locales.length;
-      setStatus("idle");
+      document.getElementById("publish-btn").disabled  = !locales.length;
+      document.getElementById("attach-btn").disabled   = false;
+      setStatus("publish", "idle");
     }
 
-    // ── Publish ───────────────────────────────────────────────────────────────
+    // Publish translations as attributes
     document.getElementById("publish-btn").addEventListener("click", async () => {
       if (!parsed) return;
-      setStatus("loading", "Publishing…");
+      setStatus("publish", "loading", "Publishing…");
       document.getElementById("publish-btn").disabled = true;
 
       try {
-        const res = await fetch(WEBHOOK_URL, {
+        const res = await fetch(PUBLISH_WEBHOOK, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            productUuid: PRODUCT_UUID,
-            org: ORG,
-            workspace: WS,
-            translations: parsed
-          })
+          body: JSON.stringify({ productUuid: PRODUCT_UUID, org: ORG, workspace: WS, translations: parsed })
         });
-
         if (!res.ok) throw new Error(`Webhook returned ${res.status}: ${await res.text()}`);
-        const data = await res.json().catch(() => ({}));
-        setStatus("ok", `✓ Published — ${Object.keys(parsed).join(", ").toUpperCase()} live on VNTANA`);
+        await res.json().catch(() => ({}));
+        setStatus("publish", "ok", `Translations live — ${Object.keys(parsed).join(", ").toUpperCase()}`);
       } catch(err) {
-        setStatus("err", `Error: ${err.message}`);
+        setStatus("publish", "err", `Error: ${err.message}`);
         document.getElementById("publish-btn").disabled = false;
       }
     });
 
-    function setStatus(type, msg = "") {
-      const el = document.getElementById("status");
-      el.className = `status ${type}`;
+    // Also attach the file to the product (from Option 1 preview)
+    document.getElementById("attach-btn").addEventListener("click", async () => {
+      if (!rawFileRef) return;
+      await doAttach(rawFileRef, "attach");
+    });
+
+    // ── Option 2: Attach file to product ─────────────────────────────────────
+    const attachDropZone  = document.getElementById("attach-drop-zone");
+    const attachFileInput = document.getElementById("attach-file-input");
+    let attachFileRef     = null;
+
+    attachDropZone.addEventListener("click", () => attachFileInput.click());
+    attachDropZone.addEventListener("dragover", e => { e.preventDefault(); attachDropZone.classList.add("drag-over"); });
+    attachDropZone.addEventListener("dragleave", () => attachDropZone.classList.remove("drag-over"));
+    attachDropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      attachDropZone.classList.remove("drag-over");
+      const f = e.dataTransfer.files[0];
+      if (f) setAttachFile(f);
+    });
+    attachFileInput.addEventListener("change", () => {
+      if (attachFileInput.files[0]) setAttachFile(attachFileInput.files[0]);
+    });
+
+    function setAttachFile(file) {
+      attachFileRef = file;
+      document.getElementById("attach-file-name").textContent = file.name;
+      document.getElementById("attach-actions").style.display = "flex";
+      setStatus("attach2", "idle");
+    }
+
+    document.getElementById("do-attach-btn").addEventListener("click", async () => {
+      if (!attachFileRef) return;
+      await doAttach(attachFileRef, "attach2");
+    });
+
+    // Shared attach logic — sends raw file to n8n, n8n uploads to VNTANA
+    async function doAttach(file, statusId) {
+      setStatus(statusId, "loading", "Attaching file…");
+      document.getElementById(statusId === "attach" ? "attach-btn" : "do-attach-btn").disabled = true;
+
+      try {
+        const form = new FormData();
+        form.append("file", file, file.name);
+        form.append("productUuid", PRODUCT_UUID);
+        form.append("clientUuid",  CLIENT_UUID);
+        form.append("name",        file.name);
+
+        const res = await fetch(ATTACH_WEBHOOK, { method: "POST", body: form });
+        if (!res.ok) throw new Error(`Webhook returned ${res.status}: ${await res.text()}`);
+        await res.json().catch(() => ({}));
+        setStatus(statusId, "ok", `Attached: ${file.name}`);
+      } catch(err) {
+        setStatus(statusId, "err", `Error: ${err.message}`);
+        document.getElementById(statusId === "attach" ? "attach-btn" : "do-attach-btn").disabled = false;
+      }
+    }
+
+    // ── Sync from attachment ──────────────────────────────────────────────────
+    document.getElementById("sync-btn").addEventListener("click", async () => {
+      setStatus("sync", "loading", "Syncing…");
+      document.getElementById("sync-btn").disabled = true;
+
+      try {
+        const res = await fetch(SYNC_WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productUuid: PRODUCT_UUID, clientUuid: CLIENT_UUID, org: ORG, workspace: WS })
+        });
+        if (!res.ok) throw new Error(`Webhook returned ${res.status}: ${await res.text()}`);
+        await res.json().catch(() => ({}));
+        setStatus("sync", "ok", "Translations updated from attachment");
+      } catch(err) {
+        setStatus("sync", "err", `Error: ${err.message}`);
+      } finally {
+        document.getElementById("sync-btn").disabled = false;
+      }
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    const statusEls = {
+      publish: "status",
+      attach:  "status",
+      attach2: "attach-status",
+      sync:    "sync-status"
+    };
+
+    function setStatus(context, type, msg = "") {
+      const elId = statusEls[context] ?? "status";
+      const el   = document.getElementById(elId);
+      el.className   = `status ${type}`;
       el.textContent = msg;
     }
   </script>
