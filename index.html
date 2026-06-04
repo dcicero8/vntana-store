@@ -3,86 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VNTANA 3D — Integration Demos</title>
+  <title>Derek's Demos — VNTANA</title>
   <link rel="stylesheet" href="style.css">
-</head>
-<body class="landing">
+  <style>
+    body { background: #f4f4f2; }
 
-  <header>
-    <a href="index.html" class="logo"><img src="VNTANA-logo-black.png" alt="VNTANA" height="18"></a>
-    <div class="header-actions">
-      <a href="https://vntana.com" target="_blank">vntana.com ↗</a>
-    </div>
+    .root-header {
+      background: #fff; border-bottom: 1px solid #e2e2e0;
+      padding: 0 2rem; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .root-header .wordmark {
+      font-size: .82rem; font-weight: 800; letter-spacing: .04em; color: #111;
+      text-decoration: none; text-transform: uppercase;
+    }
+    .root-header a.ext { font-size: .75rem; color: #666; text-decoration: none; }
+    .root-header a.ext:hover { color: #111; }
+
+    .root-hero {
+      padding: 3.5rem 2rem 2.5rem;
+      max-width: 900px; margin: 0 auto;
+    }
+    .root-hero .kicker {
+      font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: #999; margin-bottom: .6rem;
+    }
+    .root-hero h1 {
+      font-size: 2.4rem; font-weight: 800; letter-spacing: -.04em;
+      line-height: 1.1; margin-bottom: .75rem; color: #111;
+    }
+    .root-hero p { font-size: .95rem; color: #555; line-height: 1.65; max-width: 520px; }
+
+    .root-section { max-width: 900px; margin: 0 auto; padding: 0 2rem 3rem; }
+
+    .section-label {
+      font-size: .68rem; font-weight: 800; letter-spacing: .12em;
+      text-transform: uppercase; color: #aaa; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: #e2e2e0; }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .75rem; }
+    .card-grid.wide { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+
+    .dc {
+      background: #fff; border: 1px solid #e2e2e0; border-radius: 10px;
+      padding: 1.25rem 1.25rem 1rem;
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; gap: .35rem;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .dc:hover { border-color: #111; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+    .dc .tag {
+      font-size: .62rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: #aaa; margin-bottom: .1rem;
+    }
+    .dc h3 { font-size: .92rem; font-weight: 700; color: #111; letter-spacing: -.01em; line-height: 1.25; }
+    .dc p  { font-size: .78rem; color: #666; line-height: 1.55; margin: 0; }
+    .dc .go { margin-top: .5rem; font-size: .72rem; font-weight: 700; color: #aaa; }
+    .dc:hover .go { color: #111; }
+
+    .dc.featured { border-color: #111; background: #111; }
+    .dc.featured .tag { color: rgba(255,255,255,.35); }
+    .dc.featured h3  { color: #fff; }
+    .dc.featured p   { color: rgba(255,255,255,.55); }
+    .dc.featured .go { color: rgba(255,255,255,.35); }
+    .dc.featured:hover { border-color: #333; box-shadow: 0 4px 20px rgba(0,0,0,.2); }
+    .dc.featured:hover .go { color: #fff; }
+
+    .dc.tool { background: #fafafa; }
+    .dc.tool .tag { color: #c47900; }
+
+    @media (max-width: 600px) {
+      .card-grid, .card-grid.wide { grid-template-columns: 1fr; }
+      .root-hero h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="root-header">
+    <span class="wordmark">Derek Cicero · VNTANA</span>
+    <a class="ext" href="https://vntana.com" target="_blank">vntana.com ↗</a>
   </header>
 
-  <section class="landing-hero">
-    <p class="hero-eyebrow">Integration Demo</p>
-    <h1>From embed to fully<br>custom — in 3 steps</h1>
-    <p class="hero-sub">See how VNTANA 3D fits every stack, from a single link to a fully bespoke product experience.</p>
+  <div class="root-hero">
+    <p class="kicker">VNTANA · Demos &amp; Examples</p>
+    <h1>Derek's Demos</h1>
+    <p>3D viewer integrations, personalized client demos, internal tools, and n8n automation workflows — all built on VNTANA's platform.</p>
+  </div>
+
+  <section class="root-section">
+    <div class="section-label">Personalized Demos</div>
+    <div class="card-grid wide">
+      <a href="s86-demo.html" class="dc featured">
+        <span class="tag">Heavy Equipment · Bobcat</span>
+        <h3>S86-2 — Multilingual Hotspots</h3>
+        <p>Live 3D product page with hotspot annotations in EN, FR, ES and DE. Text updates instantly from VNTANA product attributes — no CMS, no re-deploy.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="home.html" class="dc">
+        <span class="tag">Building Materials · Hexion</span>
+        <h3>Hexion — Home Product Explorer</h3>
+        <p>Guided auto-tour of Hexion's building material solutions with camera snap, hotspot cards, and localized product content.</p>
+        <div class="go">Open demo →</div>
+      </a>
+    </div>
   </section>
 
-  <section class="demo-cards">
-
-    <a href="embed.html" class="demo-card">
-      <div class="demo-step">01</div>
-      <div class="demo-card-body">
-        <div class="demo-tag">Basic Embed</div>
-        <h2>Stroller</h2>
-        <p>One <code>&lt;iframe&gt;</code>, zero setup. Drop the VNTANA embed link into any CMS or page — 3D and AR work out of the box.</p>
-      </div>
-      <div class="demo-card-footer">
-        See the embed <span>→</span>
-      </div>
-    </a>
-
-    <a href="variants.html" class="demo-card">
-      <div class="demo-step">02</div>
-      <div class="demo-card-body">
-        <div class="demo-tag">Variants — Out of the Box</div>
-        <h2>VNTANA Jackets</h2>
-        <p>Three colorways, one embed link. Variant groups in the platform power real-time color switching — still no custom code needed.</p>
-      </div>
-      <div class="demo-card-footer">
-        See variants <span>→</span>
-      </div>
-    </a>
-
-    <a href="product.html?uuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&org=DCicero&workspace=example-files" class="demo-card demo-card--featured">
-      <div class="demo-step">03</div>
-      <div class="demo-card-body">
-        <div class="demo-tag">Custom Viewer SDK</div>
-        <h2>Bespoke Experience</h2>
-        <p>Full control with <code>&lt;vntana-viewer&gt;</code>. Hotspots, camera snap, live model swapping, custom lighting — built into your own design system.</p>
-      </div>
-      <div class="demo-card-footer">
-        Explore custom <span>→</span>
-      </div>
-    </a>
-
+  <section class="root-section">
+    <div class="section-label">Viewer Examples</div>
+    <div class="card-grid">
+      <a href="embed.html" class="dc">
+        <span class="tag">01 · Basic</span>
+        <h3>Basic Embed</h3>
+        <p>Simplest possible integration — one iframe, one line of HTML. Live Public asset, no auth required.</p>
+        <div class="go">Open →</div>
+      </a>
+      <a href="variants.html" class="dc">
+        <span class="tag">02 · Variants</span>
+        <h3>Variant Switcher</h3>
+        <p>Color swatch UI that swaps the 3D model on click using the NPM viewer JS API. Jacket with multiple colorways.</p>
+        <div class="go">Open →</div>
+      </a>
+      <a href="product.html" class="dc">
+        <span class="tag">03 · Custom Viewer</span>
+        <h3>Custom Viewer Controls</h3>
+        <p>Full product page — camera presets, lighting, hotspot auto-tour, AR/QR, and exploded view. Stroller demo asset.</p>
+        <div class="go">Open →</div>
+      </a>
+      <a href="parts.html" class="dc">
+        <span class="tag">04 · Industry</span>
+        <h3>Interactive Parts Catalog</h3>
+        <p>Click any part on the 3D model to surface SKU, price, and availability. Die head assembly via Figurement.</p>
+        <div class="go">Open →</div>
+      </a>
+      <a href="store.html" class="dc">
+        <span class="tag">05 · E-commerce</span>
+        <h3>3D Showcase Store</h3>
+        <p>A fake e-commerce store showing the full customer path — upload, process, set Live Public, embed in a product page.</p>
+        <div class="go">Open →</div>
+      </a>
+    </div>
   </section>
 
-  <div class="use-cases-label">Industry Use Cases</div>
-
-  <section class="demo-cards use-cases-cards">
-
-    <a href="parts.html" class="demo-card">
-      <div class="use-cases-logo"><img src="VNTANA-logo-black.png" alt="VNTANA" width="110"></div>
-      <div class="demo-card-body">
-        <div class="demo-tag">Industrial / Mechanical</div>
-        <h2>Interactive Parts Catalog</h2>
-        <p>Click any part in a 3D mechanical assembly to surface its part number, specs, and an Add to Cart — powered by the VNTANA scene graph.</p>
-      </div>
-      <div class="demo-card-footer">
-        See parts catalog <span>→</span>
-      </div>
-    </a>
-
-
+  <section class="root-section">
+    <div class="section-label">Integrations</div>
+    <div class="card-grid">
+      <a href="n8n.html" class="dc">
+        <span class="tag">n8n · Automation</span>
+        <h3>VNTANA + n8n</h3>
+        <p>How we automate attribute updates, hotspot translations, and file management using the VNTANA Platform API — with downloadable workflow templates.</p>
+        <div class="go">View integration →</div>
+      </a>
+    </div>
   </section>
 
-  <footer class="landing-footer">
-    <p>Powered by <strong>VNTANA</strong> · <a href="https://vntana.com" target="_blank">Learn more</a></p>
-  </footer>
+  <section class="root-section">
+    <div class="section-label">Internal Tools</div>
+    <div class="card-grid">
+      <a href="admin/index.html" class="dc tool">
+        <span class="tag">Admin</span>
+        <h3>Translation Publisher</h3>
+        <p>Upload or attach a spreadsheet to publish hotspot translations to VNTANA product attributes. Trigger n8n sync from attachment.</p>
+        <div class="go">Open tool →</div>
+      </a>
+      <a href="hotspot-translations.html" class="dc tool">
+        <span class="tag">Preview</span>
+        <h3>Bobcat S86 — Translation Test</h3>
+        <p>Preview translated hotspot text for all five machine features before publishing. Switch EN / FR / ES / DE live in the viewer.</p>
+        <div class="go">Open tool →</div>
+      </a>
+    </div>
+  </section>
 
 </body>
 </html>
