@@ -332,14 +332,14 @@
         <div class="step-card">
           <div class="step-n">Step 2</div>
           <span class="step-icon">⬆️</span>
-          <h3>Upload once</h3>
-          <p>Drag the spreadsheet into the admin tool. An n8n workflow writes translations to VNTANA attributes automatically.</p>
+          <h3>Publish via any tool</h3>
+          <p>Submit the spreadsheet and a script (or automation tool like n8n) calls the VNTANA API to write the translations as product attributes. Any language, any tool.</p>
         </div>
         <div class="step-card">
           <div class="step-n">Step 3</div>
           <span class="step-icon">🌍</span>
           <h3>Live immediately</h3>
-          <p>The product page reads translations on load. Language switching is instant — no page reload, no CMS publish.</p>
+          <p>The product page reads translations on load. Language switching is instant with no page reload and no CMS publish step.</p>
         </div>
       </div>
 
@@ -411,7 +411,16 @@
 
     // ── State ───────────────────────────────────────────────────────────────
     let currentLang  = 'en';
-    let translations = {};
+    // EN is the source language and lives here; FR/ES/DE are loaded from VNTANA attributes
+    let translations = {
+      en: {
+        "9f6157ae-10a6-4c25-aa25-df2885ebbcae": { title: "Selectable Joystick Controls", description: "Low-effort hand control of all machine work group functions and the ability to switch between ISO and H control patterns." },
+        "6d4f81d9-47d9-4e38-857a-1e8fee34de7b": { title: "Integrated In-Machine Cooling System", description: "A high-capacity radiator, large reversible fan and oil cooler keeps your loader running longer at lower temperatures. Run high and super-flow attachments efficiently without overheating." },
+        "6fac5a12-01ee-44df-92ed-9d37e91f4df2": { title: "Super Flow Hydraulics", description: "This auxiliary hydraulic option tackles the most demanding jobs with attachments that require the highest flow possible at 42 gpm and 4,061 psi." },
+        "02bdfbd9-fc81-40bb-84c0-bdb27ac6f683": { title: "Jobsite Companion", description: "Optional voice-activated machine functions, attachment-specific settings and real-time job insights help operators work faster without stopping the machine." },
+        "2fba9efa-159a-437e-a5de-95ab86d0f22e": { title: "360° People Detection", description: "Option that detects people around the machine and helps give operators added awareness in busy jobsite conditions." }
+      }
+    };
     let hotspots     = [];
     let activeUuid   = null;
 
@@ -468,9 +477,8 @@
         if (m) { try { translations[m[1]] = JSON.parse(value); } catch {} }
       }
 
-      // Step 2: derive hotspot list from translation keys (UUIDs are the keys)
-      const enTranslations = translations['en'] ?? translations[Object.keys(translations)[0]] ?? {};
-      hotspots = Object.keys(enTranslations).map(uuid => ({ uuid, title: enTranslations[uuid]?.title || 'Feature' }));
+      // Hotspot list derived from EN translations (always present)
+      hotspots = Object.keys(translations.en).map(uuid => ({ uuid, title: translations.en[uuid].title }));
 
       buildList();
       addHotspotsToViewer();
