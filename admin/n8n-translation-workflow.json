@@ -17,8 +17,15 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://api.vntana.com/products/{{ $json.body.productUuid }}/organizations/{{ $json.body.org }}/clients/{{ $json.body.workspace }}",
+        "url": "=https://api-platform.vntana.com/v1/products/{{ $json.body.productUuid }}/organizations/{{ $json.body.org }}/clients/{{ $json.body.workspace }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
         "options": {}
+      },
+      "credentials": {
+        "vntanaApi": {
+          "name": "VNTANA account 3"
+        }
       },
       "id": "get-product",
       "name": "Get Product",
@@ -29,7 +36,7 @@
     {
       "parameters": {
         "language": "javaScript",
-        "jsCode": "const product      = $('Get Product').item.json.response;\nconst translations = $('Webhook').item.json.body.translations;\nconst productUuid  = $('Webhook').item.json.body.productUuid;\nconst org          = $('Webhook').item.json.body.org;\nconst workspace    = $('Webhook').item.json.body.workspace;\nconst ATTR_KEY     = 'hotspot_translations';\n\n// Keep existing attributes, upsert hotspot_translations\nconst attrs = (product.attributes ?? []).filter(a => a.name !== ATTR_KEY);\nattrs.push({ name: ATTR_KEY, value: JSON.stringify(translations) });\n\n// Send only the fields the platform API accepts\nreturn [{\n  json: {\n    translations,\n    putBody: {\n      uuid:             productUuid,\n      organizationSlug: org,\n      clientSlug:       workspace,\n      name:             product.name,\n      description:      product.description ?? '',\n      attributes:       attrs\n    }\n  }\n}];"
+        "jsCode": "// Product comes from platform API — use its shape directly for the PUT\nconst raw          = $('Get Product').item.json;\nconst translations = $('Webhook').item.json.body.translations;\nconst ATTR_KEY     = 'hotspot_translations';\n\n// The platform API may return the product at root or under .response\nconst product = raw.response ?? raw;\n\n// Upsert the hotspot_translations attribute\nconst existingAttrs = Array.isArray(product.attributes) ? product.attributes : [];\nconst attrs = existingAttrs.filter(a => (a.name ?? a.key) !== ATTR_KEY);\nattrs.push({ name: ATTR_KEY, value: JSON.stringify(translations) });\n\n// Build PUT body using whatever the platform API returned, with attributes replaced\nconst putBody = { ...product, attributes: attrs };\n\nreturn [{ json: { translations, putBody } }];"
       },
       "id": "merge",
       "name": "Merge Attributes",
@@ -62,7 +69,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ ok: true, locales: Object.keys($('Merge Attributes').item.json.translations) }) }}",
+        "responseBody": "={{ JSON.stringify($('Write to VNTANA').item.json.success === false ? { ok: false, error: $('Write to VNTANA').item.json.errors } : { ok: true, locales: Object.keys($('Merge Attributes').item.json.translations) }) }}",
         "options": {}
       },
       "id": "respond",
