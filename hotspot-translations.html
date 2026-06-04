@@ -275,18 +275,15 @@
 
   <main class="page-wrap">
 
-    <!-- LEFT: viewer -->
+    <!-- LEFT: viewer (embed — asset not yet Live Public) -->
     <div class="viewer-col">
       <div class="viewer-wrap">
-        <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
-        <vntana-viewer id="viewer" loading="eager" role="application" aria-label="Hexion Building Materials 3D viewer">
-          <vntana-fs-button></vntana-fs-button>
-          <vntana-center-button></vntana-center-button>
-          <div class="button-container zoom-buttons">
-            <vntana-zoom-in-button></vntana-zoom-in-button>
-            <vntana-zoom-out-button></vntana-zoom-out-button>
-          </div>
-        </vntana-viewer>
+        <iframe
+          src="https://embed.vntana.com/v2?productUuid=e5a84eb7-eaf2-44e6-82ed-6c10c9741e02&clientSlug=figurement&organizationSlug=DCicero"
+          style="width:100%;height:100%;border:none;display:block;"
+          allow="camera; xr-spatial-tracking"
+          title="Bobcat S86 3D viewer">
+        </iframe>
       </div>
     </div>
 
@@ -334,11 +331,6 @@
   </main>
 
   <script type="module">
-    const ORG      = "DCicero";
-    const WS       = "figurement";
-    const UUID     = "e5a84eb7-eaf2-44e6-82ed-6c10c9741e02";
-    const BASE_URL = "https://api.vntana.com";
-    const GLB_BLOB = "99113ed0-e3b8-4316-be6c-6a5477d12d2f.glb";
 
     // ── Built-in English source text ──────────────────────────────────────────
     const EN_SOURCE = {
@@ -371,7 +363,75 @@
 
     // ── Translation store: { locale: { uuid: { title, description } } } ──────
     // "en" always falls back to EN_SOURCE above.
-    const translations = { en: {} };
+    const translations = {
+      en: {},
+      fr: {
+        "9f6157ae-10a6-4c25-aa25-df2885ebbcae": {
+          title: "Commandes de joystick sélectionnables",
+          description: "Contrôle manuel à faible effort de toutes les fonctions du groupe de travail et possibilité de basculer entre les schémas de commande ISO et H."
+        },
+        "6d4f81d9-47d9-4e38-857a-1e8fee34de7b": {
+          title: "Système de refroidissement intégré",
+          description: "Un radiateur haute capacité, un grand ventilateur réversible et un refroidisseur d'huile maintiennent votre chargeur en fonctionnement plus longtemps à des températures plus basses. Faites fonctionner efficacement les accessoires à haut débit sans surchauffe."
+        },
+        "6fac5a12-01ee-44df-92ed-9d37e91f4df2": {
+          title: "Hydraulique à super débit",
+          description: "Cette option hydraulique auxiliaire s'attaque aux travaux les plus exigeants avec des accessoires nécessitant le débit le plus élevé possible à 159 l/min et 280 bar."
+        },
+        "02bdfbd9-fc81-40bb-84c0-bdb27ac6f683": {
+          title: "Compagnon de chantier",
+          description: "Les fonctions optionnelles activées par la voix, les réglages spécifiques aux accessoires et les informations en temps réel aident les opérateurs à travailler plus vite sans arrêter la machine."
+        },
+        "2fba9efa-159a-437e-a5de-95ab86d0f22e": {
+          title: "Détection des personnes à 360°",
+          description: "Option qui détecte les personnes autour de la machine et aide à donner aux opérateurs une meilleure conscience de leur environnement sur les chantiers animés."
+        }
+      },
+      es: {
+        "9f6157ae-10a6-4c25-aa25-df2885ebbcae": {
+          title: "Controles de joystick seleccionables",
+          description: "Control manual de bajo esfuerzo de todas las funciones del grupo de trabajo de la máquina y la capacidad de cambiar entre los patrones de control ISO y H."
+        },
+        "6d4f81d9-47d9-4e38-857a-1e8fee34de7b": {
+          title: "Sistema de enfriamiento integrado",
+          description: "Un radiador de alta capacidad, un gran ventilador reversible y un enfriador de aceite mantienen su cargador funcionando más tiempo a temperaturas más bajas. Opere accesorios de alto caudal de forma eficiente sin sobrecalentamiento."
+        },
+        "6fac5a12-01ee-44df-92ed-9d37e91f4df2": {
+          title: "Hidráulica de super flujo",
+          description: "Esta opción hidráulica auxiliar aborda los trabajos más exigentes con accesorios que requieren el mayor caudal posible a 159 l/min y 280 bar."
+        },
+        "02bdfbd9-fc81-40bb-84c0-bdb27ac6f683": {
+          title: "Compañero de obra",
+          description: "Las funciones opcionales activadas por voz, la configuración específica de accesorios y los datos en tiempo real ayudan a los operadores a trabajar más rápido sin detener la máquina."
+        },
+        "2fba9efa-159a-437e-a5de-95ab86d0f22e": {
+          title: "Detección de personas a 360°",
+          description: "Opción que detecta personas alrededor de la máquina y ayuda a dar a los operadores mayor conciencia situacional en condiciones de obra concurridas."
+        }
+      },
+      de: {
+        "9f6157ae-10a6-4c25-aa25-df2885ebbcae": {
+          title: "Wählbare Joystick-Steuerung",
+          description: "Mühelose Handsteuerung aller Maschinenarbeitsgruppenfunktionen und die Möglichkeit, zwischen ISO- und H-Steuerungsmustern zu wechseln."
+        },
+        "6d4f81d9-47d9-4e38-857a-1e8fee34de7b": {
+          title: "Integriertes Maschinenkühlung-System",
+          description: "Ein Hochleistungskühler, ein großer umkehrbarer Lüfter und ein Ölkühler sorgen dafür, dass Ihr Lader länger bei niedrigeren Temperaturen läuft. Betreiben Sie Hochleistungsanbaugeräte effizient ohne Überhitzung."
+        },
+        "6fac5a12-01ee-44df-92ed-9d37e91f4df2": {
+          title: "Super-Flow-Hydraulik",
+          description: "Diese Zusatzhydraulikoption bewältigt die anspruchsvollsten Arbeiten mit Anbaugeräten, die den höchstmöglichen Durchfluss von 159 l/min und 280 bar erfordern."
+        },
+        "02bdfbd9-fc81-40bb-84c0-bdb27ac6f683": {
+          title: "Baustellen-Assistent",
+          description: "Optionale sprachgesteuerte Maschinenfunktionen, anbaugerätespezifische Einstellungen und Echtzeit-Einblicke helfen Bedienern, schneller zu arbeiten, ohne die Maschine anzuhalten."
+        },
+        "2fba9efa-159a-437e-a5de-95ab86d0f22e": {
+          title: "360°-Personenerkennung",
+          description: "Option, die Personen rund um die Maschine erkennt und Bedienern auf belebten Baustellen ein erhöhtes Situationsbewusstsein gibt."
+        }
+      }
+    };
 
     const LANGS = [
       { code: "en", label: "EN — English" },
@@ -381,7 +441,6 @@
     ];
 
     let activeLang = "en";
-    let hotspotEls = [];
     let apiHotspots = [];
 
     // ── Resolve text for a uuid in the active language ────────────────────────
@@ -488,90 +547,10 @@
       });
     }
 
-    const viewer  = document.getElementById("viewer");
-    const closeAll = () => viewer.querySelectorAll("vntana-hotspot.open")
-      .forEach(h => h.classList.remove("open"));
-
-    function snapCamera(cam) {
-      if (!cam) return;
-      try {
-        if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
-        if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
-        if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
-        if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
-        if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
-      } catch(e) {}
-    }
-
-    // ── Hotspot position/camera data (hardcoded from platform API) ───────────
-    const HS_DATA = [
-      {
-        uuid: "9f6157ae-10a6-4c25-aa25-df2885ebbcae",
-        position: "0.6293085111936879m 0.43696063921572464m -0.2652820648198517m",
-        normal:   "0.9534805882305541m 0.2026907327422m -0.22313949611833983m",
-        camera:   {"cameraTarget":"0r 0r 0r","cameraDistance":"2.176439668708029r","cameraRotation":"-0.14564675336358035rad 1.612555778307147rad 0rad","fieldOfView":"0.3959050905669924rad","orthographicSize":"0.4365488093301792r"}
-      },
-      {
-        uuid: "6d4f81d9-47d9-4e38-857a-1e8fee34de7b",
-        position: "-1.9041365108138133m 0.44405335513587674m -0.0001405699781816816m",
-        normal:   "-0.6439437284608202m 0.7564976774696907m -0.11422669810049478m",
-        camera:   {"cameraTarget":"0r 0r 0r","cameraDistance":"2.176439668708029r","cameraRotation":"-0.1371854325845434rad 4.7279828232984835rad 0rad","fieldOfView":"0.3959050905669924rad","orthographicSize":"0.4365488093301792r"}
-      },
-      {
-        uuid: "6fac5a12-01ee-44df-92ed-9d37e91f4df2",
-        position: "0.8737988328879692m 0.13335461258380268m -0.5814802740992924m",
-        normal:   "0.9800712980953769m 0.1986457572183087m 0.000337325966709584m",
-        camera:   {"cameraTarget":"0r 0r 0r","cameraDistance":"2.08842710011709r","cameraRotation":"-0.07838609257501661rad 1.7116294419323723rad 0rad","fieldOfView":"0.3530664253343655rad","orthographicSize":"0.37255490714388967r"}
-      },
-      {
-        uuid: "02bdfbd9-fc81-40bb-84c0-bdb27ac6f683",
-        position: "0.5269581495003125m 0.943177023063472m -0.2418768787444152m",
-        normal:   "0.9569177017571057m 0.20333107067881231m -0.20727997433545478m",
-        camera:   {"cameraTarget":"0r 0r 0r","cameraDistance":"2.2224770122786746r","cameraRotation":"-0.2679157697941619rad 1.4444041263357328rad 0rad","fieldOfView":"0.42003839582158237rad","orthographicSize":"0.47374878842449397r"}
-      },
-      {
-        uuid: "2fba9efa-159a-437e-a5de-95ab86d0f22e",
-        position: "0.6562082640148114m 1.1693785518387276m 0.21590587985227083m",
-        normal:   "0.3917762395849866m 0.8808936098696819m 0.2655895822268038m",
-        camera:   {"cameraTarget":"0r 0r 0r","cameraDistance":"2.4634960462661715r","cameraRotation":"-0.4440206724747404rad 1.5471124450762037rad 0rad","fieldOfView":"0.5672207574255906rad","orthographicSize":"0.7180285830464684r"}
-      }
-    ];
-
-    // ── Build cards immediately from EN_SOURCE (don't wait for viewer) ────────
-    apiHotspots = HS_DATA;
+    // ── Populate cards from EN_SOURCE keys ───────────────────────────────────
+    apiHotspots = Object.keys(EN_SOURCE).map(uuid => ({ uuid }));
     buildLangRow();
     buildCards();
-
-    // ── Load viewer ───────────────────────────────────────────────────────────
-    const product = await fetch(`${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r => r.json());
-    const config  = JSON.parse(product.response.viewerSettings.config);
-    Object.assign(viewer, config);
-    viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB_BLOB}`;
-
-    // ── Inject hotspot pins after model loads ─────────────────────────────────
-    viewer.addEventListener("load", () => {
-      hotspotEls = HS_DATA.map((hs, idx) => {
-        const el = document.createElement("vntana-hotspot");
-        el.position = hs.position;
-        el.normal   = hs.normal;
-        el._camera  = hs.camera;
-        viewer.appendChild(el);
-
-        el.addEventListener("click", e => {
-          if (e.target.closest(".hotspot-popup")) return;
-          const isOpen = el.classList.contains("open");
-          closeAll();
-          if (!isOpen) {
-            el.classList.add("open");
-            snapCamera(hs.camera);
-            document.querySelectorAll(".hs-card").forEach((c, ci) =>
-              c.classList.toggle("active", ci === idx));
-          }
-        });
-        return el;
-      });
-      refreshHotspots(); // re-render popups now that els exist
-    }, { once: true });
 
     // ── JSON editor ───────────────────────────────────────────────────────────
     const jsonToggle = document.getElementById("json-toggle");
