@@ -16,94 +16,67 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "={{ $credentials.apiBaseUrl }}/v1/auth/login",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            { "name": "email",    "value": "={{ $credentials.email }}" },
-            { "name": "password", "value": "={{ $credentials.password }}" }
-          ]
-        },
-        "options": {}
-      },
-      "credentials": {
-        "vntanaApi": {
-          "id": "VNTANA account 3",
-          "name": "VNTANA account 3"
-        }
-      },
-      "id": "auth",
-      "name": "Authenticate",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [460, 300]
-    },
-    {
-      "parameters": {
         "method": "GET",
-        "url": "=https://api.vntana.com/products/{{ $('Webhook').item.json.body.productUuid }}/organizations/{{ $('Webhook').item.json.body.org }}/clients/{{ $('Webhook').item.json.body.workspace }}",
+        "url": "=https://api.vntana.com/products/{{ $json.body.productUuid }}/organizations/{{ $json.body.org }}/clients/{{ $json.body.workspace }}",
         "options": {}
       },
       "id": "get-product",
       "name": "Get Product",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [680, 300]
+      "position": [460, 300]
     },
     {
       "parameters": {
         "language": "javaScript",
-        "jsCode": "const product      = $('Get Product').item.json.response;\nconst translations = $('Webhook').item.json.body.translations;\nconst token        = $('Authenticate').item.json.response?.token\n                  ?? $('Authenticate').item.json.token;\nconst ATTR_KEY     = 'hotspot_translations';\n\n// Upsert the attribute\nconst attrs = (product.attributes ?? []).filter(a => a.name !== ATTR_KEY);\nattrs.push({ name: ATTR_KEY, value: JSON.stringify(translations) });\nproduct.attributes = attrs;\n\nreturn [{\n  json: {\n    token,\n    body: {\n      uuid:             $('Webhook').item.json.body.productUuid,\n      organizationSlug: $('Webhook').item.json.body.org,\n      clientSlug:       $('Webhook').item.json.body.workspace,\n      ...product\n    }\n  }\n}];"
+        "jsCode": "const product      = $('Get Product').item.json.response;\nconst translations = $('Webhook').item.json.body.translations;\nconst ATTR_KEY     = 'hotspot_translations';\n\nconst attrs = (product.attributes ?? []).filter(a => a.name !== ATTR_KEY);\nattrs.push({ name: ATTR_KEY, value: JSON.stringify(translations) });\nproduct.attributes = attrs;\n\nreturn [{\n  json: {\n    productUuid:      $('Webhook').item.json.body.productUuid,\n    org:              $('Webhook').item.json.body.org,\n    workspace:        $('Webhook').item.json.body.workspace,\n    translations,\n    putBody: {\n      uuid:             $('Webhook').item.json.body.productUuid,\n      organizationSlug: $('Webhook').item.json.body.org,\n      clientSlug:       $('Webhook').item.json.body.workspace,\n      ...product\n    }\n  }\n}];"
       },
       "id": "merge",
       "name": "Merge Attributes",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [900, 300]
+      "position": [680, 300]
     },
     {
       "parameters": {
         "method": "PUT",
-        "url": "={{ $credentials.apiBaseUrl }}/v1/products",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $('Merge Attributes').item.json.token }}" }
-          ]
-        },
+        "url": "https://api-platform.vntana.com/v1/products",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($('Merge Attributes').item.json.body) }}",
+        "jsonBody": "={{ JSON.stringify($json.putBody) }}",
         "options": {}
+      },
+      "credentials": {
+        "vntanaApi": {
+          "name": "VNTANA account 3"
+        }
       },
       "id": "put-product",
       "name": "Write to VNTANA",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1120, 300]
+      "position": [900, 300]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ ok: true, locales: Object.keys($('Webhook').item.json.body.translations) }) }}",
+        "responseBody": "={{ JSON.stringify({ ok: true, locales: Object.keys($('Merge Attributes').item.json.translations) }) }}",
         "options": {}
       },
       "id": "respond",
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [1340, 300]
+      "position": [1120, 300]
     }
   ],
   "connections": {
-    "Webhook":          { "main": [[{ "node": "Authenticate",    "type": "main", "index": 0 }]] },
-    "Authenticate":     { "main": [[{ "node": "Get Product",     "type": "main", "index": 0 }]] },
-    "Get Product":      { "main": [[{ "node": "Merge Attributes","type": "main", "index": 0 }]] },
-    "Merge Attributes": { "main": [[{ "node": "Write to VNTANA","type": "main", "index": 0 }]] },
-    "Write to VNTANA":  { "main": [[{ "node": "Respond",         "type": "main", "index": 0 }]] }
+    "Webhook":          { "main": [[{ "node": "Get Product",      "type": "main", "index": 0 }]] },
+    "Get Product":      { "main": [[{ "node": "Merge Attributes", "type": "main", "index": 0 }]] },
+    "Merge Attributes": { "main": [[{ "node": "Write to VNTANA", "type": "main", "index": 0 }]] },
+    "Write to VNTANA":  { "main": [[{ "node": "Respond",          "type": "main", "index": 0 }]] }
   },
   "settings": { "executionOrder": "v1" }
 }
