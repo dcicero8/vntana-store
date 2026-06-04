@@ -284,9 +284,7 @@
       <div class="viewer-wrap">
         <vntana-viewer
           id="viewer"
-          environment-src="Neutral.hdr"
           enable-auto-rotate
-          shadow-intensity="0.3"
           camera-controls></vntana-viewer>
       </div>
 
@@ -449,6 +447,12 @@
         console.error('Product fetch failed:', err);
         return;
       }
+
+      // Apply stored viewer config (environment, camera, lighting)
+      try {
+        const config = JSON.parse(product.viewerSettings?.config ?? '{}');
+        Object.assign(viewer, config);
+      } catch {}
 
       // Set GLB on viewer immediately
       const modelBlobId = product.asset?.models?.find(m => m.conversionFormat === 'GLB')?.modelBlobId;
