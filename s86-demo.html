@@ -440,46 +440,36 @@
 
     // ── Init ─────────────────────────────────────────────────────────────────
     async function init() {
+      // Step 1: fetch product data — GLB URL + translations
+      let product;
       try {
-        const [pRes, hRes] = await Promise.all([
-          fetch(`${API_BASE}/products/${PRODUCT_UUID}/organizations/${ORG}/clients/${WS}`),
-          fetch(`${API_BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productUuid: PRODUCT_UUID, page: 0, size: 50 })
-          })
-        ]);
-
-        const { response: product } = await pRes.json();
-        const { response: hsData }  = await hRes.json();
-
-        // GLB URL: use asset.models[0].modelBlobId (the converted GLB, not assetBlobId)
-        const modelBlobId = product.asset?.models?.find(m => m.conversionFormat === 'GLB')?.modelBlobId;
-        if (modelBlobId) {
-          viewer.setAttribute('src',
-            `${API_BASE}/assets/products/${PRODUCT_UUID}/organizations/${ORG}/clients/${WS}/${modelBlobId}`
-          );
-        }
-
-        // Parse translations from product attributes (array of {key, value})
-        for (const attr of (product.attributes ?? [])) {
-          const key   = attr.key ?? attr.name ?? '';
-          const value = attr.value ?? '';
-          const m = key.match(/^hotspot_translations_(\w+)$/);
-          if (m) { try { translations[m[1]] = JSON.parse(value); } catch {} }
-        }
-
-        hotspots = (hsData?.content ?? []).map(hs => ({
-          uuid:  hs.uuid,
-          title: hs.title || 'Feature',
-        }));
-
-        buildList();
-        addHotspotsToViewer();
-
+        const res = await fetch(`${API_BASE}/products/${PRODUCT_UUID}/organizations/${ORG}/clients/${WS}`);
+        ({ response: product } = await res.json());
       } catch (err) {
-        console.error('Init failed:', err);
+        console.error('Product fetch failed:', err);
+        return;
       }
+
+      // Set GLB on viewer immediately
+      const modelBlobId = product.asset?.models?.find(m => m.conversionFormat === 'GLB')?.modelBlobId;
+      if (modelBlobId) {
+        viewer.src = `${API_BASE}/assets/products/${PRODUCT_UUID}/organizations/${ORG}/clients/${WS}/${modelBlobId}`;
+      }
+
+      // Parse translations from product attributes (array of {key, value})
+      for (const attr of (product.attributes ?? [])) {
+        const key   = attr.key ?? attr.name ?? '';
+        const value = attr.value ?? '';
+        const m = key.match(/^hotspot_translations_(\w+)$/);
+        if (m) { try { translations[m[1]] = JSON.parse(value); } catch {} }
+      }
+
+      // Step 2: derive hotspot list from translation keys (UUIDs are the keys)
+      const enTranslations = translations['en'] ?? translations[Object.keys(translations)[0]] ?? {};
+      hotspots = Object.keys(enTranslations).map(uuid => ({ uuid, title: enTranslations[uuid]?.title || 'Feature' }));
+
+      buildList();
+      addHotspotsToViewer();
     }
 
     function buildList() {
