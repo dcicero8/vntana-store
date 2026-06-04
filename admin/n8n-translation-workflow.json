@@ -17,15 +17,21 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api-platform.vntana.com/v1/auth/login",
+        "url": "={{ $credentials.apiBaseUrl }}/v1/auth/login",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
-            { "name": "email",    "value": "={{ $vars.VNTANA_EMAIL }}" },
-            { "name": "password", "value": "={{ $vars.VNTANA_PASSWORD }}" }
+            { "name": "email",    "value": "={{ $credentials.email }}" },
+            { "name": "password", "value": "={{ $credentials.password }}" }
           ]
         },
         "options": {}
+      },
+      "credentials": {
+        "vntanaApi": {
+          "id": "VNTANA account 3",
+          "name": "VNTANA account 3"
+        }
       },
       "id": "auth",
       "name": "Authenticate",
@@ -59,7 +65,7 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "https://api-platform.vntana.com/v1/products",
+        "url": "={{ $credentials.apiBaseUrl }}/v1/products",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
