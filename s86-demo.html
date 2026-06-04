@@ -233,6 +233,55 @@
     }
     .btn-secondary:hover { border-color: #333; }
 
+    /* ── Hotspot pins (Bobcat orange override) ───────────────── */
+    vntana-hotspot { cursor: pointer; z-index: 10; }
+    .hotspot-pin {
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #ff3600; color: #fff;
+      font-size: .75rem; font-weight: 800;
+      border: 2.5px solid #fff;
+      box-shadow: 0 3px 12px rgba(255,54,0,.5);
+      transition: transform .15s, box-shadow .15s;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+    vntana-hotspot:hover .hotspot-pin,
+    vntana-hotspot.open  .hotspot-pin {
+      transform: scale(1.18); background: #cc2b00;
+      box-shadow: 0 4px 16px rgba(255,54,0,.65);
+    }
+    vntana-hotspot.hide .hotspot-pin { opacity: .4; transform: scale(.7); background: #aaa; box-shadow: none; }
+    .hotspot-popup {
+      display: none; position: absolute;
+      bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+      background: #fff; border: 1px solid #e0e0e0;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      padding: .85rem 1rem 1rem; min-width: 200px; max-width: 260px;
+      z-index: 20;
+    }
+    vntana-hotspot.open .hotspot-popup { display: block; }
+    .hotspot-popup-title {
+      font-size: .78rem; font-weight: 800; margin-bottom: .35rem;
+      padding-right: 1.2rem; line-height: 1.3;
+    }
+    .hotspot-popup-body { font-size: .73rem; color: #555; line-height: 1.55; }
+    .hotspot-close {
+      position: absolute; top: 6px; right: 8px;
+      background: none; border: none; cursor: pointer;
+      font-size: .7rem; color: #aaa; padding: 2px 4px; line-height: 1;
+    }
+    .hotspot-close:hover { color: #111; }
+
+    /* ── Sidebar dot → numbered circle ──────────────────────── */
+    .hs-dot {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #eee; color: #777;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 800; flex-shrink: 0;
+      transition: background .12s, color .12s;
+    }
+    .hs-item.active .hs-dot { background: #ff3600; color: #fff; }
+
     /* ── Footer ──────────────────────────────── */
     .page-footer {
       background: #000; color: #444; padding: 1.25rem 2rem;
@@ -410,34 +459,35 @@
   </footer>
 
   <script type="module">
-    // ── Config ──────────────────────────────────────────────────────────────
+    // ── Config ───────────────────────────────────────────────────────────────
     const PRODUCT_UUID = 'f047fcd9-eceb-465b-9abd-625efaa99ac2';
     const ORG          = 'DCicero';
     const WS           = 'n8n-work';
     const API_BASE     = 'https://api.vntana.com';
 
-    // ── Hotspot positions (from VNTANA editor; search API returns 500 for this workspace)
-    const HS_DATA = [
-      { uuid: "9f6157ae-10a6-4c25-aa25-df2885ebbcae", position: "0.6293085111936879m 0.43696063921572464m -0.2652820648198517m", normal: "0.9534805882305541m 0.2026907327422m -0.22313949611833983m", camera: {cameraTarget:"0r 0r 0r",cameraDistance:"2.176439668708029r",cameraRotation:"-0.14564675336358035rad 1.612555778307147rad 0rad",fieldOfView:"0.3959050905669924rad",orthographicSize:"0.4365488093301792r"} },
-      { uuid: "6d4f81d9-47d9-4e38-857a-1e8fee34de7b", position: "-1.9041365108138133m 0.44405335513587674m -0.0001405699781816816m", normal: "-0.6439437284608202m 0.7564976774696907m -0.11422669810049478m", camera: {cameraTarget:"0r 0r 0r",cameraDistance:"2.176439668708029r",cameraRotation:"-0.1371854325845434rad 4.7279828232984835rad 0rad",fieldOfView:"0.3959050905669924rad",orthographicSize:"0.4365488093301792r"} },
-      { uuid: "6fac5a12-01ee-44df-92ed-9d37e91f4df2", position: "0.8737988328879692m 0.13335461258380268m -0.5814802740992924m", normal: "0.9800712980953769m 0.1986457572183087m 0.000337325966709584m", camera: {cameraTarget:"0r 0r 0r",cameraDistance:"2.08842710011709r",cameraRotation:"-0.07838609257501661rad 1.7116294419323723rad 0rad",fieldOfView:"0.3530664253343655rad",orthographicSize:"0.37255490714388967r"} },
-      { uuid: "02bdfbd9-fc81-40bb-84c0-bdb27ac6f683", position: "0.5269581495003125m 0.943177023063472m -0.2418768787444152m", normal: "0.9569177017571057m 0.20333107067881231m -0.20727997433545478m", camera: {cameraTarget:"0r 0r 0r",cameraDistance:"2.2224770122786746r",cameraRotation:"-0.2679157697941619rad 1.4444041263357328rad 0rad",fieldOfView:"0.42003839582158237rad",orthographicSize:"0.47374878842449397r"} },
-      { uuid: "2fba9efa-159a-437e-a5de-95ab86d0f22e", position: "0.6562082640148114m 1.1693785518387276m 0.21590587985227083m", normal: "0.3917762395849866m 0.8808936098696819m 0.2655895822268036m", camera: {cameraTarget:"0r 0r 0r",cameraDistance:"2.4634960462661715r",cameraRotation:"-0.4440206724747404rad 1.5471124450762037rad 0rad",fieldOfView:"0.5672207574255906rad",orthographicSize:"0.7180285830464684r"} }
+    // Translation UUIDs (attribute keys) align positionally with API hotspot order
+    const TRANSLATION_UUIDS = [
+      '9f6157ae-10a6-4c25-aa25-df2885ebbcae',
+      '6d4f81d9-47d9-4e38-857a-1e8fee34de7b',
+      '6fac5a12-01ee-44df-92ed-9d37e91f4df2',
+      '02bdfbd9-fc81-40bb-84c0-bdb27ac6f683',
+      '2fba9efa-159a-437e-a5de-95ab86d0f22e'
     ];
 
-    // ── State ───────────────────────────────────────────────────────────────
-    let currentLang  = 'en';
-    let translations = {
+    // EN translations as fallback (FR/ES/DE loaded from VNTANA attributes)
+    const translations = {
       en: {
-        "9f6157ae-10a6-4c25-aa25-df2885ebbcae": { title: "Selectable Joystick Controls", description: "Low-effort hand control of all machine work group functions and the ability to switch between ISO and H control patterns." },
-        "6d4f81d9-47d9-4e38-857a-1e8fee34de7b": { title: "Integrated In-Machine Cooling System", description: "A high-capacity radiator, large reversible fan and oil cooler keeps your loader running longer at lower temperatures. Run high and super-flow attachments efficiently without overheating." },
-        "6fac5a12-01ee-44df-92ed-9d37e91f4df2": { title: "Super Flow Hydraulics", description: "This auxiliary hydraulic option tackles the most demanding jobs with attachments that require the highest flow possible at 42 gpm and 4,061 psi." },
-        "02bdfbd9-fc81-40bb-84c0-bdb27ac6f683": { title: "Jobsite Companion", description: "Optional voice-activated machine functions, attachment-specific settings and real-time job insights help operators work faster without stopping the machine." },
-        "2fba9efa-159a-437e-a5de-95ab86d0f22e": { title: "360° People Detection", description: "Option that detects people around the machine and helps give operators added awareness in busy jobsite conditions." }
+        '9f6157ae-10a6-4c25-aa25-df2885ebbcae': { title: 'Selectable Joystick Controls', description: 'Low-effort hand control of all machine work group functions and the ability to switch between ISO and H control patterns.' },
+        '6d4f81d9-47d9-4e38-857a-1e8fee34de7b': { title: 'Integrated In-Machine Cooling System', description: 'A high-capacity radiator, large reversible fan and oil cooler keeps your loader running longer at lower temperatures. Run high and super-flow attachments efficiently without overheating.' },
+        '6fac5a12-01ee-44df-92ed-9d37e91f4df2': { title: 'Super Flow Hydraulics', description: 'This auxiliary hydraulic option tackles the most demanding jobs with attachments that require the highest flow possible at 42 gpm and 4,061 psi.' },
+        '02bdfbd9-fc81-40bb-84c0-bdb27ac6f683': { title: 'Jobsite Companion', description: 'Optional voice-activated machine functions, attachment-specific settings and real-time job insights help operators work faster without stopping the machine.' },
+        '2fba9efa-159a-437e-a5de-95ab86d0f22e': { title: '360° People Detection', description: 'Option that detects people around the machine and helps give operators added awareness in busy jobsite conditions.' }
       }
     };
-    let hotspots  = HS_DATA;
-    let activeUuid = null;
+
+    let currentLang = 'en';
+    let hotspots    = [];  // populated from API
+    let activeUuid  = null;
 
     const viewer = document.getElementById('viewer');
 
@@ -462,14 +512,17 @@
 
     // ── Init ─────────────────────────────────────────────────────────────────
     async function init() {
-      let product;
-      try {
-        const res = await fetch(`${API_BASE}/products/${PRODUCT_UUID}/organizations/${ORG}/clients/${WS}`);
-        ({ response: product } = await res.json());
-      } catch (err) {
-        console.error('Product fetch failed:', err);
-        return;
-      }
+      const [productRes, hotspotRes] = await Promise.all([
+        fetch(`${API_BASE}/products/${PRODUCT_UUID}/organizations/${ORG}/clients/${WS}`),
+        fetch(`${API_BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productUuid: PRODUCT_UUID, page: 1, size: 50 })
+        })
+      ]);
+
+      const { response: product } = await productRes.json();
+      const { response: hsData }  = await hotspotRes.json();
 
       // Apply stored viewer config (environment, camera, lighting)
       try {
@@ -491,23 +544,35 @@
         if (m) { try { translations[m[1]] = JSON.parse(value); } catch {} }
       }
 
-      buildList();
+      // Build hotspot list from API — same pattern as product.js
+      hotspots = (hsData?.grid ?? []).map((hs, i) => {
+        const dim = JSON.parse(hs.config.dimensions);
+        const cam = hs.config.camera ? JSON.parse(hs.config.camera) : null;
+        return {
+          uuid:     TRANSLATION_UUIDS[i], // maps positionally to translation keys
+          position: dim.position,
+          normal:   dim.normal,
+          camera:   cam
+        };
+      });
 
-      // Inject hotspot pins after model finishes loading
+      buildList();
       viewer.addEventListener('load', addHotspotsToViewer, { once: true });
     }
 
+    // ── Sidebar list ──────────────────────────────────────────────────────────
     function buildList() {
       const list = document.getElementById('hotspot-list');
+      list.innerHTML = '';
       hotspots.forEach((hs, i) => {
         const el = document.createElement('div');
         el.className = 'hs-item';
         el.dataset.uuid = hs.uuid;
         el.innerHTML = `
-          <div class="hs-dot"></div>
-          <div class="hs-title">${labelFor(hs)}</div>
-          <div class="hs-num">${String(i + 1).padStart(2, '0')}</div>`;
+          <div class="hs-dot">${i + 1}</div>
+          <div class="hs-title">${labelFor(hs)}</div>`;
         el.addEventListener('click', () => {
+          closeAllPins();
           setActive(hs.uuid);
           snapCamera(hs.camera);
         });
@@ -516,17 +581,43 @@
       document.getElementById('panel-sub').textContent = `${hotspots.length} key features`;
     }
 
+    // ── Hotspot pins — same approach as product.js ────────────────────────────
     function addHotspotsToViewer() {
-      hotspots.forEach(hs => {
-        const el = document.createElement('vntana-hotspot');
-        el.position = hs.position;
-        el.normal   = hs.normal;
-        el._uuid    = hs.uuid;
-        viewer.appendChild(el);
-        el.addEventListener('click', () => {
-          setActive(hs.uuid);
-          snapCamera(hs.camera);
+      const closeAll = () => {
+        viewer.querySelectorAll('vntana-hotspot.open').forEach(h => h.classList.remove('open'));
+      };
+
+      hotspots.forEach((hs, idx) => {
+        const t = translations[currentLang]?.[hs.uuid] || translations.en[hs.uuid];
+        const pin = document.createElement('vntana-hotspot');
+        pin.position  = hs.position;
+        pin.normal    = hs.normal;
+        pin._camera   = hs.camera;
+        pin._uuid     = hs.uuid;
+        pin.innerHTML = `
+          <span class="hotspot-pin">${idx + 1}</span>
+          <div class="hotspot-popup">
+            <button class="hotspot-close" aria-label="Close">✕</button>
+            <div class="hotspot-popup-title">${t?.title ?? ''}</div>
+            <div class="hotspot-popup-body">${t?.description ?? ''}</div>
+          </div>`;
+
+        pin.addEventListener('click', e => {
+          if (e.target.closest('.hotspot-popup')) return;
+          const isOpen = pin.classList.contains('open');
+          closeAll();
+          if (!isOpen) {
+            pin.classList.add('open');
+            setActive(hs.uuid);
+            snapCamera(hs.camera);
+          }
         });
+
+        pin.querySelector('.hotspot-close').addEventListener('click', () => {
+          pin.classList.remove('open');
+        });
+
+        viewer.appendChild(pin);
       });
     }
 
@@ -541,10 +632,26 @@
       } catch(e) {}
     }
 
+    function closeAllPins() {
+      viewer.querySelectorAll('vntana-hotspot.open').forEach(h => h.classList.remove('open'));
+    }
+
     function applyLanguage() {
+      // Update sidebar labels
       document.querySelectorAll('.hs-item').forEach(item => {
         const hs = hotspots.find(h => h.uuid === item.dataset.uuid);
         if (hs) item.querySelector('.hs-title').textContent = labelFor(hs);
+      });
+      // Update open popup text
+      viewer.querySelectorAll('vntana-hotspot').forEach(pin => {
+        const hs = hotspots.find(h => h.uuid === pin._uuid);
+        if (!hs) return;
+        const t = translations[currentLang]?.[hs.uuid] || translations.en[hs.uuid];
+        if (!t) return;
+        const titleEl = pin.querySelector('.hotspot-popup-title');
+        const bodyEl  = pin.querySelector('.hotspot-popup-body');
+        if (titleEl) titleEl.textContent = t.title;
+        if (bodyEl)  bodyEl.textContent  = t.description;
       });
     }
 
@@ -555,7 +662,7 @@
     }
 
     function renderCard(uuid) {
-      const t = translations[currentLang]?.[uuid] || translations['en']?.[uuid];
+      const t = translations[currentLang]?.[uuid] || translations.en[uuid];
       const card = document.getElementById('active-card');
       if (!t) { card.classList.remove('visible'); return; }
       card.classList.add('visible');
@@ -565,9 +672,7 @@
     }
 
     function labelFor(hs) {
-      return translations[currentLang]?.[hs.uuid]?.title
-          || translations['en']?.[hs.uuid]?.title
-          || hs.uuid;
+      return translations[currentLang]?.[hs.uuid]?.title || translations.en[hs.uuid]?.title || '';
     }
 
     init();
