@@ -1,0 +1,206 @@
+{
+  "name": "VNTANA: Auto-Sync Translations from Attachment",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "minutes", "minutesInterval": 15 }]
+        }
+      },
+      "id": "schedule",
+      "name": "Every 15 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300],
+      "notes": "Change interval as needed. 15 min is a good default."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/auth/login",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "email": "={{ $vars.VNTANA_EMAIL }}",
+          "password": "={{ $vars.VNTANA_PASSWORD }}"
+        },
+        "options": {}
+      },
+      "id": "auth",
+      "name": "Auth",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/attachments/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $json.response.token }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "productUuid", "value": "f047fcd9-eceb-465b-9abd-625efaa99ac2" },
+            { "name": "entityType",  "value": "PRODUCT" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": { "page": 1, "size": 50 },
+        "options": {}
+      },
+      "id": "searchAttachments",
+      "name": "Search Attachments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Find attachments matching the naming convention and not yet processed\n// Convention: filename starts with 'attributes_completed_'\n// We use n8n's static data to remember the last processed attachment UUID\n\nconst attachments = $input.first().json.response?.grid ?? [];\n\n// Filter to files matching the naming pattern\nconst candidates = attachments.filter(a => {\n  const name = (a.name ?? '').toLowerCase();\n  return name.startsWith('attributes_completed_') && name.endsWith('.xlsx');\n});\n\nif (!candidates.length) {\n  return [{ json: { skip: true, reason: 'No matching attachments found' } }];\n}\n\n// Sort newest first\ncandidates.sort((a, b) => new Date(b.created ?? 0) - new Date(a.created ?? 0));\nconst latest = candidates[0];\n\n// Check if we already processed this one (stored in workflow static data)\nconst staticData = $getWorkflowStaticData('global');\nconst lastProcessed = staticData.lastProcessedUuid;\n\nif (latest.uuid === lastProcessed) {\n  return [{ json: { skip: true, reason: `Already processed: ${latest.name}` } }];\n}\n\n// New file — mark it and continue\nstaticData.lastProcessedUuid = latest.uuid;\nstaticData.lastProcessedAt   = new Date().toISOString();\n\nreturn [{ json: {\n  skip:     false,\n  blobId:   latest.blobId,\n  name:     latest.name,\n  uuid:     latest.uuid\n} }];"
+      },
+      "id": "checkNewFile",
+      "name": "Check for New File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "skip-check",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": false,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ifNewFile",
+      "name": "New File?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://api-platform.vntana.com/v1/storage/load/asset/model?blobId={{ $json.blobId }}&clientUuid=b577b1c8-80bd-4dab-b1b1-b22f9de4671a",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" }
+          ]
+        },
+        "options": {
+          "response": { "response": { "responseFormat": "file", "outputPropertyName": "data" } }
+        }
+      },
+      "id": "downloadFile",
+      "name": "Download XLSX",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 180],
+      "notes": "If 404, try /v1/products/{productUuid}/download/asset/{blobId} instead"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "parseSpreadsheet",
+      "name": "Parse Spreadsheet",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [1560, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst langs = ['fr', 'es', 'de'];\nconst translations = {};\n\nfor (const row of rows) {\n  const uuid = String(row['Hotspot UUID'] ?? '').trim();\n  if (!uuid) continue;\n  for (const lang of langs) {\n    const title       = String(row[`${lang.toUpperCase()} Title`]       ?? '').trim();\n    const description = String(row[`${lang.toUpperCase()} Description`] ?? '').trim();\n    if (!title && !description) continue;\n    if (!translations[lang]) translations[lang] = {};\n    translations[lang][uuid] = { title, description };\n  }\n}\n\nreturn [{ json: {\n  productUuid: 'f047fcd9-eceb-465b-9abd-625efaa99ac2',\n  org:         'DCicero',\n  workspace:   'n8n-work',\n  translations\n} }];"
+      },
+      "id": "transform",
+      "name": "Transform",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 180]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.vntana.com/products/{{ $json.productUuid }}/organizations/{{ $json.org }}/clients/{{ $json.workspace }}",
+        "options": {}
+      },
+      "id": "getProduct",
+      "name": "Get Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2000, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "const product    = $node['Get Product'].json.response;\nconst newTrans   = $node['Transform'].json.translations;\nconst attrMap    = {};\n\nfor (const a of (product.attributes ?? [])) {\n  attrMap[a.name ?? a.key] = a.value;\n}\nfor (const [lang, data] of Object.entries(newTrans)) {\n  attrMap[`hotspot_translations_${lang}`] = JSON.stringify(data);\n}\n\nconst attributes = Object.entries(attrMap).map(([name, value]) => ({ name, value }));\nreturn [{ json: { uuid: product.uuid, name: product.name, attributes } }];"
+      },
+      "id": "merge",
+      "name": "Merge Attributes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2220, 180]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api-platform.vntana.com/v1/products",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "writeAttributes",
+      "name": "Write Attributes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2440, 180]
+    }
+  ],
+  "connections": {
+    "Every 15 Minutes": { "main": [[{ "node": "Auth",               "type": "main", "index": 0 }]] },
+    "Auth":              { "main": [[{ "node": "Search Attachments", "type": "main", "index": 0 }]] },
+    "Search Attachments":{ "main": [[{ "node": "Check for New File", "type": "main", "index": 0 }]] },
+    "Check for New File":{ "main": [[{ "node": "New File?",          "type": "main", "index": 0 }]] },
+    "New File?":         {
+      "main": [
+        [{ "node": "Download XLSX", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Download XLSX":     { "main": [[{ "node": "Parse Spreadsheet", "type": "main", "index": 0 }]] },
+    "Parse Spreadsheet": { "main": [[{ "node": "Transform",         "type": "main", "index": 0 }]] },
+    "Transform":         { "main": [[{ "node": "Get Product",       "type": "main", "index": 0 }]] },
+    "Get Product":       { "main": [[{ "node": "Merge Attributes",  "type": "main", "index": 0 }]] },
+    "Merge Attributes":  { "main": [[{ "node": "Write Attributes",  "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": null,
+  "meta": {
+    "templateId": "vntana-auto-sync",
+    "description": "Polls VNTANA every 15 minutes for product attachments named 'attributes_completed_*.xlsx'. When a new one is found (tracked via workflow static data), downloads it, parses translations, and writes to product attributes automatically. No manual trigger needed — just attach the file and wait. Requires VNTANA_EMAIL and VNTANA_PASSWORD n8n variables."
+  }
+}
