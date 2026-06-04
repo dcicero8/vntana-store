@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bobcat S86-2 — Multilingual Hotspots · VNTANA Demo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f4f2; color: #111; font-size: 14px; -webkit-font-smoothing: antialiased; }
+
+    /* ── Header ─────────────────────────────── */
+    .demo-header {
+      background: #fff;
+      border-bottom: 1px solid #e2e2e0;
+      padding: 0 1.5rem;
+      height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .back-link {
+      font-size: .78rem; font-weight: 600; color: #666; text-decoration: none;
+      display: flex; align-items: center; gap: .35rem;
+    }
+    .back-link:hover { color: #111; }
+    .demo-header img { height: 18px; }
+
+    /* ── Product Hero ────────────────────────── */
+    .product-hero {
+      background: #111; color: #fff;
+      padding: 2.25rem 2rem 1.75rem;
+    }
+    .hero-eyebrow {
+      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: #666; margin-bottom: .5rem;
+    }
+    .product-hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -.03em; line-height: 1.05; }
+    .product-hero .subtitle { font-size: .9rem; color: #888; margin-top: .35rem; }
+
+    .specs-row {
+      display: flex; gap: 2.5rem;
+      margin-top: 1.5rem; padding-top: 1.5rem;
+      border-top: 1px solid #222;
+    }
+    .spec-value { font-size: 1.35rem; font-weight: 700; color: #fff; }
+    .spec-label { font-size: .65rem; color: #555; text-transform: uppercase; letter-spacing: .08em; margin-top: .1rem; }
+
+    .live-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin-top: 1.25rem; font-size: .68rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase; color: #555;
+    }
+    .live-badge::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: #22c55e; box-shadow: 0 0 6px #22c55e;
+    }
+
+    /* ── Tab bar ─────────────────────────────── */
+    .tab-bar {
+      background: #fff; border-bottom: 1px solid #e2e2e0;
+      display: flex; padding: 0 2rem;
+    }
+    .tab-btn {
+      padding: .85rem 1.5rem;
+      font-size: .82rem; font-weight: 700; color: #888;
+      border: none; background: none; cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+    .tab-btn:hover { color: #111; }
+    .tab-btn.active { color: #111; border-bottom-color: #111; }
+
+    /* ── Tab panels ──────────────────────────── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Demo tab ────────────────────────────── */
+    .lang-bar {
+      background: #fff; border-bottom: 1px solid #e2e2e0;
+      padding: .65rem 2rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .lang-label { font-size: .68rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: .1em; margin-right: .25rem; }
+    .lang-btn {
+      padding: .3rem .8rem; border-radius: 4px;
+      border: 1px solid #ddd; background: none; cursor: pointer;
+      font-size: .75rem; font-weight: 700; color: #666;
+      transition: all .12s;
+    }
+    .lang-btn:hover { border-color: #111; color: #111; }
+    .lang-btn.active { background: #111; border-color: #111; color: #fff; }
+
+    .demo-body {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      height: 620px;
+    }
+    @media (max-width: 600px) {
+      .demo-body { grid-template-columns: 1fr; height: auto; }
+      .viewer-wrap { height: 420px; }
+      .hotspot-panel { height: 320px; border-left: none; border-top: 1px solid #e2e2e0; }
+    }
+
+    .viewer-wrap { background: #0d0d0d; position: relative; }
+    vntana-viewer { width: 100%; height: 100%; display: block; }
+
+    .hotspot-panel {
+      background: #fff; border-left: 1px solid #e2e2e0;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .panel-header {
+      padding: 1rem 1.25rem .8rem; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
+    }
+    .panel-header h3 { font-size: .85rem; font-weight: 700; }
+    .panel-header p { font-size: .73rem; color: #999; margin-top: .2rem; }
+
+    .active-card {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #f0f0f0;
+      display: none; flex-shrink: 0;
+      background: #fafaf8;
+    }
+    .active-card.visible { display: block; }
+    .active-card .ac-title { font-size: .88rem; font-weight: 700; margin-bottom: .4rem; }
+    .active-card .ac-desc { font-size: .78rem; color: #555; line-height: 1.55; }
+    .active-card .ac-lang { font-size: .65rem; font-weight: 700; color: #bbb; text-transform: uppercase; letter-spacing: .08em; margin-bottom: .5rem; }
+
+    .hotspot-list { flex: 1; overflow-y: auto; }
+    .hs-item {
+      padding: .7rem 1.25rem;
+      border-bottom: 1px solid #f5f5f5;
+      cursor: pointer; display: flex; align-items: center; gap: .7rem;
+      transition: background .1s;
+    }
+    .hs-item:hover { background: #fafaf9; }
+    .hs-item.active { background: #f5f5f0; }
+    .hs-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; flex-shrink: 0; transition: background .15s; }
+    .hs-item.active .hs-dot { background: #111; }
+    .hs-title { font-size: .8rem; font-weight: 600; flex: 1; }
+    .hs-num { font-size: .68rem; color: #ccc; }
+
+    .empty-state { padding: 2rem 1.25rem; text-align: center; color: #ccc; font-size: .78rem; line-height: 1.7; }
+    .empty-arrow { font-size: 1.4rem; display: block; margin-bottom: .4rem; }
+
+    /* ── Behind the Scenes ───────────────────── */
+    .bts-wrap { max-width: 760px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+    .bts-intro { margin-bottom: 2.5rem; }
+    .bts-intro h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -.025em; margin-bottom: .5rem; }
+    .bts-intro p { color: #555; font-size: .88rem; line-height: 1.65; max-width: 580px; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: .875rem; margin-bottom: 2.75rem; }
+    @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+    .step-card { background: #fff; border: 1px solid #e2e2e0; border-radius: 10px; padding: 1.4rem; }
+    .step-n { font-size: .65rem; font-weight: 800; color: #bbb; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .6rem; }
+    .step-icon { font-size: 1.6rem; display: block; margin-bottom: .7rem; }
+    .step-card h3 { font-size: .9rem; font-weight: 700; margin-bottom: .35rem; }
+    .step-card p { font-size: .78rem; color: #666; line-height: 1.55; }
+
+    .bts-section { margin-bottom: 2.5rem; }
+    .bts-section h2 { font-size: .95rem; font-weight: 800; margin-bottom: 1rem; }
+
+    .code-block { background: #1a1a1a; border-radius: 8px; overflow: hidden; }
+    .code-topbar {
+      background: #252525; padding: .5rem 1rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .code-dots { display: flex; gap: .35rem; }
+    .code-dots span { width: 10px; height: 10px; border-radius: 50%; background: #444; }
+    .code-filename { font-size: .7rem; color: #666; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .code-block pre {
+      padding: 1.25rem 1.5rem;
+      font-size: .76rem; color: #cdd6f4;
+      line-height: 1.75; overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+    .c-comment { color: #6c7086; }
+    .c-keyword { color: #cba6f7; }
+    .c-string  { color: #a6e3a1; }
+    .c-fn      { color: #89b4fa; }
+    .c-var     { color: #f38ba8; }
+    .c-prop    { color: #fab387; }
+
+    .checklist { list-style: none; display: grid; gap: .55rem; }
+    .checklist li {
+      display: flex; align-items: flex-start; gap: .6rem;
+      font-size: .84rem; color: #333; line-height: 1.45;
+    }
+    .checklist li::before { content: '✓'; color: #22c55e; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+
+    .bts-ctas {
+      display: flex; gap: .75rem; flex-wrap: wrap;
+      margin-top: 2.25rem; padding-top: 2.25rem;
+      border-top: 1px solid #e2e2e0;
+    }
+    .btn-primary {
+      padding: .6rem 1.25rem; border-radius: 6px;
+      font-size: .82rem; font-weight: 700; color: #fff;
+      background: #111; border: none; cursor: pointer;
+      text-decoration: none; transition: opacity .15s;
+    }
+    .btn-primary:hover { opacity: .8; }
+    .btn-secondary {
+      padding: .6rem 1.25rem; border-radius: 6px;
+      font-size: .82rem; font-weight: 700; color: #111;
+      background: none; border: 1.5px solid #ccc; cursor: pointer;
+      text-decoration: none; transition: border-color .15s;
+    }
+    .btn-secondary:hover { border-color: #111; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="demo-header">
+    <a href="personalized-demos.html" class="back-link">← Personalized Demos</a>
+    <img src="VNTANA-logo-black.png" alt="VNTANA" height="18">
+  </header>
+
+  <!-- Product Hero -->
+  <div class="product-hero">
+    <p class="hero-eyebrow">Skid-Steer Loader &nbsp;·&nbsp; VNTANA 3D Demo</p>
+    <h1>Pro S86-2</h1>
+    <p class="subtitle">Multilingual hotspot annotations — powered by VNTANA</p>
+    <div class="specs-row">
+      <div>
+        <div class="spec-value">115 hp</div>
+        <div class="spec-label">Horsepower</div>
+      </div>
+      <div>
+        <div class="spec-value">3,500 lbs</div>
+        <div class="spec-label">Rated Capacity</div>
+      </div>
+      <div>
+        <div class="spec-value">42 gal/min</div>
+        <div class="spec-label">Super-Flow</div>
+      </div>
+    </div>
+    <p class="live-badge">Live 3D &nbsp;·&nbsp; EN · FR · ES · DE</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="demo">Interactive Demo</button>
+    <button class="tab-btn" data-tab="bts">Behind the Scenes</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       DEMO TAB
+  ══════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-demo">
+
+    <div class="lang-bar">
+      <span class="lang-label">Language</span>
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="fr">FR</button>
+      <button class="lang-btn" data-lang="es">ES</button>
+      <button class="lang-btn" data-lang="de">DE</button>
+    </div>
+
+    <div class="demo-body">
+      <div class="viewer-wrap">
+        <vntana-viewer
+          id="viewer"
+          environment-src="Neutral.hdr"
+          enable-auto-rotate
+          shadow-intensity="0.3"
+          camera-controls></vntana-viewer>
+      </div>
+
+      <aside class="hotspot-panel">
+        <div class="panel-header">
+          <h3>Feature Hotspots</h3>
+          <p id="panel-sub">Rotate the model · click a hotspot</p>
+        </div>
+
+        <div class="active-card" id="active-card">
+          <div class="ac-lang" id="card-lang">EN</div>
+          <div class="ac-title" id="card-title"></div>
+          <div class="ac-desc" id="card-desc"></div>
+        </div>
+
+        <div class="hotspot-list" id="hotspot-list">
+          <div class="empty-state" id="empty-state">
+            <span class="empty-arrow">↑</span>
+            Click any hotspot pin<br>on the 3D model
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       BEHIND THE SCENES TAB
+  ══════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-bts">
+    <div class="bts-wrap">
+
+      <div class="bts-intro">
+        <h2>How multilingual hotspots work</h2>
+        <p>Translations live as product attributes in VNTANA — a key-value store attached to every asset. Your product page reads them at load time and applies them to the 3D viewer. No backend changes, no CMS workflow, no per-language page variants.</p>
+      </div>
+
+      <!-- 3 Steps -->
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-n">Step 1</div>
+          <span class="step-icon">📋</span>
+          <h3>Fill out the template</h3>
+          <p>One row per hotspot, one column per language. Takes about 15 minutes for a full product page.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-n">Step 2</div>
+          <span class="step-icon">⬆️</span>
+          <h3>Upload once</h3>
+          <p>Drag the spreadsheet into the admin tool. An n8n workflow writes translations to VNTANA attributes automatically.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-n">Step 3</div>
+          <span class="step-icon">🌍</span>
+          <h3>Live immediately</h3>
+          <p>The product page reads translations on load. Language switching happens client-side with no page reload.</p>
+        </div>
+      </div>
+
+      <!-- Code snippet -->
+      <div class="bts-section">
+        <h2>What the integration looks like</h2>
+        <div class="code-block">
+          <div class="code-topbar">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-filename">product-page.js &nbsp;— ~30 lines total</span>
+          </div>
+<pre><span class="c-comment">// 1. Fetch translations stored in VNTANA product attributes</span>
+<span class="c-keyword">const</span> <span class="c-var">res</span> = <span class="c-keyword">await</span> <span class="c-fn">fetch</span>(<span class="c-string">`https://api.vntana.com/products/${PRODUCT_UUID}/organizations/${ORG}/clients/${WS}`</span>);
+<span class="c-keyword">const</span> { response: <span class="c-prop">product</span> } = <span class="c-keyword">await</span> <span class="c-var">res</span>.<span class="c-fn">json</span>();
+
+<span class="c-comment">// 2. Attributes are keyed as "hotspot_translations_fr", "hotspot_translations_de", etc.</span>
+<span class="c-keyword">const</span> <span class="c-var">translations</span> = {};
+<span class="c-keyword">for</span> (<span class="c-keyword">const</span> [<span class="c-prop">key</span>, <span class="c-prop">value</span>] <span class="c-keyword">of</span> Object.<span class="c-fn">entries</span>(<span class="c-prop">product</span>.attributes ?? {})) {
+  <span class="c-keyword">const</span> <span class="c-var">match</span> = <span class="c-prop">key</span>.<span class="c-fn">match</span>(<span class="c-string">/^hotspot_translations_(\w+)$/</span>);
+  <span class="c-keyword">if</span> (<span class="c-var">match</span>) <span class="c-var">translations</span>[<span class="c-var">match</span>[1]] = JSON.<span class="c-fn">parse</span>(<span class="c-prop">value</span>);
+}
+
+<span class="c-comment">// 3. Apply when the visitor selects a language — works with the VNTANA NPM viewer</span>
+<span class="c-keyword">function</span> <span class="c-fn">setLanguage</span>(<span class="c-prop">lang</span>) {
+  viewer.<span class="c-fn">querySelectorAll</span>(<span class="c-string">'vntana-hotspot'</span>).<span class="c-fn">forEach</span>(<span class="c-prop">hs</span> => {
+    <span class="c-keyword">const</span> <span class="c-var">t</span> = <span class="c-var">translations</span>[<span class="c-prop">lang</span>]?.[<span class="c-prop">hs</span>.dataset.uuid];
+    <span class="c-keyword">if</span> (<span class="c-var">t</span>) {
+      <span class="c-prop">hs</span>.<span class="c-fn">setAttribute</span>(<span class="c-string">'title'</span>, <span class="c-var">t</span>.title);
+      <span class="c-prop">hs</span>.<span class="c-fn">setAttribute</span>(<span class="c-string">'body'</span>, <span class="c-var">t</span>.description);
+    }
+  });
+}</pre>
+        </div>
+      </div>
+
+      <!-- What's included -->
+      <div class="bts-section">
+        <h2>What's included in this package</h2>
+        <ul class="checklist">
+          <li>Admin upload tool — drag-and-drop spreadsheet, auto-published to VNTANA in seconds</li>
+          <li>Translation spreadsheet template — one row per hotspot, one column per language</li>
+          <li>n8n automation workflow — importable JSON, runs in your cloud instance</li>
+          <li>Integration code (~30 lines JS) — drops into any product page template</li>
+          <li>Works with any VNTANA Live Public asset — no additional platform configuration</li>
+          <li>Update anytime — re-upload the spreadsheet to revise translations instantly</li>
+        </ul>
+      </div>
+
+      <!-- CTAs -->
+      <div class="bts-ctas">
+        <a href="admin/index.html" class="btn-primary">Open Admin Tool</a>
+        <a href="admin/hotspot-translations-template.xlsx" download class="btn-secondary">Download Template</a>
+        <a href="admin/n8n-translation-workflow.json" download class="btn-secondary">Download n8n Workflow</a>
+        <a href="hotspot-translations.html" class="btn-secondary">Full Preview Tool</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ── Config ──────────────────────────────────────────────────────────────
+    const PRODUCT_UUID = 'f047fcd9-eceb-465b-9abd-625efaa99ac2';
+    const ORG          = 'DCicero';
+    const WS           = 'n8n-work';
+    const CDN_BASE     = 'https://cdn.vntana.com';
+    const GLB_BLOB     = '8c3b1e9b-551c-4d0b-ae46-92d0867aba57.glb';
+
+    // ── State ───────────────────────────────────────────────────────────────
+    let currentLang  = 'en';
+    let translations = {};
+    let hotspots     = [];
+    let activeUuid   = null;
+
+    // ── Viewer ──────────────────────────────────────────────────────────────
+    const viewer = document.getElementById('viewer');
+    viewer.setAttribute('src', `${CDN_BASE}/asset-blobs/${GLB_BLOB}`);
+
+    // ── Tab switching ────────────────────────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `tab-${id}`));
+      });
+    });
+
+    // ── Language buttons ─────────────────────────────────────────────────────
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentLang = btn.dataset.lang;
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b === btn));
+        applyLanguage();
+        if (activeUuid) renderCard(activeUuid);
+      });
+    });
+
+    // ── Load data ────────────────────────────────────────────────────────────
+    async function init() {
+      try {
+        const [pRes, hRes] = await Promise.all([
+          fetch(`https://api.vntana.com/products/${PRODUCT_UUID}/organizations/${ORG}/clients/${WS}`),
+          fetch(`https://api.vntana.com/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productUuid: PRODUCT_UUID, page: 0, size: 50 })
+          })
+        ]);
+
+        const { response: product } = await pRes.json();
+        const { response: hsData }  = await hRes.json();
+
+        // Parse translations from product attributes
+        for (const [key, value] of Object.entries(product.attributes ?? {})) {
+          const m = key.match(/^hotspot_translations_(\w+)$/);
+          if (m) { try { translations[m[1]] = JSON.parse(value); } catch {} }
+        }
+
+        hotspots = (hsData?.content ?? []).map(hs => ({
+          uuid:  hs.uuid,
+          title: hs.title || 'Feature',
+        }));
+
+        buildList();
+        addHotspotsToViewer();
+
+      } catch (err) {
+        console.error('Init failed:', err);
+      }
+    }
+
+    // ── Sidebar list ─────────────────────────────────────────────────────────
+    function buildList() {
+      const list = document.getElementById('hotspot-list');
+      if (!hotspots.length) return;
+      document.getElementById('empty-state').remove();
+
+      hotspots.forEach((hs, i) => {
+        const el = document.createElement('div');
+        el.className = 'hs-item';
+        el.dataset.uuid = hs.uuid;
+        el.innerHTML = `
+          <div class="hs-dot"></div>
+          <div class="hs-title">${labelFor(hs.uuid, hs.title)}</div>
+          <div class="hs-num">${String(i + 1).padStart(2, '0')}</div>`;
+        el.addEventListener('click', () => setActive(hs.uuid));
+        list.appendChild(el);
+      });
+
+      document.getElementById('panel-sub').textContent = `${hotspots.length} feature hotspots`;
+    }
+
+    // ── Add hotspots to viewer ────────────────────────────────────────────────
+    function addHotspotsToViewer() {
+      hotspots.forEach(hs => {
+        const el = document.createElement('vntana-hotspot');
+        el.dataset.uuid = hs.uuid;
+        el.setAttribute('slot', 'hotspot');
+        const t = translations[currentLang]?.[hs.uuid] || translations['en']?.[hs.uuid];
+        if (t) { el.setAttribute('title', t.title); el.setAttribute('body', t.description); }
+        el.addEventListener('click', () => setActive(hs.uuid));
+        viewer.appendChild(el);
+      });
+    }
+
+    // ── Apply language to all hotspots ────────────────────────────────────────
+    function applyLanguage() {
+      hotspots.forEach(hs => {
+        const el = viewer.querySelector(`vntana-hotspot[data-uuid="${hs.uuid}"]`);
+        if (!el) return;
+        const t = translations[currentLang]?.[hs.uuid] || translations['en']?.[hs.uuid];
+        if (t) { el.setAttribute('title', t.title); el.setAttribute('body', t.description); }
+      });
+      // Update sidebar titles
+      document.querySelectorAll('.hs-item').forEach(item => {
+        const hs = hotspots.find(h => h.uuid === item.dataset.uuid);
+        if (hs) item.querySelector('.hs-title').textContent = labelFor(hs.uuid, hs.title);
+      });
+    }
+
+    // ── Set active hotspot ────────────────────────────────────────────────────
+    function setActive(uuid) {
+      activeUuid = uuid;
+      document.querySelectorAll('.hs-item').forEach(el => el.classList.toggle('active', el.dataset.uuid === uuid));
+      renderCard(uuid);
+    }
+
+    function renderCard(uuid) {
+      const t   = translations[currentLang]?.[uuid] || translations['en']?.[uuid];
+      const card = document.getElementById('active-card');
+      if (!t) { card.classList.remove('visible'); return; }
+      card.classList.add('visible');
+      document.getElementById('card-lang').textContent  = currentLang.toUpperCase();
+      document.getElementById('card-title').textContent = t.title;
+      document.getElementById('card-desc').textContent  = t.description;
+    }
+
+    function labelFor(uuid, fallback) {
+      return translations[currentLang]?.[uuid]?.title
+        || translations['en']?.[uuid]?.title
+        || fallback;
+    }
+
+    init();
+  </script>
+</body>
+</html>
