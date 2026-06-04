@@ -386,7 +386,6 @@
     const ORG          = 'DCicero';
     const WS           = 'n8n-work';
     const CDN_BASE     = 'https://cdn.vntana.com';
-    const GLB_BLOB     = '8c3b1e9b-551c-4d0b-ae46-92d0867aba57.glb';
 
     // ── State ───────────────────────────────────────────────────────────────
     let currentLang  = 'en';
@@ -396,7 +395,6 @@
 
     // ── Viewer ──────────────────────────────────────────────────────────────
     const viewer = document.getElementById('viewer');
-    viewer.setAttribute('src', `${CDN_BASE}/asset-blobs/${GLB_BLOB}`);
 
     // ── Tab switching ────────────────────────────────────────────────────────
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -431,6 +429,12 @@
 
         const { response: product } = await pRes.json();
         const { response: hsData }  = await hRes.json();
+
+        // Set viewer src from the converted model blob (not the original assetBlobId)
+        const modelBlobId = product.models?.[0]?.modelBlobId;
+        if (modelBlobId) {
+          viewer.setAttribute('src', `${CDN_BASE}/asset-blobs/${modelBlobId}`);
+        }
 
         // Parse translations from product attributes
         for (const [key, value] of Object.entries(product.attributes ?? {})) {
