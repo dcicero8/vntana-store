@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VNTANA Translation Publisher</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f4f2;
+      color: #111;
+      min-height: 100vh;
+      padding: 2rem;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e2e2e0;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 960px;
+      margin: 0 auto 1.5rem;
+    }
+    h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    h2 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
+    p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; margin-top: 0.4rem; }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed #d1d5db;
+      border-radius: 10px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-top: 1.25rem;
+    }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: #111; background: #f9f9f9; }
+    .drop-zone input { display: none; }
+    .drop-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .drop-label { font-size: 0.9rem; font-weight: 600; }
+    .drop-sub   { font-size: 0.78rem; color: #9ca3af; margin-top: 0.25rem; }
+
+    /* Preview table */
+    .preview-wrap { overflow-x: auto; margin-top: 1rem; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.78rem; }
+    th {
+      background: #f3f4f6; padding: 0.5rem 0.75rem;
+      text-align: left; font-weight: 700; border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f0f0f0; vertical-align: top; max-width: 220px; }
+    .lang-en { background: #f0f7ff; }
+    .lang-fr { background: #fffef0; }
+    .lang-es { background: #f0fff4; }
+    .lang-de { background: #fff7f0; }
+    .uuid-cell { color: #9ca3af; font-family: monospace; font-size: 0.7rem; }
+    .missing { color: #ef4444; font-style: italic; }
+    .ok      { color: #16a34a; }
+
+    /* Status + button */
+    .actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
+    .publish-btn {
+      padding: 0.7rem 1.75rem;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .publish-btn:hover   { opacity: 0.8; }
+    .publish-btn:disabled { opacity: 0.35; cursor: default; }
+    .status {
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+    }
+    .status.idle    { display: none; }
+    .status.loading { background: #f3f4f6; color: #6b7280; }
+    .status.ok      { background: #dcfce7; color: #166534; }
+    .status.err     { background: #fee2e2; color: #991b1b; }
+
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      margin-right: 0.25rem;
+    }
+    .badge-en { background: #dbeafe; color: #1d4ed8; }
+    .badge-fr { background: #fef9c3; color: #854d0e; }
+    .badge-es { background: #dcfce7; color: #166534; }
+    .badge-de { background: #ffedd5; color: #9a3412; }
+
+    a { color: #2563eb; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>VNTANA Translation Publisher</h1>
+    <p>Upload a completed translation spreadsheet to publish hotspot text to the VNTANA platform. The translations will be live immediately.</p>
+
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="file-input" accept=".xlsx,.xls">
+      <div class="drop-icon">📄</div>
+      <div class="drop-label">Drop your spreadsheet here, or click to browse</div>
+      <div class="drop-sub">Accepts .xlsx — use the <a href="hotspot-translations-template.xlsx" download>template</a></div>
+    </div>
+  </div>
+
+  <div class="card" id="preview-card" style="display:none">
+    <h2>Preview</h2>
+    <div class="preview-wrap">
+      <table id="preview-table"></table>
+    </div>
+    <div class="actions">
+      <button class="publish-btn" id="publish-btn" disabled>Publish to VNTANA</button>
+      <div class="status idle" id="status"></div>
+    </div>
+  </div>
+
+  <script>
+    // ── Config ────────────────────────────────────────────────────────────────
+    // Replace with your actual n8n webhook URL after creating the workflow
+    const WEBHOOK_URL = "https://vntana.app.n8n.cloud/webhook/vntana-translations";
+
+    const PRODUCT_UUID = "e5a84eb7-eaf2-44e6-82ed-6c10c9741e02";
+    const ORG          = "DCicero";
+    const WS           = "figurement";
+
+    const LANGS = ["fr", "es", "de"];
+    const LANG_LABELS = { en: "EN", fr: "FR", es: "ES", de: "DE" };
+
+    let parsed = null; // { fr: { uuid: { title, description } }, ... }
+
+    // ── Drop zone ─────────────────────────────────────────────────────────────
+    const dropZone  = document.getElementById("drop-zone");
+    const fileInput = document.getElementById("file-input");
+
+    dropZone.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("drag-over");
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    // ── Parse xlsx ────────────────────────────────────────────────────────────
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const wb   = XLSX.read(e.target.result, { type: "array" });
+        const ws   = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+
+        const translations = {};
+        for (const row of rows) {
+          const uuid = String(row["Hotspot UUID"] ?? "").trim();
+          if (!uuid) continue;
+          for (const lang of LANGS) {
+            const title       = String(row[`${lang.toUpperCase()} Title`]       ?? "").trim();
+            const description = String(row[`${lang.toUpperCase()} Description`] ?? "").trim();
+            if (!title && !description) continue;
+            if (!translations[lang]) translations[lang] = {};
+            translations[lang][uuid] = { title, description };
+          }
+        }
+
+        parsed = translations;
+        renderPreview(rows, translations);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function renderPreview(rows, translations) {
+      const table = document.getElementById("preview-table");
+      const locales = Object.keys(translations);
+
+      let html = "<tr><th>#</th><th>UUID</th>";
+      for (const lang of ["en", ...locales]) {
+        html += `<th class="lang-${lang}"><span class="badge badge-${lang}">${LANG_LABELS[lang]}</span> Title</th>`;
+        html += `<th class="lang-${lang}">Description</th>`;
+      }
+      html += "</tr>";
+
+      for (const row of rows) {
+        const uuid = String(row["Hotspot UUID"] ?? "").trim();
+        if (!uuid) continue;
+        html += `<tr>
+          <td>${row["Hotspot #"] ?? ""}</td>
+          <td class="uuid-cell">${uuid.slice(0,8)}…</td>
+          <td class="lang-en">${row["EN Title"] ?? ""}</td>
+          <td class="lang-en">${(row["EN Description"] ?? "").slice(0, 80)}…</td>`;
+
+        for (const lang of locales) {
+          const t = translations[lang]?.[uuid];
+          if (t) {
+            html += `<td class="lang-${lang} ok">${t.title}</td>`;
+            html += `<td class="lang-${lang}">${t.description.slice(0,80)}…</td>`;
+          } else {
+            html += `<td class="lang-${lang} missing" colspan="2">Not translated</td>`;
+          }
+        }
+        html += "</tr>";
+      }
+
+      table.innerHTML = html;
+      document.getElementById("preview-card").style.display = "block";
+      document.getElementById("publish-btn").disabled = !locales.length;
+      setStatus("idle");
+    }
+
+    // ── Publish ───────────────────────────────────────────────────────────────
+    document.getElementById("publish-btn").addEventListener("click", async () => {
+      if (!parsed) return;
+      setStatus("loading", "Publishing…");
+      document.getElementById("publish-btn").disabled = true;
+
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            productUuid: PRODUCT_UUID,
+            org: ORG,
+            workspace: WS,
+            translations: parsed
+          })
+        });
+
+        if (!res.ok) throw new Error(`Webhook returned ${res.status}: ${await res.text()}`);
+        const data = await res.json().catch(() => ({}));
+        setStatus("ok", `✓ Published — ${Object.keys(parsed).join(", ").toUpperCase()} live on VNTANA`);
+      } catch(err) {
+        setStatus("err", `Error: ${err.message}`);
+        document.getElementById("publish-btn").disabled = false;
+      }
+    });
+
+    function setStatus(type, msg = "") {
+      const el = document.getElementById("status");
+      el.className = `status ${type}`;
+      el.textContent = msg;
+    }
+  </script>
+
+</body>
+</html>
