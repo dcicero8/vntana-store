@@ -590,6 +590,22 @@
     Object.assign(viewer, config);
     viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB_BLOB}`;
 
+    // ── Auto-load translations from product attributes ────────────────────────
+    const attrs = product.response.attributes ?? [];
+    for (const attr of attrs) {
+      const match = (attr.name ?? attr.key ?? "").match(/^hotspot_translations_(\w+)$/);
+      if (match) {
+        const lang = match[1];
+        try {
+          const data = JSON.parse(attr.value);
+          translations[lang] = { ...(translations[lang] ?? {}), ...data };
+          if (!LANGS.find(l => l.code === lang)) LANGS.push({ code: lang, label: lang.toUpperCase() });
+        } catch(e) { console.warn("Failed to parse translations for", lang, e); }
+      }
+    }
+    buildLangRow();
+    refreshHotspots();
+
     // ── Inject hotspot pins after model loads ─────────────────────────────────
     viewer.addEventListener("load", () => {
       hotspotEls = HS_DATA.map((hs, idx) => {
