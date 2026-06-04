@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>n8n Integration — VNTANA</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+
+    /* ── Page shell ─────────────────────────────────────────── */
+    body { background: #f4f4f2; }
+
+    .n8n-hero {
+      background: #111; color: #fff;
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+    }
+    .n8n-hero .eyebrow {
+      font-size: .72rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: #f5523e; margin-bottom: .75rem;
+    }
+    .n8n-hero h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: .75rem; }
+    .n8n-hero p  { font-size: .95rem; color: rgba(255,255,255,.65); max-width: 560px; margin: 0 auto 1.5rem; line-height: 1.65; }
+    .n8n-logo {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px; padding: .45rem .9rem;
+      font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.8);
+    }
+    .n8n-logo svg { width: 20px; height: 20px; }
+
+    /* ── Flow diagram ───────────────────────────────────────── */
+    .flow-section { padding: 3rem 2rem; max-width: 1280px; margin: 0 auto; }
+    .flow-section > h2 {
+      text-align: center; font-size: 1.1rem; font-weight: 700;
+      letter-spacing: -.01em; margin-bottom: .4rem;
+    }
+    .flow-section > p {
+      text-align: center; font-size: .85rem; color: #666;
+      margin-bottom: 2.5rem;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr 40px 1fr;
+      gap: 0;
+      align-items: start;
+    }
+
+    /* columns */
+    .flow-col {}
+    .flow-col-header {
+      text-align: center; margin-bottom: 1rem;
+    }
+    .flow-col-header .col-icon {
+      font-size: 1.6rem; display: block; margin-bottom: .3rem;
+    }
+    .flow-col-header h3 {
+      font-size: .72rem; font-weight: 800; letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .col-inputs  .flow-col-header h3 { color: #2563eb; }
+    .col-ops     .flow-col-header h3 { color: #7c3aed; }
+    .col-outputs .flow-col-header h3 { color: #059669; }
+
+    /* connector arrows */
+    .flow-arrow {
+      display: flex; align-items: center; justify-content: center;
+      padding-top: 4.5rem;
+    }
+    .flow-arrow svg { color: #ccc; }
+
+    /* cards */
+    .flow-card {
+      background: #fff; border: 1px solid #e2e2e0;
+      border-radius: 10px; padding: .85rem 1rem;
+      margin-bottom: .75rem; position: relative;
+    }
+    .flow-card-icon {
+      font-size: 1.1rem; margin-bottom: .3rem; display: block;
+    }
+    .flow-card h4 { font-size: .82rem; font-weight: 700; margin-bottom: .2rem; }
+    .flow-card p  { font-size: .74rem; color: #666; line-height: 1.5; margin: 0; }
+    .flow-card .tag {
+      display: inline-block; margin-top: .4rem;
+      padding: .1rem .45rem; border-radius: 3px;
+      font-size: .62rem; font-weight: 700; letter-spacing: .05em;
+    }
+    .tag-blue   { background: #dbeafe; color: #1d4ed8; }
+    .tag-purple { background: #ede9fe; color: #6d28d9; }
+    .tag-green  { background: #d1fae5; color: #065f46; }
+    .tag-orange { background: #ffedd5; color: #9a3412; }
+
+    .col-inputs  .flow-card { border-left: 3px solid #3b82f6; }
+    .col-ops     .flow-card { border-left: 3px solid #8b5cf6; }
+    .col-outputs .flow-card { border-left: 3px solid #10b981; }
+
+    /* ── Workflows ──────────────────────────────────────────── */
+    .workflows-section {
+      background: #fff; border-top: 1px solid #e2e2e0;
+      padding: 3rem 2rem;
+    }
+    .workflows-inner { max-width: 1280px; margin: 0 auto; }
+    .workflows-section h2 {
+      font-size: 1.1rem; font-weight: 700; margin-bottom: .35rem;
+    }
+    .workflows-section > .workflows-inner > p {
+      font-size: .85rem; color: #666; margin-bottom: 2rem;
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .workflow-card {
+      border: 1px solid #e2e2e0; border-radius: 10px; padding: 1.25rem;
+      background: #fafafa;
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+    .workflow-card-top {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem;
+    }
+    .workflow-card h3 { font-size: .88rem; font-weight: 700; line-height: 1.3; }
+    .workflow-card p  { font-size: .78rem; color: #666; line-height: 1.5; flex: 1; }
+    .workflow-card-links {
+      display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .25rem;
+    }
+    .btn-n8n {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .4rem .9rem; border-radius: 6px;
+      font-size: .72rem; font-weight: 700;
+      background: #ea4b71; color: #fff;
+      text-decoration: none; transition: opacity .15s;
+    }
+    .btn-n8n:hover { opacity: .85; }
+    .btn-download {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .4rem .9rem; border-radius: 6px;
+      font-size: .72rem; font-weight: 700;
+      background: #f3f4f6; color: #374151;
+      text-decoration: none; border: 1px solid #e5e7eb;
+      transition: border-color .15s;
+    }
+    .btn-download:hover { border-color: #374151; }
+    .status-pill {
+      font-size: .62rem; font-weight: 700; padding: .15rem .5rem;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .pill-live    { background: #d1fae5; color: #065f46; }
+    .pill-pending { background: #fef9c3; color: #854d0e; }
+
+    /* ── Docs strip ─────────────────────────────────────────── */
+    .docs-strip {
+      background: #111; color: #fff;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    .docs-strip h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: .4rem; }
+    .docs-strip p  { font-size: .85rem; color: rgba(255,255,255,.6); margin-bottom: 1.25rem; }
+    .docs-links    { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+    .btn-docs {
+      padding: .55rem 1.25rem; border-radius: 6px;
+      font-size: .78rem; font-weight: 700; text-decoration: none;
+      border: 1px solid rgba(255,255,255,.25); color: rgba(255,255,255,.85);
+      transition: border-color .15s, color .15s;
+    }
+    .btn-docs:hover { border-color: #fff; color: #fff; }
+
+    @media (max-width: 860px) {
+      .flow-grid {
+        grid-template-columns: 1fr;
+      }
+      .flow-arrow { display: none; }
+      .flow-col { margin-bottom: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo"><img src="VNTANA-logo-black.png" alt="VNTANA" height="18"></a>
+    <div class="header-actions">
+      <a href="personalized-demos.html">← Demos</a>
+      <a href="https://vntana.com" target="_blank">vntana.com ↗</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="n8n-hero">
+    <p class="eyebrow">Integrations</p>
+    <h1>VNTANA + n8n</h1>
+    <p>Automate product attribute updates, hotspot translations, and file management using the VNTANA Platform API — no code required beyond configuring a workflow.</p>
+    <a class="n8n-logo" href="https://n8n.io" target="_blank">
+      <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#ea4b71"/><path d="M12 20c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8-8-3.6-8-8z" fill="#fff" fill-opacity=".2"/><path d="M17 16l6 4-6 4V16z" fill="#fff"/></svg>
+      Powered by n8n
+    </a>
+  </div>
+
+  <!-- Flow diagram -->
+  <section class="flow-section">
+    <h2>How the integration works</h2>
+    <p>Data flows from a trigger on the left, through VNTANA API operations in the middle, to live product updates on the right.</p>
+
+    <div class="flow-grid">
+
+      <!-- INPUTS -->
+      <div class="flow-col col-inputs">
+        <div class="flow-col-header">
+          <span class="col-icon">📥</span>
+          <h3>Inputs</h3>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">📄</span>
+          <h4>Spreadsheet Upload</h4>
+          <p>Drop an .xlsx into the admin UI. Parsed locally, sent to n8n via webhook.</p>
+          <span class="tag tag-blue">Webhook trigger</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">📎</span>
+          <h4>Product Attachment</h4>
+          <p>Attach a spreadsheet directly to a VNTANA product. n8n detects it automatically.</p>
+          <span class="tag tag-blue">Timer trigger</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">⏱️</span>
+          <h4>Scheduled Poll</h4>
+          <p>Runs every 15 minutes. Checks for new attachments matching a filename pattern.</p>
+          <span class="tag tag-blue">Schedule trigger</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">🖱️</span>
+          <h4>Manual Sync Button</h4>
+          <p>One-click from the admin page triggers n8n to re-read the attached file and update immediately.</p>
+          <span class="tag tag-blue">Webhook trigger</span>
+        </div>
+      </div>
+
+      <!-- ARROW -->
+      <div class="flow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </div>
+
+      <!-- OPERATIONS -->
+      <div class="flow-col col-ops">
+        <div class="flow-col-header">
+          <span class="col-icon">⚙️</span>
+          <h3>Operations</h3>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">🔐</span>
+          <h4>Authenticate</h4>
+          <p>Posts credentials to <code style="font-size:.7rem;background:#f3f4f6;padding:1px 3px;border-radius:2px;">/v1/auth/login</code> and passes the token to all subsequent requests via X-AUTH-TOKEN.</p>
+          <span class="tag tag-purple">Platform API</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">🔍</span>
+          <h4>Search Attachments</h4>
+          <p>Queries <code style="font-size:.7rem;background:#f3f4f6;padding:1px 3px;border-radius:2px;">/v1/attachments/search</code> for files on the product. Filters by filename prefix and skips already-processed UUIDs.</p>
+          <span class="tag tag-purple">Platform API</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">📊</span>
+          <h4>Parse Spreadsheet</h4>
+          <p>n8n's built-in Spreadsheet File node reads the .xlsx and maps each row to JSON. Expects two columns: <strong>attribute_key</strong> and <strong>attribute_value</strong>.</p>
+          <span class="tag tag-purple">n8n native</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">🔄</span>
+          <h4>Build Attributes Array</h4>
+          <p>Transforms spreadsheet rows into the <code style="font-size:.7rem;background:#f3f4f6;padding:1px 3px;border-radius:2px;">[{name, value}]</code> format the VNTANA Products API expects.</p>
+          <span class="tag tag-purple">Code node</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">📎</span>
+          <h4>Upload as Attachment</h4>
+          <p>Posts the raw file to <code style="font-size:.7rem;background:#f3f4f6;padding:1px 3px;border-radius:2px;">/v1/attachments/upload/product-attachment</code>, then registers the blobId on the product.</p>
+          <span class="tag tag-purple">Platform API</span>
+        </div>
+      </div>
+
+      <!-- ARROW -->
+      <div class="flow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </div>
+
+      <!-- OUTPUTS -->
+      <div class="flow-col col-outputs">
+        <div class="flow-col-header">
+          <span class="col-icon">📤</span>
+          <h3>Outputs</h3>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">✅</span>
+          <h4>Product Attributes Updated</h4>
+          <p>All attributes on the VNTANA product are replaced with the values from the spreadsheet. Live immediately — no publish step.</p>
+          <span class="tag tag-green">VNTANA Platform</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">🌍</span>
+          <h4>Multilingual Hotspot Text</h4>
+          <p>Translations are stored as <code style="font-size:.7rem;background:#f3f4f6;padding:1px 3px;border-radius:2px;">hotspot_translations_fr</code> etc. attributes and read at page load — no CMS, no re-deploy.</p>
+          <span class="tag tag-green">Live on viewer</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">📁</span>
+          <h4>File Stored on Product</h4>
+          <p>The spreadsheet lives as an attachment in VNTANA alongside the 3D asset — auditable, replaceable, no external storage needed.</p>
+          <span class="tag tag-green">VNTANA Platform</span>
+        </div>
+
+        <div class="flow-card">
+          <span class="flow-card-icon">↩️</span>
+          <h4>Webhook Response</h4>
+          <p>n8n responds to the admin UI with success status and the languages that were updated, so the operator gets immediate confirmation.</p>
+          <span class="tag tag-green">Admin UI</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Workflow templates -->
+  <section class="workflows-section">
+    <div class="workflows-inner">
+      <h2>Workflow templates</h2>
+      <p>Import any of these into your n8n instance or grab them from the n8n creator portal.</p>
+
+      <div class="workflow-grid">
+
+        <div class="workflow-card">
+          <div class="workflow-card-top">
+            <h3>Update Product Attributes from Attachment</h3>
+            <span class="status-pill pill-live">Published</span>
+          </div>
+          <p>Timer-based polling. Detects new <code style="font-size:.72rem;background:#f3f4f6;padding:1px 3px;border-radius:2px;">attributes_completed_*.xlsx</code> attachments and replaces all product attributes. Generic — works for any VNTANA product.</p>
+          <div class="workflow-card-links">
+            <a class="btn-n8n" href="https://n8n.io/creators/vntana" target="_blank">
+              View on n8n ↗
+            </a>
+            <a class="btn-download" href="admin/n8n-vntana-attributes-from-attachment.json" download>
+              ↓ JSON
+            </a>
+          </div>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-card-top">
+            <h3>Publish Hotspot Translations</h3>
+            <span class="status-pill pill-live">Live</span>
+          </div>
+          <p>Receives translated hotspot text from the admin upload UI and writes <code style="font-size:.72rem;background:#f3f4f6;padding:1px 3px;border-radius:2px;">hotspot_translations_fr/es/de</code> to product attributes via n8n webhook.</p>
+          <div class="workflow-card-links">
+            <a class="btn-download" href="admin/n8n-translation-workflow.json" download>
+              ↓ JSON
+            </a>
+          </div>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-card-top">
+            <h3>Attach File to Product</h3>
+            <span class="status-pill pill-pending">In progress</span>
+          </div>
+          <p>Receives a raw .xlsx via multipart upload, stores it as a product attachment in VNTANA using the attachments API, and returns the blobId.</p>
+          <div class="workflow-card-links">
+            <a class="btn-download" href="admin/n8n-attach-file-workflow.json" download>
+              ↓ JSON
+            </a>
+          </div>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-card-top">
+            <h3>Sync Translations from Attachment</h3>
+            <span class="status-pill pill-pending">In progress</span>
+          </div>
+          <p>Manual webhook trigger. Reads the latest .xlsx attachment from a product, parses hotspot translations, and writes them to attributes — no file re-upload needed.</p>
+          <div class="workflow-card-links">
+            <a class="btn-download" href="admin/n8n-sync-attachment-workflow.json" download>
+              ↓ JSON
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Docs strip -->
+  <div class="docs-strip">
+    <h2>API references</h2>
+    <p>Everything these workflows use is documented and public.</p>
+    <div class="docs-links">
+      <a class="btn-docs" href="https://github.com/VNTANA-3D/vntana-api-docs" target="_blank">VNTANA API Docs ↗</a>
+      <a class="btn-docs" href="https://n8n.io/creators/vntana" target="_blank">VNTANA on n8n ↗</a>
+      <a class="btn-docs" href="admin/index.html">Admin Tool</a>
+      <a class="btn-docs" href="https://vntana.com" target="_blank">vntana.com ↗</a>
+    </div>
+  </div>
+
+</body>
+</html>
