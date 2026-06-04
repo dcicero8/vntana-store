@@ -16,6 +16,12 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    .page-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
     /* ── Header ─────────────────────────────── */
     .demo-header {
       background: #cc2b00; /* Bobcat primary darker for header */
@@ -71,7 +77,6 @@
     /* ── Tab bar ─────────────────────────────── */
     .tab-bar {
       background: #fff; border-bottom: 1px solid #e0e0e0;
-      display: flex; padding: 0 2rem;
     }
     .tab-btn {
       padding: .9rem 1.5rem;
@@ -91,8 +96,6 @@
     /* ── Language bar ────────────────────────── */
     .lang-bar {
       background: #fff; border-bottom: 1px solid #e0e0e0;
-      padding: .6rem 2rem;
-      display: flex; align-items: center; gap: .75rem;
     }
     .lang-label { font-size: .62rem; font-weight: 800; color: #bbb; text-transform: uppercase; letter-spacing: .12em; margin-right: .25rem; }
     .lang-btn {
@@ -159,7 +162,7 @@
     .empty-arrow { font-size: 1.2rem; display: block; margin-bottom: .4rem; opacity: .5; }
 
     /* ── Behind the Scenes ───────────────────── */
-    .bts-wrap { max-width: 780px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+    .bts-wrap { padding: 2.5rem 0 4rem; }
 
     .bts-intro { margin-bottom: 2.5rem; }
     .bts-intro .eyebrow { font-size: .65rem; font-weight: 800; color: #ff3600; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem; }
@@ -251,21 +254,25 @@
 
   <!-- Product Hero -->
   <div class="product-hero">
-    <p class="hero-eyebrow">Pro &nbsp;·&nbsp; Skid-Steer Loader</p>
-    <h1>S86-2</h1>
-    <p class="subtitle">Multilingual hotspot annotations — powered by VNTANA</p>
-    <div class="specs-row">
-      <div><div class="spec-value">115 hp</div><div class="spec-label">Horsepower</div></div>
-      <div><div class="spec-value">3,500 lbs</div><div class="spec-label">Rated Capacity</div></div>
-      <div><div class="spec-value">42 gal/min</div><div class="spec-label">Super-Flow</div></div>
+    <div class="page-inner">
+      <p class="hero-eyebrow">Pro &nbsp;·&nbsp; Skid-Steer Loader</p>
+      <h1>S86-2</h1>
+      <p class="subtitle">Multilingual feature annotations powered by VNTANA</p>
+      <div class="specs-row">
+        <div><div class="spec-value">115 hp</div><div class="spec-label">Horsepower</div></div>
+        <div><div class="spec-value">3,500 lbs</div><div class="spec-label">Rated Capacity</div></div>
+        <div><div class="spec-value">42 gal/min</div><div class="spec-label">Super-Flow</div></div>
+      </div>
+      <p class="live-badge">Live 3D &nbsp;·&nbsp; EN · FR · ES · DE</p>
     </div>
-    <p class="live-badge">Live 3D &nbsp;·&nbsp; EN · FR · ES · DE</p>
   </div>
 
   <!-- Tabs -->
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="demo">Interactive Demo</button>
-    <button class="tab-btn" data-tab="bts">Behind the Scenes</button>
+    <div class="page-inner" style="display:flex;width:100%;padding-top:0;padding-bottom:0;">
+      <button class="tab-btn active" data-tab="demo">Interactive Demo</button>
+      <button class="tab-btn" data-tab="bts">Behind the Scenes</button>
+    </div>
   </div>
 
   <!-- ═══════════════════════════════════════════
@@ -273,40 +280,38 @@
   ═══════════════════════════════════════════════ -->
   <div class="tab-panel active" id="tab-demo">
     <div class="lang-bar">
-      <span class="lang-label">Language</span>
-      <button class="lang-btn active" data-lang="en">EN</button>
-      <button class="lang-btn" data-lang="fr">FR</button>
-      <button class="lang-btn" data-lang="es">ES</button>
-      <button class="lang-btn" data-lang="de">DE</button>
+      <div class="page-inner" style="display:flex;align-items:center;gap:.75rem;width:100%;padding-top:.6rem;padding-bottom:.6rem;">
+        <span class="lang-label">Language</span>
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="fr">FR</button>
+        <button class="lang-btn" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="de">DE</button>
+      </div>
     </div>
 
-    <div class="demo-body">
-      <div class="viewer-wrap">
-        <vntana-viewer
-          id="viewer"
-          enable-auto-rotate
-          camera-controls></vntana-viewer>
-      </div>
-
-      <aside class="hotspot-panel">
-        <div class="panel-header">
-          <h3>Feature Hotspots</h3>
-          <p id="panel-sub">Rotate the model · click a hotspot</p>
+    <div class="page-inner" style="padding-top:0;padding-bottom:0;">
+      <div class="demo-body">
+        <div class="viewer-wrap">
+          <vntana-viewer
+            id="viewer"
+            camera-controls></vntana-viewer>
         </div>
 
-        <div class="active-card" id="active-card">
-          <div class="ac-lang" id="card-lang">EN</div>
-          <div class="ac-title" id="card-title"></div>
-          <div class="ac-desc" id="card-desc"></div>
-        </div>
-
-        <div class="hotspot-list" id="hotspot-list">
-          <div class="empty-state" id="empty-state">
-            <span class="empty-arrow">↑</span>
-            Click any hotspot pin<br>on the 3D model
+        <aside class="hotspot-panel">
+          <div class="panel-header">
+            <h3>Key Features</h3>
+            <p id="panel-sub">Select a feature to read more</p>
           </div>
-        </div>
-      </aside>
+
+          <div class="active-card" id="active-card">
+            <div class="ac-lang" id="card-lang">EN</div>
+            <div class="ac-title" id="card-title"></div>
+            <div class="ac-desc" id="card-desc"></div>
+          </div>
+
+          <div class="hotspot-list" id="hotspot-list"></div>
+        </aside>
+      </div>
     </div>
   </div>
 
@@ -314,7 +319,8 @@
        BEHIND THE SCENES TAB
   ═══════════════════════════════════════════════ -->
   <div class="tab-panel" id="tab-bts">
-    <div class="bts-wrap">
+    <div class="page-inner">
+    <div class="bts-wrap" style="padding-left:0;padding-right:0;">
 
       <div class="bts-intro">
         <p class="eyebrow">How It Works</p>
@@ -393,6 +399,7 @@
         <a href="hotspot-translations.html" class="btn-secondary">Full Preview Tool</a>
       </div>
 
+    </div>
     </div>
   </div>
 
@@ -481,14 +488,10 @@
       hotspots = Object.keys(translations.en).map(uuid => ({ uuid, title: translations.en[uuid].title }));
 
       buildList();
-      addHotspotsToViewer();
     }
 
     function buildList() {
       const list = document.getElementById('hotspot-list');
-      if (!hotspots.length) return;
-      document.getElementById('empty-state')?.remove();
-
       hotspots.forEach((hs, i) => {
         const el = document.createElement('div');
         el.className = 'hs-item';
@@ -500,29 +503,10 @@
         el.addEventListener('click', () => setActive(hs.uuid));
         list.appendChild(el);
       });
-
-      document.getElementById('panel-sub').textContent = `${hotspots.length} feature hotspots`;
-    }
-
-    function addHotspotsToViewer() {
-      hotspots.forEach(hs => {
-        const el = document.createElement('vntana-hotspot');
-        el.dataset.uuid = hs.uuid;
-        el.setAttribute('slot', 'hotspot');
-        const t = translations[currentLang]?.[hs.uuid] || translations['en']?.[hs.uuid];
-        if (t) { el.setAttribute('title', t.title); el.setAttribute('body', t.description); }
-        el.addEventListener('click', () => setActive(hs.uuid));
-        viewer.appendChild(el);
-      });
+      document.getElementById('panel-sub').textContent = `${hotspots.length} key features`;
     }
 
     function applyLanguage() {
-      hotspots.forEach(hs => {
-        const el = viewer.querySelector(`vntana-hotspot[data-uuid="${hs.uuid}"]`);
-        if (!el) return;
-        const t = translations[currentLang]?.[hs.uuid] || translations['en']?.[hs.uuid];
-        if (t) { el.setAttribute('title', t.title); el.setAttribute('body', t.description); }
-      });
       document.querySelectorAll('.hs-item').forEach(item => {
         const hs = hotspots.find(h => h.uuid === item.dataset.uuid);
         if (hs) item.querySelector('.hs-title').textContent = labelFor(hs);
