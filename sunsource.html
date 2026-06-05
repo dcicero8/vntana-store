@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mobile Equipment Components — SunSource</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .sunsource-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: #003087; color: #fff;
+      font-size: .68rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .25rem .65rem; border-radius: 4px;
+      margin-bottom: .6rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo"><img src="VNTANA-logo-black.png" alt="VNTANA" height="18"></a>
+    <nav class="demo-nav">
+      <a href="personalized-demos.html" class="demo-nav-home">← Personalized Demos</a>
+      <a href="#" class="active">SunSource / Mobile Equipment</a>
+    </nav>
+    <button class="cart-btn" id="cart-btn" hidden>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span id="cart-label">Quote (0 items)</span>
+    </button>
+  </header>
+
+  <main class="product-page">
+
+    <!-- LEFT: 3D viewer -->
+    <div class="viewer-column">
+
+      <div class="viewer-loading" id="viewer-loading">
+        <div class="viewer-loading-bg" id="viewer-loading-bg"></div>
+        <div class="viewer-loading-inner">
+          <div class="viewer-loading-spinner"></div>
+          <div class="viewer-loading-text">Loading 3D model…</div>
+        </div>
+      </div>
+
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+      <vntana-viewer
+        shadow-intensity="0.4"
+        shadow-radius="3"
+        loading="eager"
+        role="application"
+        aria-label="Interactive mobile equipment 3D viewer"
+      >
+        <vntana-fs-button></vntana-fs-button>
+        <vntana-center-button></vntana-center-button>
+        <vntana-scene-graph-button active></vntana-scene-graph-button>
+        <div class="button-container zoom-buttons">
+          <vntana-zoom-in-button></vntana-zoom-in-button>
+          <vntana-zoom-out-button></vntana-zoom-out-button>
+        </div>
+      </vntana-viewer>
+
+      <div class="viewer-hint">
+        Click a component to view specs &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom
+      </div>
+    </div>
+
+    <!-- RIGHT: part details -->
+    <div class="product-column">
+
+      <div class="sunsource-badge">SunSource</div>
+      <div class="embed-step-label" style="margin-bottom: 0.75rem;">Mobile Technology — Hydraulic & Electronic Components</div>
+
+      <div class="breadcrumb">
+        <a href="#" id="breadcrumb-home">All Components</a>
+        <span id="breadcrumb-part"></span>
+      </div>
+
+      <h1 class="product-name" id="assembly-name">Loading…</h1>
+      <p class="product-subtitle" id="assembly-subtitle">Click any component on the 3D model to view specifications, part numbers, and request a quote.</p>
+
+      <hr class="divider">
+
+      <!-- Default state -->
+      <div id="part-default">
+        <div class="parts-catalog-header">
+          <p class="product-subtitle">SunSource is the industry leader in modular valve solutions and mobile hydraulic components. Click any highlighted part to explore the full product lineup for this machine.</p>
+          <button class="btn-primary" id="btn-add-all-top">Add All to Quote</button>
+        </div>
+        <table class="parts-table" id="parts-table">
+          <thead>
+            <tr>
+              <th>Part #</th>
+              <th>Component</th>
+              <th>Series</th>
+              <th>Availability</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="parts-table-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Selected state -->
+      <div id="part-selected" hidden>
+
+        <div class="part-selected-eyebrow">Component Selected</div>
+        <h2 class="part-name" id="part-name"></h2>
+        <div class="part-number-badge" id="part-number"></div>
+
+        <img id="part-render" class="part-render" src="" alt="" hidden>
+
+        <hr class="divider">
+
+        <p class="product-description" id="part-description"></p>
+
+        <div class="part-meta">
+          <div class="part-meta-row">
+            <span class="part-meta-label">Series</span>
+            <span class="part-meta-value" id="part-series">—</span>
+          </div>
+          <div class="part-meta-row">
+            <span class="part-meta-label">Availability</span>
+            <span class="part-meta-value" id="part-availability">—</span>
+          </div>
+          <div class="part-meta-row">
+            <span class="part-meta-label">Lead time</span>
+            <span class="part-meta-value" id="part-lead-time">—</span>
+          </div>
+        </div>
+
+        <div class="product-price" id="part-price"></div>
+
+        <button class="btn-primary" id="btn-add-to-cart">Add to Quote</button>
+        <button class="btn-secondary">Request Datasheet</button>
+
+        <hr class="divider">
+
+        <button class="btn-secondary" id="btn-add-all">Add All Components to Quote</button>
+
+        <hr class="divider">
+
+        <div class="ar-callout">
+          <div class="ar-callout-icon">&#x25A6;</div>
+          <div>
+            <strong>See it at scale</strong>
+            <p>Tap the AR button to place this machine at true 1:1 scale in your facility or job site.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">✕</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  </div>
+
+  <script type="module" src="sunsource.js"></script>
+
+</body>
+</html>
