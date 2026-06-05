@@ -287,6 +287,34 @@
     }
     .product-link:hover { border-color: var(--accent); color: var(--accent); }
 
+    /* ── Visibility test panel ── */
+    .vis-test-panel {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: #111; color: #fff; border-radius: 10px;
+      padding: 1rem 1.1rem; z-index: 100;
+      font-size: .75rem; min-width: 220px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    }
+    .vis-test-panel h4 {
+      font-size: .7rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: #f5523e; margin-bottom: .75rem;
+    }
+    .vis-test-btns { display: flex; flex-direction: column; gap: .4rem; }
+    .vis-test-btn {
+      padding: .4rem .75rem; border-radius: 6px; border: none;
+      font-size: .72rem; font-weight: 700; cursor: pointer;
+      text-align: left;
+    }
+    .vis-test-btn.hide { background: #ef4444; color: #fff; }
+    .vis-test-btn.show { background: #10b981; color: #fff; }
+    .vis-test-btn.hide:hover { background: #dc2626; }
+    .vis-test-btn.show:hover { background: #059669; }
+    .vis-test-log {
+      margin-top: .65rem; padding: .5rem; background: rgba(255,255,255,.08);
+      border-radius: 5px; font-size: .65rem; color: rgba(255,255,255,.6);
+      min-height: 2rem; font-family: monospace; line-height: 1.5;
+    }
+
     @media (max-width: 800px) {
       .home-page { grid-template-columns: 1fr; }
       .home-viewer-col { position: relative; top: 0; height: 65vw; min-height: 300px; }
@@ -384,12 +412,22 @@
 
   </main>
 
+  <!-- Visibility test panel -->
+  <div class="vis-test-panel">
+    <h4>Visibility Test</h4>
+    <div class="vis-test-btns">
+      <button class="vis-test-btn hide" onclick="testHideWalls()">Hide Exterior Walls</button>
+      <button class="vis-test-btn show" onclick="testShowWalls()">Show Exterior Walls</button>
+    </div>
+    <div class="vis-test-log" id="vis-log">waiting for model load...</div>
+  </div>
+
   <script type="module">
     const ORG      = "hexion";
     const WS       = "demo-room";
     const UUID     = "1d946378-c041-424f-86d0-7ddad134cf6c";
     const BASE_URL = "https://api.vntana.com";
-    const GLB_BLOB = "40dd1c77-200a-43b2-a3d2-5423ff6e0801.glb";
+    const GLB_BLOB = "ede786c4-9398-400a-a1f7-423621a2a503.glb";
 
     const TOUR_INTERVAL = 5000; // ms per hotspot
 
@@ -565,6 +603,38 @@
 
     prevBtn.addEventListener("click", () => { goTo(current - 1); if (!paused) startTimer(); });
     nextBtn.addEventListener("click", () => { goTo(current + 1); if (!paused) startTimer(); });
+
+    // ── Visibility test ────────────────────────────────────────
+    const EXTERIOR_WALL_GROUPS = [
+      "First_Floor_Exterior_Walls",
+      "Dining_Room_Exterior_Walls",
+      "First_Floor_Bath_Exterior_Walls",
+      "First_Floor_Hall_Exterior_Walls",
+      "Garage_Exterior_Walls",
+      "Kitchen_Exterior_Walls",
+      "Living_Room_Exterior_Walls",
+    ];
+
+    const visLog = document.getElementById("vis-log");
+
+    function fireVisibilityEvent(action, names) {
+      let fired = 0;
+      names.forEach(name => {
+        viewer.dispatchEvent(new CustomEvent(`scene-graph-${action}`, {
+          detail: { name },
+          bubbles: true
+        }));
+        fired++;
+      });
+      visLog.textContent = `Fired scene-graph-${action} for ${fired} groups. Check viewer above.`;
+    }
+
+    window.testHideWalls = () => fireVisibilityEvent("hide", EXTERIOR_WALL_GROUPS);
+    window.testShowWalls = () => fireVisibilityEvent("show", EXTERIOR_WALL_GROUPS);
+
+    viewer.addEventListener("load", () => {
+      visLog.textContent = "Model loaded. Ready to test.";
+    }, { once: true });
   </script>
 
 </body>
