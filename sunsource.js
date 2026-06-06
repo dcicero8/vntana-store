@@ -298,6 +298,11 @@ if (!attachSelectionListener()) {
   viewer.addEventListener("load", attachSelectionListener, { once: true });
 }
 
+// ── Explode slider ────────────────────────────────────────────
+document.getElementById("explode-slider").addEventListener("input", (e) => {
+  if (viewer.scene) viewer.scene.explodedStrength = parseFloat(e.target.value);
+});
+
 // ── Loading overlay ───────────────────────────────────────────
 const loadingEl   = document.getElementById("viewer-loading");
 let loadingDone   = false;
