@@ -19,6 +19,30 @@ const partLeadEl    = document.getElementById("part-lead-time");
 const partPriceEl   = document.getElementById("part-price");
 const partRenderEl  = document.getElementById("part-render");
 
+// ── Part renders (Figurement cloud renders, one per node) ────
+const RENDERS = {
+  "LicensePlates":               "renders/sunsource/LicensePlates.jpg",
+  "Lift_Arm_Lower_Beam":         "renders/sunsource/Lift_Arm_Lower_Beam.jpg",
+  "Lift_Arm_Upper_Actuator_Base":"renders/sunsource/Lift_Arm_Upper_Actuator_Base.jpg",
+  "Lift_Arm_Upper_Actuator_Stem":"renders/sunsource/Lift_Arm_Upper_Actuator_Stem.jpg",
+  "Lift_Arm_Upper_Beam":         "renders/sunsource/Lift_Arm_Upper_Beam.jpg",
+  "Lift_Arm_Upper_Lever_1":      "renders/sunsource/Lift_Arm_Upper_Lever_1.jpg",
+  "Lift_Arm_Upper_Lever_2":      "renders/sunsource/Lift_Arm_Upper_Lever_2.jpg",
+  "Lift_Bucket":                 "renders/sunsource/Lift_Bucket.jpg",
+  "Lift_Lower_Arm_Actuator_Base":"renders/sunsource/Lift_Lower_Arm_Actuator_Base.jpg",
+  "Lift_Lower_Arm_Actuator_Stem":"renders/sunsource/Lift_Lower_Arm_Actuator_Stem.jpg",
+  "Lift_Turn_Root":              "renders/sunsource/Lift_Turn_Root.jpg",
+  "MainBody":                    "renders/sunsource/MainBody.jpg",
+  "Support_Beam_Front_Left":     "renders/sunsource/Support_Beam_Front_Left.jpg",
+  "Support_Beam_Front_Right":    "renders/sunsource/Support_Beam_Front_Right.jpg",
+  "Support_Beam_Rear_Left":      "renders/sunsource/Support_Beam_Rear_Left.jpg",
+  "Support_Beam_Rear_Right":     "renders/sunsource/Support_Beam_Rear_Right.jpg",
+  "Wheel_Front_Left":            "renders/sunsource/Wheel_Front_Left.jpg",
+  "Wheel_Front_Right":           "renders/sunsource/Wheel_Front_Right.jpg",
+  "Wheel_Rear_Left":             "renders/sunsource/Wheel_Rear_Left.jpg",
+  "Wheel_Rear_Right":            "renders/sunsource/Wheel_Rear_Right.jpg",
+};
+
 // ── Parts catalog ─────────────────────────────────────────────
 // Keys match scene graph node names exactly (strip count suffix handled below).
 const PARTS_DATA = {
@@ -224,7 +248,14 @@ const showPart = (name) => {
   partAvailEl.textContent  = data.avail;
   partLeadEl.textContent   = data.lead;
   partPriceEl.textContent  = data.price;
-  partRenderEl.hidden      = true;
+  const renderSrc = RENDERS[name];
+  if (renderSrc) {
+    partRenderEl.src    = renderSrc;
+    partRenderEl.alt    = data.display ?? name;
+    partRenderEl.hidden = false;
+  } else {
+    partRenderEl.hidden = true;
+  }
 
   document.getElementById("breadcrumb-part").textContent = ` › ${data.display ?? name.replace(/_/g, " ")}`;
 
