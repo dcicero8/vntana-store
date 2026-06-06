@@ -21,7 +21,6 @@ const partRenderEl  = document.getElementById("part-render");
 
 // ── Part renders (Figurement cloud renders, one per node) ────
 const RENDERS = {
-  "LicensePlates":               "renders/sunsource/LicensePlates.jpg",
   "Lift_Arm_Lower_Beam":         "renders/sunsource/Lift_Arm_Lower_Beam.jpg",
   "Lift_Arm_Upper_Actuator_Base":"renders/sunsource/Lift_Arm_Upper_Actuator_Base.jpg",
   "Lift_Arm_Upper_Actuator_Stem":"renders/sunsource/Lift_Arm_Upper_Actuator_Stem.jpg",
