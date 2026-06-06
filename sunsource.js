@@ -49,7 +49,7 @@ const PARTS_DATA = {
     sku: "SS-PWD-42",
     display: "Planetary Wheel Drive (Front)",
     series: "Danfoss Series 40",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 3–5 days",
     desc: "Danfoss Series 40 planetary wheel drive for front axle drive applications. High-torque, compact design with integrated brake. Assembled and tested at SunSource. Available in multiple displacement configurations."
@@ -58,7 +58,7 @@ const PARTS_DATA = {
     sku: "SS-PWD-42",
     display: "Planetary Wheel Drive (Front)",
     series: "Danfoss Series 40",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 3–5 days",
     desc: "Danfoss Series 40 planetary wheel drive for front axle drive applications. High-torque, compact design with integrated brake. Assembled and tested at SunSource. Available in multiple displacement configurations."
@@ -67,7 +67,7 @@ const PARTS_DATA = {
     sku: "SS-BAM-51",
     display: "Bent Axis Propel Motor (Rear)",
     series: "Danfoss Series 51",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
     desc: "Danfoss Series 51 bent axis variable motor for rear propel drive. High efficiency across full speed range, suitable for demanding mobile applications. SunSource-authorized build center with global product support."
@@ -76,7 +76,7 @@ const PARTS_DATA = {
     sku: "SS-BAM-51",
     display: "Bent Axis Propel Motor (Rear)",
     series: "Danfoss Series 51",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
     desc: "Danfoss Series 51 bent axis variable motor for rear propel drive. High efficiency across full speed range, suitable for demanding mobile applications. SunSource-authorized build center with global product support."
@@ -85,7 +85,7 @@ const PARTS_DATA = {
     sku: "SS-ECS-100",
     display: "Electronic Control System",
     series: "Danfoss PLUS+1",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
     desc: "Danfoss PLUS+1 electronic control system with integrated telematics. Programmable controller for machine motion, operator interface, and real-time diagnostics. In-house design and technical support available from SunSource."
@@ -94,7 +94,7 @@ const PARTS_DATA = {
     sku: "SS-HPM-90",
     display: "Hydrostatic Propel Pump",
     series: "Danfoss Series 90",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
     desc: "Danfoss Series 90 axial piston variable pump for hydrostatic transmission. Delivers precise speed and torque control for propel drive circuits. Stocked components available to assemble per your machine specifications."
@@ -103,7 +103,7 @@ const PARTS_DATA = {
     sku: "SS-HPM-90",
     display: "Hydrostatic Propel Motor",
     series: "Danfoss Series 90",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
     desc: "Danfoss Series 90 axial piston variable motor, paired with Series 90 pump for closed-loop hydrostatic transmission. High power density with smooth, stepless speed control across the full operating range."
@@ -112,7 +112,7 @@ const PARTS_DATA = {
     sku: "SS-WFP-PVG",
     display: "Work Function Pump",
     series: "Danfoss PVG Valve",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 3–5 days",
     desc: "Danfoss high-performance PVG proportional valve for work function circuits — lift, tilt, and auxiliary. SunSource is your source for PVG valves, assembled and tested in-house. Hybrid valve assemblies available."
@@ -121,7 +121,7 @@ const PARTS_DATA = {
     sku: "SS-WFM-43",
     display: "Work Function Motor",
     series: "Danfoss Series 43",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
     desc: "Danfoss Series 43 orbital motor for work function drives. Compact, high-torque design ideal for lift arm, rotation, and auxiliary attachment circuits on mobile equipment."
@@ -130,7 +130,7 @@ const PARTS_DATA = {
     sku: "SS-ATT-BKT",
     display: "Lift Bucket Attachment",
     series: "OEM Compatible",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Contact for lead time",
     desc: "Heavy-duty lift bucket attachment for telehandler and loader applications. Compatible with standard quick-attach systems. SunSource provides full aftermarket support and replacement hydraulic components for attachment circuits."
@@ -139,7 +139,7 @@ const PARTS_DATA = {
     sku: "SS-CYL-LB",
     display: "Lift Arm Hydraulic Cylinder",
     series: "Custom Build",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "Built to Order",
     lead: "Est. 2–3 weeks",
     desc: "Custom-built hydraulic cylinder for lower lift arm. SunSource designs and assembles custom cylinder solutions to match your machine's exact stroke, bore, and pressure requirements."
@@ -148,7 +148,7 @@ const PARTS_DATA = {
     sku: "SS-CYL-UB",
     display: "Upper Arm Hydraulic Cylinder",
     series: "Custom Build",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "Built to Order",
     lead: "Est. 2–3 weeks",
     desc: "Custom-built hydraulic cylinder for upper lift arm. SunSource designs and assembles custom cylinder solutions to match your machine's exact stroke, bore, and pressure requirements."
@@ -157,7 +157,7 @@ const PARTS_DATA = {
     sku: "SS-FRM-SB",
     display: "Frame Support Assembly",
     series: "OEM Compatible",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
     desc: "Structural frame support assembly. SunSource provides full aftermarket support for mobile equipment structural and hydraulic interface components."
@@ -171,7 +171,7 @@ const cartLabel = document.getElementById("cart-label");
 
 const addToCart = (n = 1) => {
   cartCount += n;
-  cartLabel.textContent = `Quote (${cartCount} item${cartCount === 1 ? "" : "s"})`;
+  cartLabel.textContent = `Cart (${cartCount} item${cartCount === 1 ? "" : "s"})`;
   cartBtn.hidden = false;
   cartBtn.classList.add("cart-flash");
   setTimeout(() => cartBtn.classList.remove("cart-flash"), 600);
@@ -213,7 +213,7 @@ tableEntries.forEach(([key, data]) => {
   tr.innerHTML = `
     <td class="parts-table-sku">${data.sku}</td>
     <td class="parts-table-name">${data.display}</td>
-    <td class="parts-table-qty">${data.series}</td>
+    <td class="parts-table-price">${data.price}</td>
     <td class="parts-table-avail ${data.avail === "Built to Order" ? "avail-low" : "avail-in"}">${data.avail}</td>
     <td><button class="btn-table-cart">Add</button></td>
   `;
@@ -234,7 +234,7 @@ const showPart = (name) => {
     sku: "SS-???",
     display: name.replace(/_/g, " "),
     series: "—",
-    price: "Contact for pricing",
+    price: "$200.00",
     avail: "Contact us",
     lead: "—",
     desc: `Component of the mobile equipment assembly. Contact SunSource for specifications and availability.`,
@@ -246,7 +246,7 @@ const showPart = (name) => {
   partSeriesEl.textContent = data.series;
   partAvailEl.textContent  = data.avail;
   partLeadEl.textContent   = data.lead;
-  partPriceEl.textContent  = data.price;
+  partPriceEl.textContent  = data.price ?? "$200.00";
   const renderSrc = RENDERS[name];
   if (renderSrc) {
     partRenderEl.src    = renderSrc;
