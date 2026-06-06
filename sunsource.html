@@ -7,13 +7,36 @@
   <link rel="stylesheet" href="style.css">
   <style>
     .sunsource-badge {
-      display: inline-flex; align-items: center; gap: .5rem;
+      display: inline-block;
       background: #003087; color: #fff;
-      font-size: .68rem; font-weight: 700; letter-spacing: .06em;
+      font-size: .65rem; font-weight: 700; letter-spacing: .08em;
       text-transform: uppercase;
-      padding: .25rem .65rem; border-radius: 4px;
-      margin-bottom: .6rem;
+      padding: .2rem .6rem; border-radius: 3px;
+      margin-bottom: .5rem;
     }
+
+    /* Tighten the product title for a longer name */
+    .product-name { font-size: 1.45rem; }
+
+    /* Override table for SunSource -- 3 cols instead of 5 */
+    #parts-table th:nth-child(1),
+    #parts-table td:nth-child(1) { display: none; } /* hide Part # -- shown on detail panel */
+
+    #parts-table { font-size: .78rem; }
+    #parts-table .parts-table-name { font-size: .8rem; }
+
+    /* Series col: truncate long names */
+    #parts-table td:nth-child(3),
+    #parts-table th:nth-child(3) {
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-width: 90px;
+      font-size: .72rem;
+    }
+
+    /* Part meta row for series */
+    .part-meta-row { display: flex; justify-content: space-between; padding: .35rem 0; border-bottom: 1px solid var(--border); font-size: .83rem; }
+    .part-meta-label { color: var(--muted); }
+    .part-meta-value { font-weight: 500; text-align: right; }
   </style>
 </head>
 <body>
@@ -93,7 +116,7 @@
               <th>Part #</th>
               <th>Component</th>
               <th>Series</th>
-              <th>Availability</th>
+              <th>Status</th>
               <th></th>
             </tr>
           </thead>
