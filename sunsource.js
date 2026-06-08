@@ -287,31 +287,26 @@ const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
-  viewer.selection.highlight.addEventListener("change", (event) => {
-    // value=1 → primary selection (part pops out white, rest dims)
-    // value=0 → level-0 highlight (body/glass click, causes blue dim with no pop-out)
-    // Only treat value===1 as an intentional part selection; anything else → clear
+  viewer.selection.highlight.addEventListener("change", () => {
+    // After VNTANA updates the highlight set, check what's currently highlighted.
+    // If a PARTS_DATA node is in the set → show it. Otherwise clear.
     let matchedPart = null;
-    let hasPrimary = false;
-
-    event.changes.forEach((value, node) => {
-      console.log("change value:", value, "node:", node?.name);
-      if (value !== 1) return;
-      hasPrimary = true;
-      let n = node;
-      while (n) {
-        const name = normalizePartName(n.name ?? "");
-        const resolved = PART_NODE_ALIASES[name] ?? name;
-        console.log("  walk:", name, "→", resolved, "match:", !!PARTS_DATA[resolved]);
-        if (PARTS_DATA[resolved]) { matchedPart = resolved; return; }
-        n = n.parent;
+    try {
+      for (const node of viewer.selection.highlight) {
+        let n = node;
+        while (n) {
+          const name = normalizePartName(n.name ?? "");
+          const resolved = PART_NODE_ALIASES[name] ?? name;
+          if (PARTS_DATA[resolved]) { matchedPart = resolved; break; }
+          n = n.parent;
+        }
+        if (matchedPart) break;
       }
-    });
+    } catch (_) { /* highlight not iterable — fall through to clear */ }
 
-    if (hasPrimary && matchedPart) {
+    if (matchedPart) {
       handlePartName(matchedPart);
     } else {
-      // No primary selection, or primary hit something not in PARTS_DATA → clear
       viewer.selection.highlight.clear();
     }
   });
