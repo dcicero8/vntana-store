@@ -287,26 +287,17 @@ const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
-  viewer.selection.highlight.addEventListener("change", () => {
-    // After VNTANA updates the highlight set, check what's currently highlighted.
-    // If a PARTS_DATA node is in the set → show it. Otherwise clear.
-    let matchedPart = null;
-    viewer.selection.highlight.forEach((node) => {
-      if (matchedPart) return;
+  viewer.selection.highlight.addEventListener("change", (event) => {
+    event.changes.forEach((value, node) => {
+      // Walk up the scene tree to find a PARTS_DATA match
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
         const resolved = PART_NODE_ALIASES[name] ?? name;
-        if (PARTS_DATA[resolved]) { matchedPart = resolved; return; }
+        if (PARTS_DATA[resolved]) { handlePartName(resolved); return; }
         n = n.parent;
       }
     });
-
-    if (matchedPart) {
-      handlePartName(matchedPart);
-    } else {
-      viewer.selection.highlight.clear();
-    }
   });
   return true;
 };
