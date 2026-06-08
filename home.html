@@ -389,7 +389,6 @@
     const WS       = "demo-room";
     const UUID     = "39f54c5d-6a80-4337-b974-c5e0d2dcc8da";
     const BASE_URL = "https://api.vntana.com";
-    const GLB_BLOB = "f013cb26-e37c-4475-a662-ae748ea188eb.glb";
 
     const TOUR_INTERVAL = 5000; // ms per hotspot
 
@@ -433,7 +432,12 @@
 
     const config = JSON.parse(product.response.viewerSettings.config);
     Object.assign(viewer, config);
-    viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB_BLOB}`;
+    const models = product.response.asset?.models ?? [];
+    const glbModel = models.find(m => (m.conversionFormat ?? m.type) === "GLB");
+    const blobId = glbModel?.modelBlobId ?? glbModel?.blobId;
+    if (blobId) {
+      viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
+    }
 
     // ── Inject hotspots after viewer loads ─────────────────────
     viewer.addEventListener("load", () => {
