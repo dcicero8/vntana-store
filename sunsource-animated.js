@@ -314,21 +314,21 @@ if (!attachSelectionListener()) {
 
 // ── Stop autoplay and log animation API on load ───────────────
 const initAnimation = () => {
-  // Log everything animation-related on the viewer
-  const animKeys = Object.getOwnPropertyNames(Object.getPrototypeOf(viewer))
-    .filter(k => /anim|play|time|clip/i.test(k));
-  console.log("Viewer animation props:", animKeys);
-  console.log("viewer.animations:", viewer.animations);
-  console.log("viewer.animationClips:", viewer.animationClips);
-  console.log("viewer.animationTime:", viewer.animationTime);
-  console.log("viewer.currentTime:", viewer.currentTime);
+  // Log ALL viewer properties to find animation API
+  const allKeys = [];
+  let obj = viewer;
+  while (obj && obj !== HTMLElement.prototype) {
+    Object.getOwnPropertyNames(obj).forEach(k => { if (!allKeys.includes(k)) allKeys.push(k); });
+    obj = Object.getPrototypeOf(obj);
+  }
+  const animKeys = allKeys.filter(k => /anim|play|pause|stop|time|clip|loop/i.test(k));
+  console.log("All anim keys:", animKeys);
+  console.log("viewer.scene anim keys:", viewer.scene ? Object.keys(viewer.scene).filter(k => /anim|play|time/i.test(k)) : "no scene");
 
-  // Try to pause/stop autoplay
-  try { viewer.pause?.(); } catch(_) {}
-  try { viewer.pauseAnimation?.(); } catch(_) {}
-  try { viewer.stopAnimation?.(); } catch(_) {}
-  if (viewer.animationTime !== undefined) viewer.animationTime = 0;
-  if (viewer.currentTime   !== undefined) viewer.currentTime   = 0;
+  // Try to pause autoplay
+  ["pause","pauseAnimation","stop","stopAnimation"].forEach(fn => {
+    if (typeof viewer[fn] === "function") { console.log("calling viewer." + fn); viewer[fn](); }
+  });
 };
 viewer.addEventListener("load",       initAnimation, { once: true });
 viewer.addEventListener("model-load", initAnimation, { once: true });
