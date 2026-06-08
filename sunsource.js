@@ -86,24 +86,6 @@ const PARTS_DATA = {
     lead: "Ships in 5–7 days",
     desc: "Danfoss Series 51 bent axis variable motor for rear propel drive. High efficiency across full speed range, suitable for demanding mobile applications. SunSource-authorized build center with global product support."
   },
-  "Lift_Lower_Arm_Actuator_Base": {
-    sku: "SS-HPM-90",
-    display: "Hydrostatic Propel Pump",
-    series: "Danfoss Series 90",
-    price: "$200.00",
-    avail: "In Stock",
-    lead: "Ships in 5–7 days",
-    desc: "Danfoss Series 90 axial piston variable pump for hydrostatic transmission. Delivers precise speed and torque control for propel drive circuits. Stocked components available to assemble per your machine specifications."
-  },
-  "Lift_Lower_Arm_Actuator_Stem": {
-    sku: "SS-HPM-90",
-    display: "Hydrostatic Propel Motor",
-    series: "Danfoss Series 90",
-    price: "$200.00",
-    avail: "In Stock",
-    lead: "Ships in 5–7 days",
-    desc: "Danfoss Series 90 axial piston variable motor, paired with Series 90 pump for closed-loop hydrostatic transmission. High power density with smooth, stepless speed control across the full operating range."
-  },
   "Lift_Arm_Upper_Actuator_Base": {
     sku: "SS-WFP-PVG",
     display: "Work Function Pump",
@@ -112,15 +94,6 @@ const PARTS_DATA = {
     avail: "In Stock",
     lead: "Ships in 3–5 days",
     desc: "Danfoss high-performance PVG proportional valve for work function circuits — lift, tilt, and auxiliary. SunSource is your source for PVG valves, assembled and tested in-house. Hybrid valve assemblies available."
-  },
-  "Lift_Arm_Upper_Actuator_Stem": {
-    sku: "SS-WFM-43",
-    display: "Work Function Motor",
-    series: "Danfoss Series 43",
-    price: "$200.00",
-    avail: "In Stock",
-    lead: "Ships in 5–7 days",
-    desc: "Danfoss Series 43 orbital motor for work function drives. Compact, high-torque design ideal for lift arm, rotation, and auxiliary attachment circuits on mobile equipment."
   },
   "Lift_Bucket": {
     sku: "SS-ATT-BKT",
@@ -148,15 +121,6 @@ const PARTS_DATA = {
     avail: "Built to Order",
     lead: "Est. 2–3 weeks",
     desc: "Custom-built hydraulic cylinder for upper lift arm. SunSource designs and assembles custom cylinder solutions to match your machine's exact stroke, bore, and pressure requirements."
-  },
-  "Support_Beam_Front_Left": {
-    sku: "SS-FRM-SB",
-    display: "Frame Support Assembly",
-    series: "OEM Compatible",
-    price: "$200.00",
-    avail: "In Stock",
-    lead: "Ships in 5–7 days",
-    desc: "Structural frame support assembly. SunSource provides full aftermarket support for mobile equipment structural and hydraulic interface components."
   },
   "Engine_Node_0": {
     sku: "SS-ENG-351W",
