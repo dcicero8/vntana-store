@@ -322,17 +322,20 @@ const initAnimation = () => {
     obj = Object.getPrototypeOf(obj);
   }
   const animKeys = allKeys.filter(k => /anim|play|pause|stop|time|clip|loop/i.test(k));
-  console.log("All anim keys:", animKeys.join(", "));
-  const sceneAnimKeys = viewer.scene ? Object.keys(viewer.scene).filter(k => /anim|play|time/i.test(k)) : [];
-  console.log("viewer.scene anim keys:", sceneAnimKeys.join(", "));
-  // Also log the actual values
-  animKeys.forEach(k => console.log(`  viewer.${k} =`, viewer[k]));
-  sceneAnimKeys.forEach(k => console.log(`  viewer.scene.${k} =`, viewer.scene[k]));
-
-  // Try to pause autoplay
-  ["pause","pauseAnimation","stop","stopAnimation"].forEach(fn => {
-    if (typeof viewer[fn] === "function") { console.log("calling viewer." + fn); viewer[fn](); }
-  });
+  // Found it: viewer.scene.animations
+  const anims = viewer.scene?.animations;
+  console.log("viewer.scene.animations:", anims);
+  if (anims && anims.length > 0) {
+    const a = anims[0];
+    console.log("anim[0] keys:", Object.keys(a).join(", "));
+    console.log("anim[0]:", a);
+    // Try to pause
+    if (typeof a.pause  === "function") { a.pause();  console.log("paused via a.pause()"); }
+    if (typeof a.stop   === "function") { a.stop();   console.log("paused via a.stop()"); }
+    if ("playing" in a) { a.playing = false; console.log("set playing=false"); }
+    if ("paused"  in a) { a.paused  = true;  console.log("set paused=true"); }
+    if ("time"    in a) { a.time    = 0;     console.log("set time=0"); }
+  }
 };
 viewer.addEventListener("load",       initAnimation, { once: true });
 viewer.addEventListener("model-load", initAnimation, { once: true });
@@ -340,9 +343,12 @@ viewer.addEventListener("model-load", initAnimation, { once: true });
 // ── Engine Lift slider (scrubs GLB animation 0–3s) ───────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
   const t = parseFloat(e.target.value);
-  console.log("slider t=", t, "animationTime=", viewer.animationTime, "currentTime=", viewer.currentTime);
-  if (viewer.animationTime !== undefined) viewer.animationTime = t;
-  else if (viewer.currentTime !== undefined) viewer.currentTime = t;
+  const a = viewer.scene?.animations?.[0];
+  if (!a) return;
+  console.log("slider t=", t, "anim keys:", Object.keys(a).join(", "));
+  if ("time"    in a) a.time    = t;
+  if ("paused"  in a) a.paused  = true;
+  if ("playing" in a) a.playing = false;
 });
 
 
