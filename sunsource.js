@@ -288,24 +288,30 @@ const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
   viewer.selection.highlight.addEventListener("change", (event) => {
-    console.log("highlight change, changes size:", event.changes.size);
+    // value=1 → primary selection (part pops out white, rest dims)
+    // value=0 → level-0 highlight (body/glass click, causes blue dim with no pop-out)
+    // Only treat value===1 as an intentional part selection; anything else → clear
+    let matchedPart = null;
+    let hasPrimary = false;
+
     event.changes.forEach((value, node) => {
-      console.log("  change value:", value, "node name:", node?.name);
-    });
-    event.changes.forEach((value, node) => {
-      if (value === 0) return; // 0 = removed from highlight; we only care about additions
-      // Walk up the scene tree to find a PARTS_DATA match
+      if (value !== 1) return;
+      hasPrimary = true;
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
         const resolved = PART_NODE_ALIASES[name] ?? name;
-        if (PARTS_DATA[resolved]) { handlePartName(resolved); return; }
+        if (PARTS_DATA[resolved]) { matchedPart = resolved; return; }
         n = n.parent;
       }
-      // No PARTS_DATA match — immediately clear so body/seats/glass don't stay highlighted
-      console.log("No PARTS_DATA match — calling clear()");
-      viewer.selection.highlight.clear();
     });
+
+    if (hasPrimary && matchedPart) {
+      handlePartName(matchedPart);
+    } else {
+      // No primary selection, or primary hit something not in PARTS_DATA → clear
+      viewer.selection.highlight.clear();
+    }
   });
   return true;
 };
