@@ -288,6 +288,10 @@ const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
   viewer.selection.highlight.addEventListener("change", (event) => {
+    console.log("highlight change, changes size:", event.changes.size);
+    event.changes.forEach((value, node) => {
+      console.log("  change value:", value, "node name:", node?.name);
+    });
     event.changes.forEach((value, node) => {
       if (value === 0) return; // 0 = removed from highlight; we only care about additions
       // Walk up the scene tree to find a PARTS_DATA match
@@ -299,6 +303,7 @@ const attachSelectionListener = () => {
         n = n.parent;
       }
       // No PARTS_DATA match — immediately clear so body/seats/glass don't stay highlighted
+      console.log("No PARTS_DATA match — calling clear()");
       viewer.selection.highlight.clear();
     });
   });
