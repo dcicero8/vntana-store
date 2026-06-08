@@ -40,6 +40,11 @@ const RENDERS = {
   "Wheel_Front_Right":           "renders/sunsource/Wheel_Front_Right.jpg",
   "Wheel_Rear_Left":             "renders/sunsource/Wheel_Rear_Left.jpg",
   "Wheel_Rear_Right":            "renders/sunsource/Wheel_Rear_Right.jpg",
+  "Engine_Node_0":               "renders/sunsource/351W V8 Engine.png",
+  "Battery_Node_0":              "renders/sunsource/12V Battery.png",
+  "FuelPump_Node_0":             "renders/sunsource/Fuel Pump DFI HDP5.png",
+  "FuelValve_Node_0":            "renders/sunsource/Fuel Selector Valve (3-Port).png",
+  "BellHousing_node":            "renders/sunsource/Manual Transmission Bell Housing.png",
 };
 
 // ── Parts catalog ─────────────────────────────────────────────
