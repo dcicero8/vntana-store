@@ -289,7 +289,7 @@ const attachSelectionListener = () => {
 
   viewer.selection.highlight.addEventListener("change", (event) => {
     event.changes.forEach((value, node) => {
-      if (value !== 0) return;
+      if (value === 0) return; // 0 = removed from highlight; we only care about additions
       // Walk up the scene tree to find a PARTS_DATA match
       let n = node;
       while (n) {
