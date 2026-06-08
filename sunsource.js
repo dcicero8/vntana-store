@@ -291,18 +291,16 @@ const attachSelectionListener = () => {
     // After VNTANA updates the highlight set, check what's currently highlighted.
     // If a PARTS_DATA node is in the set → show it. Otherwise clear.
     let matchedPart = null;
-    try {
-      for (const node of viewer.selection.highlight) {
-        let n = node;
-        while (n) {
-          const name = normalizePartName(n.name ?? "");
-          const resolved = PART_NODE_ALIASES[name] ?? name;
-          if (PARTS_DATA[resolved]) { matchedPart = resolved; break; }
-          n = n.parent;
-        }
-        if (matchedPart) break;
+    viewer.selection.highlight.forEach((node) => {
+      if (matchedPart) return;
+      let n = node;
+      while (n) {
+        const name = normalizePartName(n.name ?? "");
+        const resolved = PART_NODE_ALIASES[name] ?? name;
+        if (PARTS_DATA[resolved]) { matchedPart = resolved; return; }
+        n = n.parent;
       }
-    } catch (_) { /* highlight not iterable — fall through to clear */ }
+    });
 
     if (matchedPart) {
       handlePartName(matchedPart);
