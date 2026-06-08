@@ -322,13 +322,15 @@ const attachSelectionListener = () => {
   viewer.selection.highlight.addEventListener("change", (event) => {
     event.changes.forEach((value, node) => {
       if (value !== 0) return;
+      // Walk up to find a PARTS_DATA match
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
         if (PARTS_DATA[name]) { handlePartName(name); return; }
         n = n.parent;
       }
-      // No PARTS_DATA match — don't show anything
+      // No match — clear the highlight so the body doesn't glow
+      viewer.selection.highlight.delete(node);
     });
   });
   return true;
