@@ -309,15 +309,18 @@ const clearEngineHighlights = () => {
 const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
-  // Highlight engine parts on load, clear on first user interaction
-  setTimeout(() => {
+  // Highlight engine parts once model is ready, clear on first click
+  const doHighlight = () => {
     highlightEngineParts();
     const clearOnce = () => {
       clearEngineHighlights();
       viewer.removeEventListener("click", clearOnce);
     };
     viewer.addEventListener("click", clearOnce);
-  }, 500);
+  };
+  // Try immediately, then also hook model-load in case scene isn't ready yet
+  viewer.addEventListener("model-load", doHighlight, { once: true });
+  viewer.addEventListener("load", doHighlight, { once: true });
 
   viewer.selection.highlight.addEventListener("change", (event) => {
     event.changes.forEach((value, node) => {
