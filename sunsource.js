@@ -281,8 +281,44 @@ const handlePartName = (name) => {
 const normalizePartName = (text) =>
   text?.replace(/\s*\(\d+\)\s*$/, "").trim() ?? "";
 
+// Engine bay part keys to highlight on load
+const ENGINE_PARTS = ["Engine_Node_0", "Battery_Node_0", "FuelPump_Node_0", "FuelValve_Node_0", "BellHousing_node"];
+
+const highlightEngineParts = () => {
+  const scene = viewer.scene;
+  if (!scene) return;
+  const highlight = viewer.selection?.highlight;
+  if (!highlight) return;
+
+  // Walk the scene graph and highlight any node whose name matches an engine part
+  const visit = (node) => {
+    const name = normalizePartName(node.name ?? "");
+    if (ENGINE_PARTS.includes(name)) {
+      highlight.set(node, 1);
+    }
+    node.children?.forEach(visit);
+  };
+  visit(scene);
+};
+
+const clearEngineHighlights = () => {
+  const highlight = viewer.selection?.highlight;
+  if (highlight) highlight.clear();
+};
+
 const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
+
+  // Highlight engine parts on load, clear on first user interaction
+  setTimeout(() => {
+    highlightEngineParts();
+    const clearOnce = () => {
+      clearEngineHighlights();
+      viewer.removeEventListener("click", clearOnce);
+    };
+    viewer.addEventListener("click", clearOnce);
+  }, 500);
+
   viewer.selection.highlight.addEventListener("change", (event) => {
     event.changes.forEach((value, node) => {
       if (value !== 0) return;
