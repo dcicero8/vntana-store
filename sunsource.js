@@ -50,6 +50,51 @@ const RENDERS = {
 // ── Parts catalog ─────────────────────────────────────────────
 // Keys match scene graph node names exactly (strip count suffix handled below).
 const PARTS_DATA = {
+  "Engine_Node_0": {
+    sku: "SS-ENG-351W",
+    display: "351W V8 Engine",
+    series: "Ford 351 Windsor",
+    price: "$4,850.00",
+    avail: "In Stock",
+    lead: "Ships in 5–7 days",
+    desc: "Ford 351 Windsor V8 engine, remanufactured to OEM specifications. 5.8L displacement, compatible with a wide range of mobile equipment and utility truck applications. SunSource-certified build with full warranty."
+  },
+  "Battery_Node_0": {
+    sku: "SS-BAT-12V",
+    display: "12V Automotive Battery",
+    series: "Group 31 Heavy Duty",
+    price: "$189.00",
+    avail: "In Stock",
+    lead: "Ships in 1–2 days",
+    desc: "Heavy-duty Group 31 12V battery for utility truck and mobile equipment starting and auxiliary power. High cold-cranking amps rated for extreme conditions. SunSource-stocked with same-day availability at select branches."
+  },
+  "FuelPump_Node_0": {
+    sku: "SS-FP-HDP5",
+    display: "Fuel Pump DFI HDP5",
+    series: "Bosch HDP5",
+    price: "$620.00",
+    avail: "In Stock",
+    lead: "Ships in 3–5 days",
+    desc: "Bosch HDP5 high-pressure direct fuel injection pump. Delivers precise fuel metering for DFI engine systems. OEM-equivalent replacement backed by SunSource technical support and warranty."
+  },
+  "FuelValve_Node_0": {
+    sku: "SS-FV-3PORT",
+    display: "Fuel Selector Valve (3-Port)",
+    series: "Pollak Motorized",
+    price: "$310.00",
+    avail: "In Stock",
+    lead: "Ships in 3–5 days",
+    desc: "Pollak motorized 3-port fuel tank selector valve for dual-tank applications. Enables automatic or manual tank switching to maximize fuel capacity and range on utility vehicles. Direct OEM replacement."
+  },
+  "BellHousing_node": {
+    sku: "SS-BH-MT",
+    display: "Manual Transmission Bell Housing",
+    series: "OEM Compatible",
+    price: "$740.00",
+    avail: "Built to Order",
+    lead: "Est. 2–3 weeks",
+    desc: "Heavy-duty manual transmission bell housing for utility truck drivetrain applications. Precision-machined for OEM fitment. SunSource sources and machines bell housing assemblies to match your transmission and engine combination."
+  },
   "Wheel_Front_Left": {
     sku: "SS-PWD-42",
     display: "Planetary Wheel Drive (Front)",
@@ -121,51 +166,6 @@ const PARTS_DATA = {
     avail: "Built to Order",
     lead: "Est. 2–3 weeks",
     desc: "Custom-built hydraulic cylinder for upper lift arm. SunSource designs and assembles custom cylinder solutions to match your machine's exact stroke, bore, and pressure requirements."
-  },
-  "Engine_Node_0": {
-    sku: "SS-ENG-351W",
-    display: "351W V8 Engine",
-    series: "Ford 351 Windsor",
-    price: "$4,850.00",
-    avail: "In Stock",
-    lead: "Ships in 5–7 days",
-    desc: "Ford 351 Windsor V8 engine, remanufactured to OEM specifications. 5.8L displacement, compatible with a wide range of mobile equipment and utility truck applications. SunSource-certified build with full warranty."
-  },
-  "Battery_Node_0": {
-    sku: "SS-BAT-12V",
-    display: "12V Automotive Battery",
-    series: "Group 31 Heavy Duty",
-    price: "$189.00",
-    avail: "In Stock",
-    lead: "Ships in 1–2 days",
-    desc: "Heavy-duty Group 31 12V battery for utility truck and mobile equipment starting and auxiliary power. High cold-cranking amps rated for extreme conditions. SunSource-stocked with same-day availability at select branches."
-  },
-  "FuelPump_Node_0": {
-    sku: "SS-FP-HDP5",
-    display: "Fuel Pump DFI HDP5",
-    series: "Bosch HDP5",
-    price: "$620.00",
-    avail: "In Stock",
-    lead: "Ships in 3–5 days",
-    desc: "Bosch HDP5 high-pressure direct fuel injection pump. Delivers precise fuel metering for DFI engine systems. OEM-equivalent replacement backed by SunSource technical support and warranty."
-  },
-  "FuelValve_Node_0": {
-    sku: "SS-FV-3PORT",
-    display: "Fuel Selector Valve (3-Port)",
-    series: "Pollak Motorized",
-    price: "$310.00",
-    avail: "In Stock",
-    lead: "Ships in 3–5 days",
-    desc: "Pollak motorized 3-port fuel tank selector valve for dual-tank applications. Enables automatic or manual tank switching to maximize fuel capacity and range on utility vehicles. Direct OEM replacement."
-  },
-  "BellHousing_node": {
-    sku: "SS-BH-MT",
-    display: "Manual Transmission Bell Housing",
-    series: "OEM Compatible",
-    price: "$740.00",
-    avail: "Built to Order",
-    lead: "Est. 2–3 weeks",
-    desc: "Heavy-duty manual transmission bell housing for utility truck drivetrain applications. Precision-machined for OEM fitment. SunSource sources and machines bell housing assemblies to match your transmission and engine combination."
   },
 };
 
