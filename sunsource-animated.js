@@ -319,16 +319,6 @@ document.getElementById("explode-slider").addEventListener("input", (e) => {
   else if (viewer.currentTime !== undefined) viewer.currentTime = t;
 });
 
-// ── Autoplay animation on load ────────────────────────────────
-const startAnimation = () => {
-  try {
-    if (viewer.playAnimation) { viewer.playAnimation(); return; }
-    if (viewer.play)          { viewer.play();          return; }
-    if (viewer.animationName !== undefined) viewer.animationName = "Scene";
-  } catch (_) {}
-};
-viewer.addEventListener("load",       startAnimation, { once: true });
-viewer.addEventListener("model-load", startAnimation, { once: true });
 
 // ── Loading overlay ───────────────────────────────────────────
 const loadingEl   = document.getElementById("viewer-loading");
