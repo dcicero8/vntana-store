@@ -344,7 +344,6 @@ const viewerConfig = JSON.parse(product.response.viewerSettings.config);
 assemblyName.textContent = "BigTruck — Mobile Equipment Components";
 document.title = "SunSource Mobile Equipment — VNTANA";
 
-console.log("viewerConfig:", JSON.stringify(viewerConfig));
 Object.assign(viewer, viewerConfig);
 viewer.enableAutoRotate = false;
 viewer.disableRotation  = false;
