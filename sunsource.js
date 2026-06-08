@@ -40,11 +40,6 @@ const RENDERS = {
   "Wheel_Front_Right":           "renders/sunsource/Wheel_Front_Right.jpg",
   "Wheel_Rear_Left":             "renders/sunsource/Wheel_Rear_Left.jpg",
   "Wheel_Rear_Right":            "renders/sunsource/Wheel_Rear_Right.jpg",
-  "Engine_Node_0":               "renders/sunsource/engine.jpg",
-  "Battery_Node_0":              "renders/sunsource/battery.jpg",
-  "FuelPump_Node_0":             "renders/sunsource/fuelpump.jpg",
-  "FuelValve_Node_0":            "renders/sunsource/fuelvalve.jpg",
-  "BellHousing_node":            "renders/sunsource/bellhousing.jpg",
 };
 
 // ── Parts catalog ─────────────────────────────────────────────
