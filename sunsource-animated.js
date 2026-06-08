@@ -312,43 +312,86 @@ if (!attachSelectionListener()) {
   viewer.addEventListener("load", attachSelectionListener, { once: true });
 }
 
-// ── Stop autoplay and log animation API on load ───────────────
-const initAnimation = () => {
-  // Log ALL viewer properties to find animation API
-  const allKeys = [];
-  let obj = viewer;
-  while (obj && obj !== HTMLElement.prototype) {
-    Object.getOwnPropertyNames(obj).forEach(k => { if (!allKeys.includes(k)) allKeys.push(k); });
-    obj = Object.getPrototypeOf(obj);
+// ── Find Three.js AnimationMixer via deep scan ────────────────
+let _mixer = null;
+let _clips  = [];
+
+const deepScanForMixer = (root) => {
+  // Scan all own property names (including non-enumerable) up to 4 levels deep
+  const seen = new WeakSet();
+  const queue = [{ obj: root, path: "viewer", depth: 0 }];
+  while (queue.length) {
+    const { obj, path, depth } = queue.shift();
+    if (!obj || typeof obj !== "object" || seen.has(obj) || depth > 4) continue;
+    seen.add(obj);
+    let names = [];
+    try { names = Object.getOwnPropertyNames(obj); } catch(e) { continue; }
+    for (const k of names) {
+      let val;
+      try { val = obj[k]; } catch(e) { continue; }
+      const fullPath = `${path}.${k}`;
+      // Three.js AnimationMixer has isAnimationMixer = true and an _actions array
+      if (val && typeof val === "object") {
+        if (val.isAnimationMixer) {
+          console.log("MIXER FOUND:", fullPath, val);
+          return { mixer: val, clips: [] };
+        }
+        // Three.js AnimationClip has .tracks array and .duration
+        if (Array.isArray(val) && val.length > 0 && val[0]?.tracks && val[0]?.duration !== undefined) {
+          console.log("CLIPS FOUND:", fullPath, val);
+          return { mixer: null, clips: val };
+        }
+        if (depth < 4 && k !== "parent" && k !== "children" && !k.startsWith("on")) {
+          queue.push({ obj: val, path: fullPath, depth: depth + 1 });
+        }
+      }
+    }
   }
-  const animKeys = allKeys.filter(k => /anim|play|pause|stop|time|clip|loop/i.test(k));
-  // Found it: viewer.scene.animations
-  const anims = viewer.scene?.animations;
-  console.log("viewer.scene.animations:", anims);
-  if (anims && anims.length > 0) {
-    const a = anims[0];
-    console.log("anim[0] keys:", Object.keys(a).join(", "));
-    console.log("anim[0]:", a);
-    // Try to pause
-    if (typeof a.pause  === "function") { a.pause();  console.log("paused via a.pause()"); }
-    if (typeof a.stop   === "function") { a.stop();   console.log("paused via a.stop()"); }
-    if ("playing" in a) { a.playing = false; console.log("set playing=false"); }
-    if ("paused"  in a) { a.paused  = true;  console.log("set paused=true"); }
-    if ("time"    in a) { a.time    = 0;     console.log("set time=0"); }
+  return null;
+};
+
+const initAnimation = () => {
+  const result = deepScanForMixer(viewer);
+  if (result?.mixer) {
+    _mixer = result.mixer;
+    // Get all actions from mixer
+    const actions = _mixer._actions ?? [];
+    console.log("Mixer actions:", actions.length);
+    // Pause all actions and reset to t=0
+    actions.forEach(a => { a.paused = true; a.time = 0; });
+    _clips = actions.map(a => a._clip).filter(Boolean);
+    console.log("Clips:", _clips.map(c => c.name + " dur=" + c.duration));
+  } else if (result?.clips) {
+    _clips = result.clips;
+    console.log("Clips (no mixer):", _clips.map(c => c.name + " dur=" + c.duration));
+  } else {
+    console.log("No mixer or clips found. viewer keys with anim/mix:",
+      (() => {
+        const keys = []; let o = viewer;
+        while (o && o !== HTMLElement.prototype) {
+          Object.getOwnPropertyNames(o).forEach(k => { if (/anim|mix|clip|action/i.test(k) && !keys.includes(k)) keys.push(k); });
+          o = Object.getPrototypeOf(o);
+        }
+        return keys;
+      })().join(", ")
+    );
   }
 };
 viewer.addEventListener("load",       initAnimation, { once: true });
 viewer.addEventListener("model-load", initAnimation, { once: true });
 
-// ── Engine Lift slider (scrubs GLB animation 0–3s) ───────────
+// ── Engine Lift slider ────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
   const t = parseFloat(e.target.value);
-  const a = viewer.scene?.animations?.[0];
-  if (!a) return;
-  console.log("slider t=", t, "anim keys:", Object.keys(a).join(", "));
-  if ("time"    in a) a.time    = t;
-  if ("paused"  in a) a.paused  = true;
-  if ("playing" in a) a.playing = false;
+  if (!_mixer) { console.log("slider: no mixer yet, t=", t); return; }
+  const actions = _mixer._actions ?? [];
+  actions.forEach(a => {
+    a.paused = true;
+    a.time   = t;
+  });
+  // Force the mixer to evaluate at this time without advancing the clock
+  _mixer.update(0);
+  console.log("slider t=", t, "actions:", actions.length);
 });
 
 
