@@ -81,15 +81,6 @@ const PARTS_DATA = {
     lead: "Ships in 5–7 days",
     desc: "Danfoss Series 51 bent axis variable motor for rear propel drive. High efficiency across full speed range, suitable for demanding mobile applications. SunSource-authorized build center with global product support."
   },
-  "MainBody": {
-    sku: "SS-ECS-100",
-    display: "Electronic Control System",
-    series: "Danfoss PLUS+1",
-    price: "$200.00",
-    avail: "In Stock",
-    lead: "Ships in 5–7 days",
-    desc: "Danfoss PLUS+1 electronic control system with integrated telematics. Programmable controller for machine motion, operator interface, and real-time diagnostics. In-house design and technical support available from SunSource."
-  },
   "Lift_Lower_Arm_Actuator_Base": {
     sku: "SS-HPM-90",
     display: "Hydrostatic Propel Pump",
@@ -332,9 +323,7 @@ const attachSelectionListener = () => {
         if (PARTS_DATA[name]) { handlePartName(name); return; }
         n = n.parent;
       }
-      // If no PARTS_DATA match, still show the node name
-      const topName = normalizePartName(node.name ?? "");
-      if (topName) handlePartName(topName);
+      // No PARTS_DATA match — don't show anything
     });
   });
   return true;
