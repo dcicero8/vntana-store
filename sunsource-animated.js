@@ -312,9 +312,31 @@ if (!attachSelectionListener()) {
   viewer.addEventListener("load", attachSelectionListener, { once: true });
 }
 
+// ── Stop autoplay and log animation API on load ───────────────
+const initAnimation = () => {
+  // Log everything animation-related on the viewer
+  const animKeys = Object.getOwnPropertyNames(Object.getPrototypeOf(viewer))
+    .filter(k => /anim|play|time|clip/i.test(k));
+  console.log("Viewer animation props:", animKeys);
+  console.log("viewer.animations:", viewer.animations);
+  console.log("viewer.animationClips:", viewer.animationClips);
+  console.log("viewer.animationTime:", viewer.animationTime);
+  console.log("viewer.currentTime:", viewer.currentTime);
+
+  // Try to pause/stop autoplay
+  try { viewer.pause?.(); } catch(_) {}
+  try { viewer.pauseAnimation?.(); } catch(_) {}
+  try { viewer.stopAnimation?.(); } catch(_) {}
+  if (viewer.animationTime !== undefined) viewer.animationTime = 0;
+  if (viewer.currentTime   !== undefined) viewer.currentTime   = 0;
+};
+viewer.addEventListener("load",       initAnimation, { once: true });
+viewer.addEventListener("model-load", initAnimation, { once: true });
+
 // ── Engine Lift slider (scrubs GLB animation 0–3s) ───────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
   const t = parseFloat(e.target.value);
+  console.log("slider t=", t, "animationTime=", viewer.animationTime, "currentTime=", viewer.currentTime);
   if (viewer.animationTime !== undefined) viewer.animationTime = t;
   else if (viewer.currentTime !== undefined) viewer.currentTime = t;
 });
