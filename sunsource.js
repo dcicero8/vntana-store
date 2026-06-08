@@ -295,12 +295,14 @@ const attachSelectionListener = () => {
     let hasPrimary = false;
 
     event.changes.forEach((value, node) => {
+      console.log("change value:", value, "node:", node?.name);
       if (value !== 1) return;
       hasPrimary = true;
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
         const resolved = PART_NODE_ALIASES[name] ?? name;
+        console.log("  walk:", name, "→", resolved, "match:", !!PARTS_DATA[resolved]);
         if (PARTS_DATA[resolved]) { matchedPart = resolved; return; }
         n = n.parent;
       }
