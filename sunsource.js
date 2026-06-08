@@ -284,18 +284,27 @@ const normalizePartName = (text) =>
 // Engine bay part keys to highlight on load
 const ENGINE_PARTS = ["Engine_Node_0", "Battery_Node_0", "FuelPump_Node_0", "FuelValve_Node_0", "BellHousing_<STL_BINARY>"];
 
+// All node names that should map to a known part (including aliases)
+const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
+
+// Flag to suppress change listener during programmatic highlights
+let suppressChangeListener = false;
+
 const highlightEngineParts = () => {
   const scene = viewer.scene;
   if (!scene) return;
   const highlight = viewer.selection?.highlight;
   if (!highlight) return;
 
+  suppressChangeListener = true;
   const visit = (node) => {
     const name = normalizePartName(node.name ?? "");
     if (ENGINE_PARTS.includes(name)) highlight.add(node);
     node.children?.forEach(visit);
   };
   visit(scene);
+  // Re-enable listener after a tick
+  setTimeout(() => { suppressChangeListener = false; }, 100);
 };
 
 const clearEngineHighlights = () => {
@@ -325,16 +334,18 @@ const attachSelectionListener = () => {
   viewer.addEventListener("load", doHighlight, { once: true });
 
   viewer.selection.highlight.addEventListener("change", (event) => {
+    if (suppressChangeListener) return;
     event.changes.forEach((value, node) => {
       if (value !== 0) return;
-      // Walk up to find a PARTS_DATA match
+      // Walk up to find a PARTS_DATA match (including aliases)
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
-        if (PARTS_DATA[name]) { handlePartName(name); return; }
+        const resolved = PART_NODE_ALIASES[name] ?? name;
+        if (PARTS_DATA[resolved]) { handlePartName(resolved); return; }
         n = n.parent;
       }
-      // No match — clear the highlight so the body doesn't glow
+      // No match — clear the highlight so body/seats/glass don't glow
       viewer.selection.highlight.clear();
     });
   });
