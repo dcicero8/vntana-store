@@ -290,15 +290,24 @@ const highlightEngineParts = () => {
   const highlight = viewer.selection?.highlight;
   if (!highlight) return;
 
-  // Log all top-level node names to console for debugging
-  console.log("Scene children:", scene.children?.map(n => n.name));
+  // Log full scene tree for debugging
+  const logTree = (node, depth = 0) => {
+    console.log(" ".repeat(depth * 2) + (node.name || "(unnamed)"));
+    node.children?.forEach(c => logTree(c, depth + 1));
+  };
+  console.log("=== Scene tree ===");
+  logTree(scene);
 
-  // Walk the scene graph and highlight any node whose name matches an engine part
+  // Try all available highlight methods
+  const tryHighlight = (node) => {
+    if (typeof highlight.add === "function") highlight.add(node);
+    else if (typeof highlight.highlight === "function") highlight.highlight(node);
+    else console.warn("No known highlight method on", highlight);
+  };
+
   const visit = (node) => {
     const name = normalizePartName(node.name ?? "");
-    if (ENGINE_PARTS.includes(name)) {
-      highlight.set(node, 1);
-    }
+    if (ENGINE_PARTS.includes(name)) tryHighlight(node);
     node.children?.forEach(visit);
   };
   visit(scene);
@@ -306,7 +315,16 @@ const highlightEngineParts = () => {
 
 const clearEngineHighlights = () => {
   const highlight = viewer.selection?.highlight;
-  if (highlight) highlight.clear();
+  if (!highlight) return;
+  if (typeof highlight.clear === "function") highlight.clear();
+  else if (typeof highlight.delete === "function") {
+    // clear all by walking scene
+    const visit = (node) => {
+      highlight.delete(node);
+      node.children?.forEach(visit);
+    };
+    if (viewer.scene) visit(viewer.scene);
+  }
 };
 
 const attachSelectionListener = () => {
@@ -340,7 +358,10 @@ const attachSelectionListener = () => {
         n = n.parent;
       }
       // No match — clear the highlight so the body doesn't glow
-      viewer.selection.highlight.delete(node);
+      const hl = viewer.selection.highlight;
+      if (typeof hl.delete === "function") hl.delete(node);
+      else if (typeof hl.remove === "function") hl.remove(node);
+      else if (typeof hl.clear === "function") hl.clear();
     });
   });
   return true;
