@@ -282,7 +282,7 @@ const normalizePartName = (text) =>
   text?.replace(/\s*\(\d+\)\s*$/, "").trim() ?? "";
 
 // Engine bay part keys to highlight on load
-const ENGINE_PARTS = ["Engine_Node_0", "Battery_Node_0", "FuelPump_Node_0", "FuelValve_Node_0", "BellHousing_node"];
+const ENGINE_PARTS = ["Engine_Node_0", "Battery_Node_0", "FuelPump_Node_0", "FuelValve_Node_0", "BellHousing_<STL_BINARY>"];
 
 const highlightEngineParts = () => {
   const scene = viewer.scene;
@@ -290,24 +290,9 @@ const highlightEngineParts = () => {
   const highlight = viewer.selection?.highlight;
   if (!highlight) return;
 
-  // Log full scene tree for debugging
-  const logTree = (node, depth = 0) => {
-    console.log(" ".repeat(depth * 2) + (node.name || "(unnamed)"));
-    node.children?.forEach(c => logTree(c, depth + 1));
-  };
-  console.log("=== Scene tree ===");
-  logTree(scene);
-
-  // Try all available highlight methods
-  const tryHighlight = (node) => {
-    if (typeof highlight.add === "function") highlight.add(node);
-    else if (typeof highlight.highlight === "function") highlight.highlight(node);
-    else console.warn("No known highlight method on", highlight);
-  };
-
   const visit = (node) => {
     const name = normalizePartName(node.name ?? "");
-    if (ENGINE_PARTS.includes(name)) tryHighlight(node);
+    if (ENGINE_PARTS.includes(name)) highlight.add(node);
     node.children?.forEach(visit);
   };
   visit(scene);
@@ -317,14 +302,6 @@ const clearEngineHighlights = () => {
   const highlight = viewer.selection?.highlight;
   if (!highlight) return;
   if (typeof highlight.clear === "function") highlight.clear();
-  else if (typeof highlight.delete === "function") {
-    // clear all by walking scene
-    const visit = (node) => {
-      highlight.delete(node);
-      node.children?.forEach(visit);
-    };
-    if (viewer.scene) visit(viewer.scene);
-  }
 };
 
 const attachSelectionListener = () => {
@@ -358,10 +335,7 @@ const attachSelectionListener = () => {
         n = n.parent;
       }
       // No match — clear the highlight so the body doesn't glow
-      const hl = viewer.selection.highlight;
-      if (typeof hl.delete === "function") hl.delete(node);
-      else if (typeof hl.remove === "function") hl.remove(node);
-      else if (typeof hl.clear === "function") hl.clear();
+      viewer.selection.highlight.clear();
     });
   });
   return true;
