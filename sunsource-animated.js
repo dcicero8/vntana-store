@@ -322,8 +322,12 @@ const initAnimation = () => {
     obj = Object.getPrototypeOf(obj);
   }
   const animKeys = allKeys.filter(k => /anim|play|pause|stop|time|clip|loop/i.test(k));
-  console.log("All anim keys:", animKeys);
-  console.log("viewer.scene anim keys:", viewer.scene ? Object.keys(viewer.scene).filter(k => /anim|play|time/i.test(k)) : "no scene");
+  console.log("All anim keys:", animKeys.join(", "));
+  const sceneAnimKeys = viewer.scene ? Object.keys(viewer.scene).filter(k => /anim|play|time/i.test(k)) : [];
+  console.log("viewer.scene anim keys:", sceneAnimKeys.join(", "));
+  // Also log the actual values
+  animKeys.forEach(k => console.log(`  viewer.${k} =`, viewer[k]));
+  sceneAnimKeys.forEach(k => console.log(`  viewer.scene.${k} =`, viewer.scene[k]));
 
   // Try to pause autoplay
   ["pause","pauseAnimation","stop","stopAnimation"].forEach(fn => {
