@@ -288,16 +288,23 @@ const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
   viewer.selection.highlight.addEventListener("change", (event) => {
+    let matched = null;
     event.changes.forEach((value, node) => {
-      // Walk up the scene tree to find a PARTS_DATA match
+      if (matched) return;
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
         const resolved = PART_NODE_ALIASES[name] ?? name;
-        if (PARTS_DATA[resolved]) { handlePartName(resolved); return; }
+        if (PARTS_DATA[resolved]) { matched = resolved; return; }
         n = n.parent;
       }
     });
+    if (matched) {
+      handlePartName(matched);
+    } else {
+      // Nothing in PARTS_DATA highlighted — reset so the same part can be re-clicked
+      lastPartName = null;
+    }
   });
   return true;
 };
