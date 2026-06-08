@@ -1,7 +1,7 @@
 import { BASE_URL } from "./products.js";
 
 // ── Asset config ─────────────────────────────────────────────
-const UUID      = "4080e745-de21-49e8-a650-019544dea546";
+const UUID      = "d7fdf9f4-b8e6-418a-bc6e-342aeee92c0a";
 const ORG       = "DCicero";
 const WORKSPACE = "blender";
 
@@ -312,10 +312,23 @@ if (!attachSelectionListener()) {
   viewer.addEventListener("load", attachSelectionListener, { once: true });
 }
 
-// ── Explode slider ────────────────────────────────────────────
+// ── Engine Lift slider (scrubs GLB animation 0–3s) ───────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
-  if (viewer.scene) viewer.scene.explodedStrength = parseFloat(e.target.value);
+  const t = parseFloat(e.target.value);
+  if (viewer.animationTime !== undefined) viewer.animationTime = t;
+  else if (viewer.currentTime !== undefined) viewer.currentTime = t;
 });
+
+// ── Autoplay animation on load ────────────────────────────────
+const startAnimation = () => {
+  try {
+    if (viewer.playAnimation) { viewer.playAnimation(); return; }
+    if (viewer.play)          { viewer.play();          return; }
+    if (viewer.animationName !== undefined) viewer.animationName = "Scene";
+  } catch (_) {}
+};
+viewer.addEventListener("load",       startAnimation, { once: true });
+viewer.addEventListener("model-load", startAnimation, { once: true });
 
 // ── Loading overlay ───────────────────────────────────────────
 const loadingEl   = document.getElementById("viewer-loading");
