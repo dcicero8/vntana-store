@@ -290,6 +290,9 @@ const highlightEngineParts = () => {
   const highlight = viewer.selection?.highlight;
   if (!highlight) return;
 
+  // Log all top-level node names to console for debugging
+  console.log("Scene children:", scene.children?.map(n => n.name));
+
   // Walk the scene graph and highlight any node whose name matches an engine part
   const visit = (node) => {
     const name = normalizePartName(node.name ?? "");
@@ -310,15 +313,19 @@ const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
   // Highlight engine parts once model is ready, clear on first click
+  let highlightDone = false;
   const doHighlight = () => {
-    highlightEngineParts();
-    const clearOnce = () => {
-      clearEngineHighlights();
-      viewer.removeEventListener("click", clearOnce);
-    };
-    viewer.addEventListener("click", clearOnce);
+    if (highlightDone) return;
+    highlightDone = true;
+    setTimeout(() => {
+      highlightEngineParts();
+      const clearOnce = () => {
+        clearEngineHighlights();
+        viewer.removeEventListener("click", clearOnce);
+      };
+      viewer.addEventListener("click", clearOnce);
+    }, 300);
   };
-  // Try immediately, then also hook model-load in case scene isn't ready yet
   viewer.addEventListener("model-load", doHighlight, { once: true });
   viewer.addEventListener("load", doHighlight, { once: true });
 
