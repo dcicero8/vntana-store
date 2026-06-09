@@ -343,6 +343,15 @@ viewer.addEventListener("load",       initLift, { once: true });
 viewer.addEventListener("model-load", initLift, { once: true });
 
 // ── Engine Lift slider (0 = rest, max = fully lifted) ─────────
+const wakeRenderer = () => {
+  // VNTANA pauses its render loop when idle; dispatch a no-op pointermove on
+  // the canvas to trigger a frame so position changes are drawn immediately.
+  const canvas = viewer.shadowRoot?.querySelector("canvas");
+  if (canvas) {
+    canvas.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, cancelable: true, clientX: 1, clientY: 1 }));
+  }
+};
+
 document.getElementById("explode-slider").addEventListener("input", (e) => {
   const sliderMax = parseFloat(e.target.max) || 3;
   const t = parseFloat(e.target.value) / sliderMax;   // normalize to 0–1
@@ -353,6 +362,7 @@ document.getElementById("explode-slider").addEventListener("input", (e) => {
     node.position.y = rest.y + offset.y * t;
     node.position.z = rest.z + offset.z * t;
   }
+  wakeRenderer();
 });
 
 
