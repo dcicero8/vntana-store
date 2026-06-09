@@ -360,7 +360,6 @@ const applyEngineTint = () => {
       tinted++;
     });
   });
-  console.log(`Engine tint applied to ${tinted} mesh(es)`);
 };
 
 viewer.addEventListener("load",       applyEngineTint, { once: true });

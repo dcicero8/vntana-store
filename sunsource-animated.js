@@ -357,7 +357,6 @@ const initLift = () => {
       liftRestPos[name] = { x: node.position.x, y: node.position.y, z: node.position.z };
     }
   });
-  console.log("Lift nodes found:", Object.keys(liftNodes).join(", ") || "none");
 };
 viewer.addEventListener("load",       initLift, { once: true });
 viewer.addEventListener("model-load", initLift, { once: true });
