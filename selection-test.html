@@ -92,23 +92,26 @@ const product = await fetch(
   `${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}`
 ).then(r => r.json());
 const { models } = product.response.asset;
+const viewerConfig = JSON.parse(product.response.viewerSettings.config);
+Object.assign(viewer, viewerConfig);
+viewer.enableAutoRotate = false;
 const glb = models.find(m => (m.conversionFormat ?? m.type) === "GLB");
 const blobId = glb?.modelBlobId ?? glb?.blobId;
 if (blobId) viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
 
-// ── Selection: click + rAF, read highlight directly ───────────
-const resolveHighlight = () => {
+// ── Selection: try multiple delays to find when highlight populates ───────────
+const checkHighlight = (label) => {
   const sel = viewer.selection?.highlight;
-  if (!sel) { log("resolveHighlight: viewer.selection.highlight is null/undefined", "miss"); return; }
-
-  log(`highlight type: ${sel.constructor?.name}, size: ${sel.size ?? "??"}`);
+  const size = sel?.size ?? "null";
+  log(`[${label}] highlight size: ${size}`);
+  if (!sel || sel.size === 0) return false;
 
   let matched = null;
   try {
     for (const entry of sel) {
       const node  = Array.isArray(entry) ? entry[0] : entry;
       const value = Array.isArray(entry) ? entry[1] : true;
-      log(`  entry: node="${node?.name}" value=${value} isArray=${Array.isArray(entry)}`);
+      log(`  entry: node="${node?.name}" value=${value}`);
       if (!value) continue;
       let n = node;
       while (n) {
@@ -131,7 +134,10 @@ const resolveHighlight = () => {
 
 viewer.addEventListener("click", () => {
   log("--- click ---");
-  requestAnimationFrame(resolveHighlight);
+  requestAnimationFrame(() => checkHighlight("rAF"));
+  setTimeout(() => checkHighlight("10ms"),  10);
+  setTimeout(() => checkHighlight("50ms"),  50);
+  setTimeout(() => checkHighlight("100ms"), 100);
 });
 
 // ── Controls ──────────────────────────────────────────────────
