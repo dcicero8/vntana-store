@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Selection Test</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; display: flex; height: 100vh; background: #fff; }
+    #viewer-wrap { flex: 1; position: relative; }
+    vntana-viewer { width: 100%; height: 100%; display: block; }
+    #panel {
+      width: 340px; padding: 1rem; overflow-y: auto;
+      background: #f5f5f5; border-left: 1px solid #ddd;
+      font-size: .75rem; font-family: monospace;
+    }
+    #panel h2 { font-size: .9rem; margin-bottom: .75rem; font-family: sans-serif; font-weight: 600; }
+    #selected { font-size: 1rem; font-weight: 700; margin-bottom: .75rem; min-height: 1.5rem; }
+    .controls { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .75rem; }
+    .controls button { font-size: .7rem; padding: .3rem .6rem; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background: #fff; }
+    .controls button:hover { background: #e5e7eb; }
+    #entries { display: flex; flex-direction: column; gap: .3rem; }
+    .entry { padding: .35rem .5rem; border-radius: 3px; border: 1px solid #e0e0e0; background: #fff; word-break: break-all; }
+    .entry.match { border-color: #22c55e; background: #f0fdf4; }
+    .entry.miss  { border-color: #f97316; background: #fff7ed; }
+    .entry .ts   { color: #9ca3af; margin-right: .4rem; }
+  </style>
+</head>
+<body>
+
+<div id="viewer-wrap">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+  <vntana-viewer id="viewer" shadow-intensity="0.4" shadow-radius="3" loading="eager">
+    <vntana-fs-button></vntana-fs-button>
+    <vntana-center-button></vntana-center-button>
+  </vntana-viewer>
+</div>
+
+<div id="panel">
+  <h2>Selection Test</h2>
+  <div id="selected">— nothing selected —</div>
+
+  <div class="controls">
+    <button id="btn-sg">Add Scene Graph</button>
+    <button id="btn-sg-remove">Remove Scene Graph</button>
+    <button id="btn-clear">Clear Log</button>
+    <button id="btn-dump">Dump viewer.selection keys</button>
+  </div>
+
+  <div id="entries"></div>
+</div>
+
+<script type="module">
+import { BASE_URL } from "./products.js";
+
+const UUID      = "4080e745-de21-49e8-a650-019544dea546";
+const ORG       = "DCicero";
+const WORKSPACE = "blender";
+
+const viewer  = document.getElementById("viewer");
+const entries = document.getElementById("entries");
+const selEl   = document.getElementById("selected");
+
+const PARTS_DATA = {
+  "Engine_Node_0":    "351W V8 Engine",
+  "Battery_Node_0":   "12V Automotive Battery",
+  "FuelPump_Node_0":  "Fuel Pump DFI HDP5",
+  "FuelValve_Node_0": "Fuel Selector Valve (3-Port)",
+  "BellHousing_node": "Manual Transmission Bell Housing",
+  "Wheel_Front_Left": "Planetary Wheel Drive (Front)",
+  "Wheel_Front_Right":"Planetary Wheel Drive (Front)",
+  "Wheel_Rear_Left":  "Bent Axis Propel Motor (Rear)",
+  "Wheel_Rear_Right": "Bent Axis Propel Motor (Rear)",
+  "Lift_Arm_Upper_Actuator_Base": "Work Function Pump",
+  "Lift_Bucket":      "Lift Bucket Attachment",
+  "Lift_Arm_Lower_Beam": "Lift Arm Hydraulic Cylinder",
+  "Lift_Arm_Upper_Beam": "Upper Arm Hydraulic Cylinder",
+};
+const ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
+const norm = t => t?.replace(/\s*\(\d+\)\s*$/, "").trim() ?? "";
+
+const log = (msg, cls = "") => {
+  const d = document.createElement("div");
+  d.className = "entry " + cls;
+  const ts = new Date().toLocaleTimeString("en", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  d.innerHTML = `<span class="ts">${ts}</span>${msg}`;
+  entries.prepend(d);
+};
+
+// ── Load model ────────────────────────────────────────────────
+const product = await fetch(
+  `${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}`
+).then(r => r.json());
+const { models } = product.response.asset;
+const glb = models.find(m => (m.conversionFormat ?? m.type) === "GLB");
+const blobId = glb?.modelBlobId ?? glb?.blobId;
+if (blobId) viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+
+// ── Selection: click + rAF, read highlight directly ───────────
+const resolveHighlight = () => {
+  const sel = viewer.selection?.highlight;
+  if (!sel) { log("resolveHighlight: viewer.selection.highlight is null/undefined", "miss"); return; }
+
+  log(`highlight type: ${sel.constructor?.name}, size: ${sel.size ?? "??"}`);
+
+  let matched = null;
+  try {
+    for (const entry of sel) {
+      const node  = Array.isArray(entry) ? entry[0] : entry;
+      const value = Array.isArray(entry) ? entry[1] : true;
+      log(`  entry: node="${node?.name}" value=${value} isArray=${Array.isArray(entry)}`);
+      if (!value) continue;
+      let n = node;
+      while (n) {
+        const resolved = ALIASES[norm(n.name ?? "")] ?? norm(n.name ?? "");
+        if (PARTS_DATA[resolved]) { matched = resolved; break; }
+        n = n.parent;
+      }
+      if (matched) break;
+    }
+  } catch (e) { log("iteration error: " + e.message, "miss"); }
+
+  if (matched) {
+    selEl.textContent = PARTS_DATA[matched];
+    log(`MATCH → ${matched}`, "match");
+  } else {
+    selEl.textContent = "— no match —";
+    log("no match found", "miss");
+  }
+};
+
+viewer.addEventListener("click", () => {
+  log("--- click ---");
+  requestAnimationFrame(resolveHighlight);
+});
+
+// ── Controls ──────────────────────────────────────────────────
+document.getElementById("btn-sg").addEventListener("click", () => {
+  const sg = document.createElement("vntana-scene-graph-button");
+  sg.setAttribute("active", "");
+  viewer.appendChild(sg);
+  log("scene graph added");
+});
+
+document.getElementById("btn-sg-remove").addEventListener("click", () => {
+  viewer.querySelector("vntana-scene-graph-button")?.remove();
+  log("scene graph removed");
+});
+
+document.getElementById("btn-clear").addEventListener("click", () => {
+  entries.innerHTML = "";
+});
+
+document.getElementById("btn-dump").addEventListener("click", () => {
+  const sel = viewer.selection;
+  if (!sel) { log("viewer.selection is null", "miss"); return; }
+  log("viewer.selection keys: " + Object.keys(sel).join(", "));
+  log("highlight keys: " + Object.keys(sel.highlight ?? {}).join(", "));
+});
+</script>
+
+</body>
+</html>
