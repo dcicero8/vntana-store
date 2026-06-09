@@ -336,6 +336,36 @@ if (!attachSelectionListener()) {
   viewer.addEventListener("load", attachSelectionListener, { once: true });
 }
 
+// ── Engine part tint test ─────────────────────────────────────
+// Try to apply a subtle blue tint to engine housing parts via Three.js material.
+// If VNTANA overrides this it'll revert visually — check the console for results.
+const ENGINE_TINT_PARTS = new Set([
+  "Engine_Node_0", "Battery_Node_0", "FuelPump_Node_0",
+  "FuelValve_Node_0", "BellHousing_<STL_BINARY>"
+]);
+const TINT_COLOR = { r: 0.55, g: 0.70, b: 0.95 };  // soft blue
+
+const applyEngineTint = () => {
+  if (!viewer.scene?.traverse) return;
+  let tinted = 0;
+  viewer.scene.traverse((node) => {
+    const name = normalizePartName(node.name ?? "");
+    if (!ENGINE_TINT_PARTS.has(name)) return;
+    // Walk this node's subtree to find all Meshes
+    node.traverse?.((child) => {
+      if (!child.isMesh || !child.material) return;
+      // Clone material so we don't affect other meshes sharing it
+      child.material = child.material.clone();
+      child.material.color.setRGB(TINT_COLOR.r, TINT_COLOR.g, TINT_COLOR.b);
+      tinted++;
+    });
+  });
+  console.log(`Engine tint applied to ${tinted} mesh(es)`);
+};
+
+viewer.addEventListener("load",       applyEngineTint, { once: true });
+viewer.addEventListener("model-load", applyEngineTint, { once: true });
+
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
   if (viewer.scene) viewer.scene.explodedStrength = parseFloat(e.target.value);
