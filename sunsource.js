@@ -328,25 +328,29 @@ const resolveFromSet = () => {
   else lastPartName = null;
 };
 
-const onSelectionChange = (event) => {
+const onHighlightChange = (event) => {
   event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
+  // rAF debounce: let both de-highlight (old part) and re-highlight (new part)
+  // events finish updating the set before we resolve.
   requestAnimationFrame(resolveFromSet);
 };
 
-let _lastSelection = null;
+let _lastHighlight = null;
 const attachSelectionListener = () => {
-  // Try "select" channel first (used by scene graph), fall back to "highlight"
-  const sel = viewer.selection?.select ?? viewer.selection?.highlight;
-  if (!sel?.addEventListener) return;
-  if (sel === _lastSelection) return;
-  if (_lastSelection) _lastSelection.removeEventListener("change", onSelectionChange);
-  sel.addEventListener("change", onSelectionChange);
-  _lastSelection = sel;
+  const hl = viewer.selection?.highlight;
+  if (!hl?.addEventListener) return;
+  if (hl === _lastHighlight) return;
+  if (_lastHighlight) _lastHighlight.removeEventListener("change", onHighlightChange);
+  hl.addEventListener("change", onHighlightChange);
+  _lastHighlight = hl;
 };
 
+// Attach on load events AND on every click — if VNTANA recreated the highlight
+// object since last attach, the click re-anchors us before resolving.
 attachSelectionListener();
 viewer.addEventListener("load",       attachSelectionListener);
 viewer.addEventListener("model-load", attachSelectionListener);
+viewer.addEventListener("click",      attachSelectionListener);
 
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
