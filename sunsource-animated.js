@@ -1,7 +1,8 @@
 import { BASE_URL } from "./products.js";
 
 // ── Asset config ─────────────────────────────────────────────
-const UUID      = "d7fdf9f4-b8e6-418a-bc6e-342aeee92c0a";
+// Use the static truck GLB — we animate nodes manually via scene.traverse()
+const UUID      = "4080e745-de21-49e8-a650-019544dea546";
 const ORG       = "DCicero";
 const WORKSPACE = "blender";
 
@@ -312,86 +313,46 @@ if (!attachSelectionListener()) {
   viewer.addEventListener("load", attachSelectionListener, { once: true });
 }
 
-// ── Find Three.js AnimationMixer via deep scan ────────────────
-let _mixer = null;
-let _clips  = [];
+// ── Engine Lift — manual node animation ───────────────────────
+// Parts that rise out of the engine bay when the slider is moved.
+// Offsets are applied on top of each node's rest position (captured on load).
+const LIFT_PARTS = {
+  "Engine_Node_0":            { y: 2.2,  x:  0.00, z:  0.00 },
+  "Battery_Node_0":           { y: 1.6,  x: -0.45, z:  0.00 },
+  "FuelPump_Node_0":          { y: 1.6,  x:  0.45, z:  0.00 },
+  "FuelValve_Node_0":         { y: 1.6,  x:  0.00, z: -0.40 },
+  "BellHousing_<STL_BINARY>": { y: 1.6,  x:  0.00, z:  0.40 },
+};
 
-const deepScanForMixer = (root) => {
-  // Scan all own property names (including non-enumerable) up to 4 levels deep
-  const seen = new WeakSet();
-  const queue = [{ obj: root, path: "viewer", depth: 0 }];
-  while (queue.length) {
-    const { obj, path, depth } = queue.shift();
-    if (!obj || typeof obj !== "object" || seen.has(obj) || depth > 4) continue;
-    seen.add(obj);
-    let names = [];
-    try { names = Object.getOwnPropertyNames(obj); } catch(e) { continue; }
-    for (const k of names) {
-      let val;
-      try { val = obj[k]; } catch(e) { continue; }
-      const fullPath = `${path}.${k}`;
-      // Three.js AnimationMixer has isAnimationMixer = true and an _actions array
-      if (val && typeof val === "object") {
-        if (val.isAnimationMixer) {
-          console.log("MIXER FOUND:", fullPath, val);
-          return { mixer: val, clips: [] };
-        }
-        // Three.js AnimationClip has .tracks array and .duration
-        if (Array.isArray(val) && val.length > 0 && val[0]?.tracks && val[0]?.duration !== undefined) {
-          console.log("CLIPS FOUND:", fullPath, val);
-          return { mixer: null, clips: val };
-        }
-        if (depth < 4 && k !== "parent" && k !== "children" && !k.startsWith("on")) {
-          queue.push({ obj: val, path: fullPath, depth: depth + 1 });
-        }
-      }
+const liftNodes   = {};   // name → Three.js Object3D
+const liftRestPos = {};   // name → { x, y, z } at rest
+
+const initLift = () => {
+  if (!viewer.scene?.traverse) return;
+  viewer.scene.traverse((node) => {
+    const raw  = node.name ?? "";
+    const name = raw.replace(/\s*\(\d+\)\s*$/, "").trim();
+    if (LIFT_PARTS[name] && !liftNodes[name]) {
+      liftNodes[name]   = node;
+      liftRestPos[name] = { x: node.position.x, y: node.position.y, z: node.position.z };
     }
-  }
-  return null;
-};
-
-const initAnimation = () => {
-  const result = deepScanForMixer(viewer);
-  if (result?.mixer) {
-    _mixer = result.mixer;
-    // Get all actions from mixer
-    const actions = _mixer._actions ?? [];
-    console.log("Mixer actions:", actions.length);
-    // Pause all actions and reset to t=0
-    actions.forEach(a => { a.paused = true; a.time = 0; });
-    _clips = actions.map(a => a._clip).filter(Boolean);
-    console.log("Clips:", _clips.map(c => c.name + " dur=" + c.duration));
-  } else if (result?.clips) {
-    _clips = result.clips;
-    console.log("Clips (no mixer):", _clips.map(c => c.name + " dur=" + c.duration));
-  } else {
-    console.log("No mixer or clips found. viewer keys with anim/mix:",
-      (() => {
-        const keys = []; let o = viewer;
-        while (o && o !== HTMLElement.prototype) {
-          Object.getOwnPropertyNames(o).forEach(k => { if (/anim|mix|clip|action/i.test(k) && !keys.includes(k)) keys.push(k); });
-          o = Object.getPrototypeOf(o);
-        }
-        return keys;
-      })().join(", ")
-    );
-  }
-};
-viewer.addEventListener("load",       initAnimation, { once: true });
-viewer.addEventListener("model-load", initAnimation, { once: true });
-
-// ── Engine Lift slider ────────────────────────────────────────
-document.getElementById("explode-slider").addEventListener("input", (e) => {
-  const t = parseFloat(e.target.value);
-  if (!_mixer) { console.log("slider: no mixer yet, t=", t); return; }
-  const actions = _mixer._actions ?? [];
-  actions.forEach(a => {
-    a.paused = true;
-    a.time   = t;
   });
-  // Force the mixer to evaluate at this time without advancing the clock
-  _mixer.update(0);
-  console.log("slider t=", t, "actions:", actions.length);
+  console.log("Lift nodes found:", Object.keys(liftNodes).join(", ") || "none");
+};
+viewer.addEventListener("load",       initLift, { once: true });
+viewer.addEventListener("model-load", initLift, { once: true });
+
+// ── Engine Lift slider (0 = rest, max = fully lifted) ─────────
+document.getElementById("explode-slider").addEventListener("input", (e) => {
+  const sliderMax = parseFloat(e.target.max) || 3;
+  const t = parseFloat(e.target.value) / sliderMax;   // normalize to 0–1
+  for (const [name, node] of Object.entries(liftNodes)) {
+    const rest   = liftRestPos[name];
+    const offset = LIFT_PARTS[name];
+    node.position.x = rest.x + offset.x * t;
+    node.position.y = rest.y + offset.y * t;
+    node.position.z = rest.z + offset.z * t;
+  }
 });
 
 
