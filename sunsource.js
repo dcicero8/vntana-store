@@ -308,31 +308,37 @@ const normalizePartName = (text) =>
 // Aliases for nodes whose root name differs from the PARTS_DATA key
 const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 
-const attachSelectionListener = () => {
-  if (!viewer.selection?.highlight?.addEventListener) return false;
+// Read the highlight object directly after a click — bypass change-event ordering issues
+const resolveHighlight = () => {
+  const sel = viewer.selection?.highlight;
+  if (!sel) return;
 
-  const highlighted = new Set();
+  // viewer.selection.highlight may be iterable directly, or expose a .selection Set
+  const iterable = typeof sel[Symbol.iterator] === "function" ? sel
+                 : typeof sel.selection?.[Symbol.iterator] === "function" ? sel.selection
+                 : null;
+  if (!iterable) return;
 
-  viewer.selection.highlight.addEventListener("change", (event) => {
-    // Keep our own live set of highlighted nodes
-    event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
-
-    // Resolve the first highlighted node that matches a known part
-    let matched = null;
-    for (const node of highlighted) {
-      let n = node;
-      while (n) {
-        const name = normalizePartName(n.name ?? "");
-        const resolved = PART_NODE_ALIASES[name] ?? name;
-        if (PARTS_DATA[resolved]) { matched = resolved; break; }
-        n = n.parent;
-      }
-      if (matched) break;
+  let matched = null;
+  for (const node of iterable) {
+    let n = node;
+    while (n) {
+      const name     = normalizePartName(n.name ?? "");
+      const resolved = PART_NODE_ALIASES[name] ?? name;
+      if (PARTS_DATA[resolved]) { matched = resolved; break; }
+      n = n.parent;
     }
+    if (matched) break;
+  }
 
-    if (matched) handlePartName(matched);
-    else lastPartName = null;
-  });
+  if (matched) handlePartName(matched);
+  else lastPartName = null;
+};
+
+const attachSelectionListener = () => {
+  if (!viewer.selection?.highlight) return false;
+  // Wait one animation frame after the click so VNTANA has updated its highlight state
+  viewer.addEventListener("click", () => requestAnimationFrame(resolveHighlight));
   return true;
 };
 if (!attachSelectionListener()) {
