@@ -373,10 +373,10 @@ let _pingFlip = false;
 const startPing = () => {
   if (_rafId) return;
   const loop = () => {
-    if (viewer.scene) {
-      _pingFlip = !_pingFlip;
-      viewer.scene.explodedStrength = _pingFlip ? 0.000001 : 0;
-    }
+    // Oscillate shadowIntensity by an imperceptible amount to trigger a render
+    // without touching part positions (unlike explodedStrength which resets them).
+    _pingFlip = !_pingFlip;
+    viewer.shadowIntensity = _pingFlip ? 0.4001 : 0.4;
     _rafId = requestAnimationFrame(loop);
   };
   _rafId = requestAnimationFrame(loop);
@@ -385,7 +385,7 @@ const startPing = () => {
 const stopPing = () => {
   cancelAnimationFrame(_rafId);
   _rafId = null;
-  if (viewer.scene) viewer.scene.explodedStrength = 0;
+  viewer.shadowIntensity = 0.4;
 };
 
 const slider = document.getElementById("explode-slider");
