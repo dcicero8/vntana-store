@@ -312,10 +312,9 @@ const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
   viewer.selection.highlight.addEventListener("change", (event) => {
-    console.log("[sel] changes:", [...event.changes.entries()].map(([n,v]) => `${n.name}=${v}`));
     let matched = null;
     event.changes.forEach((value, node) => {
-      if (matched) return;
+      if (matched || !value) return; // skip de-highlight events (value=0/false)
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
