@@ -163,10 +163,25 @@ const onSelectChange = (event) => {
   log(`select.change: [${changes.join(", ")}]`, "event");
 };
 
-let _attachedHl = null, _attachedSel = null;
+// ── Listen: hover channel ─────────────────────────────────────
+let lastHoveredNode = null;
+const onHoverChange = (event) => {
+  const changes = [];
+  event.changes.forEach((v, n) => {
+    changes.push(`${n.name}=${v}`);
+    if (v) lastHoveredNode = n;
+    else if (lastHoveredNode === n) lastHoveredNode = null;
+  });
+  log(`hover.change: [${changes.join(", ")}]`, "event");
+};
+
+let _attachedHl = null, _attachedSel = null, _attachedHov = null;
 const attachListeners = () => {
   const hl  = viewer.selection?.highlight;
   const sel = viewer.selection?.select;
+  // Try common names for the hover channel
+  const hov = viewer.selection?.hover ?? viewer.selection?.hovered ?? viewer.selection?.rollover;
+
   if (hl && hl !== _attachedHl) {
     if (_attachedHl) _attachedHl.removeEventListener("change", onHighlightChange);
     hl.addEventListener("change", onHighlightChange);
@@ -179,6 +194,12 @@ const attachListeners = () => {
     _attachedSel = sel;
     log("attached select.change listener", "info");
   }
+  if (hov && hov !== _attachedHov) {
+    if (_attachedHov) _attachedHov.removeEventListener("change", onHoverChange);
+    hov.addEventListener("change", onHoverChange);
+    _attachedHov = hov;
+    log(`attached hover.change listener (key: ${Object.keys(viewer.selection).find(k => viewer.selection[k] === hov)})`, "info");
+  }
 };
 
 viewer.addEventListener("load",       attachListeners);
@@ -188,6 +209,14 @@ viewer.addEventListener("click",      attachListeners); // re-anchor if recreate
 // Also read on click for comparison
 viewer.addEventListener("click", () => {
   log("─── click ───", "sep");
+  // Check what the hover channel had at click time
+  if (lastHoveredNode) {
+    const key = resolveNode(lastHoveredNode);
+    log(`hover at click: "${lastHoveredNode.name}" → ${key ? PARTS_DATA[key] : "no match"}`, key ? "match" : "miss");
+    if (showFullChain) log(`  chain: ${parentChain(lastHoveredNode)}`);
+  } else {
+    log("hover at click: null", "miss");
+  }
   requestAnimationFrame(() => readHighlight("rAF after click"));
 });
 
