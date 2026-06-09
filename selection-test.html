@@ -163,24 +163,25 @@ const onSelectChange = (event) => {
   log(`select.change: [${changes.join(", ")}]`, "event");
 };
 
-// ── Listen: hover channel ─────────────────────────────────────
-let lastHoveredNode = null;
-const onHoverChange = (event) => {
-  const changes = [];
+// ── Listen: background channel (= hover/mouseover) ───────────
+// viewer.selection has two channels: "background" (hover) and "highlight" (click).
+// "background" fires on pointermove and correctly identifies the hovered mesh.
+// Tracking the last background node and using it on click gives accurate selection.
+let lastBackgroundNode = null;
+const onBackgroundChange = (event) => {
   event.changes.forEach((v, n) => {
-    changes.push(`${n.name}=${v}`);
-    if (v) lastHoveredNode = n;
-    else if (lastHoveredNode === n) lastHoveredNode = null;
+    if (v) lastBackgroundNode = n;
+    else if (lastBackgroundNode === n) lastBackgroundNode = null;
   });
-  log(`hover.change: [${changes.join(", ")}]`, "event");
+  // Uncomment to see every hover event (noisy):
+  // const changes = []; event.changes.forEach((v,n) => changes.push(`${n.name}=${v}`));
+  // log(`background.change: [${changes.join(", ")}]`, "event");
 };
 
-let _attachedHl = null, _attachedSel = null, _attachedHov = null;
+let _attachedHl = null, _attachedSel = null, _attachedBg = null;
 const attachListeners = () => {
-  const hl  = viewer.selection?.highlight;
-  const sel = viewer.selection?.select;
-  // Try common names for the hover channel
-  const hov = viewer.selection?.hover ?? viewer.selection?.hovered ?? viewer.selection?.rollover;
+  const hl = viewer.selection?.highlight;
+  const bg = viewer.selection?.background;
 
   if (hl && hl !== _attachedHl) {
     if (_attachedHl) _attachedHl.removeEventListener("change", onHighlightChange);
@@ -188,17 +189,11 @@ const attachListeners = () => {
     _attachedHl = hl;
     log("attached highlight.change listener", "info");
   }
-  if (sel && sel !== _attachedSel) {
-    if (_attachedSel) _attachedSel.removeEventListener("change", onSelectChange);
-    sel.addEventListener("change", onSelectChange);
-    _attachedSel = sel;
-    log("attached select.change listener", "info");
-  }
-  if (hov && hov !== _attachedHov) {
-    if (_attachedHov) _attachedHov.removeEventListener("change", onHoverChange);
-    hov.addEventListener("change", onHoverChange);
-    _attachedHov = hov;
-    log(`attached hover.change listener (key: ${Object.keys(viewer.selection).find(k => viewer.selection[k] === hov)})`, "info");
+  if (bg && bg !== _attachedBg) {
+    if (_attachedBg) _attachedBg.removeEventListener("change", onBackgroundChange);
+    bg.addEventListener("change", onBackgroundChange);
+    _attachedBg = bg;
+    log("attached background.change (hover) listener", "info");
   }
 };
 
@@ -209,13 +204,18 @@ viewer.addEventListener("click",      attachListeners); // re-anchor if recreate
 // Also read on click for comparison
 viewer.addEventListener("click", () => {
   log("─── click ───", "sep");
-  // Check what the hover channel had at click time
-  if (lastHoveredNode) {
-    const key = resolveNode(lastHoveredNode);
-    log(`hover at click: "${lastHoveredNode.name}" → ${key ? PARTS_DATA[key] : "no match"}`, key ? "match" : "miss");
-    if (showFullChain) log(`  chain: ${parentChain(lastHoveredNode)}`);
+  // background channel = hover. Use it for accurate click resolution.
+  if (lastBackgroundNode) {
+    const key = resolveNode(lastBackgroundNode);
+    const chain = parentChain(lastBackgroundNode);
+    log(`background at click: "${lastBackgroundNode.name}" → ${key ? PARTS_DATA[key] : "no match"}`, key ? "match" : "miss");
+    if (showFullChain) log(`  chain: ${chain}`);
+    if (key) {
+      selEl.textContent = PARTS_DATA[key];
+      log(`BACKGROUND MATCH → ${key}`, "match");
+    }
   } else {
-    log("hover at click: null", "miss");
+    log("background at click: null (mouse not over a part?)", "miss");
   }
   requestAnimationFrame(() => readHighlight("rAF after click"));
 });
