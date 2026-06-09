@@ -330,26 +330,26 @@ const resolveFromSet = () => {
 
 const onHighlightChange = (event) => {
   event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
-  // Defer one rAF so both the de-highlight (old) and re-highlight (new) events
-  // have updated the set before we resolve.
+  console.log("[sel] change fired, set size:", highlighted.size,
+    "| nodes:", [...highlighted].map(n => n.name || "(unnamed)"));
   requestAnimationFrame(resolveFromSet);
 };
 
-// Re-attach every time the viewer (re)loads — VNTANA recreates its selection
-// object after model load, which would orphan a listener attached only once.
 let _lastHighlight = null;
 const attachSelectionListener = () => {
   const hl = viewer.selection?.highlight;
+  console.log("[sel] attachSelectionListener called, hl:", hl, "same?", hl === _lastHighlight);
   if (!hl?.addEventListener) return;
-  if (hl === _lastHighlight) return;            // already attached to this object
+  if (hl === _lastHighlight) return;
   if (_lastHighlight) _lastHighlight.removeEventListener("change", onHighlightChange);
   hl.addEventListener("change", onHighlightChange);
   _lastHighlight = hl;
+  console.log("[sel] listener attached to", hl);
 };
 
 attachSelectionListener();
-viewer.addEventListener("load",        attachSelectionListener);
-viewer.addEventListener("model-load",  attachSelectionListener);
+viewer.addEventListener("load",        () => { console.log("[sel] load fired"); attachSelectionListener(); });
+viewer.addEventListener("model-load",  () => { console.log("[sel] model-load fired"); attachSelectionListener(); });
 
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
