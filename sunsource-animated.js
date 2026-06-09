@@ -363,17 +363,39 @@ viewer.addEventListener("load",       initLift, { once: true });
 viewer.addEventListener("model-load", initLift, { once: true });
 
 // ── Engine Lift slider (0 = rest, max = fully lifted) ─────────
-// VNTANA ignores programmatic mouse events (isTrusted=false) so we can't
-// wake its render loop that way. Instead we ping viewer.scene.explodedStrength
-// — a reactive VNTANA setter — after each position update. Setting it to its
-// own current value is enough to mark the scene dirty and trigger a frame.
-const pingRenderer = () => {
-  if (viewer.scene) viewer.scene.explodedStrength = viewer.scene.explodedStrength;
+// VNTANA's setter skips re-renders when the value hasn't changed, and ignores
+// fake mouse events (isTrusted=false). Workaround: while the slider is held,
+// alternate explodedStrength between 0 and 0.000001 at 60fps — imperceptible
+// movement (~sub-pixel) but gives the setter a genuinely new value each frame.
+let _rafId    = null;
+let _pingFlip = false;
+
+const startPing = () => {
+  if (_rafId) return;
+  const loop = () => {
+    if (viewer.scene) {
+      _pingFlip = !_pingFlip;
+      viewer.scene.explodedStrength = _pingFlip ? 0.000001 : 0;
+    }
+    _rafId = requestAnimationFrame(loop);
+  };
+  _rafId = requestAnimationFrame(loop);
 };
 
-document.getElementById("explode-slider").addEventListener("input", (e) => {
+const stopPing = () => {
+  cancelAnimationFrame(_rafId);
+  _rafId = null;
+  if (viewer.scene) viewer.scene.explodedStrength = 0;
+};
+
+const slider = document.getElementById("explode-slider");
+slider.addEventListener("pointerdown",   startPing);
+slider.addEventListener("pointerup",     stopPing);
+slider.addEventListener("pointercancel", stopPing);
+
+slider.addEventListener("input", (e) => {
   const sliderMax = parseFloat(e.target.max) || 3;
-  const t = parseFloat(e.target.value) / sliderMax;   // normalize to 0–1
+  const t = parseFloat(e.target.value) / sliderMax;
   for (const [name, node] of Object.entries(liftNodes)) {
     const rest   = liftRestPos[name];
     const offset = LIFT_PARTS[name];
@@ -381,7 +403,6 @@ document.getElementById("explode-slider").addEventListener("input", (e) => {
     node.position.y = rest.y + offset.y * t;
     node.position.z = rest.z + offset.z * t;
   }
-  pingRenderer();
 });
 
 
