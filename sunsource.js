@@ -308,43 +308,48 @@ const normalizePartName = (text) =>
 // Aliases for nodes whose root name differs from the PARTS_DATA key
 const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 
-const attachSelectionListener = () => {
-  if (!viewer.selection?.highlight?.addEventListener) return false;
+// Our own live set of highlighted Three.js nodes, kept in sync via change events.
+// Defined outside so it persists across listener re-attachments.
+const highlighted = new Set();
 
-  // Our own live set of highlighted Three.js nodes, kept in sync via change events
-  const highlighted = new Set();
-
-  // Resolve part from whatever is currently in the highlighted set
-  const resolveFromSet = () => {
-    let matched = null;
-    for (const node of highlighted) {
-      let n = node;
-      while (n) {
-        const name     = normalizePartName(n.name ?? "");
-        const resolved = PART_NODE_ALIASES[name] ?? name;
-        if (PARTS_DATA[resolved]) { matched = resolved; break; }
-        n = n.parent;
-      }
-      if (matched) break;
+const resolveFromSet = () => {
+  let matched = null;
+  for (const node of highlighted) {
+    let n = node;
+    while (n) {
+      const name     = normalizePartName(n.name ?? "");
+      const resolved = PART_NODE_ALIASES[name] ?? name;
+      if (PARTS_DATA[resolved]) { matched = resolved; break; }
+      n = n.parent;
     }
-    if (matched) handlePartName(matched);
-    else lastPartName = null;
-  };
-
-  viewer.selection.highlight.addEventListener("change", (event) => {
-    // Update our set from the delta
-    event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
-    // Defer resolution by one rAF — both the de-highlight (old part) and re-highlight
-    // (new part) change events fire in the same synchronous frame, so by the time rAF
-    // runs the set reflects the final state with only the newly selected node.
-    requestAnimationFrame(resolveFromSet);
-  });
-
-  return true;
+    if (matched) break;
+  }
+  if (matched) handlePartName(matched);
+  else lastPartName = null;
 };
-if (!attachSelectionListener()) {
-  viewer.addEventListener("load", attachSelectionListener, { once: true });
-}
+
+const onHighlightChange = (event) => {
+  event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
+  // Defer one rAF so both the de-highlight (old) and re-highlight (new) events
+  // have updated the set before we resolve.
+  requestAnimationFrame(resolveFromSet);
+};
+
+// Re-attach every time the viewer (re)loads — VNTANA recreates its selection
+// object after model load, which would orphan a listener attached only once.
+let _lastHighlight = null;
+const attachSelectionListener = () => {
+  const hl = viewer.selection?.highlight;
+  if (!hl?.addEventListener) return;
+  if (hl === _lastHighlight) return;            // already attached to this object
+  if (_lastHighlight) _lastHighlight.removeEventListener("change", onHighlightChange);
+  hl.addEventListener("change", onHighlightChange);
+  _lastHighlight = hl;
+};
+
+attachSelectionListener();
+viewer.addEventListener("load",        attachSelectionListener);
+viewer.addEventListener("model-load",  attachSelectionListener);
 
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
