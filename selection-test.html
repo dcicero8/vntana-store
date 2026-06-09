@@ -3,27 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Selection Test</title>
+  <title>VNTANA Selection API Explorer</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: sans-serif; display: flex; height: 100vh; background: #fff; }
     #viewer-wrap { flex: 1; position: relative; }
     vntana-viewer { width: 100%; height: 100%; display: block; }
     #panel {
-      width: 340px; padding: 1rem; overflow-y: auto;
+      width: 380px; display: flex; flex-direction: column;
       background: #f5f5f5; border-left: 1px solid #ddd;
-      font-size: .75rem; font-family: monospace;
     }
-    #panel h2 { font-size: .9rem; margin-bottom: .75rem; font-family: sans-serif; font-weight: 600; }
-    #selected { font-size: 1rem; font-weight: 700; margin-bottom: .75rem; min-height: 1.5rem; }
-    .controls { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .75rem; }
-    .controls button { font-size: .7rem; padding: .3rem .6rem; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background: #fff; }
-    .controls button:hover { background: #e5e7eb; }
-    #entries { display: flex; flex-direction: column; gap: .3rem; }
-    .entry { padding: .35rem .5rem; border-radius: 3px; border: 1px solid #e0e0e0; background: #fff; word-break: break-all; }
-    .entry.match { border-color: #22c55e; background: #f0fdf4; }
-    .entry.miss  { border-color: #f97316; background: #fff7ed; }
-    .entry .ts   { color: #9ca3af; margin-right: .4rem; }
+    #panel-top { padding: .75rem; border-bottom: 1px solid #ddd; flex-shrink: 0; }
+    #panel-top h2 { font-size: .85rem; font-weight: 700; margin-bottom: .5rem; }
+    #selected { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; color: #1d4ed8; min-height: 1.4rem; }
+    .controls { display: flex; gap: .3rem; flex-wrap: wrap; }
+    .controls button {
+      font-size: .65rem; padding: .25rem .5rem; cursor: pointer;
+      border: 1px solid #ccc; border-radius: 3px; background: #fff;
+    }
+    .controls button.active { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
+    .controls button:hover:not(.active) { background: #e5e7eb; }
+    #entries { flex: 1; overflow-y: auto; padding: .5rem; display: flex; flex-direction: column; gap: .25rem; }
+    .entry { padding: .3rem .5rem; border-radius: 3px; border: 1px solid #e5e7eb; background: #fff; word-break: break-all; font-size: .7rem; font-family: monospace; }
+    .entry.match  { border-color: #22c55e; background: #f0fdf4; }
+    .entry.miss   { border-color: #f97316; background: #fff7ed; }
+    .entry.event  { border-color: #a78bfa; background: #f5f3ff; }
+    .entry.info   { border-color: #60a5fa; background: #eff6ff; }
+    .entry.sep    { border: none; background: none; color: #6b7280; font-style: italic; padding: .1rem .5rem; }
+    .entry .ts    { color: #9ca3af; margin-right: .4rem; }
+    .entry .chain { color: #6b7280; margin-top: .2rem; }
   </style>
 </head>
 <body>
@@ -37,16 +45,18 @@
 </div>
 
 <div id="panel">
-  <h2>Selection Test</h2>
-  <div id="selected">— nothing selected —</div>
-
-  <div class="controls">
-    <button id="btn-sg">Add Scene Graph</button>
-    <button id="btn-sg-remove">Remove Scene Graph</button>
-    <button id="btn-clear">Clear Log</button>
-    <button id="btn-dump">Dump viewer.selection keys</button>
+  <div id="panel-top">
+    <h2>VNTANA Selection API Explorer</h2>
+    <div id="selected">— nothing selected —</div>
+    <div class="controls">
+      <button id="btn-sg">+ Scene Graph</button>
+      <button id="btn-sg-off">- Scene Graph</button>
+      <button id="btn-dump-sel">Dump selection keys</button>
+      <button id="btn-dump-events" id="btn-dump-events">Log all viewer events</button>
+      <button id="btn-dump-chain">Show full parent chain</button>
+      <button id="btn-clear">Clear</button>
+    </div>
   </div>
-
   <div id="entries"></div>
 </div>
 
@@ -62,106 +72,194 @@ const entries = document.getElementById("entries");
 const selEl   = document.getElementById("selected");
 
 const PARTS_DATA = {
-  "Engine_Node_0":    "351W V8 Engine",
-  "Battery_Node_0":   "12V Automotive Battery",
-  "FuelPump_Node_0":  "Fuel Pump DFI HDP5",
-  "FuelValve_Node_0": "Fuel Selector Valve (3-Port)",
-  "BellHousing_node": "Manual Transmission Bell Housing",
-  "Wheel_Front_Left": "Planetary Wheel Drive (Front)",
-  "Wheel_Front_Right":"Planetary Wheel Drive (Front)",
-  "Wheel_Rear_Left":  "Bent Axis Propel Motor (Rear)",
-  "Wheel_Rear_Right": "Bent Axis Propel Motor (Rear)",
-  "Lift_Arm_Upper_Actuator_Base": "Work Function Pump",
-  "Lift_Bucket":      "Lift Bucket Attachment",
-  "Lift_Arm_Lower_Beam": "Lift Arm Hydraulic Cylinder",
-  "Lift_Arm_Upper_Beam": "Upper Arm Hydraulic Cylinder",
+  "Engine_Node_0":               "351W V8 Engine",
+  "Battery_Node_0":              "12V Automotive Battery",
+  "FuelPump_Node_0":             "Fuel Pump DFI HDP5",
+  "FuelValve_Node_0":            "Fuel Selector Valve (3-Port)",
+  "BellHousing_node":            "Manual Transmission Bell Housing",
+  "Wheel_Front_Left":            "Planetary Wheel Drive (Front)",
+  "Wheel_Front_Right":           "Planetary Wheel Drive (Front)",
+  "Wheel_Rear_Left":             "Bent Axis Propel Motor (Rear)",
+  "Wheel_Rear_Right":            "Bent Axis Propel Motor (Rear)",
+  "Lift_Arm_Upper_Actuator_Base":"Work Function Pump",
+  "Lift_Bucket":                 "Lift Bucket Attachment",
+  "Lift_Arm_Lower_Beam":         "Lift Arm Hydraulic Cylinder",
+  "Lift_Arm_Upper_Beam":         "Upper Arm Hydraulic Cylinder",
 };
 const ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 const norm = t => t?.replace(/\s*\(\d+\)\s*$/, "").trim() ?? "";
 
+let showFullChain = false;
+let logAllEvents  = false;
+
+// ── Logging ───────────────────────────────────────────────────
+const ts = () => new Date().toLocaleTimeString("en", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
 const log = (msg, cls = "") => {
   const d = document.createElement("div");
   d.className = "entry " + cls;
-  const ts = new Date().toLocaleTimeString("en", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  d.innerHTML = `<span class="ts">${ts}</span>${msg}`;
+  d.innerHTML = `<span class="ts">${ts()}</span>${msg}`;
   entries.prepend(d);
 };
+
+const parentChain = (node) => {
+  const chain = [];
+  let n = node;
+  while (n) { chain.push(n.name || "(unnamed)"); n = n.parent; }
+  return chain.join(" → ");
+};
+
+// ── Resolve a node to a PARTS_DATA key via parent walk ────────
+const resolveNode = (node) => {
+  let n = node;
+  while (n) {
+    const resolved = ALIASES[norm(n.name ?? "")] ?? norm(n.name ?? "");
+    if (PARTS_DATA[resolved]) return resolved;
+    n = n.parent;
+  }
+  return null;
+};
+
+// ── Read current highlight state ──────────────────────────────
+const readHighlight = (label) => {
+  const sel = viewer.selection?.highlight;
+  if (!sel) { log(`[${label}] viewer.selection.highlight = null`, "miss"); return; }
+
+  const entries_arr = [];
+  try { for (const e of sel) entries_arr.push(e); } catch(_) {}
+
+  const trueEntries = entries_arr.filter(e => Array.isArray(e) ? e[1] : true);
+  log(`[${label}] highlight size=${sel.size ?? "?"} true=${trueEntries.length}`, "info");
+
+  let matched = null;
+  for (const entry of trueEntries) {
+    const node = Array.isArray(entry) ? entry[0] : entry;
+    const chain = parentChain(node);
+    if (showFullChain) log(`  chain: ${chain}`);
+    const key = resolveNode(node);
+    if (key && !matched) { matched = key; }
+  }
+
+  if (matched) {
+    selEl.textContent = PARTS_DATA[matched];
+    log(`MATCH → ${matched} (${PARTS_DATA[matched]})`, "match");
+  } else if (trueEntries.length > 0) {
+    log("highlighted nodes found but no PARTS_DATA match", "miss");
+  }
+};
+
+// ── Listen: highlight channel change event ────────────────────
+const onHighlightChange = (event) => {
+  const changes = [];
+  event.changes.forEach((v, n) => changes.push(`${n.name}=${v}`));
+  log(`highlight.change: [${changes.join(", ")}]`, "event");
+  requestAnimationFrame(() => readHighlight("rAF after change"));
+};
+
+// ── Listen: select channel change event ───────────────────────
+const onSelectChange = (event) => {
+  const changes = [];
+  event.changes.forEach((v, n) => changes.push(`${n.name}=${v}`));
+  log(`select.change: [${changes.join(", ")}]`, "event");
+};
+
+let _attachedHl = null, _attachedSel = null;
+const attachListeners = () => {
+  const hl  = viewer.selection?.highlight;
+  const sel = viewer.selection?.select;
+  if (hl && hl !== _attachedHl) {
+    if (_attachedHl) _attachedHl.removeEventListener("change", onHighlightChange);
+    hl.addEventListener("change", onHighlightChange);
+    _attachedHl = hl;
+    log("attached highlight.change listener", "info");
+  }
+  if (sel && sel !== _attachedSel) {
+    if (_attachedSel) _attachedSel.removeEventListener("change", onSelectChange);
+    sel.addEventListener("change", onSelectChange);
+    _attachedSel = sel;
+    log("attached select.change listener", "info");
+  }
+};
+
+viewer.addEventListener("load",       attachListeners);
+viewer.addEventListener("model-load", attachListeners);
+viewer.addEventListener("click",      attachListeners); // re-anchor if recreated
+
+// Also read on click for comparison
+viewer.addEventListener("click", () => {
+  log("─── click ───", "sep");
+  requestAnimationFrame(() => readHighlight("rAF after click"));
+});
 
 // ── Load model ────────────────────────────────────────────────
 const product = await fetch(
   `${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}`
 ).then(r => r.json());
 const { models } = product.response.asset;
-const viewerConfig = JSON.parse(product.response.viewerSettings.config);
-Object.assign(viewer, viewerConfig);
+Object.assign(viewer, JSON.parse(product.response.viewerSettings.config));
 viewer.enableAutoRotate = false;
 const glb = models.find(m => (m.conversionFormat ?? m.type) === "GLB");
 const blobId = glb?.modelBlobId ?? glb?.blobId;
 if (blobId) viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
-
-// ── Selection: try multiple delays to find when highlight populates ───────────
-const checkHighlight = (label) => {
-  const sel = viewer.selection?.highlight;
-  const size = sel?.size ?? "null";
-  log(`[${label}] highlight size: ${size}`);
-  if (!sel || sel.size === 0) return false;
-
-  let matched = null;
-  try {
-    for (const entry of sel) {
-      const node  = Array.isArray(entry) ? entry[0] : entry;
-      const value = Array.isArray(entry) ? entry[1] : true;
-      log(`  entry: node="${node?.name}" value=${value}`);
-      if (!value) continue;
-      let n = node;
-      while (n) {
-        const resolved = ALIASES[norm(n.name ?? "")] ?? norm(n.name ?? "");
-        if (PARTS_DATA[resolved]) { matched = resolved; break; }
-        n = n.parent;
-      }
-      if (matched) break;
-    }
-  } catch (e) { log("iteration error: " + e.message, "miss"); }
-
-  if (matched) {
-    selEl.textContent = PARTS_DATA[matched];
-    log(`MATCH → ${matched}`, "match");
-  } else {
-    selEl.textContent = "— no match —";
-    log("no match found", "miss");
-  }
-};
-
-viewer.addEventListener("click", () => {
-  log("--- click ---");
-  requestAnimationFrame(() => checkHighlight("rAF"));
-  setTimeout(() => checkHighlight("10ms"),  10);
-  setTimeout(() => checkHighlight("50ms"),  50);
-  setTimeout(() => checkHighlight("100ms"), 100);
-});
+attachListeners();
 
 // ── Controls ──────────────────────────────────────────────────
 document.getElementById("btn-sg").addEventListener("click", () => {
-  const sg = document.createElement("vntana-scene-graph-button");
-  sg.setAttribute("active", "");
-  viewer.appendChild(sg);
-  log("scene graph added");
+  if (!viewer.querySelector("vntana-scene-graph-button")) {
+    const sg = document.createElement("vntana-scene-graph-button");
+    sg.setAttribute("active", "");
+    viewer.appendChild(sg);
+    attachListeners();
+    log("scene graph added + listeners re-attached", "info");
+  }
 });
 
-document.getElementById("btn-sg-remove").addEventListener("click", () => {
+document.getElementById("btn-sg-off").addEventListener("click", () => {
   viewer.querySelector("vntana-scene-graph-button")?.remove();
-  log("scene graph removed");
+  log("scene graph removed", "info");
+});
+
+document.getElementById("btn-dump-sel").addEventListener("click", () => {
+  const sel = viewer.selection;
+  if (!sel) { log("viewer.selection = null", "miss"); return; }
+  const keys = Object.keys(sel);
+  log(`viewer.selection keys: ${keys.join(", ")}`, "info");
+  keys.forEach(k => {
+    const ch = sel[k];
+    log(`  .${k}: type=${ch?.constructor?.name} size=${ch?.size ?? "??"} hasAddEventListener=${typeof ch?.addEventListener === "function"}`, "info");
+  });
+});
+
+document.getElementById("btn-dump-events").addEventListener("click", () => {
+  logAllEvents = !logAllEvents;
+  document.getElementById("btn-dump-events").classList.toggle("active", logAllEvents);
+  if (logAllEvents) {
+    // Intercept ALL events on viewer by wrapping addEventListener
+    const _orig = viewer.addEventListener.bind(viewer);
+    viewer._loggedEvents = new Set();
+    const SKIP = new Set(["pointermove","mousemove","pointerover","pointerout","mouseover","mouseout"]);
+    const proxyHandler = (type, handler, opts) => {
+      if (!viewer._loggedEvents.has(type) && !SKIP.has(type)) {
+        viewer._loggedEvents.add(type);
+        _orig(type, (e) => log(`event: ${type}`, "event"), opts);
+      }
+      return _orig(type, handler, opts);
+    };
+    viewer.addEventListener = proxyHandler;
+    log("event logging ON — interact with viewer to discover events", "info");
+  } else {
+    log("event logging OFF", "info");
+  }
+});
+
+document.getElementById("btn-dump-chain").addEventListener("click", () => {
+  showFullChain = !showFullChain;
+  document.getElementById("btn-dump-chain").classList.toggle("active", showFullChain);
+  log(`full parent chain logging: ${showFullChain ? "ON" : "OFF"}`, "info");
 });
 
 document.getElementById("btn-clear").addEventListener("click", () => {
   entries.innerHTML = "";
-});
-
-document.getElementById("btn-dump").addEventListener("click", () => {
-  const sel = viewer.selection;
-  if (!sel) { log("viewer.selection is null", "miss"); return; }
-  log("viewer.selection keys: " + Object.keys(sel).join(", "));
-  log("highlight keys: " + Object.keys(sel.highlight ?? {}).join(", "));
 });
 </script>
 
