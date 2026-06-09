@@ -33,6 +33,21 @@
       font-size: .72rem;
     }
 
+    /* Parts table group headers */
+    .parts-group-header td {
+      padding: .55rem .5rem .3rem;
+      font-size: .65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: #003087;
+      border-bottom: 1.5px solid #003087;
+      background: none;
+    }
+    .parts-group-header:not(:first-child) td { padding-top: 1.1rem; }
+    .parts-group-row { cursor: pointer; }
+    .parts-group-row:hover td { background: var(--bg); }
+
     /* Part meta row for series */
     .part-meta-row { display: flex; justify-content: space-between; padding: .35rem 0; border-bottom: 1px solid var(--border); font-size: .83rem; }
     .part-meta-label { color: var(--muted); }

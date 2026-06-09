@@ -201,33 +201,57 @@ document.getElementById("breadcrumb-home").addEventListener("click", (e) => {
 });
 
 // ── Build parts table ─────────────────────────────────────────
-// Deduplicate by SKU for the table view
-const tableEntries = [];
-const seenSkus = new Set();
-Object.entries(PARTS_DATA).forEach(([key, data]) => {
-  if (!seenSkus.has(data.sku)) {
-    seenSkus.add(data.sku);
-    tableEntries.push([key, data]);
-  }
-});
+// Groups define section headers; keys must match PARTS_DATA keys.
+const PART_GROUPS = [
+  {
+    label: "Engine Housing",
+    keys: ["Engine_Node_0", "Battery_Node_0", "FuelPump_Node_0", "FuelValve_Node_0", "BellHousing_node"],
+  },
+  {
+    label: "Drive System",
+    keys: ["Wheel_Front_Left", "Wheel_Rear_Left"],
+  },
+  {
+    label: "Lift & Hydraulics",
+    keys: ["Lift_Arm_Upper_Actuator_Base", "Lift_Bucket", "Lift_Arm_Lower_Beam", "Lift_Arm_Upper_Beam"],
+  },
+];
 
+// Build ordered, deduplicated entries respecting group order
+const seenSkus = new Set();
 const tbody = document.getElementById("parts-table-body");
-tableEntries.forEach(([key, data]) => {
-  const tr = document.createElement("tr");
-  tr.dataset.partKey = key;
-  tr.innerHTML = `
-    <td class="parts-table-sku">${data.sku}</td>
-    <td class="parts-table-name">${data.display}</td>
-    <td class="parts-table-price">${data.price}</td>
-    <td class="parts-table-avail ${data.avail === "Built to Order" ? "avail-low" : "avail-in"}">${data.avail}</td>
-    <td><button class="btn-table-cart">Add</button></td>
-  `;
-  tr.querySelector(".btn-table-cart").addEventListener("click", (e) => {
-    e.stopPropagation();
-    addToCart(1);
+
+PART_GROUPS.forEach((group, gi) => {
+  // Section header row
+  const headerRow = document.createElement("tr");
+  headerRow.className = "parts-group-header";
+  headerRow.innerHTML = `<td colspan="5" class="parts-group-label">${group.label}</td>`;
+  tbody.appendChild(headerRow);
+
+  group.keys.forEach((key, ki) => {
+    const data = PARTS_DATA[key];
+    if (!data || seenSkus.has(data.sku)) return;
+    seenSkus.add(data.sku);
+
+    const isLast = ki === group.keys.filter(k => PARTS_DATA[k] && !seenSkus.has(PARTS_DATA[k]?.sku) || seenSkus.has(data.sku)).length - 1;
+    const tr = document.createElement("tr");
+    tr.className = "parts-group-row";
+    tr.dataset.partKey  = key;
+    tr.dataset.groupIdx = gi;
+    tr.innerHTML = `
+      <td class="parts-table-sku">${data.sku}</td>
+      <td class="parts-table-name">${data.display}</td>
+      <td class="parts-table-price">${data.price}</td>
+      <td class="parts-table-avail ${data.avail === "Built to Order" ? "avail-low" : "avail-in"}">${data.avail}</td>
+      <td><button class="btn-table-cart">Add</button></td>
+    `;
+    tr.querySelector(".btn-table-cart").addEventListener("click", (e) => {
+      e.stopPropagation();
+      addToCart(1);
+    });
+    tr.addEventListener("click", () => handlePartName(key));
+    tbody.appendChild(tr);
   });
-  tr.addEventListener("click", () => handlePartName(key));
-  tbody.appendChild(tr);
 });
 
 // ── Quantity control ─────────────────────────────────────────
