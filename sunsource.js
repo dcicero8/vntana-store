@@ -308,49 +308,35 @@ const normalizePartName = (text) =>
 // Aliases for nodes whose root name differs from the PARTS_DATA key
 const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 
-// Our own live set of highlighted Three.js nodes, kept in sync via change events.
-// Defined outside so it persists across listener re-attachments.
-const highlighted = new Set();
 
-const resolveFromSet = () => {
+const resolveHighlight = () => {
+  const sel = viewer.selection?.highlight;
+  if (!sel) return;
+
   let matched = null;
-  for (const node of highlighted) {
-    let n = node;
-    while (n) {
-      const name     = normalizePartName(n.name ?? "");
-      const resolved = PART_NODE_ALIASES[name] ?? name;
-      if (PARTS_DATA[resolved]) { matched = resolved; break; }
-      n = n.parent;
+  try {
+    for (const entry of sel) {
+      // highlight may be a Map<node,bool> or a Set<node> — handle both
+      const node  = Array.isArray(entry) ? entry[0] : entry;
+      const value = Array.isArray(entry) ? entry[1] : true;
+      if (!value) continue;
+
+      let n = node;
+      while (n) {
+        const name     = normalizePartName(n.name ?? "");
+        const resolved = PART_NODE_ALIASES[name] ?? name;
+        if (PARTS_DATA[resolved]) { matched = resolved; break; }
+        n = n.parent;
+      }
+      if (matched) break;
     }
-    if (matched) break;
-  }
+  } catch (_) {}
+
   if (matched) handlePartName(matched);
   else lastPartName = null;
 };
 
-const onHighlightChange = (event) => {
-  event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
-  // rAF debounce: let both de-highlight (old part) and re-highlight (new part)
-  // events finish updating the set before we resolve.
-  requestAnimationFrame(resolveFromSet);
-};
-
-let _lastHighlight = null;
-const attachSelectionListener = () => {
-  const hl = viewer.selection?.highlight;
-  if (!hl?.addEventListener) return;
-  if (hl === _lastHighlight) return;
-  if (_lastHighlight) _lastHighlight.removeEventListener("change", onHighlightChange);
-  hl.addEventListener("change", onHighlightChange);
-  _lastHighlight = hl;
-};
-
-// Attach on load events AND on every click — if VNTANA recreated the highlight
-// object since last attach, the click re-anchors us before resolving.
-attachSelectionListener();
-viewer.addEventListener("load",       attachSelectionListener);
-viewer.addEventListener("model-load", attachSelectionListener);
-viewer.addEventListener("click",      attachSelectionListener);
+viewer.addEventListener("click", () => requestAnimationFrame(resolveHighlight));
 
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
