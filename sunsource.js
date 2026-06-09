@@ -343,7 +343,7 @@ const ENGINE_TINT_PARTS = new Set([
   "Engine_Node_0", "Battery_Node_0", "FuelPump_Node_0",
   "FuelValve_Node_0", "BellHousing_<STL_BINARY>"
 ]);
-const TINT_COLOR = { r: 0.55, g: 0.70, b: 0.95 };  // soft blue
+const TINT_COLOR = { r: 0.45, g: 0.80, b: 0.55 };  // soft green
 
 const applyEngineTint = () => {
   if (!viewer.scene?.traverse) return;
