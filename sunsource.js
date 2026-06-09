@@ -328,28 +328,25 @@ const resolveFromSet = () => {
   else lastPartName = null;
 };
 
-const onHighlightChange = (event) => {
+const onSelectionChange = (event) => {
   event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
-  console.log("[sel] change fired, set size:", highlighted.size,
-    "| nodes:", [...highlighted].map(n => n.name || "(unnamed)"));
   requestAnimationFrame(resolveFromSet);
 };
 
-let _lastHighlight = null;
+let _lastSelection = null;
 const attachSelectionListener = () => {
-  const hl = viewer.selection?.highlight;
-  console.log("[sel] attachSelectionListener called, hl:", hl, "same?", hl === _lastHighlight);
-  if (!hl?.addEventListener) return;
-  if (hl === _lastHighlight) return;
-  if (_lastHighlight) _lastHighlight.removeEventListener("change", onHighlightChange);
-  hl.addEventListener("change", onHighlightChange);
-  _lastHighlight = hl;
-  console.log("[sel] listener attached to", hl);
+  // Try "select" channel first (used by scene graph), fall back to "highlight"
+  const sel = viewer.selection?.select ?? viewer.selection?.highlight;
+  if (!sel?.addEventListener) return;
+  if (sel === _lastSelection) return;
+  if (_lastSelection) _lastSelection.removeEventListener("change", onSelectionChange);
+  sel.addEventListener("change", onSelectionChange);
+  _lastSelection = sel;
 };
 
 attachSelectionListener();
-viewer.addEventListener("load",        () => { console.log("[sel] load fired"); attachSelectionListener(); });
-viewer.addEventListener("model-load",  () => { console.log("[sel] model-load fired"); attachSelectionListener(); });
+viewer.addEventListener("load",       attachSelectionListener);
+viewer.addEventListener("model-load", attachSelectionListener);
 
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
