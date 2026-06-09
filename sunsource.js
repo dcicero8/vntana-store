@@ -311,24 +311,27 @@ const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 const attachSelectionListener = () => {
   if (!viewer.selection?.highlight?.addEventListener) return false;
 
+  const highlighted = new Set();
+
   viewer.selection.highlight.addEventListener("change", (event) => {
+    // Keep our own live set of highlighted nodes
+    event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
+
+    // Resolve the first highlighted node that matches a known part
     let matched = null;
-    event.changes.forEach((value, node) => {
-      if (matched) return;
+    for (const node of highlighted) {
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
         const resolved = PART_NODE_ALIASES[name] ?? name;
-        if (PARTS_DATA[resolved]) { matched = resolved; return; }
+        if (PARTS_DATA[resolved]) { matched = resolved; break; }
         n = n.parent;
       }
-    });
-    if (matched) {
-      handlePartName(matched);
-    } else {
-      // Nothing in PARTS_DATA highlighted — reset so the same part can be re-clicked
-      lastPartName = null;
+      if (matched) break;
     }
+
+    if (matched) handlePartName(matched);
+    else lastPartName = null;
   });
   return true;
 };
