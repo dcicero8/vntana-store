@@ -314,7 +314,7 @@ const attachSelectionListener = () => {
   viewer.selection.highlight.addEventListener("change", (event) => {
     let matched = null;
     event.changes.forEach((value, node) => {
-      if (matched) return;
+      if (matched || !value) return; // skip de-highlighted nodes (value=false)
       let n = node;
       while (n) {
         const name = normalizePartName(n.name ?? "");
