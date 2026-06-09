@@ -343,16 +343,40 @@ viewer.addEventListener("load",       initLift, { once: true });
 viewer.addEventListener("model-load", initLift, { once: true });
 
 // ── Engine Lift slider (0 = rest, max = fully lifted) ─────────
+// VNTANA pauses its render loop when idle. While the slider is held we run a
+// rAF loop that dispatches a tiny mousemove on the canvas each frame so VNTANA
+// keeps re-rendering and the position update is visible immediately.
+let _rafId  = null;
+let _wakeX  = 0;
+
 const wakeRenderer = () => {
-  // VNTANA pauses its render loop when idle; dispatch a no-op pointermove on
-  // the canvas to trigger a frame so position changes are drawn immediately.
   const canvas = viewer.shadowRoot?.querySelector("canvas");
-  if (canvas) {
-    canvas.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, cancelable: true, clientX: 1, clientY: 1 }));
-  }
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  _wakeX = (_wakeX + 1) % 4;   // tiny jitter so VNTANA sees real motion
+  canvas.dispatchEvent(new MouseEvent("mousemove", {
+    bubbles: true, cancelable: true,
+    clientX: rect.left + rect.width  / 2 + _wakeX,
+    clientY: rect.top  + rect.height / 2,
+  }));
 };
 
-document.getElementById("explode-slider").addEventListener("input", (e) => {
+const startWaking = () => {
+  if (_rafId) return;
+  const loop = () => { wakeRenderer(); _rafId = requestAnimationFrame(loop); };
+  _rafId = requestAnimationFrame(loop);
+};
+const stopWaking = () => {
+  if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
+  wakeRenderer();   // one final frame to settle
+};
+
+const slider = document.getElementById("explode-slider");
+slider.addEventListener("pointerdown", startWaking);
+slider.addEventListener("pointerup",   stopWaking);
+slider.addEventListener("pointercancel", stopWaking);
+
+slider.addEventListener("input", (e) => {
   const sliderMax = parseFloat(e.target.max) || 3;
   const t = parseFloat(e.target.value) / sliderMax;   // normalize to 0–1
   for (const [name, node] of Object.entries(liftNodes)) {
@@ -362,7 +386,6 @@ document.getElementById("explode-slider").addEventListener("input", (e) => {
     node.position.y = rest.y + offset.y * t;
     node.position.z = rest.z + offset.z * t;
   }
-  wakeRenderer();
 });
 
 
