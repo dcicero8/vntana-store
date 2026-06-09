@@ -308,37 +308,38 @@ const normalizePartName = (text) =>
 // Aliases for nodes whose root name differs from the PARTS_DATA key
 const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 
-// Read the highlight object directly after a click — bypass change-event ordering issues
-const resolveHighlight = () => {
-  const sel = viewer.selection?.highlight;
-  if (!sel) return;
-
-  // viewer.selection.highlight may be iterable directly, or expose a .selection Set
-  const iterable = typeof sel[Symbol.iterator] === "function" ? sel
-                 : typeof sel.selection?.[Symbol.iterator] === "function" ? sel.selection
-                 : null;
-  if (!iterable) return;
-
-  let matched = null;
-  for (const node of iterable) {
-    let n = node;
-    while (n) {
-      const name     = normalizePartName(n.name ?? "");
-      const resolved = PART_NODE_ALIASES[name] ?? name;
-      if (PARTS_DATA[resolved]) { matched = resolved; break; }
-      n = n.parent;
-    }
-    if (matched) break;
-  }
-
-  if (matched) handlePartName(matched);
-  else lastPartName = null;
-};
-
 const attachSelectionListener = () => {
-  if (!viewer.selection?.highlight) return false;
-  // Wait one animation frame after the click so VNTANA has updated its highlight state
-  viewer.addEventListener("click", () => requestAnimationFrame(resolveHighlight));
+  if (!viewer.selection?.highlight?.addEventListener) return false;
+
+  // Our own live set of highlighted Three.js nodes, kept in sync via change events
+  const highlighted = new Set();
+
+  // Resolve part from whatever is currently in the highlighted set
+  const resolveFromSet = () => {
+    let matched = null;
+    for (const node of highlighted) {
+      let n = node;
+      while (n) {
+        const name     = normalizePartName(n.name ?? "");
+        const resolved = PART_NODE_ALIASES[name] ?? name;
+        if (PARTS_DATA[resolved]) { matched = resolved; break; }
+        n = n.parent;
+      }
+      if (matched) break;
+    }
+    if (matched) handlePartName(matched);
+    else lastPartName = null;
+  };
+
+  viewer.selection.highlight.addEventListener("change", (event) => {
+    // Update our set from the delta
+    event.changes.forEach((value, node) => value ? highlighted.add(node) : highlighted.delete(node));
+    // Defer resolution by one rAF — both the de-highlight (old part) and re-highlight
+    // (new part) change events fire in the same synchronous frame, so by the time rAF
+    // runs the set reflects the final state with only the newly selected node.
+    requestAnimationFrame(resolveFromSet);
+  });
+
   return true;
 };
 if (!attachSelectionListener()) {
