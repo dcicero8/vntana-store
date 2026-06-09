@@ -290,6 +290,48 @@ document.getElementById("btn-dump-chain").addEventListener("click", () => {
 document.getElementById("btn-clear").addEventListener("click", () => {
   entries.innerHTML = "";
 });
+
+// ── Experimental: custom Three.js multi-hit raycast on click ──
+// Try to access the viewer's internal camera for our own raycasting.
+// If this works we can find ALL intersected meshes, not just the front one.
+viewer.addEventListener("click", (e) => {
+  const camera = viewer.camera                       // public getter?
+               ?? viewer.scene?.camera               // attached to scene?
+               ?? viewer.scene?.children?.find?.(c => c.isCamera); // traversed
+
+  if (!camera) { log("custom raycast: no camera found — try viewer.camera or viewer.scene.camera", "miss"); return; }
+
+  const rect = viewer.getBoundingClientRect();
+  const x =  ((e.clientX - rect.left)  / rect.width)  * 2 - 1;
+  const y = -((e.clientY - rect.top)   / rect.height) * 2 + 1;
+
+  // Build a ray from projection matrix + view matrix manually
+  // (Three.js Raycaster not available globally, but we can compute the ray)
+  const meshes = [];
+  viewer.scene?.traverse?.(n => { if (n.isMesh) meshes.push(n); });
+
+  log(`custom raycast: camera=${camera.type} meshes=${meshes.length}`, "info");
+
+  // Try to get THREE from the scene object's constructor chain
+  const THREE = viewer.scene?.constructor?.__THREE
+             ?? viewer.__THREE
+             ?? window.THREE;
+
+  if (!THREE?.Raycaster) {
+    log("custom raycast: THREE.Raycaster not accessible — cannot proceed", "miss");
+    return;
+  }
+
+  const rc = new THREE.Raycaster();
+  rc.setFromCamera({ x, y }, camera);
+  const hits = rc.intersectObjects(meshes, false);
+
+  log(`custom raycast hits: ${hits.length}`, hits.length ? "info" : "miss");
+  hits.slice(0, 5).forEach((hit, i) => {
+    const key = resolveNode(hit.object);
+    log(`  hit[${i}]: "${hit.object.name}" d=${hit.distance.toFixed(3)} → ${key ? PARTS_DATA[key] : "(no match)"}`, key ? "match" : "");
+  });
+});
 </script>
 
 </body>
