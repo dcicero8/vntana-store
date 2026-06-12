@@ -33,6 +33,38 @@
       display: block;
     }
 
+    /* ── View switcher ── */
+    .view-switcher {
+      display: flex;
+      gap: 0;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+    .view-btn {
+      flex: 1;
+      padding: 0.55rem 0;
+      border: none;
+      background: transparent;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .view-btn + .view-btn {
+      border-left: 1.5px solid var(--border);
+    }
+    .view-btn.active {
+      background: #111;
+      color: #fff;
+    }
+    .view-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     /* ── Tour overlay ── */
     .tour-overlay {
       position: absolute;
@@ -124,9 +156,7 @@
       background: rgba(255,255,255,0.35);
       transition: background 0.3s;
     }
-    .tour-dot.active {
-      background: #fff;
-    }
+    .tour-dot.active { background: #fff; }
 
     /* ── Info column ── */
     .home-info-col {
@@ -193,9 +223,10 @@
       border: 1.5px solid var(--border);
       border-radius: 10px;
       background: #fafafa;
-      cursor: default;
+      cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
     }
+    .hotspot-card:hover { border-color: #bbb; }
     .hotspot-card.active {
       border-color: var(--accent, #2563eb);
       background: #eff6ff;
@@ -346,14 +377,20 @@
         <h1 class="home-title">Home Product Explorer</h1>
       </div>
 
-      <p class="home-desc">Explore Hexion's product solutions in an interactive 3D experience. The guided tour automatically walks through each hotspot in the model.</p>
+      <p class="home-desc">Explore Hexion's product solutions in an interactive 3D experience. Switch between the exterior and interior views, then start the guided tour.</p>
+
+      <!-- View switcher -->
+      <div class="view-switcher">
+        <button class="view-btn active" id="btn-exterior" data-view="exterior">Exterior</button>
+        <button class="view-btn" id="btn-interior" data-view="interior">Interior</button>
+      </div>
 
       <hr class="home-divider">
 
       <div>
-        <div class="hotspot-list-label">Tour Stops</div>
+        <div class="hotspot-list-label" id="tour-stops-label">Tour Stops</div>
         <div class="hotspot-cards" id="hotspot-cards">
-          <!-- Cards populated by JS after load -->
+          <div style="font-size:0.8rem;color:#999;padding:0.5rem 0">Loading hotspots…</div>
         </div>
       </div>
 
@@ -385,12 +422,22 @@
   </main>
 
   <script type="module">
+    const BASE_URL = "https://api.vntana.com";
     const ORG      = "hexion";
     const WS       = "demo-room";
-    const UUID     = "39f54c5d-6a80-4337-b974-c5e0d2dcc8da";
-    const BASE_URL = "https://api.vntana.com";
 
-    const TOUR_INTERVAL = 5000; // ms per hotspot
+    const VIEWS = {
+      exterior: {
+        uuid:  "39f54c5d-6a80-4337-b974-c5e0d2dcc8da",
+        label: "Exterior",
+      },
+      interior: {
+        uuid:  "b86d5716-d564-481b-bea3-5e7aa0446449",
+        label: "Interior",
+      }
+    };
+
+    const TOUR_INTERVAL = 5000;
 
     const viewer   = document.getElementById("home-viewer");
     const overlay  = document.getElementById("tour-overlay");
@@ -404,66 +451,73 @@
     const pauseBtn = document.getElementById("tour-pause-btn");
     const nextBtn  = document.getElementById("tour-next-btn");
 
-    const IMG_BASE = `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WS}`;
+    let hotspotEls  = [];
+    let current     = 0;
+    let paused      = false;
+    let timer       = null;
+    let tourStarted = false;
+    let activeView  = "exterior";
 
-    const LABELS = [
-      { title: "Glass Mat",                              desc: "Advanced binder technologies provide excellent fiber bonding, strength, and processability, supporting the production of durable, high-quality glass mat for roofing, flooring, and wall systems." },
-      { title: "Foam",                                   desc: "Innovative solutions enable consistent cell structure, improved insulation performance, and mechanical strength, supporting the development of high-performance foam for construction applications." },
-      { title: "Insulation",                             desc: "Specialty chemistries enhance thermal efficiency, structural integrity, and moisture resistance, helping insulation materials perform reliably across a wide range of building environments." },
-      { title: "Building Materials and Assemblies",      desc: "Support fire performance across a range of construction materials used in walls, roofs, and structural systems." },
-      { title: "Engineered Wood for Residential Construction", desc: "Enable fire-retardant OSB, plywood, and other structural components that meet evolving building codes without compromising performance or scalability." },
-      { title: "Wood Coatings",                          desc: "Our VeoVa Vinyl Esters help wood coatings resist moisture, wear, and environmental degradation for longer-lasting protection and appearance." },
-    ];
+    // ── Helpers ────────────────────────────────────────────────
+    const stripHtml = html => {
+      const d = document.createElement("div");
+      d.innerHTML = html;
+      return d.textContent.trim();
+    };
 
-    let hotspotEls = []; // vntana-hotspot elements in the viewer
-    let current    = 0;
-    let paused     = false;
-    let timer      = null;
-
-    // ── Load viewer ────────────────────────────────────────────
-    const [product, hsData] = await Promise.all([
-      fetch(`${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r => r.json()),
-      fetch(`${BASE_URL}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productUuid: UUID, page: 1, size: 100 })
-      }).then(r => r.json())
-    ]);
-
-    const config = JSON.parse(product.response.viewerSettings.config);
-    Object.assign(viewer, config);
-    const models = product.response.asset?.models ?? [];
-    const glbModel = models.find(m => (m.conversionFormat ?? m.type) === "GLB");
-    const blobId = glbModel?.modelBlobId ?? glbModel?.blobId;
-    if (blobId) {
-      viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
+    function snapCamera(cam) {
+      if (!cam) return;
+      try {
+        if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
+        if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
+        if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+      } catch(e) {}
     }
 
-    // ── Inject hotspots after viewer loads ─────────────────────
-    viewer.addEventListener("load", () => {
-      const grid = hsData.response?.grid ?? [];
+    const closeAll = () =>
+      viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+
+    // ── Build hotspot elements from API response ───────────────
+    function injectHotspots(grid, uuid) {
+      viewer.querySelectorAll("vntana-hotspot").forEach(h => h.remove());
+      hotspotEls = [];
+
       hotspotEls = grid.map((hs, idx) => {
         const dims   = JSON.parse(hs.config.dimensions);
         const camera = hs.config.camera ? JSON.parse(hs.config.camera) : null;
-        const label  = LABELS[idx] ?? { title: `Stop ${idx + 1}` };
+
+        // Title + desc: IMAGE type uses description HTML; TEXT type uses text HTML
+        const rawHtml = hs.description ?? hs.text ?? "";
+        const title   = stripHtml(rawHtml.match(/<(?:strong|b)[^>]*>(.*?)<\/(?:strong|b)>/i)?.[1] ?? rawHtml).split("\n")[0] || `Stop ${idx + 1}`;
+        const desc    = (() => {
+          const d = document.createElement("div");
+          d.innerHTML = rawHtml;
+          const paras = [...d.querySelectorAll("p")].map(p => p.textContent.trim()).filter(Boolean);
+          return paras.length > 1 ? paras.slice(1).join(" ") : "";
+        })();
+
         const imgUrl = hs.blobId
-          ? `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WS}/${hs.blobId}`
+          ? `${BASE_URL}/hotspots/images/products/${uuid}/organizations/${ORG}/clients/${WS}/${hs.blobId}`
           : null;
 
         const el = document.createElement("vntana-hotspot");
-        el.position  = dims.position;
-        el.normal    = dims.normal;
-        el._camera   = camera;
-        el._label    = label;
-        el._imgUrl   = imgUrl;
+        el.position = dims.position;
+        el.normal   = dims.normal;
+        el._camera  = camera;
+        el._title   = title;
+        el._desc    = desc;
+        el._imgUrl  = imgUrl;
+
         el.innerHTML = `
           <span class="hotspot-pin">${idx + 1}</span>
           <div class="hotspot-popup">
             <button class="hotspot-close" aria-label="Close">✕</button>
             ${imgUrl ? `<img src="${imgUrl}" alt="" onerror="this.style.display='none'">` : ""}
             <div class="hotspot-text">
-              <strong>${label.title}</strong>
-              ${label.desc ? `<p style="font-size:0.75rem;color:#555;margin-top:0.3rem;line-height:1.4">${label.desc}</p>` : ""}
+              <strong>${title}</strong>
+              ${desc ? `<p style="font-size:0.75rem;color:#555;margin-top:0.3rem;line-height:1.4">${desc}</p>` : ""}
             </div>
           </div>`;
 
@@ -473,28 +527,14 @@
           closeAll();
           if (!isOpen) { el.classList.add("open"); snapCamera(camera); }
         });
-
         el.querySelector(".hotspot-close").addEventListener("click", closeAll);
+
         viewer.appendChild(el);
         return el;
       });
 
       buildDots();
       buildCards();
-    }, { once: true });
-
-    const closeAll = () => viewer.querySelectorAll("vntana-hotspot.open")
-      .forEach(h => h.classList.remove("open"));
-
-    function snapCamera(cam) {
-      if (!cam) return;
-      try {
-        if (cam.cameraRotation)    viewer.setCameraRotation(cam.cameraRotation);
-        if (cam.cameraDistance)    viewer.setCameraDistance(cam.cameraDistance);
-        if (cam.cameraTarget)      viewer.setCameraTarget(cam.cameraTarget);
-        if (cam.fieldOfView)       viewer.setFieldOfView(cam.fieldOfView);
-        if (cam.orthographicSize)  viewer.setOrthographicSize(cam.orthographicSize);
-      } catch(e) {}
     }
 
     function buildDots() {
@@ -509,23 +549,69 @@
     function buildCards() {
       cards.innerHTML = "";
       hotspotEls.forEach((el, i) => {
-        const label  = el._label ?? { title: `Stop ${i + 1}` };
-        const imgUrl = el._imgUrl;
-        const card   = document.createElement("div");
-        card.className    = "hotspot-card";
+        const card = document.createElement("div");
+        card.className     = "hotspot-card";
         card.dataset.index = i;
         card.innerHTML = `
           <div class="hotspot-num">${i + 1}</div>
-          ${imgUrl ? `<img class="hotspot-card-img" src="${imgUrl}" alt="">` : ""}
+          ${el._imgUrl ? `<img class="hotspot-card-img" src="${el._imgUrl}" alt="" onerror="this.style.display='none'">` : ""}
           <div class="hotspot-text">
-            <strong>${label.title}</strong>
-            ${label.desc ? `<span>${label.desc}</span>` : ""}
+            <strong>${el._title}</strong>
+            ${el._desc ? `<span>${el._desc}</span>` : ""}
           </div>`;
+        card.addEventListener("click", () => { goTo(i); pauseTour(); });
         cards.appendChild(card);
       });
     }
 
-    // ── Navigate to a hotspot ──────────────────────────────────
+    // ── Load a view (model + hotspots) ─────────────────────────
+    async function loadView(viewKey) {
+      const { uuid } = VIEWS[viewKey];
+
+      // Disable switcher during load
+      document.querySelectorAll(".view-btn").forEach(b => b.disabled = true);
+      cards.innerHTML = `<div style="font-size:0.8rem;color:#999;padding:0.5rem 0">Loading…</div>`;
+
+      stopTour();
+      closeAll();
+      viewer.querySelectorAll("vntana-hotspot").forEach(h => h.remove());
+      hotspotEls = [];
+
+      const [product, hsData] = await Promise.all([
+        fetch(`${BASE_URL}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r => r.json()),
+        fetch(`${BASE_URL}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productUuid: uuid, page: 1, size: 100 })
+        }).then(r => r.json())
+      ]);
+
+      const config = JSON.parse(product.response.viewerSettings.config);
+      Object.assign(viewer, config);
+
+      const glb = product.response.asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB");
+      const blobId = glb?.modelBlobId ?? glb?.blobId;
+
+      const grid = hsData.response?.grid ?? [];
+
+      // Inject hotspots after model loads
+      viewer.addEventListener("load", () => {
+        injectHotspots(grid, uuid);
+        document.querySelectorAll(".view-btn").forEach(b => b.disabled = false);
+
+        // If tour was already started, restart it for the new view
+        if (tourStarted) {
+          goTo(0);
+          startTimer();
+        }
+      }, { once: true });
+
+      if (blobId) {
+        viewer.src = `${BASE_URL}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${blobId}`;
+      }
+    }
+
+    // ── Tour navigation ─────────────────────────────────────────
     function goTo(index) {
       if (!hotspotEls.length) return;
       current = ((index % hotspotEls.length) + hotspotEls.length) % hotspotEls.length;
@@ -535,7 +621,6 @@
       el.classList.add("open");
       snapCamera(el._camera);
 
-      // Update UI
       document.querySelectorAll(".hotspot-card").forEach((c, i) =>
         c.classList.toggle("active", i === current));
       document.querySelectorAll(".tour-dot").forEach((d, i) =>
@@ -543,16 +628,31 @@
       fill.style.width = `${((current + 1) / hotspotEls.length) * 100}%`;
     }
 
-    // ── Tour timer ─────────────────────────────────────────────
     function startTimer() {
       clearInterval(timer);
-      timer = setInterval(() => {
-        if (!paused) goTo(current + 1);
-      }, TOUR_INTERVAL);
+      timer = setInterval(() => { if (!paused) goTo(current + 1); }, TOUR_INTERVAL);
     }
 
-    // ── Begin tour ─────────────────────────────────────────────
+    function stopTour() {
+      clearInterval(timer);
+      timer = null;
+      paused = false;
+      pauseBtn.textContent = "Pause";
+      pauseBtn.classList.remove("primary");
+      progress.style.display = "none";
+      dots.style.display     = "none";
+      controls.style.display = "none";
+      fill.style.width       = "0%";
+    }
+
+    function pauseTour() {
+      paused = true;
+      pauseBtn.textContent = "Resume";
+      pauseBtn.classList.add("primary");
+    }
+
     function startTour() {
+      tourStarted = true;
       overlay.classList.add("hidden");
       progress.style.display = "block";
       dots.style.display     = "flex";
@@ -563,7 +663,6 @@
 
     startBtn.addEventListener("click", startTour);
 
-    // ── Pause / prev / next ────────────────────────────────────
     pauseBtn.addEventListener("click", () => {
       paused = !paused;
       pauseBtn.textContent = paused ? "Resume" : "Pause";
@@ -572,6 +671,20 @@
 
     prevBtn.addEventListener("click", () => { goTo(current - 1); if (!paused) startTimer(); });
     nextBtn.addEventListener("click", () => { goTo(current + 1); if (!paused) startTimer(); });
+
+    // ── View switcher ──────────────────────────────────────────
+    document.querySelectorAll(".view-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const view = btn.dataset.view;
+        if (view === activeView) return;
+        activeView = view;
+        document.querySelectorAll(".view-btn").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+        await loadView(view);
+      });
+    });
+
+    // ── Initial load ───────────────────────────────────────────
+    await loadView("exterior");
 
   </script>
 
