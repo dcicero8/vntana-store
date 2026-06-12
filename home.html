@@ -630,7 +630,19 @@
 
     function startTimer() {
       clearInterval(timer);
-      timer = setInterval(() => { if (!paused) goTo(current + 1); }, TOUR_INTERVAL);
+      timer = setInterval(async () => {
+        if (paused) return;
+        const isLastStop = current === hotspotEls.length - 1;
+        if (isLastStop && activeView === "exterior") {
+          // Switch to interior and continue tour from stop 1
+          activeView = "interior";
+          document.querySelectorAll(".view-btn").forEach(b =>
+            b.classList.toggle("active", b.dataset.view === "interior"));
+          await loadView("interior");
+        } else {
+          goTo(current + 1);
+        }
+      }, TOUR_INTERVAL);
     }
 
     function stopTour() {
@@ -670,7 +682,18 @@
     });
 
     prevBtn.addEventListener("click", () => { goTo(current - 1); if (!paused) startTimer(); });
-    nextBtn.addEventListener("click", () => { goTo(current + 1); if (!paused) startTimer(); });
+    nextBtn.addEventListener("click", async () => {
+      const isLastStop = current === hotspotEls.length - 1;
+      if (isLastStop && activeView === "exterior") {
+        activeView = "interior";
+        document.querySelectorAll(".view-btn").forEach(b =>
+          b.classList.toggle("active", b.dataset.view === "interior"));
+        await loadView("interior");
+      } else {
+        goTo(current + 1);
+        if (!paused) startTimer();
+      }
+    });
 
     // ── View switcher ──────────────────────────────────────────
     document.querySelectorAll(".view-btn").forEach(btn => {
