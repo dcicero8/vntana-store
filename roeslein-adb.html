@@ -173,6 +173,15 @@
       color: #666;
       line-height: 1.45;
     }
+    .adb-part-link {
+      display: inline-block;
+      margin-top: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--ro-red);
+      text-decoration: none;
+    }
+    .adb-part-link:hover { text-decoration: underline; }
 
     /* ── CTA footer ── */
     .adb-cta {
@@ -229,6 +238,7 @@
       <vntana-viewer id="viewer" loading="eager">
         <vntana-fs-button></vntana-fs-button>
         <vntana-center-button></vntana-center-button>
+        <vntana-exploded-view-button></vntana-exploded-view-button>
         <div class="button-container zoom-buttons">
           <vntana-zoom-in-button></vntana-zoom-in-button>
           <vntana-zoom-out-button></vntana-zoom-out-button>
@@ -267,6 +277,14 @@
     const ORG      = "DCicero";
     const WS       = "example-files";
     const UUID     = "bcba721f-6b34-442a-bf18-901f9b8f319a";
+
+    const PART_URLS = [
+      null,
+      null,
+      "https://parts.roeslein.com/air-operated-double-diaphragm-pump/",
+      "https://parts.roeslein.com/jam-breaker-full-assembly-12oz-to-25oz-can/",
+      "https://parts.roeslein.com/air-operated-double-diaphragm-pump/",
+    ];
 
     const viewer = document.getElementById("viewer");
     const cards  = document.getElementById("adb-cards");
@@ -354,6 +372,8 @@
         viewer.appendChild(el);
 
         // Sidebar card
+        const partUrl = PART_URLS[idx] ?? null;
+
         const card = document.createElement("div");
         card.className = "adb-card";
         card.innerHTML = `
@@ -362,8 +382,10 @@
           <div class="adb-card-text">
             <strong>${title}</strong>
             ${desc ? `<span>${desc}</span>` : ""}
+            ${partUrl ? `<a class="adb-part-link" href="${partUrl}" target="_blank" rel="noopener">View Part →</a>` : ""}
           </div>`;
-        card.addEventListener("click", () => {
+        card.addEventListener("click", (e) => {
+          if (e.target.closest(".adb-part-link")) return;
           closeAll();
           el.classList.add("open");
           snapCamera(camera);
