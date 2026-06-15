@@ -81,18 +81,29 @@
       margin: 0;
     }
 
-    .adb-badge {
+    .adb-meta {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: #555;
+    }
+    .adb-meta-label { font-weight: 600; }
+    .adb-meta-tags { color: var(--ro-red); font-weight: 600; }
+
+    .adb-brochure-btn {
       display: inline-block;
       margin-top: 0.75rem;
-      padding: 0.25rem 0.65rem;
-      background: #f0f4f8;
-      border-radius: 4px;
-      font-size: 0.7rem;
+      padding: 0.45rem 1rem;
+      border: 1.5px solid var(--ro-navy);
+      border-radius: 20px;
+      font-size: 0.75rem;
       font-weight: 700;
-      color: var(--ro-navy);
       letter-spacing: 0.04em;
       text-transform: uppercase;
+      color: var(--ro-navy);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
     }
+    .adb-brochure-btn:hover { background: var(--ro-navy); color: #fff; }
 
     /* ── Hotspot list ── */
     .adb-stops {
@@ -256,7 +267,13 @@
         <div class="adb-eyebrow">Can Making &amp; Conveyance</div>
         <h1 class="adb-title">Air Doubling Box</h1>
         <p class="adb-desc">An evolved conveyor system designed for modern can manufacturing — handling multiple can sizes, smaller diameters, taller heights, and lighter gauge cans. Redesigned in 2021 for enhanced durability and serviceability.</p>
-        <span class="adb-badge">2021 Redesign</span>
+        <div class="adb-meta">
+          <span class="adb-meta-label">Used in:</span>
+          <span class="adb-meta-tags">Can Making, Conveyance</span>
+        </div>
+        <a class="adb-brochure-btn" href="https://online.flippingbook.com/view/872457776/" target="_blank" rel="noopener">
+          Download Brochure ↓
+        </a>
       </div>
 
       <div class="adb-stops">
