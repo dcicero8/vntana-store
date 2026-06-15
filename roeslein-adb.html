@@ -105,6 +105,37 @@
     }
     .adb-brochure-btn:hover { background: var(--ro-navy); color: #fff; }
 
+    /* ── Gallery ── */
+    .adb-gallery {
+      margin-top: 1rem;
+      position: relative;
+    }
+    .adb-gallery-img {
+      width: 100%;
+      border-radius: 8px;
+      object-fit: cover;
+      display: none;
+      border: 1px solid #e5e5e5;
+    }
+    .adb-gallery-img.active { display: block; }
+    .adb-gallery-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 0.6rem;
+    }
+    .adb-gallery-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: none;
+      background: #d1d5db;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.2s;
+    }
+    .adb-gallery-dot.active { background: var(--ro-navy); }
+
     /* ── Hotspot list ── */
     .adb-stops {
       padding: 1.5rem 1.75rem;
@@ -274,6 +305,14 @@
         <a class="adb-brochure-btn" href="https://online.flippingbook.com/view/872457776/" target="_blank" rel="noopener">
           Download Brochure ↓
         </a>
+        <div class="adb-gallery">
+          <img class="adb-gallery-img active" src="renders/roeslein/AI_image_1.png" alt="Air Doubling Box — front view">
+          <img class="adb-gallery-img" src="renders/roeslein/AI_image_2.png" alt="Air Doubling Box — side view">
+          <div class="adb-gallery-dots">
+            <button class="adb-gallery-dot active" data-idx="0"></button>
+            <button class="adb-gallery-dot" data-idx="1"></button>
+          </div>
+        </div>
       </div>
 
       <div class="adb-stops">
@@ -291,6 +330,18 @@
     </div>
 
   </main>
+
+  <script>
+    const imgs = document.querySelectorAll(".adb-gallery-img");
+    const dots = document.querySelectorAll(".adb-gallery-dot");
+    dots.forEach(dot => {
+      dot.addEventListener("click", () => {
+        const i = +dot.dataset.idx;
+        imgs.forEach((img, j) => img.classList.toggle("active", j === i));
+        dots.forEach((d, j) => d.classList.toggle("active", j === i));
+      });
+    });
+  </script>
 
   <script type="module">
     const BASE_URL = "https://api.vntana.com";
