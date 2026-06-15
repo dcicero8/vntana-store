@@ -296,14 +296,16 @@
       return d.textContent.trim();
     };
 
-    function snapCamera(cam) {
-      if (!cam) return;
+    function snapCamera(cam, explode) {
       try {
-        if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
-        if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
-        if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
-        if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
-        if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+        if (cam) {
+          if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
+          if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
+          if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
+          if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
+          if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+        }
+        if (explode != null) viewer.explodedStrength = explode;
       } catch(e) {}
     }
 
@@ -333,6 +335,7 @@
       const hotspotEls = grid.map((hs, idx) => {
         const dims   = JSON.parse(hs.config.dimensions);
         const camera = hs.config.camera ? JSON.parse(hs.config.camera) : null;
+        const explode = hs.config.explodedView ? JSON.parse(hs.config.explodedView).explodedStrength ?? null : null;
 
         const rawHtml = hs.description ?? hs.text ?? "";
         const title   = stripHtml(rawHtml).split("\n")[0] || `Feature ${idx + 1}`;
@@ -366,7 +369,7 @@
           if (e.target.closest(".hotspot-popup")) return;
           const isOpen = el.classList.contains("open");
           closeAll();
-          if (!isOpen) { el.classList.add("open"); snapCamera(camera); }
+          if (!isOpen) { el.classList.add("open"); snapCamera(camera, explode); }
           updateActive(idx);
         });
         el.querySelector(".hotspot-close").addEventListener("click", () => { closeAll(); clearActive(); });
@@ -389,7 +392,7 @@
           if (e.target.closest(".adb-part-link")) return;
           closeAll();
           el.classList.add("open");
-          snapCamera(camera);
+          snapCamera(camera, explode);
           updateActive(idx);
         });
         cards.appendChild(card);
