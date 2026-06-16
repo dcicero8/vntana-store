@@ -1,0 +1,163 @@
+{
+  "name": "VNTANA → Figurement (Send for Review)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vntana-send-for-review",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "vntana-send-for-review"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK",
+        "options": {}
+      },
+      "id": "node-respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [460, 180]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "tag-check",
+              "leftValue": "={{ $json.body.product.tags }}",
+              "rightValue": "Figurement",
+              "operator": {
+                "type": "array",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-if-tag",
+      "name": "Tag = Figurement?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 380]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\nconst product = body.product;\nconst org = body.organization;\nconst client = body.client;\n\nconst assetBlobId = product.asset.assetBlobId;\nconst productUuid = product.uuid;\nconst orgSlug = org.slug;\nconst clientSlug = client.slug;\nconst orgUuid = org.uuid;\nconst clientUuid = client.uuid;\n\nreturn [{\n  json: {\n    assetBlobId,\n    productUuid,\n    orgSlug,\n    clientSlug,\n    orgUuid,\n    clientUuid,\n    productName: product.name\n  }\n}];"
+      },
+      "id": "node-extract",
+      "name": "Extract GLB Blob ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 460]
+    },
+    {
+      "parameters": {
+        "operation": "downloadModel",
+        "organizationSlug": "={{ $json.orgSlug }}",
+        "clientSlug": "={{ $json.clientSlug }}",
+        "productUuid": "={{ $json.productUuid }}",
+        "blobId": "={{ $json.assetBlobId }}"
+      },
+      "id": "node-download",
+      "name": "Download GLB from VNTANA",
+      "type": "n8n-nodes-base.vntana",
+      "typeVersion": 1,
+      "position": [900, 460]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.figurement.com/api/scenes/import",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "name",
+              "value": "={{ $('Extract GLB Blob ID').item.json.productName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-import-figurement",
+      "name": "Import to Figurement",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 460],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "figurement-api-key",
+          "name": "Figurement API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const sceneId = $input.first().json.id;\nconst productName = $('Extract GLB Blob ID').item.json.productName;\nconst editorUrl = `https://app.figurement.com/scenes/${sceneId}/edit`;\n\nconsole.log(`Scene created: ${sceneId}`);\nconsole.log(`Editor URL: ${editorUrl}`);\n\nreturn [{ json: { sceneId, editorUrl, productName } }];"
+      },
+      "id": "node-log-scene",
+      "name": "Log Scene URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 460]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          { "node": "Respond to Webhook", "type": "main", "index": 0 },
+          { "node": "Tag = Figurement?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Tag = Figurement?": {
+      "main": [
+        [{ "node": "Extract GLB Blob ID", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Extract GLB Blob ID": {
+      "main": [
+        [{ "node": "Download GLB from VNTANA", "type": "main", "index": 0 }]
+      ]
+    },
+    "Download GLB from VNTANA": {
+      "main": [
+        [{ "node": "Import to Figurement", "type": "main", "index": 0 }]
+      ]
+    },
+    "Import to Figurement": {
+      "main": [
+        [{ "node": "Log Scene URL", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

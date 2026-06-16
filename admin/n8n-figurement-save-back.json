@@ -1,0 +1,139 @@
+{
+  "name": "Figurement → VNTANA (Save Back New Version)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "figurement-save-to-vntana",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "figurement-save-to-vntana"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK",
+        "options": {}
+      },
+      "id": "node-respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [460, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Figurement webhook payload includes scene ID and metadata\n// Configure your Figurement webhook to POST: { sceneId, productUuid, orgSlug, clientSlug }\nconst body = $input.first().json.body;\n\nconst sceneId = body.sceneId;\nconst productUuid = body.productUuid;\nconst orgSlug = body.orgSlug ?? 'DCicero';\nconst clientSlug = body.clientSlug ?? 'versioning';\nconst orgUuid = body.orgUuid ?? '49a01b09-ee65-4fc5-8777-433d7b5b5b29';\nconst clientUuid = body.clientUuid;\n\nreturn [{ json: { sceneId, productUuid, orgSlug, clientSlug, orgUuid, clientUuid } }];"
+      },
+      "id": "node-extract",
+      "name": "Extract Scene + Product IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.figurement.com/api/scenes/{{ $json.sceneId }}/export",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={ \"format\": \"glb\" }",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "node-export-figurement",
+      "name": "Export GLB from Figurement",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 380],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "figurement-api-key",
+          "name": "Figurement API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api-platform.vntana.com/v1/assets/upload/product-asset?clientUuid={{ $('Extract Scene + Product IDs').item.json.clientUuid }}&productUuid={{ $('Extract Scene + Product IDs').item.json.productUuid }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-upload-vntana",
+      "name": "Upload New Version to VNTANA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 380],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "vntana-platform-auth",
+          "name": "VNTANA Platform Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\nconsole.log('New version uploaded to VNTANA:', JSON.stringify(result));\nreturn [{ json: { success: true, result } }];"
+      },
+      "id": "node-log",
+      "name": "Log Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 380]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          { "node": "Respond to Webhook", "type": "main", "index": 0 },
+          { "node": "Extract Scene + Product IDs", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Extract Scene + Product IDs": {
+      "main": [
+        [{ "node": "Export GLB from Figurement", "type": "main", "index": 0 }]
+      ]
+    },
+    "Export GLB from Figurement": {
+      "main": [
+        [{ "node": "Upload New Version to VNTANA", "type": "main", "index": 0 }]
+      ]
+    },
+    "Upload New Version to VNTANA": {
+      "main": [
+        [{ "node": "Log Result", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
