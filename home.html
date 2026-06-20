@@ -263,6 +263,8 @@
     .hotspot-popup {
       width: 350px !important;
       max-width: 350px !important;
+      position: relative !important;
+      z-index: 9999 !important;
     }
     .hotspot-popup img {
       width: 100%; height: 140px; object-fit: cover; border-radius: 6px; margin-bottom: 0.5rem;
@@ -486,7 +488,6 @@
 
     const closeAll = () => {
       viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
-      viewer.querySelectorAll("vntana-hotspot").forEach(h => h.style.visibility = "");
     };
 
     // ── Build hotspot elements from API response ───────────────
@@ -539,10 +540,6 @@
           if (!isOpen) {
             el.classList.add("open");
             snapCamera(camera);
-            // Hide all other hotspot pins so they don't bleed over the popup
-            viewer.querySelectorAll("vntana-hotspot").forEach(h => {
-              h.style.visibility = h === el ? "" : "hidden";
-            });
             // Stop the tour when user manually clicks a hotspot
             clearInterval(timer);
             timer = null;
