@@ -534,7 +534,16 @@
           if (e.target.closest(".hotspot-popup")) return;
           const isOpen = el.classList.contains("open");
           closeAll();
-          if (!isOpen) { el.classList.add("open"); snapCamera(camera); }
+          if (!isOpen) {
+            el.classList.add("open");
+            snapCamera(camera);
+            // Stop the tour when user manually clicks a hotspot
+            clearInterval(timer);
+            timer = null;
+            paused = true;
+            pauseBtn.textContent = "Resume";
+            pauseBtn.classList.add("primary");
+          }
         });
         el.querySelector(".hotspot-close").addEventListener("click", closeAll);
 
