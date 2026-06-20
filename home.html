@@ -643,9 +643,6 @@
 
       closeAll();
       el.classList.add("open");
-      viewer.querySelectorAll("vntana-hotspot").forEach(h => {
-        h.style.visibility = h === el ? "" : "hidden";
-      });
       snapCamera(el._camera);
 
       document.querySelectorAll(".hotspot-card").forEach((c, i) =>
