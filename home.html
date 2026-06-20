@@ -488,21 +488,12 @@
 
     const closeAll = () => {
       viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
-      viewer.querySelectorAll("vntana-hotspot").forEach(h => {
-        const pin = h.querySelector(".hotspot-pin");
-        if (pin) { pin.style.opacity = ""; pin.style.pointerEvents = ""; }
-      });
     };
 
     const openHotspot = (el, camera) => {
       closeAll();
       el.classList.add("open");
       snapCamera(camera);
-      viewer.querySelectorAll("vntana-hotspot").forEach(h => {
-        if (h === el) return;
-        const pin = h.querySelector(".hotspot-pin");
-        if (pin) { pin.style.opacity = "0"; pin.style.pointerEvents = "none"; }
-      });
     };
 
     // ── Build hotspot elements from API response ───────────────
@@ -633,6 +624,9 @@
       viewer.addEventListener("load", () => {
         injectHotspots(grid, uuid);
         document.querySelectorAll(".view-btn").forEach(b => b.disabled = false);
+        viewer.addEventListener("click", e => {
+          if (!e.target.closest("vntana-hotspot")) closeAll();
+        });
 
         // If tour was already started, restart it for the new view
         if (tourStarted) {
