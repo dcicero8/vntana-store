@@ -488,7 +488,10 @@
 
     const closeAll = () => {
       viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
-      viewer.querySelectorAll("vntana-hotspot").forEach(h => h.style.visibility = "");
+      viewer.querySelectorAll("vntana-hotspot").forEach(h => {
+        const pin = h.querySelector(".hotspot-pin");
+        if (pin) { pin.style.opacity = ""; pin.style.pointerEvents = ""; }
+      });
     };
 
     const openHotspot = (el, camera) => {
@@ -496,7 +499,9 @@
       el.classList.add("open");
       snapCamera(camera);
       viewer.querySelectorAll("vntana-hotspot").forEach(h => {
-        h.style.visibility = h === el ? "" : "hidden";
+        if (h === el) return;
+        const pin = h.querySelector(".hotspot-pin");
+        if (pin) { pin.style.opacity = "0"; pin.style.pointerEvents = "none"; }
       });
     };
 
