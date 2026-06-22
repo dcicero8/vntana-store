@@ -75,7 +75,7 @@
         "nodeCredentialType": "vntanaApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ shareLinkUuid: $json.shareLinkUuid, assetUuid: $json.assetUuid, quantity: $json.quantity }) }}",
+        "jsonBody": "={{ JSON.stringify({ shareLinkUuid: $json.shareLinkUuid, orderItem: { productUuid: $json.assetUuid, count: $json.quantity } }) }}",
         "options": {}
       },
       "id": "post-order",
