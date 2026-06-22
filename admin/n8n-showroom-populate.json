@@ -22,7 +22,7 @@
         "nodeCredentialType": "vntanaApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ uuid: $json.showroomUuid }) }}",
+        "jsonBody": "={{ JSON.stringify({ uuid: $json.body.showroomUuid }) }}",
         "options": {}
       },
       "id": "get-showroom",
@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.payload;\nconst assets   = showroom.assets || [];\nconst layout   = showroom.layoutAttributes || {};\n\nconst assetRows = assets.map(a => ({\n  uuid:      a.uuid || '',\n  name:      a.clientName || a.name || '',\n  styleNum:  a.styleNumber || a.sku || '',\n  quantity:  '',\n  notes:     ''\n}));\n\nreturn [{\n  json: {\n    showroomUuid:   showroom.uuid,\n    showroomName:   showroom.name || 'VNTANA Showroom',\n    shareLinkUuid:  body.shareLinkUuid || '',\n    assetRows,\n    layout\n  }\n}];"
+        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.response;\nconst products = showroom.products || [];\nconst layout   = showroom.layoutAttributes || {};\n\nreturn [{\n  json: {\n    showroomUuid:  showroom.uuid,\n    showroomName:  showroom.name || 'VNTANA Showroom',\n    shareLinkUuid: body.shareLinkUuid || '',\n    products,\n    layout\n  }\n}];"
       },
       "id": "extract",
       "name": "Extract Assets",
@@ -64,81 +64,110 @@
     },
     {
       "parameters": {
-        "jsCode": "const data        = $('Extract Assets').first().json;\nconst spreadsheet = $input.item.json;\n\nconst assetRows = [\n  ['Asset UUID', 'Asset Name', 'Style #', 'Quantity', 'Notes'],\n  ...data.assetRows.map(a => [a.uuid, a.name, a.styleNum, '', ''])\n];\n\nconst layout = data.layout || {};\nconst stylingRows = [\n  ['Field', 'Value', 'Options / Notes'],\n  ['Showroom UUID',    data.showroomUuid,  ''],\n  ['Showroom Name',    data.showroomName,  'Reference only'],\n  ['Share Link UUID',  data.shareLinkUuid, 'Used for order entry'],\n  ['Font Family',      layout.FONT_FAMILY        || 'Roboto', 'Roboto / Arial / Times New Roman / Georgia / Courier New'],\n  ['Background Color', layout.BACKGROUND_COLOR   || '#FFFFFF', 'Hex format e.g. #FFFFFF'],\n  ['Text Color',       layout.TEXT_COLOR         || '#111111', 'Hex format'],\n  ['Divider Color',    layout.DIVIDER_COLOR      || '#E2E2E0', 'Hex format'],\n  ['Products Per Row', layout.PRODUCTS_PER_ROW   || 4,        '1 to 5'],\n  ['Image Style',      layout.IMAGE_STYLE        || 'Cover',   'Cover / Contain / Tile']\n];\n\nreturn [{\n  json: {\n    spreadsheetId: spreadsheet.spreadsheetId,\n    sheetUrl:      spreadsheet.spreadsheetUrl || `https://docs.google.com/spreadsheets/d/${spreadsheet.spreadsheetId}`,\n    assetRows,\n    stylingRows,\n    assetCount: data.assetRows.length\n  }\n}];"
+        "jsCode": "const data = $('Extract Assets').first().json;\n\nconst rows = [\n  { 'Asset UUID': 'Asset UUID', 'Asset Name': 'Asset Name', 'Style #': 'Style #', 'Quantity': 'Quantity', 'Notes': 'Notes' },\n  ...data.products.map(a => ({\n    'Asset UUID': a.uuid || '',\n    'Asset Name': a.name || '',\n    'Style #':    a.styleNumber || a.sku || '',\n    'Quantity':   '',\n    'Notes':      ''\n  }))\n];\n\nreturn rows.map(r => ({ json: r }));"
       },
-      "id": "prep-rows",
-      "name": "Prep Rows",
+      "id": "prep-asset-rows",
+      "name": "Prep Asset Rows",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1120, 300]
+      "position": [1120, 180]
     },
     {
       "parameters": {
         "operation": "append",
-        "documentId": { "value": "={{ $json.spreadsheetId }}", "mode": "id" },
+        "documentId": { "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}", "mode": "id" },
         "sheetName":  { "value": "Assets", "mode": "name" },
         "columns": {
           "mappingMode": "autoMapInputData",
           "value": {}
         },
-        "dataMode": "autoMap",
-        "options": {
-          "valueInputMode": "USER_ENTERED"
-        }
+        "options": { "valueInputMode": "USER_ENTERED" }
       },
       "id": "write-assets",
       "name": "Write Assets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [1340, 200],
+      "position": [1340, 180],
       "credentials": {
         "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
       }
     },
     {
       "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "agg-assets",
+      "name": "Aggregate Assets",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [1560, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data   = $('Extract Assets').first().json;\nconst layout = data.layout || {};\n\nconst rows = [\n  { 'Field': 'Field',            'Value': 'Value',                        'Options / Notes': 'Options / Notes' },\n  { 'Field': 'Showroom UUID',    'Value': data.showroomUuid,              'Options / Notes': '' },\n  { 'Field': 'Showroom Name',    'Value': data.showroomName,              'Options / Notes': 'Reference only' },\n  { 'Field': 'Share Link UUID',  'Value': data.shareLinkUuid,             'Options / Notes': 'Used for order entry' },\n  { 'Field': 'Font Family',      'Value': layout.FONT_FAMILY        || 'Roboto',   'Options / Notes': 'Roboto / Arial / Times New Roman / Georgia / Courier New' },\n  { 'Field': 'Background Color', 'Value': layout.BACKGROUND_COLOR   || '#FFFFFF',  'Options / Notes': 'Hex format e.g. #FFFFFF' },\n  { 'Field': 'Text Color',       'Value': layout.TEXT_COLOR         || '#111111',  'Options / Notes': 'Hex format' },\n  { 'Field': 'Divider Color',    'Value': layout.DIVIDER_COLOR      || '#E2E2E0',  'Options / Notes': 'Hex format' },\n  { 'Field': 'Products Per Row', 'Value': layout.PRODUCTS_PER_ROW   || 4,          'Options / Notes': '1 to 5' },\n  { 'Field': 'Image Style',      'Value': layout.IMAGE_STYLE        || 'Cover',    'Options / Notes': 'Cover / Contain / Tile' }\n];\n\nreturn rows.map(r => ({ json: r }));"
+      },
+      "id": "prep-styling-rows",
+      "name": "Prep Styling Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 180]
+    },
+    {
+      "parameters": {
         "operation": "append",
-        "documentId": { "value": "={{ $('Prep Rows').first().json.spreadsheetId }}", "mode": "id" },
+        "documentId": { "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}", "mode": "id" },
         "sheetName":  { "value": "Styling", "mode": "name" },
         "columns": {
           "mappingMode": "autoMapInputData",
           "value": {}
         },
-        "dataMode": "autoMap",
-        "options": {
-          "valueInputMode": "USER_ENTERED"
-        }
+        "options": { "valueInputMode": "USER_ENTERED" }
       },
       "id": "write-styling",
       "name": "Write Styling",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [1340, 400],
+      "position": [2000, 180],
       "credentials": {
         "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
       }
     },
     {
       "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "agg-styling",
+      "name": "Aggregate Styling",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [2220, 180]
+    },
+    {
+      "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ sheetUrl: $('Prep Rows').first().json.sheetUrl, assetCount: $('Prep Rows').first().json.assetCount }) }}",
+        "responseBody": "={{ JSON.stringify({ sheetUrl: 'https://docs.google.com/spreadsheets/d/' + $('Create Spreadsheet').first().json.spreadsheetId, assetCount: $('Extract Assets').first().json.products.length }) }}",
         "options": { "responseCode": 200 }
       },
       "id": "respond",
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [1560, 300]
+      "position": [2440, 180]
     }
   ],
   "connections": {
-    "Webhook":           { "main": [[{ "node": "GET Showroom",       "type": "main", "index": 0 }]] },
-    "GET Showroom":      { "main": [[{ "node": "Extract Assets",     "type": "main", "index": 0 }]] },
-    "Extract Assets":    { "main": [[{ "node": "Create Spreadsheet", "type": "main", "index": 0 }]] },
-    "Create Spreadsheet":{ "main": [[{ "node": "Prep Rows",          "type": "main", "index": 0 }]] },
-    "Prep Rows":         { "main": [[{ "node": "Write Assets",       "type": "main", "index": 0 }, { "node": "Write Styling", "type": "main", "index": 0 }]] },
-    "Write Assets":      { "main": [[{ "node": "Respond",            "type": "main", "index": 0 }]] },
-    "Write Styling":     { "main": [[{ "node": "Respond",            "type": "main", "index": 0 }]] }
+    "Webhook":           { "main": [[{ "node": "GET Showroom",        "type": "main", "index": 0 }]] },
+    "GET Showroom":      { "main": [[{ "node": "Extract Assets",      "type": "main", "index": 0 }]] },
+    "Extract Assets":    { "main": [[{ "node": "Create Spreadsheet",  "type": "main", "index": 0 }]] },
+    "Create Spreadsheet":{ "main": [[{ "node": "Prep Asset Rows",     "type": "main", "index": 0 }]] },
+    "Prep Asset Rows":   { "main": [[{ "node": "Write Assets",        "type": "main", "index": 0 }]] },
+    "Write Assets":      { "main": [[{ "node": "Aggregate Assets",    "type": "main", "index": 0 }]] },
+    "Aggregate Assets":  { "main": [[{ "node": "Prep Styling Rows",   "type": "main", "index": 0 }]] },
+    "Prep Styling Rows": { "main": [[{ "node": "Write Styling",       "type": "main", "index": 0 }]] },
+    "Write Styling":     { "main": [[{ "node": "Aggregate Styling",   "type": "main", "index": 0 }]] },
+    "Aggregate Styling": { "main": [[{ "node": "Respond",             "type": "main", "index": 0 }]] }
   },
   "settings": { "executionOrder": "v1" },
   "staticData": null
