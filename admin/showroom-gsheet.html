@@ -143,9 +143,9 @@
   <div class="card">
     <h2>2. Fill Out and Submit</h2>
     <div class="steps">
-      <div class="step">Open the Google Sheet. The <strong>Assets</strong> tab is pre-filled with all showroom assets — add quantities in the Quantity column for the items you want to submit.</div>
-      <div class="step">Switch to the <strong>Styling</strong> tab. Edit font, colors, and layout using Google Sheets' native color picker. Leave any row blank to keep the current value.</div>
-      <div class="step">In the Google Sheets menu bar, click <strong>VNTANA &gt; Submit to VNTANA</strong>. n8n processes both tabs in one pass and updates VNTANA via the API.</div>
+      <div class="step">Open the Google Sheet. On the Assets tab, fill in quantities for items you want to order. Edit the Group and Order columns to update showroom grouping.</div>
+      <div class="step">On the Styling tab, edit font, colors, and layout. For colors, fill the Color Swatch cell with your chosen color, then use VNTANA &gt; Read Color Swatches to pull the hex value in.</div>
+      <div class="step">Click VNTANA &gt; Submit to VNTANA in the menu bar. n8n processes orders, group changes, and styling in one pass and updates VNTANA via the API.</div>
     </div>
 
     <button class="script-toggle" onclick="toggleScript()">First time? Set up the Submit button in the sheet</button>
