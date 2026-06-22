@@ -158,8 +158,45 @@
     .addItem('Read Color Swatches', 'readColorSwatches')
     .addToUi();
 
-  SpreadsheetApp.getActiveSpreadsheet().getSheets().forEach(sheet => {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  ss.getSheets().forEach(sheet => {
     sheet.autoResizeColumns(1, sheet.getLastColumn());
+  });
+
+  setupStylingDropdowns(ss);
+}
+
+function setupStylingDropdowns(ss) {
+  const sheet = ss.getSheetByName('Styling');
+  if (!sheet) return;
+
+  const data = sheet.getDataRange().getValues();
+  const rules = SpreadsheetApp.newDataValidation;
+
+  data.forEach((row, i) => {
+    const field = String(row[0]).trim();
+    const valueCell = sheet.getRange(i + 1, 2);
+
+    if (field === 'Font Family') {
+      valueCell.setDataValidation(
+        SpreadsheetApp.newDataValidation()
+          .requireValueInList(['Roboto', 'Arial', 'Times New Roman', 'Georgia', 'Courier New'], true)
+          .setAllowInvalid(false).build()
+      );
+    } else if (field === 'Image Style') {
+      valueCell.setDataValidation(
+        SpreadsheetApp.newDataValidation()
+          .requireValueInList(['Cover', 'Contain', 'Tile'], true)
+          .setAllowInvalid(false).build()
+      );
+    } else if (field === 'Products Per Row') {
+      valueCell.setDataValidation(
+        SpreadsheetApp.newDataValidation()
+          .requireValueInList(['1', '2', '3', '4', '5'], true)
+          .setAllowInvalid(false).build()
+      );
+    }
   });
 }
 
