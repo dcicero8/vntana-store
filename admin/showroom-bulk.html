@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VNTANA Showroom Bulk Tools</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f4f2;
+      color: #111;
+      min-height: 100vh;
+      padding: 2rem;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page-header { max-width: 960px; margin: 0 auto 1.5rem; }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    .page-header p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; margin-top: 0.3rem; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e2e2e0;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 960px;
+      margin: 0 auto 1.5rem;
+    }
+    .card-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; }
+    .card-badge {
+      padding: 0.2rem 0.6rem; border-radius: 4px;
+      font-size: 0.68rem; font-weight: 700; white-space: nowrap; margin-top: 3px;
+    }
+    .badge-orders  { background: #111; color: #fff; }
+    .badge-styling { background: #e8f5e9; color: #1b5e20; }
+
+    h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+    p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; }
+    a  { color: #2563eb; font-size: 0.8rem; }
+
+    .drop-zone {
+      border: 2px dashed #d1d5db;
+      border-radius: 10px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-top: 1.25rem;
+    }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: #111; background: #f9f9f9; }
+    .drop-zone input { display: none; }
+    .drop-icon  { font-size: 2rem; margin-bottom: 0.5rem; }
+    .drop-label { font-size: 0.9rem; font-weight: 600; }
+    .drop-sub   { font-size: 0.78rem; color: #9ca3af; margin-top: 0.25rem; }
+
+    .preview-wrap { overflow-x: auto; margin-top: 1rem; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.78rem; }
+    th {
+      background: #f3f4f6; padding: 0.5rem 0.75rem;
+      text-align: left; font-weight: 700; border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.5rem 0.75rem; border-bottom: 1px solid #f0f0f0;
+      vertical-align: top; max-width: 260px;
+    }
+    .uuid-cell { color: #9ca3af; font-family: monospace; font-size: 0.7rem; }
+    .swatch {
+      display: inline-block; width: 12px; height: 12px;
+      border-radius: 2px; border: 1px solid #e2e2e0;
+      vertical-align: middle; margin-right: 4px;
+    }
+    .row-ok  { background: #f0fdf4; }
+    .row-err { background: #fef2f2; }
+
+    .actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .primary-btn {
+      padding: 0.7rem 1.75rem;
+      background: #111; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .primary-btn:hover   { opacity: 0.8; }
+    .primary-btn:disabled { opacity: 0.35; cursor: default; }
+    .secondary-btn {
+      padding: 0.65rem 1.4rem;
+      background: #fff; color: #111;
+      border: 1.5px solid #ccc; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 700;
+      cursor: pointer; transition: border-color 0.15s;
+    }
+    .secondary-btn:hover { border-color: #111; }
+    .status {
+      font-size: 0.82rem; font-weight: 600;
+      padding: 0.5rem 1rem; border-radius: 6px;
+    }
+    .status.idle    { display: none; }
+    .status.loading { background: #f3f4f6; color: #6b7280; }
+    .status.ok      { background: #dcfce7; color: #166534; }
+    .status.err     { background: #fee2e2; color: #991b1b; }
+
+    .tab-bar {
+      display: flex; gap: 0.5rem; margin-bottom: 1.25rem;
+    }
+    .tab-btn {
+      padding: 0.4rem 1rem; border-radius: 6px;
+      font-size: 0.78rem; font-weight: 700;
+      border: 1.5px solid #e2e2e0; background: #fff; cursor: pointer;
+      transition: all 0.15s; color: #666;
+    }
+    .tab-btn.active { border-color: #111; background: #111; color: #fff; }
+
+    .progress-bar-wrap {
+      background: #f3f4f6; border-radius: 6px;
+      height: 6px; width: 100%; margin-top: 0.75rem; overflow: hidden;
+      display: none;
+    }
+    .progress-bar { height: 100%; background: #111; border-radius: 6px; width: 0%; transition: width 0.3s; }
+
+    .result-row { font-size: 0.78rem; margin-top: 0.35rem; }
+    .result-row .ok  { color: #166534; }
+    .result-row .err { color: #991b1b; }
+
+    code { background: #f3f4f6; padding: 1px 5px; border-radius: 3px; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <h1>VNTANA Showroom Bulk Tools</h1>
+    <p>Fill out the spreadsheet template, upload it, and n8n handles the rest — no platform UI required.</p>
+  </div>
+
+  <!-- ── Upload Card ────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2>Upload Template</h2>
+        <p>Download the template, fill out the tabs you need, then upload it below. Both tabs are processed in one pass — leave a tab empty to skip it.</p>
+      </div>
+      <div style="margin-left:auto;flex-shrink:0;">
+        <a href="showroom-bulk-template.xlsx" download class="secondary-btn" style="text-decoration:none;padding:0.6rem 1.2rem;display:inline-block;font-size:0.8rem;">
+          Download Template
+        </a>
+      </div>
+    </div>
+
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="file-input" accept=".xlsx,.xls">
+      <div class="drop-icon">📄</div>
+      <div class="drop-label">Drop your completed template here, or click to browse</div>
+      <div class="drop-sub">Accepts .xlsx &nbsp;·&nbsp; <a href="n8n-showroom-bulk.json" download>n8n workflow</a></div>
+    </div>
+  </div>
+
+  <!-- ── Preview Card ───────────────────────────────────────────────────────── -->
+  <div class="card" id="preview-card" style="display:none">
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-orders"  onclick="showTab('orders')">Order Entry</button>
+      <button class="tab-btn"        id="tab-styling" onclick="showTab('styling')">Showroom Styling</button>
+    </div>
+
+    <div id="pane-orders">
+      <div class="preview-wrap">
+        <table id="table-orders"></table>
+      </div>
+    </div>
+
+    <div id="pane-styling" style="display:none">
+      <div class="preview-wrap">
+        <table id="table-styling"></table>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary-btn" id="run-btn">Run n8n Workflow</button>
+      <div class="status idle" id="run-status"></div>
+    </div>
+    <div class="progress-bar-wrap" id="progress-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div id="run-results" style="margin-top:.75rem;"></div>
+  </div>
+
+  <script>
+    const WEBHOOK = "https://vntana.app.n8n.cloud/webhook/vntana-showroom-bulk";
+
+    let parsedOrders  = [];
+    let parsedStyling = [];
+
+    // ── Drop zone ─────────────────────────────────────────────────────────────
+    const dropZone  = document.getElementById("drop-zone");
+    const fileInput = document.getElementById("file-input");
+
+    dropZone.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("drag-over");
+      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const wb = XLSX.read(e.target.result, { type: "array" });
+
+        // Parse Order Entry sheet
+        const wsOrders = wb.Sheets["Order Entry"];
+        if (wsOrders) {
+          const rows = XLSX.utils.sheet_to_json(wsOrders, { defval: "", range: 3 });
+          parsedOrders = rows.filter(r =>
+            String(r["Share Link UUID"] ?? "").trim() &&
+            String(r["Asset UUID"] ?? "").trim() &&
+            r["Quantity"] > 0
+          );
+        }
+
+        // Parse Showroom Styling sheet
+        const wsStyling = wb.Sheets["Showroom Styling"];
+        if (wsStyling) {
+          const rows = XLSX.utils.sheet_to_json(wsStyling, { defval: "", range: 3 });
+          parsedStyling = rows.filter(r => String(r["Showroom UUID"] ?? "").trim());
+        }
+
+        renderPreviews();
+        document.getElementById("preview-card").style.display = "block";
+        document.getElementById("run-btn").disabled = !parsedOrders.length && !parsedStyling.length;
+        setStatus("idle");
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function renderPreviews() {
+      // Orders table
+      const tOrders = document.getElementById("table-orders");
+      if (!parsedOrders.length) {
+        tOrders.innerHTML = "<tr><td style='color:#9ca3af;padding:1rem;'>No valid order rows found.</td></tr>";
+      } else {
+        let html = "<tr><th>Share Link UUID</th><th>Asset UUID</th><th>Style #</th><th>Color / Variant</th><th>Qty</th><th>Notes</th></tr>";
+        parsedOrders.forEach(r => {
+          html += `<tr>
+            <td class="uuid-cell">${String(r["Share Link UUID"]).slice(0,12)}…</td>
+            <td class="uuid-cell">${String(r["Asset UUID"]).slice(0,12)}…</td>
+            <td>${r["Style Number"] || ""}</td>
+            <td>${r["Color / Variant"] || ""}</td>
+            <td><strong>${r["Quantity"]}</strong></td>
+            <td style="color:#9ca3af;">${r["Notes"] || ""}</td>
+          </tr>`;
+        });
+        tOrders.innerHTML = html;
+      }
+
+      // Styling table
+      const tStyling = document.getElementById("table-styling");
+      if (!parsedStyling.length) {
+        tStyling.innerHTML = "<tr><td style='color:#9ca3af;padding:1rem;'>No valid styling rows found.</td></tr>";
+      } else {
+        let html = "<tr><th>Showroom UUID</th><th>Name</th><th>Font</th><th>BG Color</th><th>Text Color</th><th>Divider</th><th>Per Row</th><th>Image Style</th></tr>";
+        parsedStyling.forEach(r => {
+          const bg  = r["Background Color (hex)"] || "";
+          const txt = r["Text Color (hex)"] || "";
+          const div = r["Divider Color (hex)"] || "";
+          html += `<tr>
+            <td class="uuid-cell">${String(r["Showroom UUID"]).slice(0,12)}…</td>
+            <td>${r["Showroom Name (reference)"] || ""}</td>
+            <td>${r["Font Family"] || "<em style='color:#ccc'>keep</em>"}</td>
+            <td>${bg ? `<span class="swatch" style="background:${bg}"></span>${bg}` : "<em style='color:#ccc'>keep</em>"}</td>
+            <td>${txt ? `<span class="swatch" style="background:${txt}"></span>${txt}` : "<em style='color:#ccc'>keep</em>"}</td>
+            <td>${div ? `<span class="swatch" style="background:${div}"></span>${div}` : "<em style='color:#ccc'>keep</em>"}</td>
+            <td>${r["Products Per Row (1-5)"] || "<em style='color:#ccc'>keep</em>"}</td>
+            <td>${r["Image Style"] || "<em style='color:#ccc'>keep</em>"}</td>
+          </tr>`;
+        });
+        tStyling.innerHTML = html;
+      }
+    }
+
+    // ── Tab toggle ────────────────────────────────────────────────────────────
+    function showTab(tab) {
+      document.getElementById("pane-orders").style.display  = tab === "orders"  ? "" : "none";
+      document.getElementById("pane-styling").style.display = tab === "styling" ? "" : "none";
+      document.getElementById("tab-orders").classList.toggle("active",  tab === "orders");
+      document.getElementById("tab-styling").classList.toggle("active", tab === "styling");
+    }
+
+    // ── Run webhook ───────────────────────────────────────────────────────────
+    document.getElementById("run-btn").addEventListener("click", async () => {
+      if (!parsedOrders.length && !parsedStyling.length) return;
+
+      const btn = document.getElementById("run-btn");
+      btn.disabled = true;
+      setStatus("loading", "Sending to n8n…");
+      document.getElementById("run-results").innerHTML = "";
+
+      const progressWrap = document.getElementById("progress-wrap");
+      const progressBar  = document.getElementById("progress-bar");
+      progressWrap.style.display = "block";
+      progressBar.style.width = "30%";
+
+      try {
+        const payload = {
+          orders:  parsedOrders,
+          styling: parsedStyling
+        };
+
+        const res = await fetch(WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        progressBar.style.width = "100%";
+
+        if (!res.ok) throw new Error(`Webhook returned ${res.status}: ${await res.text()}`);
+        const data = await res.json().catch(() => ({}));
+
+        const ordersOk   = data.ordersProcessed  ?? parsedOrders.length;
+        const stylingOk  = data.stylingProcessed ?? parsedStyling.length;
+        const errors     = data.errors ?? [];
+
+        let resultHtml = "";
+        if (parsedOrders.length)  resultHtml += `<div class="result-row"><span class="ok">Order rows submitted: ${ordersOk} / ${parsedOrders.length}</span></div>`;
+        if (parsedStyling.length) resultHtml += `<div class="result-row"><span class="ok">Showrooms updated: ${stylingOk} / ${parsedStyling.length}</span></div>`;
+        if (errors.length) {
+          errors.forEach(e => {
+            resultHtml += `<div class="result-row"><span class="err">Error: ${e}</span></div>`;
+          });
+        }
+        document.getElementById("run-results").innerHTML = resultHtml;
+
+        setStatus("ok", `Done — ${ordersOk + stylingOk} operations completed`);
+      } catch(err) {
+        progressBar.style.width = "0%";
+        setStatus("err", `Error: ${err.message}`);
+        btn.disabled = false;
+      }
+    });
+
+    function setStatus(type, msg = "") {
+      const el = document.getElementById("run-status");
+      el.className   = `status ${type}`;
+      el.textContent = msg;
+    }
+  </script>
+
+</body>
+</html>
