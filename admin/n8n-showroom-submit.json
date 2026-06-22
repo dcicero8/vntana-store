@@ -97,10 +97,13 @@
     },
     {
       "parameters": {
-        "method": "GET",
-        "url": "=https://api-platform.vntana.com/v2/showrooms/get-by-uuid/{{ $json.body.showroomUuid }}",
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v2/showrooms/get-by-uuid",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "vntanaApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ uuid: $('Webhook').first().json.body.showroomUuid }) }}",
         "options": {}
       },
       "id": "get-showroom",
@@ -111,7 +114,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body     = $('Webhook').first().json.body;\nconst current  = $input.item.json.payload;\nconst s        = body.styling || {};\n\nconst layout = { ...current.layoutAttributes };\n\nif (s.fontFamily)      layout.FONT_FAMILY       = s.fontFamily;\nif (s.backgroundColor) layout.BACKGROUND_COLOR  = s.backgroundColor;\nif (s.textColor)       layout.TEXT_COLOR        = s.textColor;\nif (s.dividerColor)    layout.DIVIDER_COLOR     = s.dividerColor;\nif (s.productsPerRow)  layout.PRODUCTS_PER_ROW  = parseInt(s.productsPerRow, 10);\nif (s.imageStyle)      layout.IMAGE_STYLE       = String(s.imageStyle).toUpperCase();\n\nreturn [{ json: { ...current, layoutAttributes: layout } }];"
+        "jsCode": "const body     = $('Webhook').first().json.body;\nconst current  = $input.item.json.response;\nconst s        = body.styling || {};\n\nconst layout = { ...current.layoutAttributes };\n\nif (s.fontFamily)      layout.FONT_FAMILY       = s.fontFamily;\nif (s.backgroundColor) layout.BACKGROUND_COLOR  = s.backgroundColor;\nif (s.textColor)       layout.TEXT_COLOR        = s.textColor;\nif (s.dividerColor)    layout.DIVIDER_COLOR     = s.dividerColor;\nif (s.productsPerRow)  layout.PRODUCTS_PER_ROW  = parseInt(s.productsPerRow, 10);\nif (s.imageStyle)      layout.IMAGE_STYLE       = String(s.imageStyle).toUpperCase();\n\nreturn [{ json: { ...current, layoutAttributes: layout } }];"
       },
       "id": "merge-layout",
       "name": "Merge Layout",
@@ -138,7 +141,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const ordersData  = $('Aggregate Orders').first()?.json?.data  ?? [];\nconst stylingResp = $('PUT Showroom').first()?.json ?? null;\n\nreturn [{\n  json: {\n    ordersProcessed: ordersData.length,\n    stylingUpdated:  stylingResp?.payload != null\n  }\n}];"
+        "jsCode": "const ordersData  = $('Aggregate Orders').first()?.json?.data  ?? [];\nconst stylingResp = $('PUT Showroom').first()?.json ?? null;\n\nreturn [{\n  json: {\n    ordersProcessed: ordersData.length,\n    stylingUpdated:  stylingResp?.response != null\n  }\n}];"
       },
       "id": "build-response",
       "name": "Build Response",
