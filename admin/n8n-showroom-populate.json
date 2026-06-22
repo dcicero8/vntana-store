@@ -16,10 +16,13 @@
     },
     {
       "parameters": {
-        "method": "GET",
-        "url": "=https://api-platform.vntana.com/v2/showrooms/get-by-uuid/{{ $json.body.showroomUuid }}",
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v2/showrooms/get-by-uuid",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "vntanaApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ uuid: $json.showroomUuid }) }}",
         "options": {}
       },
       "id": "get-showroom",
