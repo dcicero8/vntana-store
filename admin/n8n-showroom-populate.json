@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.response;\nconst products = showroom.products || [];\nconst groups   = showroom.groups   || [];\nconst layout   = showroom.layoutAttributes || {};\n\n// Build productUuid → { groupTitle, order } lookup\nconst productGroupMap = {};\ngroups.forEach(g => {\n  (g.productsInfo || []).forEach(p => {\n    productGroupMap[p.productUuid] = { groupTitle: g.title || '', order: p.order || 0 };\n  });\n});\n\nreturn [{\n  json: {\n    showroomUuid:    showroom.uuid,\n    showroomName:    showroom.name || 'VNTANA Showroom',\n    shareLinkUuid:   body.shareLinkUuid || '',\n    products,\n    groups,\n    productGroupMap,\n    layout\n  }\n}];"
+        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.response;\nconst products = showroom.products || [];\nconst groups   = showroom.groups   || [];\nconst layout   = showroom.layoutAttributes || {};\n\n// Build productUuid → { groupTitle, order } lookup\nconst productGroupMap = {};\ngroups.forEach(g => {\n  (g.productsInfo || []).forEach(p => {\n    productGroupMap[p.productUuid] = { groupTitle: g.header || g.title || g.name || '', order: p.order || 0 };\n  });\n});\n\nreturn [{\n  json: {\n    showroomUuid:    showroom.uuid,\n    showroomName:    showroom.name || 'VNTANA Showroom',\n    shareLinkUuid:   body.shareLinkUuid || '',\n    products,\n    groups,\n    productGroupMap,\n    layout\n  }\n}];"
       },
       "id": "extract",
       "name": "Extract Assets",
@@ -148,7 +148,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const data = $('Extract Assets').first().json;\n\nconst rows = (data.groups || []).map(g => ({\n  'Group Title':    g.title || '',\n  'Divider Top':    (g.dividers || []).includes('TOP')    ? 'Yes' : 'No',\n  'Divider Bottom': (g.dividers || []).includes('BOTTOM') ? 'Yes' : 'No',\n  'Visible':        g.visible !== false ? 'Yes' : 'No'\n}));\n\nif (rows.length === 0) {\n  rows.push({ 'Group Title': '', 'Divider Top': 'No', 'Divider Bottom': 'No', 'Visible': 'Yes' });\n}\n\nreturn rows.map(r => ({ json: r }));"
+        "jsCode": "const data = $('Extract Assets').first().json;\n\nconst rows = (data.groups || []).map(g => ({\n  'Group Title':    g.header || g.title || g.name || '',\n  'Divider Top':    (g.dividers || []).includes('TOP')    ? 'Yes' : 'No',\n  'Divider Bottom': (g.dividers || []).includes('BOTTOM') ? 'Yes' : 'No',\n  'Visible':        g.visible !== false ? 'Yes' : 'No'\n}));\n\nif (rows.length === 0) {\n  rows.push({ 'Group Title': '', 'Divider Top': 'No', 'Divider Bottom': 'No', 'Visible': 'Yes' });\n}\n\nreturn rows.map(r => ({ json: r }));"
       },
       "id": "prep-group-rows",
       "name": "Prep Group Rows",

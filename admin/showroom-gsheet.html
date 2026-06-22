@@ -200,14 +200,14 @@ function submitToVNTANA() {
   if (groupsSheet) {
     const groupRows = groupsSheet.getDataRange().getValues().slice(1);
     groupRows.filter(r => r[0]).forEach(r => {
-      const title = String(r[0]).trim();
+      const header = String(r[0]).trim();
       const dividers = [];
       if (String(r[1]).toLowerCase() === 'yes') dividers.push('TOP');
       if (String(r[2]).toLowerCase() === 'yes') dividers.push('BOTTOM');
       const visible = String(r[3]).toLowerCase() !== 'no';
 
       const productsInfo = Object.entries(assetGroupMap)
-        .filter(([, info]) => info.group === title)
+        .filter(([, info]) => info.group === header)
         .sort((a, b) => a[1].order - b[1].order)
         .map(([uuid, info], idx) => ({
           productUuid: uuid,
@@ -215,7 +215,7 @@ function submitToVNTANA() {
           order: info.order || idx + 1
         }));
 
-      groups.push({ title, dividers, visible, productsInfo });
+      groups.push({ header, dividers, visible, productsInfo });
     });
   }
 
