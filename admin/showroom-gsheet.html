@@ -156,6 +156,10 @@
     .createMenu('VNTANA')
     .addItem('Submit to VNTANA', 'submitToVNTANA')
     .addToUi();
+
+  SpreadsheetApp.getActiveSpreadsheet().getSheets().forEach(sheet => {
+    sheet.autoResizeColumns(1, sheet.getLastColumn());
+  });
 }
 
 function submitToVNTANA() {
