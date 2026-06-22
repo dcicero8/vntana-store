@@ -43,6 +43,7 @@
     },
     {
       "parameters": {
+        "resource": "spreadsheet",
         "operation": "create",
         "title": "=VNTANA Showroom — {{ $json.showroomName }}",
         "sheetsUi": {
