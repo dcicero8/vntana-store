@@ -163,27 +163,66 @@ function submitToVNTANA() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const ui = SpreadsheetApp.getUi();
 
-  // Read Assets tab
-  const assetsSheet = ss.getSheetByName('Assets');
-  const assetRows   = assetsSheet.getDataRange().getValues().slice(1); // skip header
-  const orders = assetRows
-    .filter(r => r[0] && Number(r[3]) > 0)
-    .map(r => ({
-      shareLinkUuid: ss.getSheetByName('Styling').getRange('B4').getValue(),
-      assetUuid:     String(r[0]).trim(),
-      quantity:      Number(r[3]),
-      notes:         String(r[4] || '')
-    }));
-
-  // Read Styling tab (key-value rows starting at row 2)
+  // Read Styling tab (key-value rows; skip section headers starting with —)
   const stylingSheet = ss.getSheetByName('Styling');
   const stylingRows  = stylingSheet.getDataRange().getValues().slice(1);
   const stylingMap   = {};
-  stylingRows.forEach(r => { if (r[0]) stylingMap[String(r[0]).trim()] = r[1]; });
+  stylingRows.forEach(r => {
+    if (r[0] && !String(r[0]).startsWith('—')) stylingMap[String(r[0]).trim()] = r[1];
+  });
+  const shareLinkUuid = stylingMap['Share Link UUID'] || '';
+
+  // Read Assets tab — columns: Asset UUID, Asset Name, Style #, Group, Order, Quantity, Notes
+  const assetsSheet = ss.getSheetByName('Assets');
+  const assetRows   = assetsSheet.getDataRange().getValues().slice(1);
+
+  const orders = assetRows
+    .filter(r => r[0] && Number(r[5]) > 0)
+    .map(r => ({
+      shareLinkUuid,
+      assetUuid: String(r[0]).trim(),
+      quantity:  Number(r[5]),
+      notes:     String(r[6] || '')
+    }));
+
+  // Build asset → group/order map for groups reconstruction
+  const assetGroupMap = {};
+  assetRows.filter(r => r[0]).forEach(r => {
+    assetGroupMap[String(r[0]).trim()] = {
+      group: String(r[3] || '').trim(),
+      order: Number(r[4]) || 0
+    };
+  });
+
+  // Read Groups tab — columns: Group Title, Divider Top, Divider Bottom, Visible
+  const groupsSheet = ss.getSheetByName('Groups');
+  const groups = [];
+  if (groupsSheet) {
+    const groupRows = groupsSheet.getDataRange().getValues().slice(1);
+    groupRows.filter(r => r[0]).forEach(r => {
+      const title = String(r[0]).trim();
+      const dividers = [];
+      if (String(r[1]).toLowerCase() === 'yes') dividers.push('TOP');
+      if (String(r[2]).toLowerCase() === 'yes') dividers.push('BOTTOM');
+      const visible = String(r[3]).toLowerCase() !== 'no';
+
+      const productsInfo = Object.entries(assetGroupMap)
+        .filter(([, info]) => info.group === title)
+        .sort((a, b) => a[1].order - b[1].order)
+        .map(([uuid, info], idx) => ({
+          productUuid: uuid,
+          visible: true,
+          order: info.order || idx + 1
+        }));
+
+      groups.push({ title, dividers, visible, productsInfo });
+    });
+  }
 
   const payload = {
     showroomUuid: stylingMap['Showroom UUID'] || '',
     orders,
+    groups,
     styling: {
       fontFamily:      stylingMap['Font Family']        || '',
       backgroundColor: stylingMap['Background Color']   || '',
@@ -204,8 +243,8 @@ function submitToVNTANA() {
     const result = JSON.parse(response.getContentText());
     ui.alert(
       'Done!',
-      (result.ordersProcessed  ? result.ordersProcessed  + ' order rows submitted. ' : '') +
-      (result.stylingUpdated   ? 'Styling updated.'                                   : ''),
+      (result.ordersProcessed ? result.ordersProcessed + ' order rows submitted. ' : '') +
+      (result.stylingUpdated  ? 'Styling updated.'                                  : ''),
       ui.ButtonSet.OK
     );
   } catch(e) {

@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.response;\nconst products = showroom.products || [];\nconst layout   = showroom.layoutAttributes || {};\n\nreturn [{\n  json: {\n    showroomUuid:  showroom.uuid,\n    showroomName:  showroom.name || 'VNTANA Showroom',\n    shareLinkUuid: body.shareLinkUuid || '',\n    products,\n    layout\n  }\n}];"
+        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.response;\nconst products = showroom.products || [];\nconst groups   = showroom.groups   || [];\nconst layout   = showroom.layoutAttributes || {};\n\n// Build productUuid → { groupTitle, order } lookup\nconst productGroupMap = {};\ngroups.forEach(g => {\n  (g.productsInfo || []).forEach(p => {\n    productGroupMap[p.productUuid] = { groupTitle: g.title || '', order: p.order || 0 };\n  });\n});\n\nreturn [{\n  json: {\n    showroomUuid:    showroom.uuid,\n    showroomName:    showroom.name || 'VNTANA Showroom',\n    shareLinkUuid:   body.shareLinkUuid || '',\n    products,\n    groups,\n    productGroupMap,\n    layout\n  }\n}];"
       },
       "id": "extract",
       "name": "Extract Assets",
@@ -48,6 +48,7 @@
         "sheetsUi": {
           "sheetValues": [
             { "title": "Assets" },
+            { "title": "Groups" },
             { "title": "Styling" }
           ]
         },
@@ -64,13 +65,13 @@
     },
     {
       "parameters": {
-        "jsCode": "const data = $('Extract Assets').first().json;\n\nconst rows = data.products.map(a => ({\n  'Asset UUID': a.uuid || '',\n  'Asset Name': a.name || '',\n  'Style #':    a.styleNumber || a.sku || '',\n  'Quantity':   '',\n  'Notes':      ''\n}));\n\nreturn rows.map(r => ({ json: r }));"
+        "jsCode": "const data = $('Extract Assets').first().json;\nconst map  = data.productGroupMap || {};\n\nconst rows = data.products.map(a => {\n  const g = map[a.uuid] || {};\n  return {\n    'Asset UUID': a.uuid || '',\n    'Asset Name': a.name || '',\n    'Style #':    a.styleNumber || a.sku || '',\n    'Group':      g.groupTitle || '',\n    'Order':      g.order      || '',\n    'Quantity':   '',\n    'Notes':      ''\n  };\n});\n\nreturn rows.map(r => ({ json: r }));"
       },
       "id": "prep-asset-rows",
       "name": "Prep Asset Rows",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1120, 180]
+      "position": [1120, 120]
     },
     {
       "parameters": {
@@ -87,7 +88,7 @@
       "name": "Write Assets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [1340, 180],
+      "position": [1340, 120],
       "credentials": {
         "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
       }
@@ -101,7 +102,48 @@
       "name": "Aggregate Assets",
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [1560, 180]
+      "position": [1560, 120]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Extract Assets').first().json;\n\nconst rows = (data.groups || []).map(g => ({\n  'Group Title':    g.title || '',\n  'Divider Top':    (g.dividers || []).includes('TOP')    ? 'Yes' : 'No',\n  'Divider Bottom': (g.dividers || []).includes('BOTTOM') ? 'Yes' : 'No',\n  'Visible':        g.visible !== false ? 'Yes' : 'No'\n}));\n\nif (rows.length === 0) {\n  rows.push({ 'Group Title': '', 'Divider Top': 'No', 'Divider Bottom': 'No', 'Visible': 'Yes' });\n}\n\nreturn rows.map(r => ({ json: r }));"
+      },
+      "id": "prep-group-rows",
+      "name": "Prep Group Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 120]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}", "mode": "id" },
+        "sheetName":  { "value": "Groups", "mode": "name" },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": { "valueInputMode": "USER_ENTERED" }
+      },
+      "id": "write-groups",
+      "name": "Write Groups",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [2000, 120],
+      "credentials": {
+        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "agg-groups",
+      "name": "Aggregate Groups",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [2220, 120]
     },
     {
       "parameters": {
@@ -111,7 +153,7 @@
       "name": "Prep Styling Rows",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1780, 180]
+      "position": [2440, 120]
     },
     {
       "parameters": {
@@ -128,7 +170,7 @@
       "name": "Write Styling",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [2000, 180],
+      "position": [2660, 120],
       "credentials": {
         "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
       }
@@ -142,32 +184,35 @@
       "name": "Aggregate Styling",
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [2220, 180]
+      "position": [2880, 120]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ sheetUrl: 'https://docs.google.com/spreadsheets/d/' + $('Create Spreadsheet').first().json.spreadsheetId, assetCount: $('Extract Assets').first().json.products.length }) }}",
+        "responseBody": "={{ JSON.stringify({ sheetUrl: 'https://docs.google.com/spreadsheets/d/' + $('Create Spreadsheet').first().json.spreadsheetId, assetCount: $('Extract Assets').first().json.products.length, groupCount: ($('Extract Assets').first().json.groups || []).length }) }}",
         "options": { "responseCode": 200 }
       },
       "id": "respond",
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [2440, 180]
+      "position": [3100, 120]
     }
   ],
   "connections": {
-    "Webhook":           { "main": [[{ "node": "GET Showroom",        "type": "main", "index": 0 }]] },
-    "GET Showroom":      { "main": [[{ "node": "Extract Assets",      "type": "main", "index": 0 }]] },
-    "Extract Assets":    { "main": [[{ "node": "Create Spreadsheet",  "type": "main", "index": 0 }]] },
-    "Create Spreadsheet":{ "main": [[{ "node": "Prep Asset Rows",     "type": "main", "index": 0 }]] },
-    "Prep Asset Rows":   { "main": [[{ "node": "Write Assets",        "type": "main", "index": 0 }]] },
-    "Write Assets":      { "main": [[{ "node": "Aggregate Assets",    "type": "main", "index": 0 }]] },
-    "Aggregate Assets":  { "main": [[{ "node": "Prep Styling Rows",   "type": "main", "index": 0 }]] },
-    "Prep Styling Rows": { "main": [[{ "node": "Write Styling",       "type": "main", "index": 0 }]] },
-    "Write Styling":     { "main": [[{ "node": "Aggregate Styling",   "type": "main", "index": 0 }]] },
-    "Aggregate Styling": { "main": [[{ "node": "Respond",             "type": "main", "index": 0 }]] }
+    "Webhook":           { "main": [[{ "node": "GET Showroom",       "type": "main", "index": 0 }]] },
+    "GET Showroom":      { "main": [[{ "node": "Extract Assets",     "type": "main", "index": 0 }]] },
+    "Extract Assets":    { "main": [[{ "node": "Create Spreadsheet", "type": "main", "index": 0 }]] },
+    "Create Spreadsheet":{ "main": [[{ "node": "Prep Asset Rows",    "type": "main", "index": 0 }]] },
+    "Prep Asset Rows":   { "main": [[{ "node": "Write Assets",       "type": "main", "index": 0 }]] },
+    "Write Assets":      { "main": [[{ "node": "Aggregate Assets",   "type": "main", "index": 0 }]] },
+    "Aggregate Assets":  { "main": [[{ "node": "Prep Group Rows",    "type": "main", "index": 0 }]] },
+    "Prep Group Rows":   { "main": [[{ "node": "Write Groups",       "type": "main", "index": 0 }]] },
+    "Write Groups":      { "main": [[{ "node": "Aggregate Groups",   "type": "main", "index": 0 }]] },
+    "Aggregate Groups":  { "main": [[{ "node": "Prep Styling Rows",  "type": "main", "index": 0 }]] },
+    "Prep Styling Rows": { "main": [[{ "node": "Write Styling",      "type": "main", "index": 0 }]] },
+    "Write Styling":     { "main": [[{ "node": "Aggregate Styling",  "type": "main", "index": 0 }]] },
+    "Aggregate Styling": { "main": [[{ "node": "Respond",            "type": "main", "index": 0 }]] }
   },
   "settings": { "executionOrder": "v1" },
   "staticData": null
