@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VNTANA Showroom Google Sheet Builder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f4f2; color: #111;
+      min-height: 100vh; padding: 2rem;
+      font-size: 14px; -webkit-font-smoothing: antialiased;
+    }
+    .page-header { max-width: 720px; margin: 0 auto 1.5rem; }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    .page-header p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; margin-top: 0.3rem; }
+
+    .card {
+      background: #fff; border: 1px solid #e2e2e0; border-radius: 12px;
+      padding: 2rem; max-width: 720px; margin: 0 auto 1.5rem;
+    }
+    h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
+    p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; }
+    label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.35rem; color: #333; }
+    input[type=text] {
+      width: 100%; padding: 0.65rem 0.9rem;
+      border: 1.5px solid #d1d5db; border-radius: 8px;
+      font-size: 0.875rem; font-family: monospace;
+      transition: border-color 0.15s; outline: none;
+    }
+    input[type=text]:focus { border-color: #111; }
+    .field-group { margin-bottom: 1rem; }
+    .field-hint  { font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem; }
+
+    .primary-btn {
+      padding: 0.75rem 2rem; background: #111; color: #fff;
+      border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s; width: 100%; margin-top: 0.5rem;
+    }
+    .primary-btn:hover    { opacity: 0.8; }
+    .primary-btn:disabled { opacity: 0.35; cursor: default; }
+
+    .status {
+      font-size: 0.82rem; font-weight: 600;
+      padding: 0.6rem 1rem; border-radius: 6px; margin-top: 1rem;
+    }
+    .status.idle    { display: none; }
+    .status.loading { background: #f3f4f6; color: #6b7280; }
+    .status.ok      { background: #dcfce7; color: #166534; }
+    .status.err     { background: #fee2e2; color: #991b1b; }
+
+    .sheet-result {
+      display: none; margin-top: 1rem;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      border-radius: 8px; padding: 1rem 1.25rem;
+    }
+    .sheet-result h3 { font-size: 0.88rem; font-weight: 700; color: #166534; margin-bottom: 0.4rem; }
+    .sheet-result a  {
+      display: inline-block; margin-top: 0.5rem;
+      background: #16a34a; color: #fff; text-decoration: none;
+      padding: 0.55rem 1.25rem; border-radius: 6px;
+      font-size: 0.82rem; font-weight: 700;
+    }
+    .sheet-result a:hover { opacity: 0.85; }
+
+    /* Steps */
+    .steps { counter-reset: step; display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.25rem; }
+    .step  { display: flex; gap: 0.75rem; align-items: flex-start; font-size: 0.84rem; color: #444; line-height: 1.5; }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      background: #111; color: #fff;
+      min-width: 20px; height: 20px;
+      border-radius: 50%; font-size: 0.68rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Apps Script block */
+    .script-toggle {
+      font-size: 0.78rem; color: #2563eb; cursor: pointer;
+      border: none; background: none; padding: 0; margin-top: 1rem;
+      text-decoration: underline;
+    }
+    .script-block {
+      display: none; margin-top: 0.75rem;
+      background: #1e1e2e; color: #cdd6f4;
+      border-radius: 8px; padding: 1rem;
+      font-family: monospace; font-size: 0.72rem; line-height: 1.6;
+      white-space: pre; overflow-x: auto; position: relative;
+    }
+    .copy-btn {
+      position: absolute; top: 0.6rem; right: 0.6rem;
+      background: #313244; color: #cdd6f4; border: none;
+      border-radius: 4px; padding: 0.25rem 0.6rem;
+      font-size: 0.68rem; cursor: pointer;
+    }
+    .copy-btn:hover { background: #45475a; }
+    code { background: #f3f4f6; padding: 1px 5px; border-radius: 3px; font-size: 0.75rem; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <h1>Showroom Google Sheet Builder</h1>
+    <p>Point at a showroom you've set up in VNTANA and get a pre-filled Google Sheet back — ready for order entry and styling edits.</p>
+  </div>
+
+  <!-- ── Step 1: Populate ───────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2>1. Populate Sheet from Showroom</h2>
+    <p style="margin-bottom:1.25rem;">Enter your showroom UUID and share link UUID. n8n will fetch all assets and create a Google Sheet with everything pre-filled.</p>
+
+    <div class="field-group">
+      <label for="showroom-uuid">Showroom UUID</label>
+      <input type="text" id="showroom-uuid" placeholder="e.g. a1b2c3d4-…">
+      <div class="field-hint">Found in the VNTANA platform URL when viewing a showroom.</div>
+    </div>
+
+    <div class="field-group">
+      <label for="sharelink-uuid">Share Link UUID <span style="font-weight:400;color:#9ca3af;">(optional — for order entry)</span></label>
+      <input type="text" id="sharelink-uuid" placeholder="e.g. e5f6g7h8-…">
+      <div class="field-hint">Leave blank if you only need styling updates.</div>
+    </div>
+
+    <button class="primary-btn" id="populate-btn">Create Google Sheet</button>
+    <div class="status idle" id="populate-status"></div>
+
+    <div class="sheet-result" id="sheet-result">
+      <h3>Sheet ready</h3>
+      <p>Your sheet is pre-filled with assets from the showroom. Fill in quantities and styling, then click the Submit button inside the sheet.</p>
+      <a id="sheet-link" href="#" target="_blank">Open Google Sheet</a>
+    </div>
+  </div>
+
+  <!-- ── Step 2: How to submit ──────────────────────────────────────────────── -->
+  <div class="card">
+    <h2>2. Fill Out and Submit</h2>
+    <div class="steps">
+      <div class="step">Open the Google Sheet. The <strong>Assets</strong> tab is pre-filled with all showroom assets — add quantities in the Quantity column for the items you want to submit.</div>
+      <div class="step">Switch to the <strong>Styling</strong> tab. Edit font, colors, and layout using Google Sheets' native color picker. Leave any row blank to keep the current value.</div>
+      <div class="step">In the Google Sheets menu bar, click <strong>VNTANA &gt; Submit to VNTANA</strong>. n8n processes both tabs in one pass and updates VNTANA via the API.</div>
+    </div>
+
+    <button class="script-toggle" onclick="toggleScript()">First time? Set up the Submit button in the sheet</button>
+    <div class="script-block" id="script-block">
+      <button class="copy-btn" onclick="copyScript()">Copy</button>
+<span id="script-text">function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('VNTANA')
+    .addItem('Submit to VNTANA', 'submitToVNTANA')
+    .addToUi();
+}
+
+function submitToVNTANA() {
+  const WEBHOOK = 'https://vntana.app.n8n.cloud/webhook/vntana-showroom-submit';
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ui = SpreadsheetApp.getUi();
+
+  // Read Assets tab
+  const assetsSheet = ss.getSheetByName('Assets');
+  const assetRows   = assetsSheet.getDataRange().getValues().slice(1); // skip header
+  const orders = assetRows
+    .filter(r => r[0] && Number(r[3]) > 0)
+    .map(r => ({
+      shareLinkUuid: ss.getSheetByName('Styling').getRange('B4').getValue(),
+      assetUuid:     String(r[0]).trim(),
+      quantity:      Number(r[3]),
+      notes:         String(r[4] || '')
+    }));
+
+  // Read Styling tab (key-value rows starting at row 2)
+  const stylingSheet = ss.getSheetByName('Styling');
+  const stylingRows  = stylingSheet.getDataRange().getValues().slice(1);
+  const stylingMap   = {};
+  stylingRows.forEach(r => { if (r[0]) stylingMap[String(r[0]).trim()] = r[1]; });
+
+  const payload = {
+    showroomUuid: stylingMap['Showroom UUID'] || '',
+    orders,
+    styling: {
+      fontFamily:      stylingMap['Font Family']        || '',
+      backgroundColor: stylingMap['Background Color']   || '',
+      textColor:       stylingMap['Text Color']         || '',
+      dividerColor:    stylingMap['Divider Color']      || '',
+      productsPerRow:  stylingMap['Products Per Row']   || '',
+      imageStyle:      stylingMap['Image Style']        || ''
+    }
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(WEBHOOK, {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+    const result = JSON.parse(response.getContentText());
+    ui.alert(
+      'Done!',
+      (result.ordersProcessed  ? result.ordersProcessed  + ' order rows submitted. ' : '') +
+      (result.stylingUpdated   ? 'Styling updated.'                                   : ''),
+      ui.ButtonSet.OK
+    );
+  } catch(e) {
+    ui.alert('Error', e.message, ui.ButtonSet.OK);
+  }
+}</span>
+    </div>
+    <p style="margin-top:.75rem;font-size:.78rem;color:#9ca3af;">
+      In the sheet: <strong>Extensions &gt; Apps Script</strong> → paste the code → Save → reload the sheet. The VNTANA menu appears in the menu bar.
+    </p>
+    <p style="margin-top:1rem;font-size:.78rem;color:#9ca3af;">
+      n8n workflows: <a href="n8n-showroom-populate.json" download>Populate workflow</a> &nbsp;·&nbsp; <a href="n8n-showroom-submit.json" download>Submit workflow</a>
+    </p>
+  </div>
+
+  <script>
+    const POPULATE_WEBHOOK = "https://vntana.app.n8n.cloud/webhook/vntana-showroom-populate";
+
+    document.getElementById("populate-btn").addEventListener("click", async () => {
+      const showroomUuid  = document.getElementById("showroom-uuid").value.trim();
+      const shareLinkUuid = document.getElementById("sharelink-uuid").value.trim();
+      if (!showroomUuid) { alert("Please enter a showroom UUID."); return; }
+
+      const btn = document.getElementById("populate-btn");
+      btn.disabled = true;
+      setStatus("loading", "Creating sheet…");
+      document.getElementById("sheet-result").style.display = "none";
+
+      try {
+        const res = await fetch(POPULATE_WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ showroomUuid, shareLinkUuid })
+        });
+        if (!res.ok) throw new Error(`Webhook returned ${res.status}: ${await res.text()}`);
+        const data = await res.json();
+
+        if (data.sheetUrl) {
+          document.getElementById("sheet-link").href = data.sheetUrl;
+          document.getElementById("sheet-result").style.display = "block";
+          setStatus("ok", `Sheet created — ${data.assetCount ?? "?"} assets loaded`);
+        } else {
+          throw new Error(data.error || "No sheet URL returned");
+        }
+      } catch(err) {
+        setStatus("err", `Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    function setStatus(type, msg = "") {
+      const el = document.getElementById("populate-status");
+      el.className   = `status ${type}`;
+      el.textContent = msg;
+    }
+
+    function toggleScript() {
+      const block = document.getElementById("script-block");
+      block.style.display = block.style.display === "block" ? "none" : "block";
+    }
+
+    function copyScript() {
+      const text = document.getElementById("script-text").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector(".copy-btn");
+        btn.textContent = "Copied!";
+        setTimeout(() => btn.textContent = "Copy", 1500);
+      });
+    }
+  </script>
+
+</body>
+</html>

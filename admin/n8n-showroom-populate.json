@@ -1,0 +1,141 @@
+{
+  "name": "VNTANA Showroom — Populate Google Sheet",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vntana-showroom-populate",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api-platform.vntana.com/v2/showrooms/get-by-uuid/{{ $json.body.showroomUuid }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
+        "options": {}
+      },
+      "id": "get-showroom",
+      "name": "GET Showroom",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.payload;\nconst assets   = showroom.assets || [];\nconst layout   = showroom.layoutAttributes || {};\n\nconst assetRows = assets.map(a => ({\n  uuid:      a.uuid || '',\n  name:      a.clientName || a.name || '',\n  styleNum:  a.styleNumber || a.sku || '',\n  quantity:  '',\n  notes:     ''\n}));\n\nreturn [{\n  json: {\n    showroomUuid:   showroom.uuid,\n    showroomName:   showroom.name || 'VNTANA Showroom',\n    shareLinkUuid:  body.shareLinkUuid || '',\n    assetRows,\n    layout\n  }\n}];"
+      },
+      "id": "extract",
+      "name": "Extract Assets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "title": "=VNTANA Showroom — {{ $json.showroomName }}",
+        "sheetsUi": {
+          "sheetValues": [
+            { "title": "Assets" },
+            { "title": "Styling" }
+          ]
+        }
+      },
+      "id": "create-sheet",
+      "name": "Create Spreadsheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [900, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data        = $('Extract Assets').first().json;\nconst spreadsheet = $input.item.json;\n\nconst assetRows = [\n  ['Asset UUID', 'Asset Name', 'Style #', 'Quantity', 'Notes'],\n  ...data.assetRows.map(a => [a.uuid, a.name, a.styleNum, '', ''])\n];\n\nconst layout = data.layout || {};\nconst stylingRows = [\n  ['Field', 'Value', 'Options / Notes'],\n  ['Showroom UUID',    data.showroomUuid,  ''],\n  ['Showroom Name',    data.showroomName,  'Reference only'],\n  ['Share Link UUID',  data.shareLinkUuid, 'Used for order entry'],\n  ['Font Family',      layout.FONT_FAMILY        || 'Roboto', 'Roboto / Arial / Times New Roman / Georgia / Courier New'],\n  ['Background Color', layout.BACKGROUND_COLOR   || '#FFFFFF', 'Hex format e.g. #FFFFFF'],\n  ['Text Color',       layout.TEXT_COLOR         || '#111111', 'Hex format'],\n  ['Divider Color',    layout.DIVIDER_COLOR      || '#E2E2E0', 'Hex format'],\n  ['Products Per Row', layout.PRODUCTS_PER_ROW   || 4,        '1 to 5'],\n  ['Image Style',      layout.IMAGE_STYLE        || 'Cover',   'Cover / Contain / Tile']\n];\n\nreturn [{\n  json: {\n    spreadsheetId: spreadsheet.spreadsheetId,\n    sheetUrl:      spreadsheet.spreadsheetUrl || `https://docs.google.com/spreadsheets/d/${spreadsheet.spreadsheetId}`,\n    assetRows,\n    stylingRows,\n    assetCount: data.assetRows.length\n  }\n}];"
+      },
+      "id": "prep-rows",
+      "name": "Prep Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "value": "={{ $json.spreadsheetId }}", "mode": "id" },
+        "sheetName":  { "value": "Assets", "mode": "name" },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "dataMode": "autoMap",
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        }
+      },
+      "id": "write-assets",
+      "name": "Write Assets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [1340, 200],
+      "credentials": {
+        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "value": "={{ $('Prep Rows').first().json.spreadsheetId }}", "mode": "id" },
+        "sheetName":  { "value": "Styling", "mode": "name" },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "dataMode": "autoMap",
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        }
+      },
+      "id": "write-styling",
+      "name": "Write Styling",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [1340, 400],
+      "credentials": {
+        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ sheetUrl: $('Prep Rows').first().json.sheetUrl, assetCount: $('Prep Rows').first().json.assetCount }) }}",
+        "options": { "responseCode": 200 }
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Webhook":           { "main": [[{ "node": "GET Showroom",       "type": "main", "index": 0 }]] },
+    "GET Showroom":      { "main": [[{ "node": "Extract Assets",     "type": "main", "index": 0 }]] },
+    "Extract Assets":    { "main": [[{ "node": "Create Spreadsheet", "type": "main", "index": 0 }]] },
+    "Create Spreadsheet":{ "main": [[{ "node": "Prep Rows",          "type": "main", "index": 0 }]] },
+    "Prep Rows":         { "main": [[{ "node": "Write Assets",       "type": "main", "index": 0 }, { "node": "Write Styling", "type": "main", "index": 0 }]] },
+    "Write Assets":      { "main": [[{ "node": "Respond",            "type": "main", "index": 0 }]] },
+    "Write Styling":     { "main": [[{ "node": "Respond",            "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": null
+}

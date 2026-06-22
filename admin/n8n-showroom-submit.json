@@ -1,0 +1,176 @@
+{
+  "name": "VNTANA Showroom — Submit from Google Sheet",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vntana-showroom-submit",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "orders-check",
+              "leftValue": "={{ $json.body.orders.length }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-has-orders",
+      "name": "Has Orders?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "styling-check",
+              "leftValue": "={{ $json.body.showroomUuid }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "notEmpty" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-has-styling",
+      "name": "Has Styling?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 400]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.orders",
+        "options": {}
+      },
+      "id": "split-orders",
+      "name": "Split Orders",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [680, 120]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/showrooms/sharelinks/order-item",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ shareLinkUuid: $json.shareLinkUuid, assetUuid: $json.assetUuid, quantity: $json.quantity }) }}",
+        "options": {}
+      },
+      "id": "post-order",
+      "name": "POST Order Item",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 120]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "agg-orders",
+      "name": "Aggregate Orders",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [1120, 120]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api-platform.vntana.com/v2/showrooms/get-by-uuid/{{ $json.body.showroomUuid }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
+        "options": {}
+      },
+      "id": "get-showroom",
+      "name": "GET Showroom",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body     = $('Webhook').first().json.body;\nconst current  = $input.item.json.payload;\nconst s        = body.styling || {};\n\nconst layout = { ...current.layoutAttributes };\n\nif (s.fontFamily)      layout.FONT_FAMILY       = s.fontFamily;\nif (s.backgroundColor) layout.BACKGROUND_COLOR  = s.backgroundColor;\nif (s.textColor)       layout.TEXT_COLOR        = s.textColor;\nif (s.dividerColor)    layout.DIVIDER_COLOR     = s.dividerColor;\nif (s.productsPerRow)  layout.PRODUCTS_PER_ROW  = parseInt(s.productsPerRow, 10);\nif (s.imageStyle)      layout.IMAGE_STYLE       = String(s.imageStyle).toUpperCase();\n\nreturn [{ json: { ...current, layoutAttributes: layout } }];"
+      },
+      "id": "merge-layout",
+      "name": "Merge Layout",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api-platform.vntana.com/v1/showrooms/{{ $json.uuid }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "put-showroom",
+      "name": "PUT Showroom",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ordersData  = $('Aggregate Orders').first()?.json?.data  ?? [];\nconst stylingResp = $('PUT Showroom').first()?.json ?? null;\n\nreturn [{\n  json: {\n    ordersProcessed: ordersData.length,\n    stylingUpdated:  stylingResp?.payload != null\n  }\n}];"
+      },
+      "id": "build-response",
+      "name": "Build Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 260]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": { "responseCode": 200 }
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 260]
+    }
+  ],
+  "connections": {
+    "Webhook":        { "main": [[{ "node": "Has Orders?",  "type": "main", "index": 0 }, { "node": "Has Styling?", "type": "main", "index": 0 }]] },
+    "Has Orders?":    { "main": [[{ "node": "Split Orders", "type": "main", "index": 0 }], []] },
+    "Has Styling?":   { "main": [[{ "node": "GET Showroom", "type": "main", "index": 0 }], []] },
+    "Split Orders":   { "main": [[{ "node": "POST Order Item", "type": "main", "index": 0 }]] },
+    "POST Order Item":{ "main": [[{ "node": "Aggregate Orders", "type": "main", "index": 0 }]] },
+    "Aggregate Orders":{ "main": [[{ "node": "Build Response", "type": "main", "index": 0 }]] },
+    "GET Showroom":   { "main": [[{ "node": "Merge Layout", "type": "main", "index": 0 }]] },
+    "Merge Layout":   { "main": [[{ "node": "PUT Showroom", "type": "main", "index": 0 }]] },
+    "PUT Showroom":   { "main": [[{ "node": "Build Response", "type": "main", "index": 0 }]] },
+    "Build Response": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": null
+}
