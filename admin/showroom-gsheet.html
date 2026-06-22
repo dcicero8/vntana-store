@@ -155,11 +155,33 @@
   SpreadsheetApp.getUi()
     .createMenu('VNTANA')
     .addItem('Submit to VNTANA', 'submitToVNTANA')
+    .addItem('Read Color Swatches', 'readColorSwatches')
     .addToUi();
 
   SpreadsheetApp.getActiveSpreadsheet().getSheets().forEach(sheet => {
     sheet.autoResizeColumns(1, sheet.getLastColumn());
   });
+}
+
+function readColorSwatches() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName('Styling');
+  if (!sheet) return;
+
+  const data = sheet.getDataRange().getValues();
+  const colorFields = ['Background Color', 'Text Color', 'Divider Color'];
+
+  data.forEach((row, i) => {
+    if (!colorFields.includes(String(row[0]).trim())) return;
+    const swatchCell = sheet.getRange(i + 1, 4); // column D
+    const bg = swatchCell.getBackground();
+    if (bg && bg !== '#ffffff' && bg !== '#000000') {
+      // only overwrite Value if user actually picked a non-default color
+    }
+    if (bg) sheet.getRange(i + 1, 2).setValue(bg.toUpperCase());
+  });
+
+  SpreadsheetApp.getUi().alert('Done!', 'Hex values copied from swatches into the Value column.', SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
 function submitToVNTANA() {
