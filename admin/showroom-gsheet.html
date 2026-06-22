@@ -120,7 +120,7 @@
     <div class="field-group">
       <label for="showroom-uuid">Showroom UUID</label>
       <input type="text" id="showroom-uuid" placeholder="e.g. a1b2c3d4-…">
-      <div class="field-hint">Found in the VNTANA platform URL when viewing a showroom.</div>
+      <div class="field-hint">Paste the UUID or the full embed/platform URL — the UUID will be extracted automatically.</div>
     </div>
 
     <div class="field-group">
@@ -222,7 +222,13 @@ function submitToVNTANA() {
     const POPULATE_WEBHOOK = "https://vntana.app.n8n.cloud/webhook/vntana-showroom-populate";
 
     document.getElementById("populate-btn").addEventListener("click", async () => {
-      const showroomUuid  = document.getElementById("showroom-uuid").value.trim();
+      const raw = document.getElementById("showroom-uuid").value.trim();
+      // Accept full embed/platform URLs or bare UUIDs
+      let showroomUuid = raw;
+      try {
+        const u = new URL(raw);
+        showroomUuid = u.searchParams.get("uuid") || u.searchParams.get("showroomUuid") || raw;
+      } catch(e) { /* not a URL, use as-is */ }
       const shareLinkUuid = document.getElementById("sharelink-uuid").value.trim();
       if (!showroomUuid) { alert("Please enter a showroom UUID."); return; }
 
@@ -238,7 +244,9 @@ function submitToVNTANA() {
           body: JSON.stringify({ showroomUuid, shareLinkUuid })
         });
         if (!res.ok) throw new Error(`Webhook returned ${res.status}: ${await res.text()}`);
-        const data = await res.json();
+        const text = await res.text();
+        if (!text) throw new Error("n8n returned an empty response — make sure the workflow is Published and all nodes have credentials assigned.");
+        const data = JSON.parse(text);
 
         if (data.sheetUrl) {
           document.getElementById("sheet-link").href = data.sheetUrl;
