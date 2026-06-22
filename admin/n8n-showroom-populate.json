@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.response;\nconst products = showroom.products || [];\nconst viewInfo = showroom.viewInfo || {};\nconst groups   = viewInfo.groups   || [];\nconst layout   = viewInfo.layoutAttributes || {};\n\n// Build productUuid → { groupTitle, order } lookup\n// productsInfo[].product.uuid holds the asset UUID\nconst productGroupMap = {};\ngroups.forEach(g => {\n  (g.productsInfo || []).forEach(p => {\n    const uuid = p.product ? p.product.uuid : p.productUuid;\n    if (uuid) productGroupMap[uuid] = { groupTitle: g.title || '', order: p.order || 0 };\n  });\n});\n\nreturn [{\n  json: {\n    showroomUuid:    showroom.uuid,\n    showroomName:    showroom.name || 'VNTANA Showroom',\n    shareLinkUuid:   body.shareLinkUuid || '',\n    products,\n    groups,\n    productGroupMap,\n    layout\n  }\n}];"
+        "jsCode": "const body     = $('Webhook').first().json.body;\nconst showroom = $input.item.json.response;\nconst products = showroom.products || [];\nconst viewInfo = showroom.viewInfo || {};\nconst groups   = viewInfo.groups   || [];\nconst layout   = viewInfo.layoutAttributes || {};\n\n// Build productUuid → { groupTitle, order } lookup\n// productsInfo[].product.uuid holds the asset UUID\nconst productGroupMap = {};\ngroups.forEach(g => {\n  (g.productsInfo || []).forEach(p => {\n    const uuid = p.product ? p.product.uuid : p.productUuid;\n    if (uuid) productGroupMap[uuid] = { groupTitle: g.title != null ? String(g.title) : '', order: p.order != null ? p.order : null };\n  });\n});\n\nreturn [{\n  json: {\n    showroomUuid:    showroom.uuid,\n    showroomName:    showroom.name || 'VNTANA Showroom',\n    shareLinkUuid:   body.shareLinkUuid || '',\n    products,\n    groups,\n    productGroupMap,\n    layout\n  }\n}];"
       },
       "id": "extract",
       "name": "Extract Assets",
@@ -107,7 +107,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const data = $('Extract Assets').first().json;\nconst map  = data.productGroupMap || {};\n\nconst rows = data.products.map(a => {\n  const g = map[a.uuid] || {};\n  return {\n    'Asset UUID': a.uuid || '',\n    'Asset Name': a.name || '',\n    'Style #':    a.styleNumber || a.sku || '',\n    'Group':      g.groupTitle || '',\n    'Order':      g.order      || '',\n    'Quantity':   '',\n    'Notes':      ''\n  };\n});\n\nreturn rows.map(r => ({ json: r }));"
+        "jsCode": "const data = $('Extract Assets').first().json;\nconst map  = data.productGroupMap || {};\n\nconst rows = data.products.map(a => {\n  const g = map[a.uuid] || {};\n  return {\n    'Asset UUID': a.uuid || '',\n    'Asset Name': a.name || '',\n    'Style #':    a.styleNumber || a.sku || '',\n    'Group':      g.groupTitle != null ? String(g.groupTitle) : '',\n    'Order':      g.order      != null ? g.order : '',\n    'Quantity':   '',\n    'Notes':      ''\n  };\n});\n\nreturn rows.map(r => ({ json: r }));"
       },
       "id": "prep-asset-rows",
       "name": "Prep Asset Rows",
