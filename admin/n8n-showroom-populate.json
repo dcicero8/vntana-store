@@ -47,6 +47,7 @@
         "title": "=VNTANA Showroom — {{ $json.showroomName }}",
         "sheetsUi": {
           "sheetValues": [
+            { "title": "Instructions" },
             { "title": "Assets" },
             { "title": "Groups" },
             { "title": "Styling" }
@@ -62,6 +63,47 @@
       "credentials": {
         "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = [\n  { 'Section': 'ASSETS TAB',       'Column / Field': 'Asset UUID',      'How to use it': 'Do not edit. Unique identifier used by the API.' },\n  { 'Section': '',                 'Column / Field': 'Asset Name',      'How to use it': 'Do not edit. Display name for reference.' },\n  { 'Section': '',                 'Column / Field': 'Style #',         'How to use it': 'Do not edit. SKU / style number from VNTANA.' },\n  { 'Section': '',                 'Column / Field': 'Group',           'How to use it': 'The group this asset belongs to. Must exactly match a Group Title in the Groups tab. Leave blank for ungrouped.' },\n  { 'Section': '',                 'Column / Field': 'Order',           'How to use it': 'Controls position within the group. Lower number = appears first. Edit the number to reorder — do not move rows.' },\n  { 'Section': '',                 'Column / Field': 'Quantity',        'How to use it': 'Enter a number > 0 to submit an order for this asset. Leave blank to skip ordering.' },\n  { 'Section': '',                 'Column / Field': 'Notes',           'How to use it': 'Optional. For your reference only — not sent to VNTANA.' },\n  { 'Section': 'GROUPS TAB',       'Column / Field': 'Group Title',     'How to use it': 'Name shown as the group header in the showroom. Must match Group values in the Assets tab exactly.' },\n  { 'Section': '',                 'Column / Field': 'Divider Top',     'How to use it': 'Yes or No — adds a horizontal divider above the group.' },\n  { 'Section': '',                 'Column / Field': 'Divider Bottom',  'How to use it': 'Yes or No — adds a horizontal divider below the group.' },\n  { 'Section': '',                 'Column / Field': 'Visible',         'How to use it': 'Yes or No — controls whether this group is visible in share links.' },\n  { 'Section': '',                 'Column / Field': 'Adding a group',  'How to use it': 'Add a new row here, then set the Group column in the Assets tab to match the new Group Title.' },\n  { 'Section': 'STYLING TAB',      'Column / Field': 'Colors',          'How to use it': 'Hex format e.g. #FFFFFF. Use Google Sheets color picker: Format > Text color, then copy the hex into the Value cell.' },\n  { 'Section': '',                 'Column / Field': 'Font Family',     'How to use it': 'Options: Roboto, Arial, Times New Roman, Georgia, Courier New' },\n  { 'Section': '',                 'Column / Field': 'Products Per Row','How to use it': 'Number from 1 to 5.' },\n  { 'Section': '',                 'Column / Field': 'Image Style',     'How to use it': 'Options: Cover, Contain, Tile' },\n  { 'Section': '',                 'Column / Field': 'Blank values',    'How to use it': 'Leave any styling field blank to keep its current value in VNTANA.' },\n  { 'Section': 'SUBMITTING',       'Column / Field': 'First time setup','How to use it': 'Extensions > Apps Script — paste the code from the web page — Save — reload this sheet. A VNTANA menu appears.' },\n  { 'Section': '',                 'Column / Field': 'Submit',          'How to use it': 'Click VNTANA > Submit to VNTANA. Orders, group changes, and styling updates all go in one pass.' }\n];\n\nreturn rows.map(r => ({ json: r }));"
+      },
+      "id": "prep-instructions-rows",
+      "name": "Prep Instructions Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}", "mode": "id" },
+        "sheetName":  { "value": "Instructions", "mode": "name" },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": { "valueInputMode": "USER_ENTERED" }
+      },
+      "id": "write-instructions",
+      "name": "Write Instructions",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [1340, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "agg-instructions",
+      "name": "Aggregate Instructions",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [1560, 300]
     },
     {
       "parameters": {
@@ -203,8 +245,11 @@
     "Webhook":           { "main": [[{ "node": "GET Showroom",       "type": "main", "index": 0 }]] },
     "GET Showroom":      { "main": [[{ "node": "Extract Assets",     "type": "main", "index": 0 }]] },
     "Extract Assets":    { "main": [[{ "node": "Create Spreadsheet", "type": "main", "index": 0 }]] },
-    "Create Spreadsheet":{ "main": [[{ "node": "Prep Asset Rows",    "type": "main", "index": 0 }]] },
-    "Prep Asset Rows":   { "main": [[{ "node": "Write Assets",       "type": "main", "index": 0 }]] },
+    "Create Spreadsheet":       { "main": [[{ "node": "Prep Instructions Rows", "type": "main", "index": 0 }]] },
+    "Prep Instructions Rows":   { "main": [[{ "node": "Write Instructions",     "type": "main", "index": 0 }]] },
+    "Write Instructions":       { "main": [[{ "node": "Aggregate Instructions", "type": "main", "index": 0 }]] },
+    "Aggregate Instructions":   { "main": [[{ "node": "Prep Asset Rows",        "type": "main", "index": 0 }]] },
+    "Prep Asset Rows":          { "main": [[{ "node": "Write Assets",           "type": "main", "index": 0 }]] },
     "Write Assets":      { "main": [[{ "node": "Aggregate Assets",   "type": "main", "index": 0 }]] },
     "Aggregate Assets":  { "main": [[{ "node": "Prep Group Rows",    "type": "main", "index": 0 }]] },
     "Prep Group Rows":   { "main": [[{ "node": "Write Groups",       "type": "main", "index": 0 }]] },
