@@ -179,11 +179,8 @@ function setupStylingDropdowns(ss) {
     const valueCell = sheet.getRange(i + 1, 2);
 
     if (field === 'Font Family') {
-      valueCell.setDataValidation(
-        SpreadsheetApp.newDataValidation()
-          .requireValueInList(['Roboto', 'Arial', 'Times New Roman', 'Georgia', 'Courier New'], true)
-          .setAllowInvalid(false).build()
-      );
+      valueCell.clearDataValidations();
+      valueCell.setNote('Apply the font you want to this cell. The font family will be read automatically on submit.');
     } else if (field === 'Image Style') {
       valueCell.setDataValidation(
         SpreadsheetApp.newDataValidation()
@@ -228,10 +225,19 @@ function submitToVNTANA() {
 
   // Read Styling tab (key-value rows; skip section headers starting with —)
   const stylingSheet = ss.getSheetByName('Styling');
-  const stylingRows  = stylingSheet.getDataRange().getValues().slice(1);
+  const stylingData  = stylingSheet.getDataRange().getValues();
+  const stylingRows  = stylingData.slice(1);
   const stylingMap   = {};
   stylingRows.forEach(r => {
     if (r[0] && !String(r[0]).startsWith('—')) stylingMap[String(r[0]).trim()] = r[1];
+  });
+
+  // Font Family: read the actual font applied to the value cell, not its text
+  let fontFamily = '';
+  stylingData.forEach((r, i) => {
+    if (String(r[0]).trim() === 'Font Family') {
+      fontFamily = stylingSheet.getRange(i + 1, 2).getFontFamily() || '';
+    }
   });
   const shareLinkUuid = stylingMap['Share Link UUID'] || '';
 
@@ -287,7 +293,7 @@ function submitToVNTANA() {
     orders,
     groups,
     styling: {
-      fontFamily:      stylingMap['Font Family']        || '',
+      fontFamily:      fontFamily,
       backgroundColor: stylingMap['Background Color']   || '',
       textColor:       stylingMap['Text Color']         || '',
       dividerColor:    stylingMap['Divider Color']      || '',

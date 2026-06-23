@@ -12,7 +12,10 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 300]
+      "position": [
+        240,
+        300
+      ]
     },
     {
       "parameters": {
@@ -29,7 +32,10 @@
       "name": "GET Showroom",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [460, 300]
+      "position": [
+        460,
+        300
+      ]
     },
     {
       "parameters": {
@@ -39,7 +45,10 @@
       "name": "Extract Assets",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [680, 300]
+      "position": [
+        680,
+        300
+      ]
     },
     {
       "parameters": {
@@ -47,10 +56,18 @@
         "title": "=VNTANA Showroom — {{ $json.showroomName }}",
         "sheetsUi": {
           "sheetValues": [
-            { "title": "Instructions" },
-            { "title": "Assets" },
-            { "title": "Groups" },
-            { "title": "Styling" }
+            {
+              "title": "Instructions"
+            },
+            {
+              "title": "Assets"
+            },
+            {
+              "title": "Groups"
+            },
+            {
+              "title": "Styling"
+            }
           ]
         },
         "options": {}
@@ -59,9 +76,15 @@
       "name": "Create Spreadsheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [900, 300],
+      "position": [
+        900,
+        300
+      ],
       "credentials": {
-        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account 3"
+        }
       }
     },
     {
@@ -72,26 +95,43 @@
       "name": "Prep Instructions Rows",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1120, 300]
+      "position": [
+        1120,
+        300
+      ]
     },
     {
       "parameters": {
         "operation": "append",
-        "documentId": { "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}", "mode": "id" },
-        "sheetName":  { "value": "Instructions", "mode": "name" },
+        "documentId": {
+          "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "value": "Instructions",
+          "mode": "name"
+        },
         "columns": {
           "mappingMode": "autoMapInputData",
           "value": {}
         },
-        "options": { "valueInputMode": "USER_ENTERED" }
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        }
       },
       "id": "write-instructions",
       "name": "Write Instructions",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [1340, 300],
+      "position": [
+        1340,
+        300
+      ],
       "credentials": {
-        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account 3"
+        }
       }
     },
     {
@@ -103,7 +143,10 @@
       "name": "Aggregate Instructions",
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [1560, 300]
+      "position": [
+        1560,
+        300
+      ]
     },
     {
       "parameters": {
@@ -113,26 +156,43 @@
       "name": "Prep Asset Rows",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1120, 120]
+      "position": [
+        1120,
+        120
+      ]
     },
     {
       "parameters": {
         "operation": "append",
-        "documentId": { "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}", "mode": "id" },
-        "sheetName":  { "value": "Assets", "mode": "name" },
+        "documentId": {
+          "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "value": "Assets",
+          "mode": "name"
+        },
         "columns": {
           "mappingMode": "autoMapInputData",
           "value": {}
         },
-        "options": { "valueInputMode": "USER_ENTERED" }
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        }
       },
       "id": "write-assets",
       "name": "Write Assets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [1340, 120],
+      "position": [
+        1340,
+        120
+      ],
       "credentials": {
-        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account 3"
+        }
       }
     },
     {
@@ -144,7 +204,10 @@
       "name": "Aggregate Assets",
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [1560, 120]
+      "position": [
+        1560,
+        120
+      ]
     },
     {
       "parameters": {
@@ -154,26 +217,43 @@
       "name": "Prep Group Rows",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1780, 120]
+      "position": [
+        1780,
+        120
+      ]
     },
     {
       "parameters": {
         "operation": "append",
-        "documentId": { "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}", "mode": "id" },
-        "sheetName":  { "value": "Groups", "mode": "name" },
+        "documentId": {
+          "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "value": "Groups",
+          "mode": "name"
+        },
         "columns": {
           "mappingMode": "autoMapInputData",
           "value": {}
         },
-        "options": { "valueInputMode": "USER_ENTERED" }
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        }
       },
       "id": "write-groups",
       "name": "Write Groups",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [2000, 120],
+      "position": [
+        2000,
+        120
+      ],
       "credentials": {
-        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account 3"
+        }
       }
     },
     {
@@ -185,36 +265,56 @@
       "name": "Aggregate Groups",
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [2220, 120]
+      "position": [
+        2220,
+        120
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const data   = $('Extract Assets').first().json;\nconst layout = data.layout || {};\n\nconst rows = [\n  { 'Field': '— IDENTIFIERS —',  'Value': '',                             'Options / Notes': '' },\n  { 'Field': 'Showroom UUID',    'Value': data.showroomUuid,              'Options / Notes': '' },\n  { 'Field': 'Showroom Name',    'Value': data.showroomName,              'Options / Notes': 'Reference only' },\n  { 'Field': 'Share Link UUID',  'Value': data.shareLinkUuid,             'Options / Notes': 'Used for order entry' },\n  { 'Field': '— TYPOGRAPHY —',   'Value': '',                             'Options / Notes': '' },\n  { 'Field': 'Font Family',      'Value': (layout.FONT_FAMILY || 'Roboto').split(',')[0].trim(), 'Options / Notes': 'Roboto / Arial / Times New Roman / Georgia / Courier New' },\n  { 'Field': '— COLORS —',       'Value': '',                             'Options / Notes': '',                                      'Color Swatch': '' },\n  { 'Field': 'Background Color', 'Value': layout.BACKGROUND_COLOR   || '#FFFFFF',  'Options / Notes': 'Hex format e.g. #FFFFFF',               'Color Swatch': 'Fill this cell with your color, then VNTANA > Read Color Swatches' },\n  { 'Field': 'Text Color',       'Value': layout.TEXT_COLOR         || '#111111',  'Options / Notes': 'Hex format',                            'Color Swatch': 'Fill this cell with your color, then VNTANA > Read Color Swatches' },\n  { 'Field': 'Divider Color',    'Value': layout.DIVIDER_COLOR      || '#E2E2E0',  'Options / Notes': 'Hex format',                            'Color Swatch': 'Fill this cell with your color, then VNTANA > Read Color Swatches' },\n  { 'Field': '— LAYOUT —',       'Value': '',                             'Options / Notes': '' },\n  { 'Field': 'Products Per Row', 'Value': layout.PRODUCTS_PER_ROW   || 4,          'Options / Notes': '1 to 5' },\n  { 'Field': 'Image Style',      'Value': (layout.IMAGE_STYLE || 'Cover').charAt(0).toUpperCase() + (layout.IMAGE_STYLE || 'Cover').slice(1).toLowerCase(), 'Options / Notes': 'Cover / Contain / Tile' }\n];\n\nreturn rows.map(r => ({ json: r }));"
+        "jsCode": "const data   = $('Extract Assets').first().json;\nconst layout = data.layout || {};\n\nconst rows = [\n  { 'Field': '— IDENTIFIERS —',  'Value': '',                             'Options / Notes': '' },\n  { 'Field': 'Showroom UUID',    'Value': data.showroomUuid,              'Options / Notes': '' },\n  { 'Field': 'Showroom Name',    'Value': data.showroomName,              'Options / Notes': 'Reference only' },\n  { 'Field': 'Share Link UUID',  'Value': data.shareLinkUuid,             'Options / Notes': 'Used for order entry' },\n  { 'Field': '— TYPOGRAPHY —',   'Value': '',                             'Options / Notes': '' },\n  { 'Field': 'Font Family',      'Value': 'APPLY FONT HERE',                                     'Options / Notes': 'Format the Value cell with your chosen font — it will be read on submit' },\n  { 'Field': '— COLORS —',       'Value': '',                             'Options / Notes': '',                                      'Color Swatch': '' },\n  { 'Field': 'Background Color', 'Value': layout.BACKGROUND_COLOR   || '#FFFFFF',  'Options / Notes': 'Hex format e.g. #FFFFFF',               'Color Swatch': 'Fill this cell with your color, then VNTANA > Read Color Swatches' },\n  { 'Field': 'Text Color',       'Value': layout.TEXT_COLOR         || '#111111',  'Options / Notes': 'Hex format',                            'Color Swatch': 'Fill this cell with your color, then VNTANA > Read Color Swatches' },\n  { 'Field': 'Divider Color',    'Value': layout.DIVIDER_COLOR      || '#E2E2E0',  'Options / Notes': 'Hex format',                            'Color Swatch': 'Fill this cell with your color, then VNTANA > Read Color Swatches' },\n  { 'Field': '— LAYOUT —',       'Value': '',                             'Options / Notes': '' },\n  { 'Field': 'Products Per Row', 'Value': layout.PRODUCTS_PER_ROW   || 4,          'Options / Notes': '1 to 5' },\n  { 'Field': 'Image Style',      'Value': (layout.IMAGE_STYLE || 'Cover').charAt(0).toUpperCase() + (layout.IMAGE_STYLE || 'Cover').slice(1).toLowerCase(), 'Options / Notes': 'Cover / Contain / Tile' }\n];\n\nreturn rows.map(r => ({ json: r }));"
       },
       "id": "prep-styling-rows",
       "name": "Prep Styling Rows",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2440, 120]
+      "position": [
+        2440,
+        120
+      ]
     },
     {
       "parameters": {
         "operation": "append",
-        "documentId": { "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}", "mode": "id" },
-        "sheetName":  { "value": "Styling", "mode": "name" },
+        "documentId": {
+          "value": "={{ $('Create Spreadsheet').first().json.spreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "value": "Styling",
+          "mode": "name"
+        },
         "columns": {
           "mappingMode": "autoMapInputData",
           "value": {}
         },
-        "options": { "valueInputMode": "USER_ENTERED" }
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        }
       },
       "id": "write-styling",
       "name": "Write Styling",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
-      "position": [2660, 120],
+      "position": [
+        2660,
+        120
+      ],
       "credentials": {
-        "googleSheetsOAuth2Api": { "id": "", "name": "Google Sheets account 3" }
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account 3"
+        }
       }
     },
     {
@@ -226,39 +326,209 @@
       "name": "Aggregate Styling",
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [2880, 120]
+      "position": [
+        2880,
+        120
+      ]
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ sheetUrl: 'https://docs.google.com/spreadsheets/d/' + $('Create Spreadsheet').first().json.spreadsheetId, assetCount: $('Extract Assets').first().json.products.length, groupCount: ($('Extract Assets').first().json.groups || []).length }) }}",
-        "options": { "responseCode": 200 }
+        "options": {
+          "responseCode": 200
+        }
       },
       "id": "respond",
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [3100, 120]
+      "position": [
+        3100,
+        120
+      ]
     }
   ],
   "connections": {
-    "Webhook":           { "main": [[{ "node": "GET Showroom",       "type": "main", "index": 0 }]] },
-    "GET Showroom":      { "main": [[{ "node": "Extract Assets",     "type": "main", "index": 0 }]] },
-    "Extract Assets":    { "main": [[{ "node": "Create Spreadsheet", "type": "main", "index": 0 }]] },
-    "Create Spreadsheet":       { "main": [[{ "node": "Prep Instructions Rows", "type": "main", "index": 0 }]] },
-    "Prep Instructions Rows":   { "main": [[{ "node": "Write Instructions",     "type": "main", "index": 0 }]] },
-    "Write Instructions":       { "main": [[{ "node": "Aggregate Instructions", "type": "main", "index": 0 }]] },
-    "Aggregate Instructions":   { "main": [[{ "node": "Prep Asset Rows",        "type": "main", "index": 0 }]] },
-    "Prep Asset Rows":          { "main": [[{ "node": "Write Assets",           "type": "main", "index": 0 }]] },
-    "Write Assets":      { "main": [[{ "node": "Aggregate Assets",   "type": "main", "index": 0 }]] },
-    "Aggregate Assets":  { "main": [[{ "node": "Prep Group Rows",    "type": "main", "index": 0 }]] },
-    "Prep Group Rows":   { "main": [[{ "node": "Write Groups",       "type": "main", "index": 0 }]] },
-    "Write Groups":      { "main": [[{ "node": "Aggregate Groups",   "type": "main", "index": 0 }]] },
-    "Aggregate Groups":  { "main": [[{ "node": "Prep Styling Rows",  "type": "main", "index": 0 }]] },
-    "Prep Styling Rows": { "main": [[{ "node": "Write Styling",      "type": "main", "index": 0 }]] },
-    "Write Styling":     { "main": [[{ "node": "Aggregate Styling",  "type": "main", "index": 0 }]] },
-    "Aggregate Styling": { "main": [[{ "node": "Respond",            "type": "main", "index": 0 }]] }
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "GET Showroom",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Showroom": {
+      "main": [
+        [
+          {
+            "node": "Extract Assets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Assets": {
+      "main": [
+        [
+          {
+            "node": "Create Spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Spreadsheet": {
+      "main": [
+        [
+          {
+            "node": "Prep Instructions Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Instructions Rows": {
+      "main": [
+        [
+          {
+            "node": "Write Instructions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Instructions": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Instructions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Instructions": {
+      "main": [
+        [
+          {
+            "node": "Prep Asset Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Asset Rows": {
+      "main": [
+        [
+          {
+            "node": "Write Assets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Assets": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Assets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Assets": {
+      "main": [
+        [
+          {
+            "node": "Prep Group Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Group Rows": {
+      "main": [
+        [
+          {
+            "node": "Write Groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Groups": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Groups": {
+      "main": [
+        [
+          {
+            "node": "Prep Styling Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Styling Rows": {
+      "main": [
+        [
+          {
+            "node": "Write Styling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Styling": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Styling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Styling": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "staticData": null
 }
