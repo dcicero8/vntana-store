@@ -312,8 +312,8 @@ function submitToVNTANA() {
     const result = JSON.parse(response.getContentText());
     ui.alert(
       'Done!',
-      (result.ordersProcessed ? result.ordersProcessed + ' order rows submitted. ' : '') +
-      (result.stylingUpdated  ? 'Styling updated.'                                  : ''),
+      'We have successfully created your new showroom.' +
+      (result.ordersProcessed ? ' ' + result.ordersProcessed + ' order rows submitted.' : ''),
       ui.ButtonSet.OK
     );
   } catch(e) {
