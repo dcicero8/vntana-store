@@ -182,7 +182,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const ordersData  = $('Aggregate Orders').first()?.json?.data  ?? [];\nconst stylingResp = $('POST Showroom').first()?.json ?? null;\n\nreturn [{\n  json: {\n    ordersProcessed: ordersData.length,\n    stylingUpdated:  stylingResp?.response?.uuid != null\n  }\n}];"
+        "jsCode": "let ordersData = [];\ntry { ordersData = $('Aggregate Orders').first()?.json?.data ?? []; } catch(e) {}\n\nlet stylingResp = null;\ntry { stylingResp = $('POST Showroom').first()?.json ?? null; } catch(e) {}\n\nreturn [{\n  json: {\n    ordersProcessed: ordersData.length,\n    stylingUpdated:  stylingResp?.response?.uuid != null,\n    newShowroomUuid: stylingResp?.response?.uuid || null\n  }\n}];"
       },
       "id": "build-response",
       "name": "Build Response",
