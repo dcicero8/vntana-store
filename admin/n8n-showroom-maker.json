@@ -39,7 +39,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1780,
+        2000,
         300
       ]
     },
@@ -59,7 +59,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2000,
+        2220,
         300
       ]
     },
@@ -72,7 +72,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2220,
+        2440,
         300
       ]
     },
@@ -89,7 +89,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        2440,
+        2660,
         300
       ]
     },
@@ -268,6 +268,24 @@
         1560,
         440
       ]
+    },
+    {
+      "parameters": {
+        "mode": "waitForAll",
+        "clashHandling": {
+          "values": {
+            "resolveClash": "addSuffix"
+          }
+        }
+      },
+      "id": "merge-sheets",
+      "name": "Merge Sheets",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1780,
+        300
+      ]
     }
   ],
   "connections": {
@@ -373,9 +391,9 @@
       "main": [
         [
           {
-            "node": "Build Payload",
+            "node": "Merge Sheets",
             "type": "main",
-            "index": 0
+            "index": 2
           }
         ]
       ]
@@ -407,6 +425,39 @@
         [
           {
             "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Assets": {
+      "main": [
+        [
+          {
+            "node": "Merge Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Groups": {
+      "main": [
+        [
+          {
+            "node": "Merge Sheets",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Sheets": {
+      "main": [
+        [
+          {
+            "node": "Build Payload",
             "type": "main",
             "index": 0
           }
