@@ -1,0 +1,119 @@
+{
+  "name": "VNTANA Showroom Maker — Excel Trigger",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vntana-showroom-maker",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.item.json.body;\nconst productUuid = body.product?.uuid || '';\nconst blobId      = body.product?.asset?.assetBlobId || '';\nconst orgUuid     = body.organization?.uuid || '';\nconst clientUuid  = body.client?.uuid || '';\nconst productName = body.product?.name || 'Showroom Config';\nif (!blobId)     throw new Error('No assetBlobId in webhook payload');\nif (!orgUuid)    throw new Error('No organization.uuid in webhook payload');\nif (!clientUuid) throw new Error('No client.uuid in webhook payload');\nreturn [{ json: { productUuid, blobId, orgUuid, clientUuid, productName } }];"
+      },
+      "id": "extract-context",
+      "name": "Extract Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api-platform.vntana.com/v1/organizations/{{ $json.orgUuid }}/clients/{{ $json.clientUuid }}/products/{{ $json.productUuid }}/asset/download",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "id": "download-asset",
+      "name": "Download Asset",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const xlsx = require('xlsx');\n\nconst binaryProp = $input.item.binary?.data;\nif (!binaryProp) throw new Error('No binary data from download — check the download URL');\n\nconst buffer = Buffer.from(binaryProp.data, 'base64');\nconst wb = xlsx.read(buffer, { type: 'buffer' });\n\nif (!wb.SheetNames.includes('Assets'))  throw new Error('Excel file is missing an Assets tab');\nif (!wb.SheetNames.includes('Groups'))  throw new Error('Excel file is missing a Groups tab');\nif (!wb.SheetNames.includes('Styling')) throw new Error('Excel file is missing a Styling tab');\n\n// Assets tab\nconst assetsRaw = xlsx.utils.sheet_to_json(wb.Sheets['Assets'], { header: 1 });\nconst assets = assetsRaw.slice(1).filter(r => r[0]).map(r => ({\n  uuid:  String(r[0] || '').trim(),\n  name:  String(r[1] || '').trim(),\n  group: r[3] != null ? String(r[3]).trim() : '',\n  order: r[4] != null ? Number(r[4]) : null,\n  qty:   r[5] != null ? Number(r[5]) : 0\n}));\n\n// Groups tab\nconst groupsRaw = xlsx.utils.sheet_to_json(wb.Sheets['Groups'], { header: 1 });\nconst groups = groupsRaw.slice(1)\n  .filter(r => r[0] != null && String(r[0]).trim() !== '')\n  .map(r => ({\n    title:         String(r[0]).trim(),\n    dividerTop:    String(r[1] || '').toLowerCase() === 'yes',\n    dividerBottom: String(r[2] || '').toLowerCase() === 'yes',\n    visible:       String(r[3] || 'yes').toLowerCase() !== 'no'\n  }));\n\n// Styling tab\nconst stylingRaw = xlsx.utils.sheet_to_json(wb.Sheets['Styling'], { header: 1 });\nconst stylingMap = {};\nstylingRaw.slice(1).forEach(r => {\n  if (r[0] && !String(r[0]).startsWith('\\u2014')) {\n    stylingMap[String(r[0]).trim()] = r[1] != null ? String(r[1]).trim() : '';\n  }\n});\n\nreturn [{ json: { assets, groups, stylingMap } }];"
+      },
+      "id": "parse-excel",
+      "name": "Parse Excel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { assets, groups, stylingMap } = $input.item.json;\nconst errors = [];\n\n// Validate\nif (assets.length === 0) errors.push('Assets tab has no rows');\nconst groupTitles = new Set(groups.map(g => g.title));\nassets.forEach(a => {\n  if (!a.uuid) errors.push(`Row for \"${a.name}\" has no UUID`);\n  if (a.group && !groupTitles.has(a.group)) {\n    errors.push(`Asset \"${a.name}\" references group \"${a.group}\" not found in Groups tab`);\n  }\n});\n\n// Build groups for API\nconst apiGroups = groups.map(g => {\n  const dividers = [];\n  if (g.dividerTop)    dividers.push('TOP');\n  if (g.dividerBottom) dividers.push('BOTTOM');\n  const productsInfo = assets\n    .filter(a => a.group === g.title)\n    .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))\n    .map((a, idx) => ({ productUuid: a.uuid, order: a.order ?? idx + 1, visible: true }));\n  return { title: g.title, dividers, visible: g.visible, productsInfo };\n});\n\n// Build layout attributes\nconst layout = {};\nif (stylingMap['Background Color']) layout.BACKGROUND_COLOR = stylingMap['Background Color'];\nif (stylingMap['Text Color'])       layout.TEXT_COLOR        = stylingMap['Text Color'];\nif (stylingMap['Divider Color'])    layout.DIVIDER_COLOR     = stylingMap['Divider Color'];\nif (stylingMap['Products Per Row']) layout.PRODUCTS_PER_ROW  = parseInt(stylingMap['Products Per Row'], 10);\nif (stylingMap['Image Style'])      layout.IMAGE_STYLE       = String(stylingMap['Image Style']).toUpperCase();\n\nconst showroomName   = stylingMap['Showroom Name'] || 'New Showroom';\nconst productsUuids  = assets.map(a => a.uuid).filter(Boolean);\n\nreturn [{ json: { productsUuids, apiGroups, layout, showroomName, errors } }];"
+      },
+      "id": "build-payload",
+      "name": "Build Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/showrooms",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ name: $json.showroomName, productsUuids: $json.productsUuids, groups: $json.apiGroups, layoutAttributes: $json.layout }) }}",
+        "options": {}
+      },
+      "id": "create-showroom",
+      "name": "Create Showroom",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const built   = $('Build Payload').first().json;\nconst context = $('Extract Context').first().json;\nconst resp    = $input.item.json;\n\nconst newUuid = resp.response?.uuid || null;\nconst success = resp.success === true && !!newUuid;\n\nconst lines = [\n  'VNTANA Showroom Maker — Processing Log',\n  '======================================',\n  `Source file:    ${context.productName}`,\n  `Showroom name:  ${built.showroomName}`,\n  `Status:         ${success ? 'SUCCESS' : 'ERROR'}`,\n];\nif (newUuid)                  lines.push(`New showroom UUID: ${newUuid}`);\nif (resp.errors?.length)      lines.push(`API errors: ${resp.errors.join(', ')}`);\nif (built.errors?.length) {\n  lines.push('');\n  lines.push('Validation warnings:');\n  built.errors.forEach(e => lines.push(`  - ${e}`));\n}\nlines.push('');\nlines.push(`Assets:  ${built.productsUuids.length}`);\nlines.push(`Groups:  ${built.apiGroups.length}`);\n\nreturn [{ json: { logText: lines.join('\\n'), success, newShowroomUuid: newUuid } }];"
+      },
+      "id": "build-log",
+      "name": "Build Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: $json.success, newShowroomUuid: $json.newShowroomUuid, log: $json.logText }) }}",
+        "options": { "responseCode": 200 }
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1780, 300]
+    }
+  ],
+  "connections": {
+    "Webhook":        { "main": [[{ "node": "Extract Context",  "type": "main", "index": 0 }]] },
+    "Extract Context": { "main": [[{ "node": "Download Asset",   "type": "main", "index": 0 }]] },
+    "Download Asset":  { "main": [[{ "node": "Parse Excel",      "type": "main", "index": 0 }]] },
+    "Parse Excel":     { "main": [[{ "node": "Build Payload",    "type": "main", "index": 0 }]] },
+    "Build Payload":   { "main": [[{ "node": "Create Showroom",  "type": "main", "index": 0 }]] },
+    "Create Showroom": { "main": [[{ "node": "Build Log",        "type": "main", "index": 0 }]] },
+    "Build Log":       { "main": [[{ "node": "Respond",          "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": null
+}
