@@ -335,7 +335,9 @@ function submitToVNTANA() {
       let showroomUuid = raw;
       try {
         const u = new URL(raw);
-        showroomUuid = u.searchParams.get("uuid") || u.searchParams.get("showroomUuid") || raw;
+        showroomUuid = u.searchParams.get("uuid") || u.searchParams.get("showroomUuid")
+          || u.pathname.split('/').filter(p => /^[0-9a-f-]{36}$/.test(p)).pop()
+          || raw;
       } catch(e) { /* not a URL, use as-is */ }
       const shareLinkUuid = document.getElementById("sharelink-uuid").value.trim();
       if (!showroomUuid) { alert("Please enter a showroom UUID."); return; }
