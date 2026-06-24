@@ -19,7 +19,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.item.json.body;\nconst productUuid = body.product?.uuid || '';\nconst blobId      = body.product?.asset?.assetBlobId || '';\nconst orgUuid     = body.organization?.uuid || '';\nconst clientUuid  = body.client?.uuid || '';\nconst productName = body.product?.name || 'Showroom Config';\nif (!blobId)     throw new Error('No assetBlobId in webhook payload');\nif (!orgUuid)    throw new Error('No organization.uuid in webhook payload');\nif (!clientUuid) throw new Error('No client.uuid in webhook payload');\nreturn [{ json: { productUuid, blobId, orgUuid, clientUuid, productName } }];"
+        "jsCode": "const body = $input.item.json.body;\nconst productUuid = body.product?.uuid || '';\nconst rawBlobId   = body.product?.asset?.assetBlobId || '';\nconst blobUuid    = rawBlobId.replace(/\\.[^.]+$/, ''); // strip extension\nconst orgUuid     = body.organization?.uuid || '';\nconst clientUuid  = body.client?.uuid || '';\nconst productName = body.product?.name || 'Showroom Config';\nif (!rawBlobId)  throw new Error('No assetBlobId in webhook payload');\nif (!orgUuid)    throw new Error('No organization.uuid in webhook payload');\nif (!clientUuid) throw new Error('No client.uuid in webhook payload');\nreturn [{ json: { productUuid, blobUuid, orgUuid, clientUuid, productName } }];"
       },
       "id": "extract-context",
       "name": "Extract Context",
@@ -32,21 +32,17 @@
     },
     {
       "parameters": {
-        "method": "GET",
-        "url": "=https://api-platform.vntana.com/v1/products/{{ $json.productUuid }}/download/model?clientUuid={{ $json.clientUuid }}",
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/storage/download/clients/sign-url",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "vntanaApi",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "file",
-              "outputPropertyName": "data"
-            }
-          }
-        }
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ entityUuid: $json.blobUuid, storeType: 'ATTACHMENT', format: 'XLSX', clientUuid: $json.clientUuid, organizationUuid: $json.orgUuid }) }}",
+        "options": {}
       },
-      "id": "download-asset",
-      "name": "Download Asset",
+      "id": "get-download-url",
+      "name": "Get Download URL",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -63,7 +59,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        900,
+        1120,
         300
       ]
     },
@@ -76,7 +72,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1120,
+        1340,
         300
       ]
     },
@@ -96,7 +92,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1340,
+        1560,
         300
       ]
     },
@@ -109,7 +105,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1560,
+        1780,
         300
       ]
     },
@@ -126,7 +122,29 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        1780,
+        2000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.response.uri }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "id": "download-file",
+      "name": "Download File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
         300
       ]
     }
@@ -147,18 +165,7 @@
       "main": [
         [
           {
-            "node": "Download Asset",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Download Asset": {
-      "main": [
-        [
-          {
-            "node": "Parse Excel",
+            "node": "Get Download URL",
             "type": "main",
             "index": 0
           }
@@ -203,6 +210,28 @@
         [
           {
             "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Download URL": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Parse Excel",
             "type": "main",
             "index": 0
           }
