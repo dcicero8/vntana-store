@@ -39,7 +39,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1120,
+        1340,
         300
       ]
     },
@@ -108,34 +108,37 @@
     },
     {
       "parameters": {
-        "operation": "search",
-        "queryFilters": {
-          "filters": [
+        "method": "GET",
+        "url": "https://www.googleapis.com/drive/v3/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
             {
-              "key": "parents",
-              "values": [
-                {
-                  "value": "1dH_9ztHhg97niqv8XV_FEm5hPY0eIsZn"
-                }
-              ]
+              "name": "q",
+              "value": "'1dH_9ztHhg97niqv8XV_FEm5hPY0eIsZn' in parents and mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' and trashed=false"
             },
             {
-              "key": "mimeType",
-              "values": [
-                {
-                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                }
-              ]
+              "name": "orderBy",
+              "value": "modifiedTime desc"
+            },
+            {
+              "name": "pageSize",
+              "value": "1"
+            },
+            {
+              "name": "fields",
+              "value": "files(id,name,modifiedTime)"
             }
           ]
         },
-        "limit": 1,
-        "orderBy": "modifiedTime desc"
+        "options": {}
       },
       "id": "find-excel",
       "name": "Find Latest Excel",
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         680,
         300
@@ -145,6 +148,19 @@
           "name": "Google Drive account 2"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const files = $input.item.json.files;\nif (!files || files.length === 0) throw new Error('No Excel file found in Google Drive folder 1dH_9ztHhg97niqv8XV_FEm5hPY0eIsZn');\nconst file = files[0];\nreturn [{ json: { id: file.id, name: file.name, modifiedTime: file.modifiedTime } }];"
+      },
+      "id": "extract-file-id",
+      "name": "Extract File ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
     },
     {
       "parameters": {
@@ -161,7 +177,7 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        900,
+        1120,
         300
       ],
       "credentials": {
@@ -239,6 +255,17 @@
       ]
     },
     "Find Latest Excel": {
+      "main": [
+        [
+          {
+            "node": "Extract File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract File ID": {
       "main": [
         [
           {
