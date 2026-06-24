@@ -32,26 +32,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://api-platform.vntana.com/v1/storage/download/clients/sign-url",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "vntanaApi",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ entityUuid: $json.blobUuid, storeType: 'ATTACHMENT', format: 'XLSX', clientUuid: $json.clientUuid, organizationUuid: $json.orgUuid }) }}",
-        "options": {}
-      },
-      "id": "get-download-url",
-      "name": "Get Download URL",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        680,
-        300
-      ]
-    },
-    {
-      "parameters": {
         "jsCode": "const xlsx = require('xlsx');\n\nconst binaryProp = $input.item.binary?.data;\nif (!binaryProp) throw new Error('No binary data from download — check the download URL');\n\nconst buffer = Buffer.from(binaryProp.data, 'base64');\nconst wb = xlsx.read(buffer, { type: 'buffer' });\n\nif (!wb.SheetNames.includes('Assets'))  throw new Error('Excel file is missing an Assets tab');\nif (!wb.SheetNames.includes('Groups'))  throw new Error('Excel file is missing a Groups tab');\nif (!wb.SheetNames.includes('Styling')) throw new Error('Excel file is missing a Styling tab');\n\n// Assets tab\nconst assetsRaw = xlsx.utils.sheet_to_json(wb.Sheets['Assets'], { header: 1 });\nconst assets = assetsRaw.slice(1).filter(r => r[0]).map(r => ({\n  uuid:  String(r[0] || '').trim(),\n  name:  String(r[1] || '').trim(),\n  group: r[3] != null ? String(r[3]).trim() : '',\n  order: r[4] != null ? Number(r[4]) : null,\n  qty:   r[5] != null ? Number(r[5]) : 0\n}));\n\n// Groups tab\nconst groupsRaw = xlsx.utils.sheet_to_json(wb.Sheets['Groups'], { header: 1 });\nconst groups = groupsRaw.slice(1)\n  .filter(r => r[0] != null && String(r[0]).trim() !== '')\n  .map(r => ({\n    title:         String(r[0]).trim(),\n    dividerTop:    String(r[1] || '').toLowerCase() === 'yes',\n    dividerBottom: String(r[2] || '').toLowerCase() === 'yes',\n    visible:       String(r[3] || 'yes').toLowerCase() !== 'no'\n  }));\n\n// Styling tab\nconst stylingRaw = xlsx.utils.sheet_to_json(wb.Sheets['Styling'], { header: 1 });\nconst stylingMap = {};\nstylingRaw.slice(1).forEach(r => {\n  if (r[0] && !String(r[0]).startsWith('\\u2014')) {\n    stylingMap[String(r[0]).trim()] = r[1] != null ? String(r[1]).trim() : '';\n  }\n});\n\nreturn [{ json: { assets, groups, stylingMap } }];"
       },
       "id": "parse-excel",
@@ -128,25 +108,67 @@
     },
     {
       "parameters": {
-        "method": "GET",
-        "url": "={{ $json.response.uri }}",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "file",
-              "outputPropertyName": "data"
+        "operation": "search",
+        "queryFilters": {
+          "filters": [
+            {
+              "key": "parents",
+              "values": [
+                {
+                  "value": "1dH_9ztHhg97niqv8XV_FEm5hPY0eIsZn"
+                }
+              ]
+            },
+            {
+              "key": "mimeType",
+              "values": [
+                {
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                }
+              ]
             }
-          }
-        }
+          ]
+        },
+        "limit": 1,
+        "orderBy": "modifiedTime desc"
       },
-      "id": "download-file",
-      "name": "Download File",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "id": "find-excel",
+      "name": "Find Latest Excel",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "download-excel",
+      "name": "Download Excel",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
       "position": [
         900,
         300
-      ]
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 2"
+        }
+      }
     }
   ],
   "connections": {
@@ -165,7 +187,7 @@
       "main": [
         [
           {
-            "node": "Get Download URL",
+            "node": "Find Latest Excel",
             "type": "main",
             "index": 0
           }
@@ -216,18 +238,18 @@
         ]
       ]
     },
-    "Get Download URL": {
+    "Find Latest Excel": {
       "main": [
         [
           {
-            "node": "Download File",
+            "node": "Download Excel",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Download File": {
+    "Download Excel": {
       "main": [
         [
           {
