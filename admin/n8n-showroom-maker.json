@@ -12,7 +12,10 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 300]
+      "position": [
+        240,
+        300
+      ]
     },
     {
       "parameters": {
@@ -22,12 +25,15 @@
       "name": "Extract Context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 300]
+      "position": [
+        460,
+        300
+      ]
     },
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://api-platform.vntana.com/v1/organizations/{{ $json.orgUuid }}/clients/{{ $json.clientUuid }}/products/{{ $json.productUuid }}/asset/download",
+        "url": "=https://api-platform.vntana.com/v1/products/{{ $json.productUuid }}/download/model?clientUuid={{ $json.clientUuid }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "vntanaApi",
         "options": {
@@ -43,7 +49,10 @@
       "name": "Download Asset",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [680, 300]
+      "position": [
+        680,
+        300
+      ]
     },
     {
       "parameters": {
@@ -53,7 +62,10 @@
       "name": "Parse Excel",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [900, 300]
+      "position": [
+        900,
+        300
+      ]
     },
     {
       "parameters": {
@@ -63,7 +75,10 @@
       "name": "Build Payload",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1120, 300]
+      "position": [
+        1120,
+        300
+      ]
     },
     {
       "parameters": {
@@ -80,7 +95,10 @@
       "name": "Create Showroom",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1340, 300]
+      "position": [
+        1340,
+        300
+      ]
     },
     {
       "parameters": {
@@ -90,30 +108,110 @@
       "name": "Build Log",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1560, 300]
+      "position": [
+        1560,
+        300
+      ]
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ success: $json.success, newShowroomUuid: $json.newShowroomUuid, log: $json.logText }) }}",
-        "options": { "responseCode": 200 }
+        "options": {
+          "responseCode": 200
+        }
       },
       "id": "respond",
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [1780, 300]
+      "position": [
+        1780,
+        300
+      ]
     }
   ],
   "connections": {
-    "Webhook":        { "main": [[{ "node": "Extract Context",  "type": "main", "index": 0 }]] },
-    "Extract Context": { "main": [[{ "node": "Download Asset",   "type": "main", "index": 0 }]] },
-    "Download Asset":  { "main": [[{ "node": "Parse Excel",      "type": "main", "index": 0 }]] },
-    "Parse Excel":     { "main": [[{ "node": "Build Payload",    "type": "main", "index": 0 }]] },
-    "Build Payload":   { "main": [[{ "node": "Create Showroom",  "type": "main", "index": 0 }]] },
-    "Create Showroom": { "main": [[{ "node": "Build Log",        "type": "main", "index": 0 }]] },
-    "Build Log":       { "main": [[{ "node": "Respond",          "type": "main", "index": 0 }]] }
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Context": {
+      "main": [
+        [
+          {
+            "node": "Download Asset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Asset": {
+      "main": [
+        [
+          {
+            "node": "Parse Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Excel": {
+      "main": [
+        [
+          {
+            "node": "Build Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Payload": {
+      "main": [
+        [
+          {
+            "node": "Create Showroom",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Showroom": {
+      "main": [
+        [
+          {
+            "node": "Build Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Log": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "staticData": null
 }
