@@ -175,7 +175,7 @@
     },
     {
       "parameters": {
-        "operation": "read",
+        "operation": "fromBinary",
         "binaryPropertyName": "data",
         "options": {
           "sheetName": "Assets"
@@ -207,7 +207,7 @@
     },
     {
       "parameters": {
-        "operation": "read",
+        "operation": "fromBinary",
         "binaryPropertyName": "data",
         "options": {
           "sheetName": "Groups"
@@ -239,7 +239,7 @@
     },
     {
       "parameters": {
-        "operation": "read",
+        "operation": "fromBinary",
         "binaryPropertyName": "data",
         "options": {
           "sheetName": "Styling"
