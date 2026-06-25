@@ -177,8 +177,9 @@
       "parameters": {
         "operation": "readFromFile",
         "binaryPropertyName": "data",
-        "sheetName": "Assets",
-        "options": {}
+        "options": {
+          "sheetName": "Assets"
+        }
       },
       "id": "read-assets",
       "name": "Read Assets",
@@ -208,8 +209,9 @@
       "parameters": {
         "operation": "readFromFile",
         "binaryPropertyName": "data",
-        "sheetName": "Groups",
-        "options": {}
+        "options": {
+          "sheetName": "Groups"
+        }
       },
       "id": "read-groups",
       "name": "Read Groups",
@@ -239,8 +241,9 @@
       "parameters": {
         "operation": "readFromFile",
         "binaryPropertyName": "data",
-        "sheetName": "Styling",
-        "options": {}
+        "options": {
+          "sheetName": "Styling"
+        }
       },
       "id": "read-styling",
       "name": "Read Styling",
