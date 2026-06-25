@@ -271,17 +271,12 @@
     },
     {
       "parameters": {
-        "mode": "waitForAll",
-        "clashHandling": {
-          "values": {
-            "resolveClash": "addSuffix"
-          }
-        }
+        "mode": "append"
       },
       "id": "merge-sheets",
       "name": "Merge Sheets",
       "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
+      "typeVersion": 2,
       "position": [
         1780,
         300
