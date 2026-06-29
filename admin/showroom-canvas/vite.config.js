@@ -7,5 +7,8 @@ export default defineConfig({
   base: '/admin/showroom-canvas/',
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      input: 'index.src.html',
+    },
   },
 })

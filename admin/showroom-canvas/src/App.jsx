@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Tldraw, createShapeId, useEditor, track } from '@tldraw/tldraw'
+import { Tldraw, createShapeId, useEditor, track, toRichText } from '@tldraw/tldraw'
 import '@tldraw/tldraw/tldraw.css'
 import * as XLSX from 'xlsx'
 import './App.css'
@@ -15,7 +15,8 @@ function exportToExcel(editor, settings) {
   const notes  = shapes.filter(s => s.type === 'note')
 
   const parsedAssets = notes.map((n, i) => {
-    const text = n.props.text || ''
+    const util = editor.getShapeUtil(n)
+    const text = (util.getText ? util.getText(n) : null) ?? ''
     const uuidMatch = text.match(/uuid[:\s]+([0-9a-f-]{36})/i)
     const nameMatch = text.match(/name[:\s]+(.+)/i)
     return {
@@ -102,7 +103,7 @@ const Sidebar = track(function Sidebar({ onExport }) {
       x: selected ? 20 + Math.random() * 100 : 200 + Math.random() * 200,
       y: selected ? 40 + Math.random() * 80  : 200 + Math.random() * 200,
       props: {
-        text: 'uuid: paste-uuid-here\nname: Asset Name',
+        richText: toRichText('uuid: paste-uuid-here\nname: Asset Name'),
         color: 'green', size: 's',
       },
     })
@@ -219,7 +220,7 @@ export default function App() {
           parentId: frameId,
           x: 20, y: 40 + i * (noteH + notePad),
           props: {
-            text: `uuid: ${a.uuid || 'PASTE-UUID-HERE'}\nname: ${a.name}`,
+            richText: toRichText(`uuid: ${a.uuid || 'PASTE-UUID-HERE'}\nname: ${a.name}`),
             color: a.uuid ? 'green' : 'yellow',
             size: 's',
           },
@@ -234,11 +235,11 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      <div style={{ width: 256, flexShrink: 0, height: '100vh', overflowY: 'auto', background: '#fff', borderRight: '1px solid #e2e4e9', zIndex: 10 }}>
-        {ready && <Sidebar />}
-      </div>
       <div style={{ flex: 1, position: 'relative' }}>
         <Tldraw onMount={handleMount} />
+      </div>
+      <div style={{ width: 256, flexShrink: 0, height: '100vh', overflowY: 'auto', background: '#fff', borderLeft: '1px solid #e2e4e9', zIndex: 10 }}>
+        {ready && <Sidebar />}
       </div>
     </div>
   )
