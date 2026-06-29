@@ -21,6 +21,15 @@ function saveSettings(s) {
 
 // ─── Export logic ─────────────────────────────────────────────────────────────
 function exportToExcel(editor, settings) {
+  try {
+    _doExport(editor, settings)
+  } catch (err) {
+    alert(`Export failed: ${err?.message ?? err}\n\nCheck the console for details.`)
+    console.error('[showroom-canvas] export error', err)
+  }
+}
+
+function _doExport(editor, settings) {
   const { showroomName, bgColor, textColor, divColor, ppr, imgStyle } = settings
   if (!showroomName) { alert('Set a showroom name first.'); return }
 
@@ -39,10 +48,14 @@ function exportToExcel(editor, settings) {
     const text = (util.getText ? util.getText(n) : null) ?? ''
     const uuidMatch = text.match(/uuid[:\s]+([0-9a-f-]{36})/i)
     const nameMatch = text.match(/name[:\s]+(.+)/i)
+    const uuid = uuidMatch ? uuidMatch[1].trim() : ''
     const group = groups.find(g => g.id === n.parentId)
-    if (!group) ungrouped.push(text.slice(0, 40) || '(empty note)')
+    // Only flag notes that have a real UUID but no group -- placeholder notes are expected noise
+    if (uuid && /^[0-9a-f-]{36}$/i.test(uuid) && !group) {
+      ungrouped.push(text.slice(0, 40) || '(empty note)')
+    }
     return {
-      uuid: uuidMatch ? uuidMatch[1].trim() : '',
+      uuid,
       name: nameMatch ? nameMatch[1].trim() : '',
       group: group?.title || '',
       parentId: n.parentId,
@@ -67,7 +80,7 @@ function exportToExcel(editor, settings) {
   // Sort assets by Y position within their frame so spatial order = export order
   const groupOrder = Object.fromEntries(groups.map((g, i) => [g.id, i]))
   const assets = [...parsedAssets]
-    .sort((a, b) => (groupOrder[a.parentId] ?? 99) - (groupOrder[b.parentId] ?? 99) || a.y - b.y)
+    .sort((a, b) => (groupOrder[a.parentId] ?? Infinity) - (groupOrder[b.parentId] ?? Infinity) || a.y - b.y)
     .map((a, i) => ({ ...a, order: i + 1 }))
 
   const wb = XLSX.utils.book_new()
@@ -91,7 +104,7 @@ function exportToExcel(editor, settings) {
     ['Background Color', bgColor],
     ['Text Color',       textColor],
     ['Divider Color',    divColor],
-    ['Products Per Row', parseInt(ppr)],
+    ['Products Per Row', parseInt(ppr, 10)],
     ['Image Style',      imgStyle],
   ])
   wsS['!cols'] = [{wch:20},{wch:24}]
@@ -102,13 +115,12 @@ function exportToExcel(editor, settings) {
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 function Sidebar({ editor }) {
-  const saved = loadSettings()
-  const [name, setName]         = useState(saved?.name      ?? 'New Showroom')
-  const [bgColor, setBg]        = useState(saved?.bgColor   ?? '#f3f3f3')
-  const [textColor, setText]    = useState(saved?.textColor ?? '#000000')
-  const [divColor, setDiv]      = useState(saved?.divColor  ?? '#409c4b')
-  const [ppr, setPpr]           = useState(saved?.ppr       ?? '3')
-  const [imgStyle, setImgStyle] = useState(saved?.imgStyle  ?? 'CONTAIN')
+  const [name, setName]         = useState(() => loadSettings()?.name      ?? 'New Showroom')
+  const [bgColor, setBg]        = useState(() => loadSettings()?.bgColor   ?? '#f3f3f3')
+  const [textColor, setText]    = useState(() => loadSettings()?.textColor ?? '#000000')
+  const [divColor, setDiv]      = useState(() => loadSettings()?.divColor  ?? '#409c4b')
+  const [ppr, setPpr]           = useState(() => loadSettings()?.ppr       ?? '3')
+  const [imgStyle, setImgStyle] = useState(() => loadSettings()?.imgStyle  ?? 'CONTAIN')
   const [, forceUpdate]         = useState(0)
 
   // Persist settings whenever they change
