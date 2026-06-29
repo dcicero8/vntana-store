@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { Tldraw, createShapeId, useEditor, toRichText } from '@tldraw/tldraw'
+import { Tldraw, createShapeId, toRichText } from '@tldraw/tldraw'
 import '@tldraw/tldraw/tldraw.css'
 import * as XLSX from 'xlsx'
 import './App.css'
@@ -72,9 +72,8 @@ function exportToExcel(editor, settings) {
   XLSX.writeFile(wb, `VNTANA Showroom — ${showroomName}.xlsx`)
 }
 
-// ─── Sidebar (reads live editor state) ───────────────────────────────────────
-function Sidebar({ onExport }) {
-  const editor = useEditor()
+// ─── Sidebar (receives editor as prop — lives outside Tldraw tree) ───────────
+function Sidebar({ editor }) {
   const [, forceUpdate] = useState(0)
 
   useEffect(() => {
@@ -184,7 +183,7 @@ function Sidebar({ onExport }) {
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [ready, setReady] = useState(false)
+  const [editor, setEditor] = useState(null)
 
   const handleMount = useCallback((editor) => {
     const GROUPS = [
@@ -236,7 +235,7 @@ export default function App() {
 
     editor.createShapes(shapes)
     editor.zoomToFit()
-    setReady(true)
+    setEditor(editor)
   }, [])
 
   return (
@@ -245,7 +244,7 @@ export default function App() {
         <Tldraw onMount={handleMount} />
       </div>
       <div style={{ width: 256, flexShrink: 0, height: '100vh', overflowY: 'auto', background: '#fff', borderLeft: '1px solid #e2e4e9', zIndex: 10 }}>
-        {ready && <Sidebar />}
+        {editor && <Sidebar editor={editor} />}
       </div>
     </div>
   )
