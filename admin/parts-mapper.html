@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parts Mapper — VNTANA</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; background: #f5f6f8; color: #1a1a1a; }
+
+  /* ── Header ── */
+  .header { background: #0c1a2e; color: #fff; padding: 14px 24px; display: flex; align-items: center; gap: 16px; }
+  .header h1 { font-size: 16px; font-weight: 600; }
+  .header .badge { background: #409c4b; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: .05em; }
+  .product-meta { margin-left: auto; font-size: 12px; color: #94a3b8; }
+  .product-meta strong { color: #e2e8f0; }
+
+  /* ── Status bar ── */
+  #status { padding: 10px 24px; font-size: 13px; background: #fff; border-bottom: 1px solid #e2e4e9; display: flex; align-items: center; gap: 12px; min-height: 40px; }
+  #status .stat { color: #64748b; }
+  #status .stat strong { color: #1a1a1a; }
+  #status .spinner { width: 16px; height: 16px; border: 2px solid #e2e4e9; border-top-color: #409c4b; border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Layout ── */
+  .layout { display: flex; height: calc(100vh - 97px); }
+  .pane { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .pane + .pane { border-left: 1px solid #e2e4e9; }
+  .pane-header { padding: 10px 16px; background: #f8f9fb; border-bottom: 1px solid #e2e4e9; font-size: 13px; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 8px; }
+  .pane-header .count { font-weight: 400; color: #94a3b8; font-size: 12px; }
+  .pane-body { overflow-y: auto; flex: 1; }
+
+  /* ── Filters ── */
+  .filters { padding: 8px 12px; background: #fff; border-bottom: 1px solid #e2e4e9; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .filters input[type=text] { flex: 1; min-width: 140px; padding: 5px 9px; border: 1px solid #d1d5db; border-radius: 5px; font-size: 13px; }
+  .filters label { font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+
+  /* ── Tables ── */
+  table { width: 100%; border-collapse: collapse; }
+  thead th { position: sticky; top: 0; background: #f1f3f5; font-size: 12px; font-weight: 600; color: #6b7280; text-align: left; padding: 7px 12px; border-bottom: 1px solid #e2e4e9; z-index: 1; }
+  tbody tr { border-bottom: 1px solid #f0f0f2; }
+  tbody tr:hover { background: #f8f9fb; }
+  tbody tr.needs-rename { background: #fefce8; }
+  tbody tr.needs-rename:hover { background: #fef9c3; }
+  tbody tr.is-new { background: #eff6ff; }
+  tbody tr.is-new:hover { background: #dbeafe; }
+  td { padding: 6px 12px; font-size: 13px; vertical-align: middle; }
+  td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
+  td .chip { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px; text-transform: uppercase; letter-spacing: .03em; }
+  td .chip.new    { background: #dbeafe; color: #1d4ed8; }
+  td .chip.rename { background: #fef3c7; color: #92400e; }
+
+  /* ── Right pane editable table ── */
+  .editable-name { width: 100%; padding: 4px 7px; border: 1px solid transparent; border-radius: 4px; font-size: 13px; background: transparent; font-family: inherit; }
+  .editable-name:focus { outline: none; border-color: #409c4b; background: #fff; }
+  .editable-name.changed { border-color: #f59e0b; background: #fffbeb; }
+
+  /* ── Footer ── */
+  .footer { border-top: 1px solid #e2e4e9; background: #fff; padding: 12px 24px; display: flex; align-items: center; gap: 12px; }
+  .footer .info { color: #6b7280; font-size: 13px; flex: 1; }
+  .btn { padding: 8px 18px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-primary { background: #409c4b; color: #fff; }
+  .btn-primary:hover { background: #378542; }
+  .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+  .btn-secondary { background: #f1f3f5; color: #374151; }
+  .btn-secondary:hover { background: #e5e7eb; }
+
+  /* ── Empty / error states ── */
+  .empty { padding: 48px 24px; text-align: center; color: #94a3b8; }
+  .empty strong { display: block; font-size: 15px; color: #6b7280; margin-bottom: 6px; }
+  .error-banner { background: #fee2e2; color: #991b1b; padding: 12px 24px; font-size: 13px; border-bottom: 1px solid #fecaca; }
+
+  /* ── Apply overlay ── */
+  #apply-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; align-items: center; justify-content: center; }
+  #apply-overlay.active { display: flex; }
+  .overlay-card { background: #fff; border-radius: 10px; padding: 32px; max-width: 420px; text-align: center; }
+  .overlay-card h2 { font-size: 16px; margin-bottom: 8px; }
+  .overlay-card p  { color: #6b7280; font-size: 13px; margin-bottom: 20px; }
+  .big-spinner { width: 40px; height: 40px; border: 3px solid #e2e4e9; border-top-color: #409c4b; border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
+  .success-icon { font-size: 40px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Parts Mapper</h1>
+  <span class="badge">VNTANA</span>
+  <div class="product-meta" id="product-meta">Loading...</div>
+</div>
+
+<div id="error-banner" class="error-banner" style="display:none"></div>
+
+<div id="status">
+  <div class="spinner" id="status-spinner"></div>
+  <span id="status-text">Loading scene tree...</span>
+</div>
+
+<div class="layout">
+  <!-- Left: raw tree (read-only) -->
+  <div class="pane">
+    <div class="pane-header">
+      Original Scene Tree
+      <span class="count" id="left-count"></span>
+    </div>
+    <div class="filters">
+      <input type="text" id="left-filter" placeholder="Filter by name..." oninput="renderLeft()">
+      <label><input type="checkbox" id="left-only-none" onchange="renderLeft()"> Only NONE nodes</label>
+    </div>
+    <div class="pane-body">
+      <table id="left-table">
+        <thead><tr>
+          <th>#</th>
+          <th>Node Name</th>
+          <th>Suggested Name</th>
+          <th>Ancestor</th>
+        </tr></thead>
+        <tbody id="left-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right: editable mapping -->
+  <div class="pane">
+    <div class="pane-header">
+      Confirmed Names
+      <span class="count" id="right-count"></span>
+    </div>
+    <div class="filters">
+      <input type="text" id="right-filter" placeholder="Filter by name..." oninput="renderRight()">
+      <label><input type="checkbox" id="right-only-changed" onchange="renderRight()"> Only changed</label>
+      <label><input type="checkbox" id="right-only-new" onchange="renderRight()"> Only new</label>
+    </div>
+    <div class="pane-body">
+      <table id="right-table">
+        <thead><tr>
+          <th>#</th>
+          <th>Raw Name</th>
+          <th style="width:40%">Confirmed Name</th>
+          <th>Status</th>
+        </tr></thead>
+        <tbody id="right-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="info" id="footer-info">Load a product to begin.</div>
+  <button class="btn btn-secondary" onclick="resetChanges()">Reset</button>
+  <button class="btn btn-primary" id="apply-btn" disabled onclick="applyMapping()">Apply to Product</button>
+</div>
+
+<div id="apply-overlay">
+  <div class="overlay-card" id="overlay-card">
+    <div class="big-spinner" id="overlay-spinner"></div>
+    <h2>Applying mapping...</h2>
+    <p>Rewriting the GLB scene tree and uploading a new version. This may take a minute.</p>
+  </div>
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+// Update this URL after importing the n8n workflow and activating it
+const APPLY_WEBHOOK_URL = 'https://vntana.app.n8n.cloud/webhook/parts-tree-apply';
+const VNTANA_CLIENT_UUID = 'b577b1c8-80bd-4dab-b1b1-b22f9de4671a';
+const VNTANA_AUTH_BASE   = 'https://api-platform.vntana.com';
+const VNTANA_PUBLIC_BASE = 'https://api.vntana.com';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let mapping = null;         // raw mapping object from attachment
+let entries = [];           // working copy of mapping.entries
+let originalEntries = [];   // snapshot for reset
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+const params = new URLSearchParams(location.search);
+const productUuid = params.get('uuid');
+const clientUuid  = params.get('clientUuid') || VNTANA_CLIENT_UUID;
+
+if (!productUuid) {
+  showError('No ?uuid= parameter found. Open this page from the Parts Tree Extract workflow response.');
+} else {
+  loadMapping();
+}
+
+// ── Load mapping from VNTANA attachment ───────────────────────────────────────
+async function loadMapping() {
+  setStatus('loading', 'Fetching mapping attachment from VNTANA...');
+  try {
+    // We need auth to search attachments
+    const authResp = await fetch(`${VNTANA_AUTH_BASE}/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: prompt('VNTANA email:'), password: prompt('VNTANA password:') })
+    });
+    const authData = await authResp.json();
+    const token = authData?.response?.token;
+    if (!token) throw new Error('Authentication failed. Check credentials.');
+
+    // Search attachments for this product
+    const searchResp = await fetch(
+      `${VNTANA_AUTH_BASE}/v1/attachments/search?productUuid=${productUuid}&entityType=PRODUCT`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-AUTH-TOKEN': token },
+        body: JSON.stringify({ page: 1, size: 50 })
+      }
+    );
+    const searchData = await searchResp.json();
+    const attachments = searchData?.response?.grid ?? [];
+
+    // Find the most recent scene-mapping JSON
+    const mappingAttachment = attachments
+      .filter(a => (a.name ?? '').startsWith('scene-mapping-') && (a.name ?? '').endsWith('.json'))
+      .sort((a, b) => new Date(b.created ?? 0) - new Date(a.created ?? 0))[0];
+
+    if (!mappingAttachment) {
+      throw new Error(`No scene-mapping-*.json attachment found on product ${productUuid}. Run the Parts Tree Extract workflow first.`);
+    }
+
+    setStatus('loading', 'Downloading mapping data...');
+
+    // Download the JSON blob
+    const dlResp = await fetch(
+      `${VNTANA_AUTH_BASE}/v1/storage/load/asset/model?blobId=${mappingAttachment.blobId}&clientUuid=${clientUuid}`,
+      { headers: { 'X-AUTH-TOKEN': token } }
+    );
+    if (!dlResp.ok) throw new Error(`Failed to download mapping (${dlResp.status})`);
+
+    mapping = await dlResp.json();
+    entries = mapping.entries.map(e => ({ ...e }));
+    originalEntries = mapping.entries.map(e => ({ ...e }));
+
+    // Update header
+    document.getElementById('product-meta').innerHTML =
+      `<strong>${escHtml(mapping.productName)}</strong> &nbsp; ${escHtml(productUuid.slice(0,8))}...`;
+
+    setStatus('ready', `${mapping.totalMeshes} mesh nodes loaded. ${mapping.needsRename} need renaming.`);
+    document.getElementById('apply-btn').disabled = false;
+    updateFooter();
+    renderLeft();
+    renderRight();
+
+  } catch (err) {
+    showError(err.message);
+    setStatus('idle', '');
+  }
+}
+
+// ── Render left pane (read-only) ──────────────────────────────────────────────
+function renderLeft() {
+  const filter    = document.getElementById('left-filter').value.toLowerCase();
+  const onlyNone  = document.getElementById('left-only-none').checked;
+  const tbody     = document.getElementById('left-body');
+
+  const visible = entries.filter(e => {
+    if (onlyNone && !e.needsRename) return false;
+    if (filter && !e.rawName.toLowerCase().includes(filter) && !e.suggestedName.toLowerCase().includes(filter) && !e.namedAncestor.toLowerCase().includes(filter)) return false;
+    return true;
+  });
+
+  document.getElementById('left-count').textContent = `${visible.length} / ${entries.length}`;
+
+  tbody.innerHTML = visible.map(e => `
+    <tr class="${e.needsRename ? 'needs-rename' : ''} ${e.isNew ? 'is-new' : ''}">
+      <td class="mono" style="color:#94a3b8">${e.nodeIndex}</td>
+      <td class="mono">${escHtml(e.rawName)}</td>
+      <td>${escHtml(e.suggestedName) || '<span style="color:#94a3b8">—</span>'}</td>
+      <td style="color:#94a3b8;font-size:12px">${escHtml(e.namedAncestor) || '—'}</td>
+    </tr>
+  `).join('');
+}
+
+// ── Render right pane (editable) ──────────────────────────────────────────────
+function renderRight() {
+  const filter      = document.getElementById('right-filter').value.toLowerCase();
+  const onlyChanged = document.getElementById('right-only-changed').checked;
+  const onlyNew     = document.getElementById('right-only-new').checked;
+  const tbody       = document.getElementById('right-body');
+
+  const visible = entries.filter((e, i) => {
+    const orig = originalEntries[i];
+    if (onlyChanged && e.confirmedName === orig?.confirmedName) return false;
+    if (onlyNew && !e.isNew) return false;
+    if (filter && !e.rawName.toLowerCase().includes(filter) && !e.confirmedName.toLowerCase().includes(filter)) return false;
+    return true;
+  });
+
+  document.getElementById('right-count').textContent = `${visible.length} / ${entries.length}`;
+
+  tbody.innerHTML = visible.map(e => {
+    const orig    = originalEntries.find(o => o.nodeIndex === e.nodeIndex);
+    const changed = e.confirmedName !== orig?.confirmedName;
+    const chips   = [
+      e.isNew      ? '<span class="chip new">new</span>'    : '',
+      e.needsRename ? '<span class="chip rename">rename</span>' : ''
+    ].filter(Boolean).join(' ');
+    return `
+      <tr class="${e.needsRename ? 'needs-rename' : ''} ${e.isNew ? 'is-new' : ''}">
+        <td class="mono" style="color:#94a3b8">${e.nodeIndex}</td>
+        <td class="mono">${escHtml(e.rawName)}</td>
+        <td>
+          <input
+            class="editable-name ${changed ? 'changed' : ''}"
+            value="${escAttr(e.confirmedName)}"
+            data-idx="${e.nodeIndex}"
+            onchange="updateEntry(${e.nodeIndex}, this.value)"
+            oninput="this.classList.toggle('changed', this.value !== ${JSON.stringify(orig?.confirmedName ?? '')})"
+          >
+        </td>
+        <td>${chips}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function updateEntry(nodeIndex, value) {
+  const e = entries.find(e => e.nodeIndex === nodeIndex);
+  if (e) { e.confirmedName = value.trim(); }
+  updateFooter();
+}
+
+function resetChanges() {
+  entries = originalEntries.map(e => ({ ...e }));
+  renderLeft();
+  renderRight();
+  updateFooter();
+}
+
+function updateFooter() {
+  if (!entries.length) return;
+  const changed = entries.filter((e, i) => e.confirmedName !== originalEntries[i]?.confirmedName).length;
+  document.getElementById('footer-info').textContent =
+    `${entries.length} mesh nodes  |  ${changed} name${changed !== 1 ? 's' : ''} changed from default`;
+}
+
+// ── Apply ──────────────────────────────────────────────────────────────────────
+async function applyMapping() {
+  const overlay = document.getElementById('apply-overlay');
+  overlay.classList.add('active');
+
+  try {
+    const payload = {
+      productUuid,
+      clientUuid,
+      entries: entries.map(e => ({ nodeIndex: e.nodeIndex, confirmedName: e.confirmedName }))
+    };
+
+    const resp = await fetch(APPLY_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok || data.success === false) {
+      throw new Error(data.message || `Webhook returned ${resp.status}`);
+    }
+
+    // Show success
+    document.getElementById('overlay-card').innerHTML = `
+      <div class="success-icon">✅</div>
+      <h2>Done!</h2>
+      <p>
+        <strong>${data.renameCount ?? '?'}</strong> nodes renamed.<br>
+        New version uploaded to VNTANA. Check the product in the platform to review and publish.
+      </p>
+      <button class="btn btn-primary" onclick="document.getElementById('apply-overlay').classList.remove('active')">Close</button>
+    `;
+
+  } catch (err) {
+    document.getElementById('overlay-card').innerHTML = `
+      <div class="success-icon">❌</div>
+      <h2>Error</h2>
+      <p>${escHtml(err.message)}</p>
+      <button class="btn btn-secondary" onclick="document.getElementById('apply-overlay').classList.remove('active')">Close</button>
+    `;
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function setStatus(state, text) {
+  const spinner = document.getElementById('status-spinner');
+  spinner.style.display = state === 'loading' ? '' : 'none';
+  document.getElementById('status-text').textContent = text;
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-banner');
+  el.textContent = msg;
+  el.style.display = '';
+}
+
+function escHtml(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

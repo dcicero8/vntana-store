@@ -1,0 +1,244 @@
+{
+  "meta": {
+    "templateId": "vntana-parts-tree-apply",
+    "description": "Receives the edited scene mapping from parts-mapper.html, rewrites the GLB scene node names, uploads the result as a new product version, and stores the final mapping as a JSON attachment."
+  },
+  "name": "VNTANA — Parts Tree Apply",
+  "nodes": [
+    {
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "parts-tree-apply",
+      "parameters": {
+        "path": "parts-tree-apply",
+        "httpMethod": "POST",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "extractPayload",
+      "name": "Extract Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "parameters": {
+        "jsCode": "// Expects: { productUuid, clientUuid, entries: [{ nodeIndex, confirmedName }] }\nconst body = $input.first().json.body ?? $input.first().json;\n\nconst productUuid = body.productUuid;\nconst clientUuid  = body.clientUuid   ?? 'b577b1c8-80bd-4dab-b1b1-b22f9de4671a';\nconst entries     = body.entries      ?? [];\n\nif (!productUuid)      throw new Error('productUuid is required');\nif (!entries.length)   throw new Error('entries array is required and must not be empty');\n\n// Build a nodeIndex -> confirmedName map\nconst renameMap = {};\nentries.forEach(e => {\n  if (e.confirmedName && String(e.confirmedName).trim()) {\n    renameMap[e.nodeIndex] = String(e.confirmedName).trim();\n  }\n});\n\nreturn [{ json: { productUuid, clientUuid, renameMap, entryCount: entries.length } }];"
+      }
+    },
+    {
+      "id": "auth",
+      "name": "Auth",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/auth/login",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "email": "={{ $vars.VNTANA_EMAIL }}",
+          "password": "={{ $vars.VNTANA_PASSWORD }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "getProduct",
+      "name": "Get Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300],
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api-platform.vntana.com/v1/products/{{ $node['Extract Payload'].json.productUuid }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "clientUuid", "value": "={{ $node['Extract Payload'].json.clientUuid }}" }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "resolveBlob",
+      "name": "Resolve Blob",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300],
+      "parameters": {
+        "jsCode": "const product = $input.first().json.response ?? $input.first().json;\nconst ids = $node['Extract Payload'].json;\n\nconst productName = product?.name ?? ids.productUuid;\nconst assetBlobId = product?.asset?.assetBlobId;\n\nif (!assetBlobId) throw new Error(`No assetBlobId found for product ${ids.productUuid}. Ensure the product has a processed 3D asset.`);\n\nreturn [{ json: { ...ids, productName, assetBlobId } }];"
+      }
+    },
+    {
+      "id": "downloadGlb",
+      "name": "Download GLB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 300],
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api-platform.vntana.com/v1/storage/load/asset/model?blobId={{ $json.assetBlobId }}&clientUuid={{ $json.clientUuid }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "glbData"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "rewriteGlb",
+      "name": "Rewrite GLB",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 300],
+      "parameters": {
+        "jsCode": "// Rewrite the GLB JSON chunk: apply confirmedName renames to matching node indexes.\n// The binary chunk (geometry + textures) is preserved byte-for-byte.\nconst binaryData = $input.first().binary?.glbData;\nif (!binaryData) throw new Error('No GLB binary data in glbData field');\n\nconst renameMap = $node['Extract Payload'].json.renameMap;\nconst ids       = $node['Resolve Blob'].json;\n\nconst buf = Buffer.from(binaryData.data, 'base64');\n\n// Validate GLB magic\nconst magic = buf.readUInt32LE(0);\nif (magic !== 0x46546C67) throw new Error('Not a valid GLB file');\n\nconst jsonChunkLength = buf.readUInt32LE(12);\nconst jsonChunkType   = buf.readUInt32LE(16);\nif (jsonChunkType !== 0x4E4F534A) throw new Error('First GLB chunk is not JSON');\n\nconst jsonStr  = buf.slice(20, 20 + jsonChunkLength).toString('utf8').replace(/\\0+$/, '');\nconst gltf     = JSON.parse(jsonStr);\n\n// Apply renames\nlet renameCount = 0;\nObject.entries(renameMap).forEach(([idxStr, newName]) => {\n  const idx = parseInt(idxStr, 10);\n  if (gltf.nodes[idx]) {\n    gltf.nodes[idx].name = newName;\n    renameCount++;\n  }\n});\n\n// Serialize new JSON chunk — must be 4-byte aligned, padded with spaces\nconst newJsonStr = JSON.stringify(gltf);\nconst padLen     = (4 - (newJsonStr.length % 4)) % 4;\nconst paddedJson = newJsonStr + ' '.repeat(padLen);\nconst newJsonBuf = Buffer.from(paddedJson, 'utf8');\n\n// Locate binary chunk (starts at byte 20 + jsonChunkLength, aligned)\nconst binaryChunkOffset = 20 + jsonChunkLength;\nconst hasBinaryChunk    = binaryChunkOffset < buf.length;\nconst binaryChunkBuf    = hasBinaryChunk ? buf.slice(binaryChunkOffset) : Buffer.alloc(0);\n\n// Build new GLB\nconst newJsonChunkHeader = Buffer.alloc(8);\nnewJsonChunkHeader.writeUInt32LE(newJsonBuf.length, 0);\nnewJsonChunkHeader.writeUInt32LE(0x4E4F534A,        4); // JSON type\n\nconst newTotalLength = 12 + 8 + newJsonBuf.length + binaryChunkBuf.length;\nconst header = Buffer.alloc(12);\nheader.writeUInt32LE(0x46546C67, 0); // magic\nheader.writeUInt32LE(2,           4); // version\nheader.writeUInt32LE(newTotalLength, 8);\n\nconst newGlb = Buffer.concat([header, newJsonChunkHeader, newJsonBuf, binaryChunkBuf]);\n\nconst fileName = `${ids.productName.replace(/[^a-z0-9_-]/gi, '_')}_remapped.glb`;\nconst binary = {\n  renamedGlb: await this.helpers.prepareBinaryData(\n    newGlb,\n    fileName,\n    'model/gltf-binary'\n  )\n};\n\nreturn [{\n  json: { ...ids, renameCount, fileName },\n  binary\n}];"
+      }
+    },
+    {
+      "id": "uploadNewVersion",
+      "name": "Upload New Version",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api-platform.vntana.com/v1/assets/upload/product-asset?clientUuid={{ $json.clientUuid }}&productUuid={{ $json.productUuid }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "parameterType": "formBinaryData",
+              "inputDataFieldName": "renamedGlb"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "VNTANA Platform Auth"
+        }
+      }
+    },
+    {
+      "id": "storeFinalMapping",
+      "name": "Store Final Mapping",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 300],
+      "parameters": {
+        "jsCode": "// Retrieve original mapping entries to merge confirmed names, then re-upload\nconst ids       = $node['Rewrite GLB'].json;\nconst renameMap = $node['Extract Payload'].json.renameMap;\nconst uploadResp = $input.first().json;\n\nconst finalMapping = {\n  productUuid:   ids.productUuid,\n  productName:   ids.productName,\n  appliedAt:     new Date().toISOString(),\n  renameCount:   ids.renameCount,\n  uploadResponse: uploadResp,\n  renames: Object.entries(renameMap).map(([idx, name]) => ({ nodeIndex: parseInt(idx, 10), confirmedName: name }))\n};\n\nconst jsonStr  = JSON.stringify(finalMapping, null, 2);\nconst fileName = `scene-mapping-${ids.productUuid}.json`;\n\nconst binary = {\n  mappingFile: await this.helpers.prepareBinaryData(\n    Buffer.from(jsonStr, 'utf8'),\n    fileName,\n    'application/json'\n  )\n};\n\nreturn [{ json: { ...ids, finalMapping, jsonStr, fileName }, binary }];"
+      }
+    },
+    {
+      "id": "uploadFinalMapping",
+      "name": "Upload Final Mapping",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2220, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api-platform.vntana.com/v1/attachments/upload/product-attachment?clientUuid={{ $json.clientUuid }}&productUuid={{ $json.productUuid }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipartFormData",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "parameterType": "formBinaryData",
+              "inputDataFieldName": "mappingFile"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "registerFinalMapping",
+      "name": "Register Final Mapping",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2440, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/attachments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "productUuid", "value": "={{ $node['Store Final Mapping'].json.productUuid }}" },
+            { "name": "blobId",      "value": "={{ $json.response.blobId }}" },
+            { "name": "name",        "value": "={{ $node['Store Final Mapping'].json.fileName }}" },
+            { "name": "entityType",  "value": "PRODUCT" },
+            { "name": "entityUuid",  "value": "={{ $node['Store Final Mapping'].json.productUuid }}" }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2660, 300],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'GLB rewritten and uploaded as new version', productUuid: $node['Store Final Mapping'].json.productUuid, productName: $node['Store Final Mapping'].json.productName, renameCount: $node['Store Final Mapping'].json.renameCount }) }}"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook":             { "main": [[{ "node": "Extract Payload",    "type": "main", "index": 0 }]] },
+    "Extract Payload":     { "main": [[{ "node": "Auth",               "type": "main", "index": 0 }]] },
+    "Auth":                { "main": [[{ "node": "Get Product",        "type": "main", "index": 0 }]] },
+    "Get Product":         { "main": [[{ "node": "Resolve Blob",       "type": "main", "index": 0 }]] },
+    "Resolve Blob":        { "main": [[{ "node": "Download GLB",       "type": "main", "index": 0 }]] },
+    "Download GLB":        { "main": [[{ "node": "Rewrite GLB",        "type": "main", "index": 0 }]] },
+    "Rewrite GLB":         { "main": [[{ "node": "Upload New Version", "type": "main", "index": 0 }]] },
+    "Upload New Version":  { "main": [[{ "node": "Store Final Mapping","type": "main", "index": 0 }]] },
+    "Store Final Mapping": { "main": [[{ "node": "Upload Final Mapping","type": "main", "index": 0 }]] },
+    "Upload Final Mapping":{ "main": [[{ "node": "Register Final Mapping","type": "main", "index": 0 }]] },
+    "Register Final Mapping":{ "main": [[{ "node": "Respond",          "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": null
+}

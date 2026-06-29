@@ -1,0 +1,253 @@
+{
+  "meta": {
+    "templateId": "vntana-parts-tree-extract",
+    "description": "Triggered by VNTANA webhook (or manually) with a product UUID. Downloads the product GLB, parses its scene tree, stores the raw tree as a JSON attachment, and responds with a link to the parts-mapper UI. If a mapping attachment already exists from a prior run it is included so the mapper can show confirmed vs new nodes."
+  },
+  "name": "VNTANA — Parts Tree Extract",
+  "nodes": [
+    {
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "parts-tree-extract",
+      "parameters": {
+        "path": "parts-tree-extract",
+        "httpMethod": "POST",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "extractIds",
+      "name": "Extract IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "parameters": {
+        "jsCode": "// Supports two payload shapes:\n// 1. Full VNTANA webhook: { product, organization, client }\n// 2. Manual trigger:      { productUuid, clientUuid, orgUuid?, orgSlug?, clientSlug? }\nconst body = $input.first().json.body ?? $input.first().json;\n\nlet productUuid, clientUuid, orgUuid, orgSlug, clientSlug, assetBlobId, productName;\n\nif (body.product) {\n  // VNTANA webhook payload\n  productUuid  = body.product.uuid;\n  productName  = body.product.name;\n  assetBlobId  = body.product.asset?.assetBlobId ?? '';\n  orgUuid      = body.organization?.uuid ?? '49a01b09-ee65-4fc5-8777-433d7b5b5b29';\n  orgSlug      = body.organization?.slug ?? 'DCicero';\n  clientUuid   = body.client?.uuid ?? 'b577b1c8-80bd-4dab-b1b1-b22f9de4671a';\n  clientSlug   = body.client?.slug ?? 'n8n-work';\n} else {\n  // Manual trigger\n  productUuid  = body.productUuid;\n  clientUuid   = body.clientUuid   ?? 'b577b1c8-80bd-4dab-b1b1-b22f9de4671a';\n  orgUuid      = body.orgUuid      ?? '49a01b09-ee65-4fc5-8777-433d7b5b5b29';\n  orgSlug      = body.orgSlug      ?? 'DCicero';\n  clientSlug   = body.clientSlug   ?? 'n8n-work';\n  productName  = body.productName  ?? '';\n  assetBlobId  = body.assetBlobId  ?? '';\n}\n\nif (!productUuid) throw new Error('productUuid is required');\n\nreturn [{ json: { productUuid, clientUuid, orgUuid, orgSlug, clientSlug, productName, assetBlobId } }];"
+      }
+    },
+    {
+      "id": "auth",
+      "name": "Auth",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/auth/login",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "email": "={{ $vars.VNTANA_EMAIL }}",
+          "password": "={{ $vars.VNTANA_PASSWORD }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "getProduct",
+      "name": "Get Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300],
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.vntana.com/products/{{ $node['Extract IDs'].json.productUuid }}/organizations/{{ $node['Extract IDs'].json.orgSlug }}/clients/{{ $node['Extract IDs'].json.clientSlug }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "resolveIds",
+      "name": "Resolve Blob ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300],
+      "parameters": {
+        "jsCode": "// Use blob ID from webhook payload if present; fall back to product API response\nconst ids = $node['Extract IDs'].json;\nconst product = $input.first().json.response;\n\nconst productName = product?.name ?? ids.productName ?? ids.productUuid;\nconst assetBlobId = ids.assetBlobId || product?.asset?.assetBlobId || '';\n\nif (!assetBlobId) throw new Error(`No assetBlobId found for product ${ids.productUuid}`);\n\nreturn [{ json: {\n  ...ids,\n  productName,\n  assetBlobId\n} }];"
+      }
+    },
+    {
+      "id": "searchAttachments",
+      "name": "Search Attachments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/attachments/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "productUuid", "value": "={{ $node['Extract IDs'].json.productUuid }}" },
+            { "name": "entityType",  "value": "PRODUCT" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": { "page": 1, "size": 50 },
+        "options": {}
+      }
+    },
+    {
+      "id": "findExistingMapping",
+      "name": "Find Existing Mapping",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 300],
+      "parameters": {
+        "jsCode": "// Look for a prior scene mapping attachment (JSON file)\nconst attachments = $input.first().json.response?.grid ?? [];\nconst mapping = attachments\n  .filter(a => (a.name ?? '').startsWith('scene-mapping-') && (a.name ?? '').endsWith('.json'))\n  .sort((a, b) => new Date(b.created ?? 0) - new Date(a.created ?? 0))[0];\n\nreturn [{ json: {\n  hasPriorMapping: !!mapping,\n  mappingBlobId:   mapping?.blobId  ?? null,\n  mappingName:     mapping?.name    ?? null\n} }];"
+      }
+    },
+    {
+      "id": "downloadGlb",
+      "name": "Download GLB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 300],
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api-platform.vntana.com/v1/storage/load/asset/model?blobId={{ $node['Resolve Blob ID'].json.assetBlobId }}&clientUuid={{ $node['Extract IDs'].json.clientUuid }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "glbData"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "parseSceneTree",
+      "name": "Parse Scene Tree",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 300],
+      "parameters": {
+        "jsCode": "// Parse the GLB binary's JSON chunk and extract the scene node hierarchy.\n// GLB format: 12-byte header, then chunks. First chunk is JSON (type 0x4E4F534A).\nconst binaryData = $input.first().binary?.glbData;\nif (!binaryData) throw new Error('No GLB binary data in glbData field');\n\n// n8n provides binary as Buffer-like; access via Buffer.from\nconst buf = Buffer.from(binaryData.data, 'base64');\n\n// Validate GLB magic: 0x46546C67\nconst magic = buf.readUInt32LE(0);\nif (magic !== 0x46546C67) throw new Error(`Not a valid GLB file (magic: 0x${magic.toString(16)})`);\n\n// Read JSON chunk: bytes 12-19 are chunk header (length + type)\nconst jsonChunkLength = buf.readUInt32LE(12);\nconst jsonChunkType   = buf.readUInt32LE(16);\nif (jsonChunkType !== 0x4E4F534A) throw new Error('First GLB chunk is not JSON');\n\nconst jsonStr = buf.slice(20, 20 + jsonChunkLength).toString('utf8').replace(/\\0+$/, '');\nconst gltf = JSON.parse(jsonStr);\n\nconst nodes = gltf.nodes ?? [];\nconst meshes = gltf.meshes ?? [];\n\n// Build child -> parent index map\nconst parentOf = new Array(nodes.length).fill(-1);\nnodes.forEach((node, i) => {\n  (node.children ?? []).forEach(ci => { parentOf[ci] = i; });\n});\n\n// For a given node index, walk up to find the nearest named ancestor (not NONE / not empty)\nfunction findNamedAncestor(idx) {\n  let cur = parentOf[idx];\n  while (cur !== -1) {\n    const name = (nodes[cur]?.name ?? '').trim();\n    if (name && name.toUpperCase() !== 'NONE') return name;\n    cur = parentOf[cur];\n  }\n  return null;\n}\n\n// Extract flat list of mesh nodes with suggested names\nconst meshNodes = [];\nnodes.forEach((node, i) => {\n  if (node.mesh === undefined) return;\n  const rawName      = (node.name ?? '').trim();\n  const meshName     = gltf.meshes[node.mesh]?.name ?? '';\n  const namedAncestor = findNamedAncestor(i);\n  const isNone       = !rawName || rawName.toUpperCase() === 'NONE';\n\n  meshNodes.push({\n    nodeIndex:     i,\n    meshIndex:     node.mesh,\n    rawName:       rawName || 'NONE',\n    meshName:      meshName || '',\n    suggestedName: isNone ? (namedAncestor ?? '') : rawName,\n    namedAncestor: namedAncestor ?? '',\n    needsRename:   isNone\n  });\n});\n\n// Full tree for reference (recursive helper)\nfunction buildTree(idx) {\n  const n = nodes[idx];\n  return {\n    index: idx,\n    name: (n.name ?? 'NONE'),\n    hasMesh: n.mesh !== undefined,\n    meshIndex: n.mesh ?? null,\n    children: (n.children ?? []).map(buildTree)\n  };\n}\nconst roots = nodes\n  .map((_, i) => i)\n  .filter(i => parentOf[i] === -1)\n  .map(buildTree);\n\nconst ids = $node['Extract IDs'].json;\nreturn [{ json: {\n  productUuid:  ids.productUuid,\n  productName:  $node['Resolve Blob ID'].json.productName,\n  clientUuid:   ids.clientUuid,\n  assetBlobId:  ids.assetBlobId,\n  totalNodes:   nodes.length,\n  totalMeshes:  meshNodes.length,\n  needsRename:  meshNodes.filter(m => m.needsRename).length,\n  meshNodes,\n  sceneRoots:   roots\n} }];"
+      }
+    },
+    {
+      "id": "buildMappingJson",
+      "name": "Build Mapping JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2220, 300],
+      "parameters": {
+        "jsCode": "// Merge with prior mapping if one exists; mark new nodes\nconst tree     = $node['Parse Scene Tree'].json;\nconst prior    = $node['Find Existing Mapping'].json;\n\nconst mapping = {\n  productUuid:   tree.productUuid,\n  productName:   tree.productName,\n  assetBlobId:   tree.assetBlobId,\n  extractedAt:   new Date().toISOString(),\n  hasPriorMapping: prior.hasPriorMapping,\n  totalNodes:    tree.totalNodes,\n  totalMeshes:   tree.totalMeshes,\n  needsRename:   tree.needsRename,\n  // Each entry: { nodeIndex, rawName, suggestedName, confirmedName, isNew, needsRename }\n  entries: tree.meshNodes.map(m => ({\n    nodeIndex:     m.nodeIndex,\n    meshIndex:     m.meshIndex,\n    rawName:       m.rawName,\n    meshName:      m.meshName,\n    suggestedName: m.suggestedName,\n    confirmedName: m.suggestedName,  // default; user edits in mapper UI\n    namedAncestor: m.namedAncestor,\n    needsRename:   m.needsRename,\n    isNew:         false  // will be set to true if no prior mapping had this nodeIndex\n  }))\n};\n\n// Mark new nodes relative to prior mapping\nif (prior.hasPriorMapping && prior.priorEntries) {\n  const priorIndexes = new Set((prior.priorEntries ?? []).map(e => e.nodeIndex));\n  mapping.entries.forEach(e => { e.isNew = !priorIndexes.has(e.nodeIndex); });\n}\n\nconst jsonStr = JSON.stringify(mapping, null, 2);\nconst fileName = `scene-mapping-${tree.productUuid}.json`;\n\nreturn [{ json: { mapping, jsonStr, fileName, productUuid: tree.productUuid, clientUuid: tree.clientUuid, productName: tree.productName } }];"
+      }
+    },
+    {
+      "id": "uploadMappingJson",
+      "name": "Upload Mapping JSON",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2440, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api-platform.vntana.com/v1/attachments/upload/product-attachment?clientUuid={{ $json.clientUuid }}&productUuid={{ $json.productUuid }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipartFormData",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "parameterType": "formBinaryData",
+              "inputDataFieldName": "mappingFile"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "prepareBinary",
+      "name": "Prepare JSON Binary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2220, 460],
+      "parameters": {
+        "jsCode": "// Convert the JSON string to binary so it can be uploaded as a file\nconst item = $input.first();\nconst jsonStr = item.json.jsonStr;\nconst fileName = item.json.fileName;\n\nconst binary = {\n  mappingFile: await this.helpers.prepareBinaryData(\n    Buffer.from(jsonStr, 'utf8'),\n    fileName,\n    'application/json'\n  )\n};\n\nreturn [{ json: item.json, binary }];"
+      }
+    },
+    {
+      "id": "registerAttachment",
+      "name": "Register Attachment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2660, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-platform.vntana.com/v1/attachments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AUTH-TOKEN", "value": "={{ $node['Auth'].json.response.token }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "productUuid", "value": "={{ $node['Build Mapping JSON'].json.productUuid }}" },
+            { "name": "blobId",      "value": "={{ $json.response.blobId }}" },
+            { "name": "name",        "value": "={{ $node['Build Mapping JSON'].json.fileName }}" },
+            { "name": "entityType",  "value": "PRODUCT" },
+            { "name": "entityUuid",  "value": "={{ $node['Build Mapping JSON'].json.productUuid }}" }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2880, 300],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Scene tree extracted and stored', productUuid: $node['Build Mapping JSON'].json.productUuid, productName: $node['Build Mapping JSON'].json.productName, totalMeshes: $node['Build Mapping JSON'].json.mapping.totalMeshes, needsRename: $node['Build Mapping JSON'].json.mapping.needsRename, mapperUrl: 'https://vntana-store-production.up.railway.app/admin/parts-mapper.html?uuid=' + $node['Build Mapping JSON'].json.productUuid + '&clientUuid=' + $node['Build Mapping JSON'].json.clientUuid }) }}"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook":              { "main": [[{ "node": "Extract IDs",          "type": "main", "index": 0 }]] },
+    "Extract IDs":          { "main": [[{ "node": "Auth",                 "type": "main", "index": 0 }]] },
+    "Auth":                 { "main": [[{ "node": "Get Product",          "type": "main", "index": 0 }]] },
+    "Get Product":          { "main": [[{ "node": "Resolve Blob ID",      "type": "main", "index": 0 }]] },
+    "Resolve Blob ID":      { "main": [[{ "node": "Search Attachments",   "type": "main", "index": 0 }]] },
+    "Search Attachments":   { "main": [[{ "node": "Find Existing Mapping","type": "main", "index": 0 }]] },
+    "Find Existing Mapping":{ "main": [[{ "node": "Download GLB",         "type": "main", "index": 0 }]] },
+    "Download GLB":         { "main": [[{ "node": "Parse Scene Tree",     "type": "main", "index": 0 }]] },
+    "Parse Scene Tree":     { "main": [[{ "node": "Build Mapping JSON",   "type": "main", "index": 0 }]] },
+    "Build Mapping JSON":   { "main": [[{ "node": "Prepare JSON Binary",  "type": "main", "index": 0 }]] },
+    "Prepare JSON Binary":  { "main": [[{ "node": "Upload Mapping JSON",  "type": "main", "index": 0 }]] },
+    "Upload Mapping JSON":  { "main": [[{ "node": "Register Attachment",  "type": "main", "index": 0 }]] },
+    "Register Attachment":  { "main": [[{ "node": "Respond",              "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": null
+}
