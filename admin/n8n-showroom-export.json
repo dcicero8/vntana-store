@@ -1,0 +1,104 @@
+{
+  "name": "VNTANA Showroom Export — UUID List",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vntana-showroom-export",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.item.json.body;\nconst showroomUuid = (body.showroomUuid || '').trim();\nif (!showroomUuid || !/^[0-9a-f-]{36}$/i.test(showroomUuid)) {\n  throw new Error('Missing or invalid showroomUuid in request body');\n}\nreturn [{ json: { showroomUuid } }];"
+      },
+      "id": "extract-uuid",
+      "name": "Extract UUID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api-platform.vntana.com/v1/showrooms/{{ $json.showroomUuid }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vntanaApi",
+        "options": {}
+      },
+      "id": "get-showroom",
+      "name": "Get Showroom",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.item.json;\nif (!resp.success || !resp.response) {\n  throw new Error(`Failed to fetch showroom: ${JSON.stringify(resp.errors)}`);\n}\n\nconst showroom = resp.response;\nconst showroomName = showroom.name || 'Showroom';\nconst groups = showroom.groups || [];\nconst products = showroom.products || showroom.productsUuids || [];\n\n// Build a flat list: try to get name + uuid from each product entry\nconst rows = [];\nif (groups.length > 0) {\n  groups.forEach(g => {\n    (g.productsInfo || []).forEach(p => {\n      rows.push({\n        uuid: p.productUuid || p.uuid || '',\n        name: p.productName || p.name || '',\n        group: g.title || '',\n        order: p.order ?? '',\n      });\n    });\n  });\n} else {\n  // Fallback: flat productsUuids array\n  products.forEach((p, i) => {\n    const uuid = typeof p === 'string' ? p : (p.uuid || p.productUuid || '');\n    rows.push({ uuid, name: typeof p === 'object' ? (p.name || '') : '', group: '', order: i + 1 });\n  });\n}\n\n// Build CSV\nconst csvLines = ['Asset UUID,Asset Name,Group,Order'];\nrows.forEach(r => {\n  const name  = String(r.name  || '').replace(/,/g, ' ');\n  const group = String(r.group || '').replace(/,/g, ' ');\n  csvLines.push(`${r.uuid},${name},${group},${r.order}`);\n});\n\nconst csv = csvLines.join('\\n');\nconst filename = `${showroomName.replace(/[^a-zA-Z0-9 _-]/g, '')} — Assets.csv`;\n\nreturn [{ json: { csv, filename, showroomName, count: rows.length } }];"
+      },
+      "id": "build-csv",
+      "name": "Build CSV",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { csv, filename } = $input.item.json;\nconst base64 = Buffer.from(csv, 'utf8').toString('base64');\nreturn [{\n  json: $input.item.json,\n  binary: {\n    data: {\n      data: base64,\n      mimeType: 'text/csv',\n      fileName: filename,\n    }\n  }\n}];"
+      },
+      "id": "encode-file",
+      "name": "Encode File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Disposition",
+                "value": "={{ 'attachment; filename=\"' + $('Encode File').first().json.filename + '\"' }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Extract UUID", "type": "main", "index": 0 }]]
+    },
+    "Extract UUID": {
+      "main": [[{ "node": "Get Showroom", "type": "main", "index": 0 }]]
+    },
+    "Get Showroom": {
+      "main": [[{ "node": "Build CSV", "type": "main", "index": 0 }]]
+    },
+    "Build CSV": {
+      "main": [[{ "node": "Encode File", "type": "main", "index": 0 }]]
+    },
+    "Encode File": {
+      "main": [[{ "node": "Respond", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}
