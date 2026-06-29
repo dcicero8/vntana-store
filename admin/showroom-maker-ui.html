@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Showroom Maker — VNTANA Admin</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --vntana: #409c4b;
+    --vntana-dark: #2e7336;
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --border: #e2e4e9;
+    --text: #1a1c22;
+    --muted: #6b7280;
+    --danger: #dc2626;
+    --step-inactive: #d1d5db;
+    --radius: 10px;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; gap: 16px; height: 56px; }
+  header h1 { font-size: 16px; font-weight: 600; }
+  header .badge { background: var(--vntana); color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+
+  .layout { display: grid; grid-template-columns: 200px 1fr; gap: 0; min-height: calc(100vh - 56px); }
+
+  /* Steps sidebar */
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 16px; }
+  .step-nav { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .step-nav li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--muted); transition: background 0.15s; }
+  .step-nav li:hover { background: var(--bg); }
+  .step-nav li.active { background: #f0faf1; color: var(--vntana); }
+  .step-nav li.done { color: var(--text); }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--step-inactive); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-nav li.active .step-num { background: var(--vntana); }
+  .step-nav li.done .step-num { background: var(--vntana); }
+  .step-nav li.done .step-num::after { content: '✓'; }
+  .step-nav li.done .step-num .num { display: none; }
+
+  .sidebar-footer { margin-top: 32px; padding: 0 12px; }
+  .sidebar-footer p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* Main content */
+  .main { padding: 24px 28px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .desc { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+  /* Form elements */
+  .form-row { display: grid; gap: 20px; margin-bottom: 20px; }
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  input[type=text], input[type=number], select, textarea {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px;
+    font-size: 14px; background: var(--surface); outline: none; transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--vntana); }
+
+  .color-field { display: flex; gap: 8px; align-items: center; }
+  .color-field input[type=color] { width: 40px; height: 38px; padding: 2px; border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
+  .color-field input[type=text] { flex: 1; }
+
+  /* Card */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+  .card-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+  /* Preview bar */
+  .preview-bar { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 24px; }
+  .preview-swatch { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border); flex-shrink: 0; }
+  .preview-label { font-size: 12px; color: var(--muted); }
+  .preview-val { font-size: 14px; font-weight: 600; }
+
+  /* Template buttons */
+  .template-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .btn-sm { padding: 7px 14px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: background 0.15s; }
+  .btn-sm:hover { background: var(--bg); }
+  .btn-sm.primary { background: var(--vntana); color: #fff; border-color: var(--vntana); }
+  .btn-sm.primary:hover { background: var(--vntana-dark); }
+  .btn-sm.danger { color: var(--danger); border-color: #fecaca; }
+  .btn-sm.danger:hover { background: #fff1f1; }
+
+  /* Groups list */
+  .group-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .group-item { display: grid; grid-template-columns: 1fr 90px 90px 80px 36px; gap: 8px; align-items: center; background: var(--bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); }
+  .group-item input, .group-item select { padding: 6px 8px; font-size: 13px; }
+  .group-item .drag-handle { cursor: grab; color: var(--muted); font-size: 16px; }
+
+  /* Assets table */
+  .asset-table-wrap { overflow-x: auto; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 10px; background: var(--bg); border-bottom: 2px solid var(--border); font-weight: 700; white-space: nowrap; }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  td input, td select { padding: 5px 8px; font-size: 13px; border: 1px solid transparent; border-radius: 5px; background: transparent; width: 100%; }
+  td input:focus, td select:focus { border-color: var(--vntana); background: var(--surface); outline: none; }
+  .uuid-cell input { font-family: monospace; font-size: 12px; }
+  .del-btn { background: none; border: none; color: #ccc; font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 5px; }
+  .del-btn:hover { color: var(--danger); background: #fff1f1; }
+
+  /* Paste area */
+  .paste-area { border: 2px dashed var(--border); border-radius: 8px; padding: 16px; font-size: 13px; color: var(--muted); cursor: pointer; text-align: center; margin-bottom: 12px; transition: border-color 0.15s; }
+  .paste-area:hover { border-color: var(--vntana); color: var(--vntana); }
+
+  /* Summary / export */
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+  .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; text-align: center; }
+  .summary-card .num { font-size: 36px; font-weight: 800; color: var(--vntana); }
+  .summary-card .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .export-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn-lg { padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; transition: background 0.15s; }
+  .btn-lg.primary { background: var(--vntana); color: #fff; }
+  .btn-lg.primary:hover { background: var(--vntana-dark); }
+  .btn-lg.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-lg.secondary:hover { background: var(--bg); }
+
+  .validation-errors { background: #fff1f1; border: 1px solid #fecaca; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; }
+  .validation-errors p { font-size: 13px; font-weight: 700; color: var(--danger); margin-bottom: 8px; }
+  .validation-errors ul { font-size: 13px; color: var(--danger); padding-left: 18px; }
+
+  .nav-footer { display: flex; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; background: #f0faf1; color: var(--vntana); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Showroom Maker</h1>
+  <span class="badge">VNTANA Admin</span>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <ul class="step-nav">
+      <li class="active" data-step="1" onclick="goStep(1)">
+        <div class="step-num"><span class="num">1</span></div> Styling
+      </li>
+      <li data-step="2" onclick="goStep(2)">
+        <div class="step-num"><span class="num">2</span></div> Groups
+      </li>
+      <li data-step="3" onclick="goStep(3)">
+        <div class="step-num"><span class="num">3</span></div> Assets
+      </li>
+      <li data-step="4" onclick="goStep(4)">
+        <div class="step-num"><span class="num">4</span></div> Export
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <p>Exports an Excel file in the Showroom Maker format.<br><br>Drop it in <strong>VNTANA-Inbox</strong> on Google Drive or the <strong>Showroom Maker</strong> Drive folder to auto-create the showroom.</p>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- STEP 1: STYLING -->
+    <div class="section active" id="step-1">
+      <h2>Styling</h2>
+      <p class="desc">Set the visual appearance of the showroom. Save a template to reuse across showrooms.</p>
+
+      <div class="template-row">
+        <button class="btn-sm" onclick="saveTemplate()">Save as Template</button>
+        <button class="btn-sm" onclick="loadTemplate()">Load Template</button>
+        <button class="btn-sm danger" onclick="clearTemplate()">Clear Template</button>
+        <span id="template-status" style="font-size:13px;color:var(--muted);align-self:center;"></span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Showroom Identity</div>
+        <div class="form-row cols-2">
+          <div>
+            <label>Showroom Name</label>
+            <input type="text" id="s-name" placeholder="e.g. 007e Series" oninput="updatePreview()">
+          </div>
+          <div>
+            <label>Tags <span style="font-weight:400;color:var(--muted)">(comma-separated)</span></label>
+            <input type="text" id="s-tags" placeholder="e.g. outdoor, industrial">
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" id="s-display-name" checked style="width:auto;accent-color:var(--vntana);">
+              Display Showroom Name
+            </label>
+          </div>
+          <div>
+            <label>Password <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <input type="text" id="s-password" placeholder="Leave blank for public">
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div>
+            <label>Logo URL <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <input type="text" id="s-logo" placeholder="https://...">
+          </div>
+          <div>
+            <label>Background Image URL <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <input type="text" id="s-bg-img" placeholder="https://...">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Colors</div>
+        <div class="form-row cols-3">
+          <div>
+            <label>Background Color</label>
+            <div class="color-field">
+              <input type="color" id="s-bg-picker" value="#f3f3f3" oninput="syncColor('bg')">
+              <input type="text" id="s-bg" value="#f3f3f3" placeholder="#f3f3f3" oninput="syncColorFromText('bg')" maxlength="7">
+            </div>
+          </div>
+          <div>
+            <label>Text Color</label>
+            <div class="color-field">
+              <input type="color" id="s-text-picker" value="#000000" oninput="syncColor('text')">
+              <input type="text" id="s-text" value="#000000" placeholder="#000000" oninput="syncColorFromText('text')" maxlength="7">
+            </div>
+          </div>
+          <div>
+            <label>Divider Color</label>
+            <div class="color-field">
+              <input type="color" id="s-div-picker" value="#409c4b" oninput="syncColor('div')">
+              <input type="text" id="s-div" value="#409c4b" placeholder="#409c4b" oninput="syncColorFromText('div')" maxlength="7">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Layout</div>
+        <div class="form-row cols-2">
+          <div>
+            <label>Products Per Row</label>
+            <select id="s-ppr">
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <div>
+            <label>Image Style</label>
+            <select id="s-imgstyle">
+              <option value="CONTAIN" selected>Contain</option>
+              <option value="COVER">Cover</option>
+              <option value="FILL">Fill</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Asset Attributes <span style="font-weight:400;font-size:12px;color:var(--muted)">Choose which fields show on each product card (max 10)</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" value="product_name" class="attr-cb" checked style="accent-color:var(--vntana);"> product_name
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" value="price" class="attr-cb" style="accent-color:var(--vntana);"> price
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" value="sku" class="attr-cb" style="accent-color:var(--vntana);"> sku
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" value="color" class="attr-cb" style="accent-color:var(--vntana);"> color
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" value="description" class="attr-cb" style="accent-color:var(--vntana);"> description
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" value="hotspot_translations_de" class="attr-cb" style="accent-color:var(--vntana);"> hotspot_translations_de
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" value="hotspot_translations_es" class="attr-cb" style="accent-color:var(--vntana);"> hotspot_translations_es
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" value="hotspot_translations_fr" class="attr-cb" style="accent-color:var(--vntana);"> hotspot_translations_fr
+          </label>
+        </div>
+      </div>
+
+      <div id="style-preview" class="preview-bar" style="display:none;">
+        <div class="preview-swatch" id="prev-bg"></div>
+        <div>
+          <div class="preview-label">Background</div>
+          <div class="preview-val" id="prev-bg-val"></div>
+        </div>
+        <div class="preview-swatch" id="prev-text" style="border:1px solid #ccc;"></div>
+        <div>
+          <div class="preview-label">Text</div>
+          <div class="preview-val" id="prev-text-val"></div>
+        </div>
+        <div class="preview-swatch" id="prev-div"></div>
+        <div>
+          <div class="preview-label">Divider</div>
+          <div class="preview-val" id="prev-div-val"></div>
+        </div>
+      </div>
+
+      <div class="nav-footer">
+        <button class="btn-lg primary" onclick="goStep(2)">Next: Groups →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: GROUPS -->
+    <div class="section" id="step-2">
+      <h2>Groups</h2>
+      <p class="desc">Define the sections of your showroom. Assets will be assigned to groups in the next step. Groups display in the order listed here.</p>
+
+      <div id="group-list" class="group-list"></div>
+
+      <button class="btn-sm primary" onclick="addGroup()">+ Add Group</button>
+
+      <div class="nav-footer">
+        <button class="btn-lg secondary" onclick="goStep(1)">← Back</button>
+        <button class="btn-lg primary" onclick="goStep(3)">Next: Assets →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: ASSETS -->
+    <div class="section" id="step-3">
+      <h2>Assets</h2>
+      <p class="desc">Add the product UUIDs from VNTANA. Each UUID must be a valid product UUID (not an asset blob ID). Assign each asset to a group and set its display order.</p>
+
+      <div class="paste-area" onclick="showPasteModal()" title="Click to paste a list of UUIDs">
+        📋 Click to paste UUIDs (one per line, optionally with name)
+      </div>
+
+      <div class="asset-table-wrap">
+        <table id="asset-table">
+          <thead>
+            <tr>
+              <th style="width:32px">#</th>
+              <th style="width:260px">Asset UUID</th>
+              <th>Asset Name</th>
+              <th style="width:140px">Group</th>
+              <th style="width:62px">Order</th>
+              <th style="width:32px"></th>
+            </tr>
+          </thead>
+          <tbody id="asset-body"></tbody>
+        </table>
+      </div>
+
+      <button class="btn-sm primary" onclick="addAsset()">+ Add Row</button>
+
+      <div class="nav-footer">
+        <button class="btn-lg secondary" onclick="goStep(2)">← Back</button>
+        <button class="btn-lg primary" onclick="goStep(4)">Next: Export →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: EXPORT -->
+    <div class="section" id="step-4">
+      <h2>Export</h2>
+      <p class="desc">Review and download your Excel file. You can manually edit it before dropping it into Google Drive to trigger the showroom creation.</p>
+
+      <div id="validation-errors" class="validation-errors" style="display:none;"></div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="num" id="sum-assets">0</div>
+          <div class="lbl">Assets</div>
+        </div>
+        <div class="summary-card">
+          <div class="num" id="sum-groups">0</div>
+          <div class="lbl">Groups</div>
+        </div>
+        <div class="summary-card">
+          <div class="num" id="sum-name" style="font-size:18px;padding-top:8px;">—</div>
+          <div class="lbl">Showroom Name</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Groups Preview</div>
+        <div id="groups-preview"></div>
+      </div>
+
+      <div class="export-actions">
+        <button class="btn-lg primary" onclick="exportExcel()">⬇ Download Excel</button>
+        <button class="btn-lg secondary" onclick="goStep(1)">← Edit Styling</button>
+        <span style="font-size:13px;color:var(--muted);">Then drop the file in the <strong>Showroom Maker</strong> Google Drive folder</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Paste Modal -->
+<div id="paste-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:28px;width:520px;max-width:90vw;">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">Paste UUIDs</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">One UUID per line. Optionally add a name after a tab or comma: <code>uuid,Name</code></p>
+    <textarea id="paste-input" rows="8" style="width:100%;font-family:monospace;font-size:13px;border:1px solid var(--border);border-radius:7px;padding:10px;resize:vertical;" placeholder="73d63eda-8ebc-4248-8c88-2cc5a59a7adb, Product Name"></textarea>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button class="btn-sm primary" onclick="importPaste()">Import</button>
+      <button class="btn-sm" onclick="closePasteModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let groups = [];
+let assets = [];
+let currentStep = 1;
+
+// ─── Step navigation ─────────────────────────────────────────────────────────
+function goStep(n) {
+  currentStep = n;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  document.querySelectorAll('.step-nav li').forEach(li => {
+    const s = parseInt(li.dataset.step);
+    li.classList.toggle('active', s === n);
+    li.classList.toggle('done', s < n);
+  });
+  if (n === 3) renderAssetTable();
+  if (n === 4) renderExportSummary();
+}
+
+// ─── Styling ─────────────────────────────────────────────────────────────────
+function syncColor(key) {
+  const picker = document.getElementById('s-' + key + '-picker');
+  const text   = document.getElementById('s-' + key);
+  text.value = picker.value;
+  updatePreview();
+}
+function syncColorFromText(key) {
+  const text   = document.getElementById('s-' + key);
+  const picker = document.getElementById('s-' + key + '-picker');
+  if (/^#[0-9a-f]{6}$/i.test(text.value)) picker.value = text.value;
+  updatePreview();
+}
+function updatePreview() {
+  const bg   = document.getElementById('s-bg').value;
+  const text = document.getElementById('s-text').value;
+  const div  = document.getElementById('s-div').value;
+  document.getElementById('prev-bg').style.background  = bg;
+  document.getElementById('prev-text').style.background = text;
+  document.getElementById('prev-div').style.background  = div;
+  document.getElementById('prev-bg-val').textContent   = bg;
+  document.getElementById('prev-text-val').textContent = text;
+  document.getElementById('prev-div-val').textContent  = div;
+  document.getElementById('style-preview').style.display = 'flex';
+}
+
+function getStyling() {
+  const attrs = [...document.querySelectorAll('.attr-cb:checked')].map(c => c.value);
+  return {
+    name:        document.getElementById('s-name').value.trim(),
+    tags:        document.getElementById('s-tags').value.trim(),
+    displayName: document.getElementById('s-display-name').checked,
+    password:    document.getElementById('s-password').value.trim(),
+    logo:        document.getElementById('s-logo').value.trim(),
+    bgImg:       document.getElementById('s-bg-img').value.trim(),
+    bg:          document.getElementById('s-bg').value,
+    text:        document.getElementById('s-text').value,
+    div:         document.getElementById('s-div').value,
+    ppr:         document.getElementById('s-ppr').value,
+    img:         document.getElementById('s-imgstyle').value,
+    attrs,
+  };
+}
+function applyStyling(s) {
+  document.getElementById('s-name').value = s.name || '';
+  document.getElementById('s-tags').value = s.tags || '';
+  document.getElementById('s-display-name').checked = s.displayName !== false;
+  document.getElementById('s-password').value = s.password || '';
+  document.getElementById('s-logo').value = s.logo || '';
+  document.getElementById('s-bg-img').value = s.bgImg || '';
+  document.getElementById('s-bg').value = s.bg || '#f3f3f3';
+  document.getElementById('s-text').value = s.text || '#000000';
+  document.getElementById('s-div').value = s.div || '#409c4b';
+  document.getElementById('s-bg-picker').value = s.bg || '#f3f3f3';
+  document.getElementById('s-text-picker').value = s.text || '#000000';
+  document.getElementById('s-div-picker').value = s.div || '#409c4b';
+  document.getElementById('s-ppr').value = s.ppr || '3';
+  document.getElementById('s-imgstyle').value = s.img || 'CONTAIN';
+  if (s.attrs) {
+    document.querySelectorAll('.attr-cb').forEach(cb => {
+      cb.checked = s.attrs.includes(cb.value);
+    });
+  }
+  updatePreview();
+}
+
+function saveTemplate() {
+  const s = getStyling();
+  delete s.name; // don't save showroom name in template
+  localStorage.setItem('showroom-template', JSON.stringify(s));
+  document.getElementById('template-status').textContent = 'Template saved ✓';
+  setTimeout(() => document.getElementById('template-status').textContent = '', 2000);
+}
+function loadTemplate() {
+  const raw = localStorage.getItem('showroom-template');
+  if (!raw) { alert('No template saved yet.'); return; }
+  const s = JSON.parse(raw);
+  s.name = document.getElementById('s-name').value; // preserve current name
+  applyStyling(s);
+  document.getElementById('template-status').textContent = 'Template loaded ✓';
+  setTimeout(() => document.getElementById('template-status').textContent = '', 2000);
+}
+function clearTemplate() {
+  localStorage.removeItem('showroom-template');
+  document.getElementById('template-status').textContent = 'Template cleared';
+  setTimeout(() => document.getElementById('template-status').textContent = '', 2000);
+}
+
+// ─── Groups ───────────────────────────────────────────────────────────────────
+function renderGroups() {
+  const list = document.getElementById('group-list');
+  if (groups.length === 0) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:8px 0;">No groups yet. Click "Add Group" to start.</p>';
+    return;
+  }
+  list.innerHTML = groups.map((g, i) => `
+    <div class="group-item">
+      <input type="text" value="${esc(g.title)}" placeholder="Group title" oninput="groups[${i}].title=this.value;updateAssetGroupOptions()">
+      <select onchange="groups[${i}].divTop=this.value==='yes'">
+        <option value="no" ${!g.divTop ? 'selected' : ''}>Top: No</option>
+        <option value="yes" ${g.divTop ? 'selected' : ''}>Top: Yes</option>
+      </select>
+      <select onchange="groups[${i}].divBottom=this.value==='yes'">
+        <option value="no" ${!g.divBottom ? 'selected' : ''}>Bottom: No</option>
+        <option value="yes" ${g.divBottom ? 'selected' : ''}>Bottom: Yes</option>
+      </select>
+      <select onchange="groups[${i}].visible=this.value==='yes'">
+        <option value="yes" ${g.visible !== false ? 'selected' : ''}>Visible</option>
+        <option value="no" ${g.visible === false ? 'selected' : ''}>Hidden</option>
+      </select>
+      <button class="del-btn" onclick="removeGroup(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function addGroup() {
+  groups.push({ title: '', divTop: false, divBottom: false, visible: true });
+  renderGroups();
+}
+function removeGroup(i) {
+  groups.splice(i, 1);
+  renderGroups();
+  updateAssetGroupOptions();
+}
+
+// ─── Assets ───────────────────────────────────────────────────────────────────
+function groupOptions(selected) {
+  return ['', ...groups.map(g => g.title)].map(t =>
+    `<option value="${esc(t)}" ${t === selected ? 'selected' : ''}>${t || '— No group —'}</option>`
+  ).join('');
+}
+
+function updateAssetGroupOptions() {
+  document.querySelectorAll('.group-select').forEach((sel, i) => {
+    const cur = assets[i]?.group || '';
+    sel.innerHTML = groupOptions(cur);
+  });
+}
+
+function renderAssetTable() {
+  const tbody = document.getElementById('asset-body');
+  if (assets.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;font-size:13px;">No assets yet. Click "+ Add Row" or paste UUIDs.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = assets.map((a, i) => `
+    <tr>
+      <td style="color:var(--muted);font-size:12px;">${i + 1}</td>
+      <td class="uuid-cell"><input type="text" value="${esc(a.uuid)}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" oninput="assets[${i}].uuid=this.value.trim()"></td>
+      <td><input type="text" value="${esc(a.name)}" placeholder="Product name" oninput="assets[${i}].name=this.value"></td>
+      <td><select class="group-select" onchange="assets[${i}].group=this.value">${groupOptions(a.group)}</select></td>
+      <td><input type="number" value="${a.order ?? ''}" min="1" style="width:60px;" oninput="assets[${i}].order=this.value?parseInt(this.value):null"></td>
+      <td><button class="del-btn" onclick="removeAsset(${i})">✕</button></td>
+    </tr>
+  `).join('');
+}
+
+function addAsset() {
+  assets.push({ uuid: '', name: '', group: groups[0]?.title || '', order: assets.length + 1 });
+  renderAssetTable();
+}
+function removeAsset(i) {
+  assets.splice(i, 1);
+  renderAssetTable();
+}
+
+// Paste modal
+function showPasteModal() {
+  document.getElementById('paste-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('paste-input').focus(), 50);
+}
+function closePasteModal() {
+  document.getElementById('paste-modal').style.display = 'none';
+  document.getElementById('paste-input').value = '';
+}
+function importPaste() {
+  const raw = document.getElementById('paste-input').value;
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  let added = 0;
+  lines.forEach(line => {
+    const parts = line.split(/[\t,]/).map(p => p.trim());
+    const uuid = parts[0];
+    if (/^[0-9a-f-]{36}$/i.test(uuid)) {
+      assets.push({ uuid, name: parts[1] || '', group: groups[0]?.title || '', order: assets.length + 1 });
+      added++;
+    }
+  });
+  closePasteModal();
+  renderAssetTable();
+  if (added === 0) alert('No valid UUIDs found. Make sure each line starts with a UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).');
+}
+
+// ─── Export ───────────────────────────────────────────────────────────────────
+function renderExportSummary() {
+  const s = getStyling();
+  const validAssets = assets.filter(a => /^[0-9a-f-]{36}$/i.test(a.uuid));
+  const errors = [];
+
+  if (!s.name) errors.push('Showroom Name is required.');
+  if (validAssets.length === 0) errors.push('No valid asset UUIDs.');
+
+  const groupTitles = new Set(groups.map(g => g.title).filter(Boolean));
+  assets.forEach(a => {
+    if (a.uuid && a.group && !groupTitles.has(a.group))
+      errors.push(`Asset "${a.name || a.uuid.slice(0,8)}…" references unknown group "${a.group}".`);
+  });
+
+  const errBox = document.getElementById('validation-errors');
+  if (errors.length) {
+    errBox.style.display = 'block';
+    errBox.innerHTML = `<p>Please fix before exporting:</p><ul>${errors.map(e => `<li>${e}</li>`).join('')}</ul>`;
+  } else {
+    errBox.style.display = 'none';
+  }
+
+  document.getElementById('sum-assets').textContent = validAssets.length;
+  document.getElementById('sum-groups').textContent = groups.filter(g => g.title).length;
+  document.getElementById('sum-name').textContent = s.name || '—';
+
+  // Groups preview
+  const gp = document.getElementById('groups-preview');
+  if (groups.length === 0) {
+    gp.innerHTML = '<p style="font-size:13px;color:var(--muted);">No groups defined.</p>';
+  } else {
+    gp.innerHTML = groups.filter(g => g.title).map(g => {
+      const groupAssets = validAssets.filter(a => a.group === g.title);
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+          <span class="tag">${esc(g.title)}</span>
+          <span style="font-size:13px;color:var(--muted);">${groupAssets.length} asset${groupAssets.length !== 1 ? 's' : ''}</span>
+          ${g.divTop ? '<span style="font-size:12px;color:var(--muted);">Divider Top</span>' : ''}
+          ${g.divBottom ? '<span style="font-size:12px;color:var(--muted);">Divider Bottom</span>' : ''}
+          ${g.visible === false ? '<span style="font-size:12px;color:var(--muted);">Hidden</span>' : ''}
+        </div>`;
+    }).join('');
+  }
+}
+
+function exportExcel() {
+  const s = getStyling();
+  const validAssets = assets.filter(a => /^[0-9a-f-]{36}$/i.test(a.uuid));
+  if (!s.name) { alert('Please enter a Showroom Name first.'); goStep(1); return; }
+  if (validAssets.length === 0) { alert('No valid asset UUIDs to export.'); goStep(3); return; }
+
+  const wb = XLSX.utils.book_new();
+
+  // Assets sheet
+  const assetsData = [['Asset UUID', 'Asset Name', 'Group', 'Order']];
+  validAssets.forEach(a => assetsData.push([a.uuid, a.name, a.group, a.order ?? '']));
+  const wsAssets = XLSX.utils.aoa_to_sheet(assetsData);
+  wsAssets['!cols'] = [{wch:38},{wch:28},{wch:20},{wch:8}];
+  XLSX.utils.book_append_sheet(wb, wsAssets, 'Assets');
+
+  // Groups sheet
+  const groupsData = [['Group Title', 'Divider Top', 'Divider Bottom', 'Visible']];
+  groups.filter(g => g.title).forEach(g => groupsData.push([
+    g.title,
+    g.divTop ? 'Yes' : 'No',
+    g.divBottom ? 'Yes' : 'No',
+    g.visible !== false ? 'Yes' : 'No',
+  ]));
+  const wsGroups = XLSX.utils.aoa_to_sheet(groupsData);
+  wsGroups['!cols'] = [{wch:24},{wch:14},{wch:16},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, wsGroups, 'Groups');
+
+  // Styling sheet
+  const stylingData = [
+    ['Field', 'Value'],
+    ['Showroom Name',        s.name],
+    ['Display Name',         s.displayName ? 'Yes' : 'No'],
+    ['Tags',                 s.tags],
+    ['Password',             s.password],
+    ['Logo URL',             s.logo],
+    ['Background Image URL', s.bgImg],
+    ['Background Color',     s.bg],
+    ['Text Color',           s.text],
+    ['Divider Color',        s.div],
+    ['Products Per Row',     parseInt(s.ppr)],
+    ['Image Style',          s.img],
+    ['Asset Attributes',     s.attrs.join(',')],
+  ];
+  const wsStyling = XLSX.utils.aoa_to_sheet(stylingData);
+  wsStyling['!cols'] = [{wch:20},{wch:24}];
+  XLSX.utils.book_append_sheet(wb, wsStyling, 'Styling');
+
+  const filename = `VNTANA Showroom — ${s.name}.xlsx`;
+  XLSX.writeFile(wb, filename);
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// Init
+updatePreview();
+renderGroups();
+</script>
+</body>
+</html>
