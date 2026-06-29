@@ -740,7 +740,36 @@ function exportExcel() {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
-// Init
+// ─── Init with Example Showroom defaults ─────────────────────────────────────
+(function initDefaults() {
+  document.getElementById('s-name').value        = 'Example Showroom';
+  document.getElementById('s-display-name').checked = true;
+  document.getElementById('s-bg').value          = '#f0ebe3';
+  document.getElementById('s-bg-picker').value   = '#f0ebe3';
+  document.getElementById('s-text').value        = '#2d2d2d';
+  document.getElementById('s-text-picker').value = '#2d2d2d';
+  document.getElementById('s-div').value         = '#4a6fa5';
+  document.getElementById('s-div-picker').value  = '#4a6fa5';
+  document.getElementById('s-ppr').value         = '4';
+  document.getElementById('s-imgstyle').value    = 'COVER';
+  // No asset attributes checked by default
+  document.querySelectorAll('.attr-cb').forEach(cb => cb.checked = false);
+
+  groups = [
+    { title: 'Athletics',    divTop: true,  divBottom: false, visible: true },
+    { title: 'Accessories',  divTop: true,  divBottom: false, visible: true },
+    { title: 'Jackets',      divTop: true,  divBottom: true,  visible: true },
+  ];
+
+  assets = [
+    { uuid: '', name: 'Yoga Top & Leggings',    group: 'Athletics',   order: 1 },
+    { uuid: '', name: 'purse_new.glb',           group: 'Accessories', order: 1 },
+    { uuid: '', name: 'VNTANA Jacket (White)',   group: 'Jackets',     order: 1 },
+    { uuid: '', name: 'VNTANA Jacket (Blue)',    group: 'Jackets',     order: 2 },
+    { uuid: '', name: 'VNTANA Jacket (Black)',   group: 'Jackets',     order: 3 },
+  ];
+})();
+
 updatePreview();
 renderGroups();
 </script>
