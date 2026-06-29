@@ -222,31 +222,68 @@
       }
     },
     {
+      "id": "buildNotification",
+      "name": "Build Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2880, 300],
+      "parameters": {
+        "jsCode": "const m = $node['Build Mapping JSON'].json;\nconst mapperUrl = `https://vntana-store-production.up.railway.app/admin/parts-mapper.html?uuid=${m.productUuid}&clientUuid=${m.clientUuid}`;\n\nconst lines = [\n  `*Parts Mapper ready: ${m.productName}*`,\n  `${m.mapping.needsRename} of ${m.mapping.totalMeshes} mesh nodes need renaming.`,\n  m.hasPriorMapping ? 'Prior mapping found — new geometry will be flagged.' : 'First-time extract.',\n  '',\n  `<${mapperUrl}|Open Parts Mapper>`\n];\n\nreturn [{ json: { mapperUrl, slackText: lines.join('\\n'), ...m } }];"
+      }
+    },
+    {
+      "id": "slackNotify",
+      "name": "Slack Notify",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [3100, 300],
+      "parameters": {
+        "operation": "message",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "parts-mapper",
+          "mode": "name"
+        },
+        "text": "={{ $json.slackText }}",
+        "otherOptions": {
+          "mrkdwn": true
+        }
+      },
+      "credentials": {
+        "slackApi": {
+          "name": "Slack account"
+        }
+      }
+    },
+    {
       "id": "respond",
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [2880, 300],
+      "position": [3320, 300],
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ success: true, message: 'Scene tree extracted and stored', productUuid: $node['Build Mapping JSON'].json.productUuid, productName: $node['Build Mapping JSON'].json.productName, totalMeshes: $node['Build Mapping JSON'].json.mapping.totalMeshes, needsRename: $node['Build Mapping JSON'].json.mapping.needsRename, mapperUrl: 'https://vntana-store-production.up.railway.app/admin/parts-mapper.html?uuid=' + $node['Build Mapping JSON'].json.productUuid + '&clientUuid=' + $node['Build Mapping JSON'].json.clientUuid }) }}"
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Scene tree extracted and stored', productUuid: $node['Build Notification'].json.productUuid, productName: $node['Build Notification'].json.productName, totalMeshes: $node['Build Notification'].json.mapping.totalMeshes, needsRename: $node['Build Notification'].json.mapping.needsRename, mapperUrl: $node['Build Notification'].json.mapperUrl }) }}"
       }
     }
   ],
   "connections": {
-    "Webhook":              { "main": [[{ "node": "Extract IDs",          "type": "main", "index": 0 }]] },
-    "Extract IDs":          { "main": [[{ "node": "Auth",                 "type": "main", "index": 0 }]] },
-    "Auth":                 { "main": [[{ "node": "Get Product",          "type": "main", "index": 0 }]] },
-    "Get Product":          { "main": [[{ "node": "Resolve Blob ID",      "type": "main", "index": 0 }]] },
-    "Resolve Blob ID":      { "main": [[{ "node": "Search Attachments",   "type": "main", "index": 0 }]] },
-    "Search Attachments":   { "main": [[{ "node": "Find Existing Mapping","type": "main", "index": 0 }]] },
-    "Find Existing Mapping":{ "main": [[{ "node": "Download GLB",         "type": "main", "index": 0 }]] },
-    "Download GLB":         { "main": [[{ "node": "Parse Scene Tree",     "type": "main", "index": 0 }]] },
-    "Parse Scene Tree":     { "main": [[{ "node": "Build Mapping JSON",   "type": "main", "index": 0 }]] },
-    "Build Mapping JSON":   { "main": [[{ "node": "Prepare JSON Binary",  "type": "main", "index": 0 }]] },
-    "Prepare JSON Binary":  { "main": [[{ "node": "Upload Mapping JSON",  "type": "main", "index": 0 }]] },
-    "Upload Mapping JSON":  { "main": [[{ "node": "Register Attachment",  "type": "main", "index": 0 }]] },
-    "Register Attachment":  { "main": [[{ "node": "Respond",              "type": "main", "index": 0 }]] }
+    "Webhook":              { "main": [[{ "node": "Extract IDs",           "type": "main", "index": 0 }]] },
+    "Extract IDs":          { "main": [[{ "node": "Auth",                  "type": "main", "index": 0 }]] },
+    "Auth":                 { "main": [[{ "node": "Get Product",           "type": "main", "index": 0 }]] },
+    "Get Product":          { "main": [[{ "node": "Resolve Blob ID",       "type": "main", "index": 0 }]] },
+    "Resolve Blob ID":      { "main": [[{ "node": "Search Attachments",    "type": "main", "index": 0 }]] },
+    "Search Attachments":   { "main": [[{ "node": "Find Existing Mapping", "type": "main", "index": 0 }]] },
+    "Find Existing Mapping":{ "main": [[{ "node": "Download GLB",          "type": "main", "index": 0 }]] },
+    "Download GLB":         { "main": [[{ "node": "Parse Scene Tree",      "type": "main", "index": 0 }]] },
+    "Parse Scene Tree":     { "main": [[{ "node": "Build Mapping JSON",    "type": "main", "index": 0 }]] },
+    "Build Mapping JSON":   { "main": [[{ "node": "Prepare JSON Binary",   "type": "main", "index": 0 }]] },
+    "Prepare JSON Binary":  { "main": [[{ "node": "Upload Mapping JSON",   "type": "main", "index": 0 }]] },
+    "Upload Mapping JSON":  { "main": [[{ "node": "Register Attachment",   "type": "main", "index": 0 }]] },
+    "Register Attachment":  { "main": [[{ "node": "Build Notification",    "type": "main", "index": 0 }]] },
+    "Build Notification":   { "main": [[{ "node": "Slack Notify",          "type": "main", "index": 0 }]] },
+    "Slack Notify":         { "main": [[{ "node": "Respond",               "type": "main", "index": 0 }]] }
   },
   "settings": { "executionOrder": "v1" },
   "staticData": null
