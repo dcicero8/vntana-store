@@ -200,12 +200,14 @@
         </div>
         <div class="form-row cols-2">
           <div>
-            <label>Logo URL <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-            <input type="text" id="s-logo" placeholder="https://...">
+            <label>Logo <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <input type="file" id="s-logo" accept="image/*" style="padding:6px 8px;font-size:13px;">
+            <div id="s-logo-preview" style="margin-top:6px;display:none;"><img id="s-logo-img" style="max-height:48px;border-radius:4px;border:1px solid var(--border);"></div>
           </div>
           <div>
-            <label>Background Image URL <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-            <input type="text" id="s-bg-img" placeholder="https://...">
+            <label>Background Image <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <input type="file" id="s-bg-img" accept="image/*" style="padding:6px 8px;font-size:13px;">
+            <div id="s-bg-img-preview" style="margin-top:6px;display:none;"><img id="s-bg-img-img" style="max-height:48px;border-radius:4px;border:1px solid var(--border);max-width:100%;object-fit:cover;"></div>
           </div>
         </div>
       </div>
@@ -431,6 +433,22 @@ function goStep(n) {
   if (n === 4) renderExportSummary();
 }
 
+// ─── File preview helpers ─────────────────────────────────────────────────────
+function wireFilePreview(inputId, previewWrapperId, imgId) {
+  document.getElementById(inputId).addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById(imgId).src = e.target.result;
+      document.getElementById(previewWrapperId).style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+}
+wireFilePreview('s-logo',   's-logo-preview',   's-logo-img');
+wireFilePreview('s-bg-img', 's-bg-img-preview', 's-bg-img-img');
+
 // ─── Styling ─────────────────────────────────────────────────────────────────
 function syncColor(key) {
   const picker = document.getElementById('s-' + key + '-picker');
@@ -464,8 +482,8 @@ function getStyling() {
     tags:        document.getElementById('s-tags').value.trim(),
     displayName: document.getElementById('s-display-name').checked,
     password:    document.getElementById('s-password').value.trim(),
-    logo:        document.getElementById('s-logo').value.trim(),
-    bgImg:       document.getElementById('s-bg-img').value.trim(),
+    logo:        document.getElementById('s-logo-img').src || '',
+    bgImg:       document.getElementById('s-bg-img-img').src || '',
     bg:          document.getElementById('s-bg').value,
     text:        document.getElementById('s-text').value,
     div:         document.getElementById('s-div').value,
@@ -479,8 +497,7 @@ function applyStyling(s) {
   document.getElementById('s-tags').value = s.tags || '';
   document.getElementById('s-display-name').checked = s.displayName !== false;
   document.getElementById('s-password').value = s.password || '';
-  document.getElementById('s-logo').value = s.logo || '';
-  document.getElementById('s-bg-img').value = s.bgImg || '';
+  // logo and bg-img are file inputs — not restorable from template
   document.getElementById('s-bg').value = s.bg || '#f3f3f3';
   document.getElementById('s-text').value = s.text || '#000000';
   document.getElementById('s-div').value = s.div || '#409c4b';
