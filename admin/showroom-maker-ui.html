@@ -260,6 +260,26 @@
             </select>
           </div>
         </div>
+        <div class="form-row cols-2">
+          <div>
+            <label>Font Family</label>
+            <select id="s-font-preset" onchange="syncFontPreset()">
+              <option value="">System default</option>
+              <option value="Inter, sans-serif">Inter</option>
+              <option value="'DM Sans', sans-serif">DM Sans</option>
+              <option value="'Playfair Display', serif">Playfair Display</option>
+              <option value="'Roboto', sans-serif">Roboto</option>
+              <option value="'Montserrat', sans-serif">Montserrat</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="'Courier New', monospace">Courier New</option>
+              <option value="custom">Custom...</option>
+            </select>
+          </div>
+          <div id="s-font-custom-wrap" style="display:none;">
+            <label>Custom Font CSS / Google Fonts URL</label>
+            <input type="text" id="s-font-custom" placeholder="e.g. 'Nunito', sans-serif">
+          </div>
+        </div>
       </div>
 
       <div class="card">
@@ -475,6 +495,19 @@ function updatePreview() {
   document.getElementById('style-preview').style.display = 'flex';
 }
 
+function syncFontPreset() {
+  const preset = document.getElementById('s-font-preset').value;
+  const wrap   = document.getElementById('s-font-custom-wrap');
+  wrap.style.display = preset === 'custom' ? 'block' : 'none';
+}
+
+function getFont() {
+  const preset = document.getElementById('s-font-preset').value;
+  if (!preset) return '';
+  if (preset === 'custom') return document.getElementById('s-font-custom').value.trim();
+  return preset;
+}
+
 function getStyling() {
   const attrs = [...document.querySelectorAll('.attr-cb:checked')].map(c => c.value);
   return {
@@ -489,6 +522,7 @@ function getStyling() {
     div:         document.getElementById('s-div').value,
     ppr:         document.getElementById('s-ppr').value,
     img:         document.getElementById('s-imgstyle').value,
+    font:        getFont(),
     attrs,
   };
 }
@@ -498,6 +532,17 @@ function applyStyling(s) {
   document.getElementById('s-display-name').checked = s.displayName !== false;
   document.getElementById('s-password').value = s.password || '';
   // logo and bg-img are file inputs — not restorable from template
+  // restore font
+  if (s.font) {
+    const presets = [...document.getElementById('s-font-preset').options].map(o => o.value);
+    if (presets.includes(s.font)) {
+      document.getElementById('s-font-preset').value = s.font;
+    } else {
+      document.getElementById('s-font-preset').value = 'custom';
+      document.getElementById('s-font-custom').value = s.font;
+      document.getElementById('s-font-custom-wrap').style.display = 'block';
+    }
+  }
   document.getElementById('s-bg').value = s.bg || '#f3f3f3';
   document.getElementById('s-text').value = s.text || '#000000';
   document.getElementById('s-div').value = s.div || '#409c4b';
@@ -727,6 +772,7 @@ function exportExcel() {
     ['Divider Color',        s.div],
     ['Products Per Row',     parseInt(s.ppr)],
     ['Image Style',          s.img],
+    ['Font Family',          s.font],
     ['Asset Attributes',     s.attrs.join(',')],
   ];
   const wsStyling = XLSX.utils.aoa_to_sheet(stylingData);
