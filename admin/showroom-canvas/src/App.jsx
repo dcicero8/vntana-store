@@ -5,6 +5,20 @@ import * as XLSX from 'xlsx'
 import './App.css'
 import './sidebar.css'
 
+// ─── localStorage helpers ─────────────────────────────────────────────────────
+const SETTINGS_KEY = 'showroom-canvas-settings'
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch { return null }
+}
+
+function saveSettings(s) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) } catch {}
+}
+
 // ─── Export logic ─────────────────────────────────────────────────────────────
 function exportToExcel(editor, settings) {
   const { showroomName, bgColor, textColor, divColor, ppr, imgStyle } = settings
@@ -14,16 +28,25 @@ function exportToExcel(editor, settings) {
   const frames = shapes.filter(s => s.type === 'frame')
   const notes  = shapes.filter(s => s.type === 'note')
 
-  const parsedAssets = notes.map((n, i) => {
+  const groups = frames.map((f, i) => ({
+    id: f.id,
+    title: f.props.name || `Group ${i + 1}`,
+  }))
+
+  const ungrouped = []
+  const parsedAssets = notes.map(n => {
     const util = editor.getShapeUtil(n)
     const text = (util.getText ? util.getText(n) : null) ?? ''
     const uuidMatch = text.match(/uuid[:\s]+([0-9a-f-]{36})/i)
     const nameMatch = text.match(/name[:\s]+(.+)/i)
+    const group = groups.find(g => g.id === n.parentId)
+    if (!group) ungrouped.push(text.slice(0, 40) || '(empty note)')
     return {
       uuid: uuidMatch ? uuidMatch[1].trim() : '',
       name: nameMatch ? nameMatch[1].trim() : '',
+      group: group?.title || '',
       parentId: n.parentId,
-      x: n.x, y: n.y,
+      y: n.y,
     }
   }).filter(a => /^[0-9a-f-]{36}$/i.test(a.uuid))
 
@@ -32,60 +55,76 @@ function exportToExcel(editor, settings) {
     return
   }
 
-  const groups = frames.map((f, i) => ({
-    id: f.id,
-    title: f.props.name || `Group ${i + 1}`,
-  }))
+  if (ungrouped.length > 0) {
+    const ok = window.confirm(
+      `${ungrouped.length} note(s) are outside any group frame and will be skipped:\n\n` +
+      ungrouped.map(t => `  • ${t}`).join('\n') +
+      '\n\nContinue anyway?'
+    )
+    if (!ok) return
+  }
 
-  const assets = parsedAssets.map((a, i) => {
-    const group = groups.find(g => g.id === a.parentId)
-    return { uuid: a.uuid, name: a.name, group: group?.title || '', order: i + 1 }
-  })
+  // Sort assets by Y position within their frame so spatial order = export order
+  const groupOrder = Object.fromEntries(groups.map((g, i) => [g.id, i]))
+  const assets = [...parsedAssets]
+    .sort((a, b) => (groupOrder[a.parentId] ?? 99) - (groupOrder[b.parentId] ?? 99) || a.y - b.y)
+    .map((a, i) => ({ ...a, order: i + 1 }))
 
   const wb = XLSX.utils.book_new()
 
   const wsA = XLSX.utils.aoa_to_sheet([
-    ['Asset UUID','Asset Name','Group','Order'],
+    ['Asset UUID', 'Asset Name', 'Group', 'Order'],
     ...assets.map(a => [a.uuid, a.name, a.group, a.order])
   ])
   wsA['!cols'] = [{wch:38},{wch:28},{wch:20},{wch:8}]
   XLSX.utils.book_append_sheet(wb, wsA, 'Assets')
 
   const wsG = XLSX.utils.aoa_to_sheet([
-    ['Group Title','Divider Top','Divider Bottom','Visible'],
-    ...groups.map(g => [g.title,'No','No','Yes'])
+    ['Group Title', 'Divider Top', 'Divider Bottom', 'Visible'],
+    ...groups.map(g => [g.title, 'No', 'No', 'Yes'])
   ])
   XLSX.utils.book_append_sheet(wb, wsG, 'Groups')
 
   const wsS = XLSX.utils.aoa_to_sheet([
-    ['Field','Value'],
-    ['Showroom Name', showroomName],
+    ['Field', 'Value'],
+    ['Showroom Name',    showroomName],
     ['Background Color', bgColor],
-    ['Text Color', textColor],
-    ['Divider Color', divColor],
+    ['Text Color',       textColor],
+    ['Divider Color',    divColor],
     ['Products Per Row', parseInt(ppr)],
-    ['Image Style', imgStyle],
+    ['Image Style',      imgStyle],
   ])
   wsS['!cols'] = [{wch:20},{wch:24}]
   XLSX.utils.book_append_sheet(wb, wsS, 'Styling')
 
-  XLSX.writeFile(wb, `VNTANA Showroom — ${showroomName}.xlsx`)
+  XLSX.writeFile(wb, `VNTANA Showroom - ${showroomName}.xlsx`)
 }
 
-// ─── Sidebar (receives editor as prop — lives outside Tldraw tree) ───────────
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
 function Sidebar({ editor }) {
-  const [, forceUpdate] = useState(0)
+  const saved = loadSettings()
+  const [name, setName]         = useState(saved?.name      ?? 'New Showroom')
+  const [bgColor, setBg]        = useState(saved?.bgColor   ?? '#f3f3f3')
+  const [textColor, setText]    = useState(saved?.textColor ?? '#000000')
+  const [divColor, setDiv]      = useState(saved?.divColor  ?? '#409c4b')
+  const [ppr, setPpr]           = useState(saved?.ppr       ?? '3')
+  const [imgStyle, setImgStyle] = useState(saved?.imgStyle  ?? 'CONTAIN')
+  const [, forceUpdate]         = useState(0)
 
+  // Persist settings whenever they change
   useEffect(() => {
-    const unsub = editor.store.listen(() => forceUpdate(n => n + 1), { source: 'all', scope: 'all' })
-    return unsub
+    saveSettings({ name, bgColor, textColor, divColor, ppr, imgStyle })
+  }, [name, bgColor, textColor, divColor, ppr, imgStyle])
+
+  // Debounced store listener — only re-render 150ms after the last change
+  useEffect(() => {
+    let timer
+    const unsub = editor.store.listen(() => {
+      clearTimeout(timer)
+      timer = setTimeout(() => forceUpdate(n => n + 1), 150)
+    }, { source: 'all', scope: 'all' })
+    return () => { unsub(); clearTimeout(timer) }
   }, [editor])
-  const [name, setName]         = useState('New Showroom')
-  const [bgColor, setBg]        = useState('#f3f3f3')
-  const [textColor, setText]    = useState('#000000')
-  const [divColor, setDiv]      = useState('#409c4b')
-  const [ppr, setPpr]           = useState('3')
-  const [imgStyle, setImgStyle] = useState('CONTAIN')
 
   const settings = { showroomName: name, bgColor, textColor, divColor, ppr, imgStyle }
 
@@ -109,14 +148,15 @@ function Sidebar({ editor }) {
       y: selected ? 40 + Math.random() * 80  : 200 + Math.random() * 200,
       props: {
         richText: toRichText('uuid: paste-uuid-here\nname: Asset Name'),
-        color: 'green', size: 's',
+        color: 'yellow', size: 's',
       },
     })
     editor.select(id)
   }
 
-  const frameCount = editor.getCurrentPageShapes().filter(s => s.type === 'frame').length
-  const noteCount  = editor.getCurrentPageShapes().filter(s => s.type === 'note').length
+  const shapes = editor.getCurrentPageShapes()
+  const frameCount = shapes.filter(s => s.type === 'frame').length
+  const noteCount  = shapes.filter(s => s.type === 'note').length
 
   return (
     <div className="sidebar">
@@ -127,7 +167,7 @@ function Sidebar({ editor }) {
 
       <div className="field">
         <label>Showroom Name</label>
-        <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. 007e Series" />
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Summer Collection" />
       </div>
 
       <div className="field">
@@ -169,16 +209,58 @@ function Sidebar({ editor }) {
           <li>Click <strong>+ Add Group</strong> to create a section frame</li>
           <li>Double-click the frame label to rename it</li>
           <li>Select a frame, then click <strong>+ Add Asset</strong></li>
-          <li>Double-click each note and replace the uuid &amp; name</li>
+          <li>Double-click each note and replace the uuid and name</li>
           <li>Drag notes between frames to reassign groups</li>
         </ol>
       </div>
 
       <button className="btn-export" onClick={() => exportToExcel(editor, settings)}>
-        ⬇ Export Excel
+        Export Excel
       </button>
     </div>
   )
+}
+
+// ─── Seed data ────────────────────────────────────────────────────────────────
+const SEED_GROUPS = [
+  {
+    name: 'Athletics', x: 40, y: 40,
+    assets: [{ name: 'Yoga Top & Leggings', uuid: '' }],
+  },
+  {
+    name: 'Accessories', x: 620, y: 40,
+    assets: [{ name: 'purse_new.glb', uuid: '' }],
+  },
+  {
+    name: 'Jackets', x: 40, y: 420,
+    assets: [
+      { name: 'VNTANA Jacket (White)', uuid: '' },
+      { name: 'VNTANA Jacket (Blue)',  uuid: '' },
+      { name: 'VNTANA Jacket (Black)', uuid: '' },
+    ],
+  },
+]
+
+function seedCanvas(editor) {
+  const shapes = []
+  const noteH = 90, notePad = 12
+  SEED_GROUPS.forEach(g => {
+    const frameId = createShapeId()
+    const frameH = Math.max(260, g.assets.length * (noteH + notePad) + 60)
+    shapes.push({ id: frameId, type: 'frame', x: g.x, y: g.y, props: { w: 520, h: frameH, name: g.name } })
+    g.assets.forEach((a, i) => {
+      shapes.push({
+        id: createShapeId(), type: 'note', parentId: frameId,
+        x: 20, y: 40 + i * (noteH + notePad),
+        props: {
+          richText: toRichText(`uuid: ${a.uuid || 'PASTE-UUID-HERE'}\nname: ${a.name}`),
+          color: 'yellow', size: 's',
+        },
+      })
+    })
+  })
+  editor.createShapes(shapes)
+  editor.zoomToFit()
 }
 
 // ─── App ──────────────────────────────────────────────────────────────────────
@@ -187,63 +269,18 @@ export default function App() {
   const [ready, setReady] = useState(false)
 
   const handleMount = useCallback((editor) => {
-    const GROUPS = [
-      {
-        name: 'Athletics', x: 40, y: 40,
-        assets: [
-          { name: 'Yoga Top & Leggings', uuid: '' },
-        ],
-      },
-      {
-        name: 'Accessories', x: 620, y: 40,
-        assets: [
-          { name: 'purse_new.glb', uuid: '' },
-        ],
-      },
-      {
-        name: 'Jackets', x: 40, y: 420,
-        assets: [
-          { name: 'VNTANA Jacket (White)', uuid: '' },
-          { name: 'VNTANA Jacket (Blue)',  uuid: '' },
-          { name: 'VNTANA Jacket (Black)', uuid: '' },
-        ],
-      },
-    ]
-
-    const shapes = []
-    GROUPS.forEach(g => {
-      const frameId = createShapeId()
-      const noteH = 90, notePad = 12
-      const frameH = Math.max(260, g.assets.length * (noteH + notePad) + 60)
-      shapes.push({
-        id: frameId, type: 'frame',
-        x: g.x, y: g.y,
-        props: { w: 520, h: frameH, name: g.name },
-      })
-      g.assets.forEach((a, i) => {
-        shapes.push({
-          id: createShapeId(), type: 'note',
-          parentId: frameId,
-          x: 20, y: 40 + i * (noteH + notePad),
-          props: {
-            richText: toRichText(`uuid: ${a.uuid || 'PASTE-UUID-HERE'}\nname: ${a.name}`),
-            color: a.uuid ? 'green' : 'yellow',
-            size: 's',
-          },
-        })
-      })
-    })
-
-    editor.createShapes(shapes)
-    editor.zoomToFit()
     editorRef.current = editor
+    // Don't re-seed if persistence already loaded shapes
+    if (editor.getCurrentPageShapes().length === 0) {
+      seedCanvas(editor)
+    }
     setReady(true)
   }, [])
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       <div style={{ flex: 1, position: 'relative' }}>
-        <Tldraw onMount={handleMount} />
+        <Tldraw persistenceKey="showroom-canvas" onMount={handleMount} />
       </div>
       <div style={{ width: 256, flexShrink: 0, height: '100vh', overflowY: 'auto', background: '#fff', borderLeft: '1px solid #e2e4e9', zIndex: 10 }}>
         {ready && <Sidebar editor={editorRef.current} />}
