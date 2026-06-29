@@ -142,13 +142,13 @@
   <aside class="sidebar">
     <ul class="step-nav">
       <li class="active" data-step="1" onclick="goStep(1)">
-        <div class="step-num"><span class="num">1</span></div> Styling
+        <div class="step-num"><span class="num">1</span></div> Assets
       </li>
       <li data-step="2" onclick="goStep(2)">
         <div class="step-num"><span class="num">2</span></div> Groups
       </li>
       <li data-step="3" onclick="goStep(3)">
-        <div class="step-num"><span class="num">3</span></div> Assets
+        <div class="step-num"><span class="num">3</span></div> Styling
       </li>
       <li data-step="4" onclick="goStep(4)">
         <div class="step-num"><span class="num">4</span></div> Export
@@ -162,10 +162,64 @@
 
   <main class="main">
 
-    <!-- STEP 1: STYLING -->
+    <!-- STEP 1: ASSETS -->
     <div class="section active" id="step-1">
+      <h2>Assets</h2>
+      <p class="desc">Add the product UUIDs from VNTANA. Each UUID must be a valid product UUID (not an asset blob ID). Assign each asset to a group and set its display order.</p>
+
+      <div class="paste-area" onclick="showPasteModal()" title="Click to paste a list of UUIDs">
+        📋 Click to paste UUIDs (one per line, optionally with name)
+      </div>
+
+      <div class="asset-table-wrap">
+        <table id="asset-table">
+          <thead>
+            <tr>
+              <th style="width:32px">#</th>
+              <th style="width:260px">Asset UUID</th>
+              <th>Asset Name</th>
+              <th style="width:140px">Group</th>
+              <th style="width:62px">Order</th>
+              <th style="width:32px"></th>
+            </tr>
+          </thead>
+          <tbody id="asset-body"></tbody>
+        </table>
+      </div>
+
+      <button class="btn-sm primary" onclick="addAsset()">+ Add Row</button>
+
+      <div class="nav-footer">
+        <button class="btn-lg primary" onclick="goStep(2)">Next: Groups →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: GROUPS -->
+    <div class="section" id="step-2">
+      <h2>Groups</h2>
+      <p class="desc">Define the sections of your showroom. Assets will be assigned to groups in the next step. Groups display in the order listed here.</p>
+
+      <div id="group-list" class="group-list"></div>
+
+      <button class="btn-sm primary" onclick="addGroup()">+ Add Group</button>
+
+      <div class="nav-footer">
+        <button class="btn-lg secondary" onclick="goStep(1)">← Back</button>
+        <button class="btn-lg primary" onclick="goStep(3)">Next: Styling →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: STYLING -->
+    <div class="section" id="step-3">
       <h2>Styling</h2>
       <p class="desc">Set the visual appearance of the showroom. Save a template to reuse across showrooms.</p>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button class="btn-sm" id="mode-form-btn" onclick="setStylingMode('form')" style="background:var(--vntana);color:#fff;border-color:var(--vntana);">Form</button>
+        <button class="btn-sm" id="mode-canvas-btn" onclick="setStylingMode('canvas')">Canvas</button>
+      </div>
+
+      <div id="styling-form-panel">
 
       <div class="template-row">
         <button class="btn-sm" onclick="saveTemplate()">Save as Template</button>
@@ -329,53 +383,15 @@
           <div class="preview-val" id="prev-div-val"></div>
         </div>
       </div>
+      </div><!-- end styling-form-panel -->
 
-      <div class="nav-footer">
-        <button class="btn-lg primary" onclick="goStep(2)">Next: Groups →</button>
+      <div id="styling-canvas-panel" style="display:none;">
+        <div style="border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;background:var(--surface);">
+          <p style="font-size:14px;font-weight:600;margin-bottom:6px;">Design spatially with the Showroom Canvas</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Use the tldraw canvas to arrange groups and assets visually, then export an Excel file directly from there.</p>
+          <a href="/admin/showroom-canvas/" target="_blank" class="btn-lg primary" style="display:inline-block;text-decoration:none;padding:10px 20px;">Open Canvas App</a>
+        </div>
       </div>
-    </div>
-
-    <!-- STEP 2: GROUPS -->
-    <div class="section" id="step-2">
-      <h2>Groups</h2>
-      <p class="desc">Define the sections of your showroom. Assets will be assigned to groups in the next step. Groups display in the order listed here.</p>
-
-      <div id="group-list" class="group-list"></div>
-
-      <button class="btn-sm primary" onclick="addGroup()">+ Add Group</button>
-
-      <div class="nav-footer">
-        <button class="btn-lg secondary" onclick="goStep(1)">← Back</button>
-        <button class="btn-lg primary" onclick="goStep(3)">Next: Assets →</button>
-      </div>
-    </div>
-
-    <!-- STEP 3: ASSETS -->
-    <div class="section" id="step-3">
-      <h2>Assets</h2>
-      <p class="desc">Add the product UUIDs from VNTANA. Each UUID must be a valid product UUID (not an asset blob ID). Assign each asset to a group and set its display order.</p>
-
-      <div class="paste-area" onclick="showPasteModal()" title="Click to paste a list of UUIDs">
-        📋 Click to paste UUIDs (one per line, optionally with name)
-      </div>
-
-      <div class="asset-table-wrap">
-        <table id="asset-table">
-          <thead>
-            <tr>
-              <th style="width:32px">#</th>
-              <th style="width:260px">Asset UUID</th>
-              <th>Asset Name</th>
-              <th style="width:140px">Group</th>
-              <th style="width:62px">Order</th>
-              <th style="width:32px"></th>
-            </tr>
-          </thead>
-          <tbody id="asset-body"></tbody>
-        </table>
-      </div>
-
-      <button class="btn-sm primary" onclick="addAsset()">+ Add Row</button>
 
       <div class="nav-footer">
         <button class="btn-lg secondary" onclick="goStep(2)">← Back</button>
@@ -412,7 +428,7 @@
 
       <div class="export-actions">
         <button class="btn-lg primary" onclick="exportExcel()">⬇ Download Excel</button>
-        <button class="btn-lg secondary" onclick="goStep(1)">← Edit Styling</button>
+        <button class="btn-lg secondary" onclick="goStep(3)">← Edit Styling</button>
         <span style="font-size:13px;color:var(--muted);">Then drop the file in the <strong>Showroom Maker</strong> Google Drive folder</span>
       </div>
     </div>
@@ -449,7 +465,8 @@ function goStep(n) {
     li.classList.toggle('active', s === n);
     li.classList.toggle('done', s < n);
   });
-  if (n === 3) renderAssetTable();
+  if (n === 1) renderAssetTable();
+  if (n === 2) renderGroups();
   if (n === 4) renderExportSummary();
 }
 
@@ -734,8 +751,8 @@ function renderExportSummary() {
 function exportExcel() {
   const s = getStyling();
   const validAssets = assets.filter(a => /^[0-9a-f-]{36}$/i.test(a.uuid));
-  if (!s.name) { alert('Please enter a Showroom Name first.'); goStep(1); return; }
-  if (validAssets.length === 0) { alert('No valid asset UUIDs to export.'); goStep(3); return; }
+  if (!s.name) { alert('Please enter a Showroom Name first.'); goStep(3); return; }
+  if (validAssets.length === 0) { alert('No valid asset UUIDs to export.'); goStep(1); return; }
 
   const wb = XLSX.utils.book_new();
 
@@ -783,6 +800,19 @@ function exportExcel() {
   XLSX.writeFile(wb, filename);
 }
 
+// ─── Styling mode toggle ─────────────────────────────────────────────────────
+function setStylingMode(mode) {
+  const isForm = mode === 'form';
+  document.getElementById('styling-form-panel').style.display = isForm ? '' : 'none';
+  document.getElementById('styling-canvas-panel').style.display = isForm ? 'none' : '';
+  document.getElementById('mode-form-btn').style.cssText = isForm
+    ? 'background:var(--vntana);color:#fff;border-color:var(--vntana);'
+    : '';
+  document.getElementById('mode-canvas-btn').style.cssText = isForm
+    ? ''
+    : 'background:var(--vntana);color:#fff;border-color:var(--vntana);';
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
@@ -817,6 +847,7 @@ function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&qu
 })();
 
 updatePreview();
+renderAssetTable();
 renderGroups();
 </script>
 </body>
