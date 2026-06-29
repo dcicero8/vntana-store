@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
-import { Tldraw, createShapeId, useEditor, track, toRichText } from '@tldraw/tldraw'
+import { useState, useCallback, useEffect } from 'react'
+import { Tldraw, createShapeId, useEditor, toRichText } from '@tldraw/tldraw'
 import '@tldraw/tldraw/tldraw.css'
 import * as XLSX from 'xlsx'
 import './App.css'
@@ -73,8 +73,14 @@ function exportToExcel(editor, settings) {
 }
 
 // ─── Sidebar (reads live editor state) ───────────────────────────────────────
-const Sidebar = track(function Sidebar({ onExport }) {
+function Sidebar({ onExport }) {
   const editor = useEditor()
+  const [, forceUpdate] = useState(0)
+
+  useEffect(() => {
+    const unsub = editor.store.listen(() => forceUpdate(n => n + 1), { source: 'all', scope: 'all' })
+    return unsub
+  }, [editor])
   const [name, setName]         = useState('New Showroom')
   const [bgColor, setBg]        = useState('#f3f3f3')
   const [textColor, setText]    = useState('#000000')
@@ -174,7 +180,7 @@ const Sidebar = track(function Sidebar({ onExport }) {
       </button>
     </div>
   )
-})
+}
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
