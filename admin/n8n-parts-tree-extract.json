@@ -1,7 +1,7 @@
 {
   "meta": {
     "templateId": "vntana-parts-tree-extract",
-    "description": "Triggered by VNTANA webhook when a product is sent for review. Downloads the product GLB using the VNTANA native node, parses the scene tree, stores the mapping as a JSON attachment, and sends a Slack notification with a link to the parts-mapper UI."
+    "description": "Triggered by VNTANA webhook when a product is sent for review. Sends a Slack notification with a link to the parts-mapper UI where the user can download/parse/rename the GLB scene tree in their browser."
   },
   "name": "VNTANA — Parts Tree Extract",
   "nodes": [
@@ -30,71 +30,13 @@
       }
     },
     {
-      "id": "downloadGlb",
-      "name": "Download GLB",
-      "type": "n8n-nodes-vntana.vntana",
-      "typeVersion": 1,
-      "position": [680, 300],
-      "parameters": {
-        "operation": "downloadModel",
-        "productUuid": "={{$json.productUuid}}",
-        "clientUuid": "={{$json.clientUuid}}"
-      },
-      "credentials": {
-        "vntanaApi": {
-          "id": "y9Rnk5t3kCLxkLvQ",
-          "name": "VNTANA account 3"
-        }
-      }
-    },
-    {
-      "id": "parseSceneTree",
-      "name": "Parse Scene Tree",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [900, 300],
-      "parameters": {
-        "jsCode": "const binaryData = $input.first().binary?.data;\nif (!binaryData) {\n  // Try common binary property names\n  const keys = Object.keys($input.first().binary ?? {});\n  if (!keys.length) throw new Error('No binary data found. Expected GLB binary from Download GLB node.');\n}\nconst binKey = Object.keys($input.first().binary)[0];\nconst buf = Buffer.from($input.first().binary[binKey].data, 'base64');\n\nconst magic = buf.readUInt32LE(0);\nif (magic !== 0x46546C67) throw new Error(`Not a valid GLB file (magic: 0x${magic.toString(16)})`);\n\nconst jsonChunkLength = buf.readUInt32LE(12);\nconst jsonChunkType   = buf.readUInt32LE(16);\nif (jsonChunkType !== 0x4E4F534A) throw new Error('First GLB chunk is not JSON');\n\nconst jsonStr = buf.slice(20, 20 + jsonChunkLength).toString('utf8').replace(/\\0+$/, '');\nconst gltf = JSON.parse(jsonStr);\n\nconst nodes  = gltf.nodes  ?? [];\nconst meshes = gltf.meshes ?? [];\n\nconst parentOf = new Array(nodes.length).fill(-1);\nnodes.forEach((node, i) => {\n  (node.children ?? []).forEach(ci => { parentOf[ci] = i; });\n});\n\nfunction findNamedAncestor(idx) {\n  let cur = parentOf[idx];\n  while (cur !== -1) {\n    const name = (nodes[cur]?.name ?? '').trim();\n    if (name && name.toUpperCase() !== 'NONE') return name;\n    cur = parentOf[cur];\n  }\n  return null;\n}\n\nconst meshNodes = [];\nnodes.forEach((node, i) => {\n  if (node.mesh === undefined) return;\n  const rawName       = (node.name ?? '').trim();\n  const meshName      = meshes[node.mesh]?.name ?? '';\n  const namedAncestor = findNamedAncestor(i);\n  const isNone        = !rawName || rawName.toUpperCase() === 'NONE';\n  meshNodes.push({\n    nodeIndex:     i,\n    meshIndex:     node.mesh,\n    rawName:       rawName || 'NONE',\n    meshName,\n    suggestedName: isNone ? (namedAncestor ?? '') : rawName,\n    namedAncestor: namedAncestor ?? '',\n    needsRename:   isNone\n  });\n});\n\nconst ids = $node['Extract IDs'].json;\nreturn [{ json: {\n  productUuid:  ids.productUuid,\n  productName:  ids.productName || ids.productUuid,\n  clientUuid:   ids.clientUuid,\n  totalNodes:   nodes.length,\n  totalMeshes:  meshNodes.length,\n  needsRename:  meshNodes.filter(m => m.needsRename).length,\n  meshNodes\n} }];"
-      }
-    },
-    {
-      "id": "buildMappingJson",
-      "name": "Build Mapping JSON",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [1120, 300],
-      "parameters": {
-        "jsCode": "const tree = $input.first().json;\n\nconst mapping = {\n  productUuid:  tree.productUuid,\n  productName:  tree.productName,\n  clientUuid:   tree.clientUuid,\n  extractedAt:  new Date().toISOString(),\n  totalNodes:   tree.totalNodes,\n  totalMeshes:  tree.totalMeshes,\n  needsRename:  tree.needsRename,\n  entries: tree.meshNodes.map(m => ({\n    nodeIndex:     m.nodeIndex,\n    meshIndex:     m.meshIndex,\n    rawName:       m.rawName,\n    meshName:      m.meshName,\n    suggestedName: m.suggestedName,\n    confirmedName: m.suggestedName,\n    namedAncestor: m.namedAncestor,\n    needsRename:   m.needsRename,\n    isNew:         false\n  }))\n};\n\nconst jsonStr  = JSON.stringify(mapping, null, 2);\nconst fileName = `scene-mapping-${tree.productUuid}.json`;\n\nconst binary = {\n  mappingFile: await this.helpers.prepareBinaryData(\n    Buffer.from(jsonStr, 'utf8'),\n    fileName,\n    'application/json'\n  )\n};\n\nreturn [{ json: { mapping, jsonStr, fileName, productUuid: tree.productUuid, clientUuid: tree.clientUuid, productName: tree.productName, totalMeshes: tree.totalMeshes, needsRename: tree.needsRename }, binary }];"
-      }
-    },
-    {
-      "id": "uploadAttachment",
-      "name": "Upload Mapping Attachment",
-      "type": "n8n-nodes-vntana.vntana",
-      "typeVersion": 1,
-      "position": [1340, 300],
-      "parameters": {
-        "resource": "attachment",
-        "operation": "upload",
-        "productUuid": "={{$json.productUuid}}",
-        "clientUuid": "={{$json.clientUuid}}",
-        "binaryPropertyName": "mappingFile"
-      },
-      "credentials": {
-        "vntanaApi": {
-          "id": "y9Rnk5t3kCLxkLvQ",
-          "name": "VNTANA account 3"
-        }
-      }
-    },
-    {
       "id": "buildNotification",
       "name": "Build Notification",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1560, 300],
+      "position": [680, 300],
       "parameters": {
-        "jsCode": "const prev = $node['Build Mapping JSON'].json;\nconst mapperUrl = `https://vntana-store-production.up.railway.app/admin/parts-mapper.html?uuid=${prev.productUuid}&clientUuid=${prev.clientUuid}`;\n\nconst lines = [\n  `*Parts Mapper ready: ${prev.productName}*`,\n  `${prev.needsRename} of ${prev.totalMeshes} mesh nodes need renaming.`,\n  '',\n  `<${mapperUrl}|Open Parts Mapper>`\n];\n\nreturn [{ json: { mapperUrl, slackText: lines.join('\\n'), ...prev } }];"
+        "jsCode": "const ids = $input.first().json;\nconst mapperUrl = `https://vntana-store-production.up.railway.app/admin/parts-mapper.html?uuid=${ids.productUuid}&clientUuid=${ids.clientUuid}`;\nconst productLabel = ids.productName || ids.productUuid;\n\nconst slackText = [\n  `*Parts Mapper: ${productLabel}*`,\n  `Open the mapper to review and rename mesh nodes in this model.`,\n  '',\n  `<${mapperUrl}|Open Parts Mapper>`\n].join('\\n');\n\nreturn [{ json: { ...ids, mapperUrl, slackText } }];"
       }
     },
     {
@@ -102,7 +44,7 @@
       "name": "Slack Notify",
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
-      "position": [1780, 300],
+      "position": [900, 300],
       "parameters": {
         "operation": "message",
         "select": "channel",
@@ -115,9 +57,7 @@
         "otherOptions": { "mrkdwn": true }
       },
       "credentials": {
-        "slackApi": {
-          "name": "Slack account"
-        }
+        "slackApi": { "name": "Slack account" }
       }
     },
     {
@@ -125,22 +65,18 @@
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [2000, 300],
+      "position": [1120, 300],
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ success: true, productUuid: $node['Build Notification'].json.productUuid, productName: $node['Build Notification'].json.productName, totalMeshes: $node['Build Notification'].json.totalMeshes, needsRename: $node['Build Notification'].json.needsRename, mapperUrl: $node['Build Notification'].json.mapperUrl }) }}"
+        "responseBody": "={{ JSON.stringify({ success: true, productUuid: $json.productUuid, productName: $json.productName, mapperUrl: $json.mapperUrl }) }}"
       }
     }
   ],
   "connections": {
-    "Webhook":                   { "main": [[{ "node": "Extract IDs",              "type": "main", "index": 0 }]] },
-    "Extract IDs":               { "main": [[{ "node": "Download GLB",             "type": "main", "index": 0 }]] },
-    "Download GLB":              { "main": [[{ "node": "Parse Scene Tree",         "type": "main", "index": 0 }]] },
-    "Parse Scene Tree":          { "main": [[{ "node": "Build Mapping JSON",       "type": "main", "index": 0 }]] },
-    "Build Mapping JSON":        { "main": [[{ "node": "Upload Mapping Attachment","type": "main", "index": 0 }]] },
-    "Upload Mapping Attachment": { "main": [[{ "node": "Build Notification",       "type": "main", "index": 0 }]] },
-    "Build Notification":        { "main": [[{ "node": "Slack Notify",             "type": "main", "index": 0 }]] },
-    "Slack Notify":              { "main": [[{ "node": "Respond",                  "type": "main", "index": 0 }]] }
+    "Webhook":            { "main": [[{ "node": "Extract IDs",       "type": "main", "index": 0 }]] },
+    "Extract IDs":        { "main": [[{ "node": "Build Notification", "type": "main", "index": 0 }]] },
+    "Build Notification": { "main": [[{ "node": "Slack Notify",       "type": "main", "index": 0 }]] },
+    "Slack Notify":       { "main": [[{ "node": "Respond",            "type": "main", "index": 0 }]] }
   },
   "settings": { "executionOrder": "v1" },
   "staticData": null

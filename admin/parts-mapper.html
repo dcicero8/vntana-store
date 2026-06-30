@@ -160,81 +160,70 @@
 
 <script>
 // ── Config ────────────────────────────────────────────────────────────────────
-// Update this URL after importing the n8n workflow and activating it
-const APPLY_WEBHOOK_URL = 'https://vntana.app.n8n.cloud/webhook/parts-tree-apply';
 const VNTANA_CLIENT_UUID = 'b577b1c8-80bd-4dab-b1b1-b22f9de4671a';
-const VNTANA_AUTH_BASE   = 'https://api-platform.vntana.com';
-const VNTANA_PUBLIC_BASE = 'https://api.vntana.com';
+const VNTANA_API_BASE    = 'https://api-platform.vntana.com';
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let mapping = null;         // raw mapping object from attachment
-let entries = [];           // working copy of mapping.entries
-let originalEntries = [];   // snapshot for reset
+let token       = null;   // VNTANA auth token
+let productInfo = null;   // product API response
+let glbBuf      = null;   // original GLB ArrayBuffer
+let gltfJson    = null;   // parsed glTF JSON from GLB
+let entries     = [];     // working copy of mesh node list
+let originalEntries = []; // snapshot for reset
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-const params = new URLSearchParams(location.search);
+const params      = new URLSearchParams(location.search);
 const productUuid = params.get('uuid');
 const clientUuid  = params.get('clientUuid') || VNTANA_CLIENT_UUID;
 
 if (!productUuid) {
-  showError('No ?uuid= parameter found. Open this page from the Parts Tree Extract workflow response.');
+  showError('No ?uuid= parameter found. Open this page from a Parts Mapper notification.');
 } else {
-  loadMapping();
+  loadFromGlb();
 }
 
-// ── Load mapping from VNTANA attachment ───────────────────────────────────────
-async function loadMapping() {
-  setStatus('loading', 'Fetching mapping attachment from VNTANA...');
+// ── Main load: login → get product → download GLB → parse scene tree ──────────
+async function loadFromGlb() {
+  setStatus('loading', 'Authenticating...');
   try {
-    // We need auth to search attachments
-    const authResp = await fetch(`${VNTANA_AUTH_BASE}/v1/auth/login`, {
+    const email    = prompt('VNTANA email:');
+    const password = prompt('VNTANA password:');
+    const authResp = await fetch(`${VNTANA_API_BASE}/v1/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: prompt('VNTANA email:'), password: prompt('VNTANA password:') })
+      body: JSON.stringify({ email, password })
     });
     const authData = await authResp.json();
-    const token = authData?.response?.token;
-    if (!token) throw new Error('Authentication failed. Check credentials.');
+    token = authData?.response?.token;
+    if (!token) throw new Error('Authentication failed. Check email and password.');
 
-    // Search attachments for this product
-    const searchResp = await fetch(
-      `${VNTANA_AUTH_BASE}/v1/attachments/search?productUuid=${productUuid}&entityType=PRODUCT`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-AUTH-TOKEN': token },
-        body: JSON.stringify({ page: 1, size: 50 })
-      }
-    );
-    const searchData = await searchResp.json();
-    const attachments = searchData?.response?.grid ?? [];
-
-    // Find the most recent scene-mapping JSON
-    const mappingAttachment = attachments
-      .filter(a => (a.name ?? '').startsWith('scene-mapping-') && (a.name ?? '').endsWith('.json'))
-      .sort((a, b) => new Date(b.created ?? 0) - new Date(a.created ?? 0))[0];
-
-    if (!mappingAttachment) {
-      throw new Error(`No scene-mapping-*.json attachment found on product ${productUuid}. Run the Parts Tree Extract workflow first.`);
-    }
-
-    setStatus('loading', 'Downloading mapping data...');
-
-    // Download the JSON blob
-    const dlResp = await fetch(
-      `${VNTANA_AUTH_BASE}/v1/storage/load/asset/model?blobId=${mappingAttachment.blobId}&clientUuid=${clientUuid}`,
+    setStatus('loading', 'Fetching product info...');
+    const prodResp = await fetch(
+      `${VNTANA_API_BASE}/v1/products/${productUuid}?clientUuid=${clientUuid}`,
       { headers: { 'X-AUTH-TOKEN': token } }
     );
-    if (!dlResp.ok) throw new Error(`Failed to download mapping (${dlResp.status})`);
+    const prodData = await prodResp.json();
+    productInfo = prodData?.response;
+    const asset  = productInfo?.asset;
+    const blobId = asset?.models?.[0]?.modelBlobId ?? asset?.assetBlobId;
+    if (!blobId) throw new Error('No model blobId found on this product.');
 
-    mapping = await dlResp.json();
-    entries = mapping.entries.map(e => ({ ...e }));
-    originalEntries = mapping.entries.map(e => ({ ...e }));
-
-    // Update header
+    const productName = productInfo?.name ?? productUuid;
     document.getElementById('product-meta').innerHTML =
-      `<strong>${escHtml(mapping.productName)}</strong> &nbsp; ${escHtml(productUuid.slice(0,8))}...`;
+      `<strong>${escHtml(productName)}</strong> &nbsp; <span style="color:#64748b">${escHtml(productUuid.slice(0,8))}...</span>`;
 
-    setStatus('ready', `${mapping.totalMeshes} mesh nodes loaded. ${mapping.needsRename} need renaming.`);
+    setStatus('loading', 'Downloading GLB (may take a moment)...');
+    const dlResp = await fetch(
+      `${VNTANA_API_BASE}/v1/storage/load/asset/model?blobId=${blobId}&clientUuid=${clientUuid}`,
+      { headers: { 'X-AUTH-TOKEN': token } }
+    );
+    if (!dlResp.ok) throw new Error(`GLB download failed (${dlResp.status})`);
+    glbBuf = await dlResp.arrayBuffer();
+
+    setStatus('loading', 'Parsing scene tree...');
+    parseGlbSceneTree();
+
+    setStatus('ready', `${entries.length} mesh nodes loaded. ${entries.filter(e=>e.needsRename).length} need renaming.`);
     document.getElementById('apply-btn').disabled = false;
     updateFooter();
     renderLeft();
@@ -244,6 +233,111 @@ async function loadMapping() {
     showError(err.message);
     setStatus('idle', '');
   }
+}
+
+// ── GLB parsing ───────────────────────────────────────────────────────────────
+function parseGlbSceneTree() {
+  const dv = new DataView(glbBuf);
+  const magic = dv.getUint32(0, true);
+  if (magic !== 0x46546C67) throw new Error('Not a valid GLB file (magic: 0x' + magic.toString(16) + ')');
+
+  const jsonChunkLen  = dv.getUint32(12, true);
+  const jsonChunkType = dv.getUint32(16, true);
+  if (jsonChunkType !== 0x4E4F534A) throw new Error('First GLB chunk is not JSON');
+
+  const jsonBytes = new Uint8Array(glbBuf, 20, jsonChunkLen);
+  gltfJson = JSON.parse(new TextDecoder().decode(jsonBytes));
+
+  const nodes  = gltfJson.nodes  ?? [];
+  const meshes = gltfJson.meshes ?? [];
+
+  const parentOf = new Array(nodes.length).fill(-1);
+  nodes.forEach((node, i) => {
+    (node.children ?? []).forEach(ci => { parentOf[ci] = i; });
+  });
+
+  function findNamedAncestor(idx) {
+    let cur = parentOf[idx];
+    while (cur !== -1) {
+      const name = (nodes[cur]?.name ?? '').trim();
+      if (name && name.toUpperCase() !== 'NONE') return name;
+      cur = parentOf[cur];
+    }
+    return '';
+  }
+
+  const meshNodes = [];
+  nodes.forEach((node, i) => {
+    if (node.mesh === undefined) return;
+    const rawName  = (node.name ?? '').trim();
+    const meshName = meshes[node.mesh]?.name ?? '';
+    const ancestor = findNamedAncestor(i);
+    const isNone   = !rawName || rawName.toUpperCase() === 'NONE';
+    meshNodes.push({
+      nodeIndex:     i,
+      meshIndex:     node.mesh,
+      rawName:       rawName || 'NONE',
+      meshName,
+      suggestedName: isNone ? ancestor : rawName,
+      namedAncestor: ancestor,
+      confirmedName: isNone ? ancestor : rawName,
+      needsRename:   isNone,
+      isNew:         false
+    });
+  });
+
+  entries = meshNodes;
+  originalEntries = meshNodes.map(e => ({ ...e }));
+}
+
+// ── Rewrite GLB with confirmed names ─────────────────────────────────────────
+function buildRenamedGlb() {
+  const gltfCopy = JSON.parse(JSON.stringify(gltfJson));
+  let renamedCount = 0;
+
+  entries.forEach(e => {
+    const confirmed = (e.confirmedName ?? '').trim();
+    if (confirmed && confirmed !== gltfCopy.nodes[e.nodeIndex]?.name) {
+      gltfCopy.nodes[e.nodeIndex].name = confirmed;
+      renamedCount++;
+    }
+  });
+
+  const newJsonStr  = JSON.stringify(gltfCopy);
+  const encoder     = new TextEncoder();
+  const jsonBytes   = encoder.encode(newJsonStr);
+  const padLen      = (4 - (jsonBytes.length % 4)) % 4;
+  const paddedLen   = jsonBytes.length + padLen;
+
+  // Binary chunk = everything after the original JSON chunk
+  const dv = new DataView(glbBuf);
+  const origJsonLen    = dv.getUint32(12, true);
+  const binaryOffset   = 20 + origJsonLen;
+  const binaryChunkBuf = blobBuf => glbBuf.slice(binaryOffset);
+  const binChunk       = glbBuf.slice(binaryOffset);
+
+  const totalLen = 12 + 8 + paddedLen + binChunk.byteLength;
+  const outBuf   = new ArrayBuffer(totalLen);
+  const outView  = new DataView(outBuf);
+  const outU8    = new Uint8Array(outBuf);
+
+  // Header
+  outView.setUint32(0, 0x46546C67, true); // magic "glTF"
+  outView.setUint32(4, 2, true);           // version
+  outView.setUint32(8, totalLen, true);
+
+  // JSON chunk header
+  outView.setUint32(12, paddedLen, true);
+  outView.setUint32(16, 0x4E4F534A, true); // type JSON
+
+  // JSON chunk data (padded with spaces)
+  outU8.set(jsonBytes, 20);
+  for (let i = jsonBytes.length; i < paddedLen; i++) outU8[20 + i] = 0x20;
+
+  // Binary chunk (copy verbatim)
+  outU8.set(new Uint8Array(binChunk), 20 + paddedLen);
+
+  return { buf: outBuf, renamedCount };
 }
 
 // ── Render left pane (read-only) ──────────────────────────────────────────────
@@ -336,40 +430,69 @@ function updateFooter() {
 // ── Apply ──────────────────────────────────────────────────────────────────────
 async function applyMapping() {
   const overlay = document.getElementById('apply-overlay');
+  const card    = document.getElementById('overlay-card');
   overlay.classList.add('active');
+  card.innerHTML = `
+    <div class="big-spinner" id="overlay-spinner"></div>
+    <h2>Applying mapping...</h2>
+    <p>Rewriting GLB scene tree and uploading new version to VNTANA.</p>
+  `;
 
   try {
-    const payload = {
-      productUuid,
-      clientUuid,
-      entries: entries.map(e => ({ nodeIndex: e.nodeIndex, confirmedName: e.confirmedName }))
-    };
+    // 1. Rewrite GLB in browser
+    const { buf, renamedCount } = buildRenamedGlb();
 
-    const resp = await fetch(APPLY_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    // 2. Upload as new version via VNTANA API
+    const formData = new FormData();
+    const blob = new Blob([buf], { type: 'model/gltf-binary' });
+    const productName = productInfo?.name ?? productUuid;
+    const fileName = (productName.replace(/[^a-z0-9_-]/gi, '_') || productUuid) + '_remapped.glb';
+    formData.append('file', blob, fileName);
 
-    const data = await resp.json();
+    card.querySelector('p').textContent = 'Uploading new version to VNTANA...';
 
-    if (!resp.ok || data.success === false) {
-      throw new Error(data.message || `Webhook returned ${resp.status}`);
+    const uploadResp = await fetch(
+      `${VNTANA_API_BASE}/v1/assets/upload/product-asset?clientUuid=${clientUuid}&productUuid=${productUuid}`,
+      { method: 'POST', headers: { 'X-AUTH-TOKEN': token }, body: formData }
+    );
+    if (!uploadResp.ok) {
+      const err = await uploadResp.text();
+      throw new Error(`Upload failed (${uploadResp.status}): ${err.slice(0,200)}`);
     }
 
-    // Show success
-    document.getElementById('overlay-card').innerHTML = `
+    // 3. Save mapping JSON as attachment
+    const mapping = {
+      productUuid,
+      productName,
+      appliedAt: new Date().toISOString(),
+      renamedCount,
+      entries: entries.map(e => ({ nodeIndex: e.nodeIndex, rawName: e.rawName, confirmedName: e.confirmedName }))
+    };
+    const mappingBlob = new Blob([JSON.stringify(mapping, null, 2)], { type: 'application/json' });
+    const mappingForm = new FormData();
+    mappingForm.append('file', mappingBlob, `scene-mapping-${productUuid}.json`);
+
+    await fetch(
+      `${VNTANA_API_BASE}/v1/attachments/product?clientUuid=${clientUuid}&productUuid=${productUuid}`,
+      { method: 'POST', headers: { 'X-AUTH-TOKEN': token }, body: mappingForm }
+    );
+
+    card.innerHTML = `
       <div class="success-icon">✅</div>
       <h2>Done!</h2>
       <p>
-        <strong>${data.renameCount ?? '?'}</strong> nodes renamed.<br>
+        <strong>${renamedCount}</strong> node${renamedCount !== 1 ? 's' : ''} renamed.<br>
         New version uploaded to VNTANA. Check the product in the platform to review and publish.
       </p>
       <button class="btn btn-primary" onclick="document.getElementById('apply-overlay').classList.remove('active')">Close</button>
     `;
 
+    // Update local state so reset works correctly
+    originalEntries = entries.map(e => ({ ...e }));
+    updateFooter();
+
   } catch (err) {
-    document.getElementById('overlay-card').innerHTML = `
+    card.innerHTML = `
       <div class="success-icon">❌</div>
       <h2>Error</h2>
       <p>${escHtml(err.message)}</p>
