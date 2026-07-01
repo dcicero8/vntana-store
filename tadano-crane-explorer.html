@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tadano GT-1200XL-2 | Crane Explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --tadano-yellow: #FFD100;
+      --tadano-black:  #0D0D0D;
+      --tadano-panel:  #161616;
+      --tadano-card:   #1E1E1E;
+      --tadano-border: #2C2C2C;
+      --tadano-muted:  #888;
+      --tadano-text:   #F0F0F0;
+    }
+
+    body {
+      background: var(--tadano-black);
+      color: var(--tadano-text);
+    }
+
+    /* ── Header override ── */
+    header {
+      background: var(--tadano-black);
+      border-bottom: 1px solid var(--tadano-border);
+    }
+    header .logo img { filter: invert(1); }
+    header .demo-nav a { color: var(--tadano-muted); }
+    header .demo-nav a:hover, header .demo-nav a.active { color: var(--tadano-text); }
+
+    /* ── Layout ── */
+    .crane-page {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Left: Viewer ── */
+    .crane-viewer-col {
+      position: sticky;
+      top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .crane-viewer-wrap {
+      position: relative;
+      flex: 1;
+    }
+    vntana-viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── Start overlay ── */
+    .tour-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      z-index: 10;
+      transition: opacity 0.5s ease;
+    }
+    .tour-overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .tour-overlay-eyebrow {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tadano-yellow);
+    }
+    .tour-overlay-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      max-width: 320px;
+    }
+    .tour-overlay-sub {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.55;
+    }
+    .tour-start-btn {
+      margin-top: 0.5rem;
+      padding: 0.85rem 2.5rem;
+      background: var(--tadano-yellow);
+      color: var(--tadano-black);
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .tour-start-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    /* ── Progress bar ── */
+    .tour-progress {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      z-index: 5;
+      display: none;
+    }
+    .tour-progress-fill {
+      height: 100%;
+      background: var(--tadano-yellow);
+      transition: width 0.35s ease;
+      width: 0%;
+    }
+
+    /* ── Dot indicators ── */
+    .tour-stop-indicator {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 7px;
+      z-index: 5;
+    }
+    .tour-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transition: background 0.3s;
+    }
+    .tour-dot.active { background: var(--tadano-yellow); }
+
+    /* ── Right: Info panel ── */
+    .crane-info-col {
+      background: var(--tadano-panel);
+      border-left: 1px solid var(--tadano-border);
+      padding: 2rem 1.75rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ── Header block ── */
+    .crane-eyebrow {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--tadano-yellow);
+    }
+    .crane-model {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: #fff;
+      margin: 0.3rem 0 0;
+    }
+    .crane-spec-line {
+      font-size: 0.78rem;
+      color: var(--tadano-muted);
+      margin-top: 0.3rem;
+      letter-spacing: 0.02em;
+    }
+    .crane-desc {
+      font-size: 0.85rem;
+      color: var(--tadano-muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .crane-divider {
+      border: none;
+      border-top: 1px solid var(--tadano-border);
+      margin: 0;
+    }
+
+    /* ── Stop cards ── */
+    .stop-list-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--tadano-muted);
+      margin-bottom: 0.6rem;
+    }
+    .stop-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .stop-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+      border: 1.5px solid var(--tadano-border);
+      border-radius: 8px;
+      background: var(--tadano-card);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .stop-card:hover { border-color: #444; background: #222; }
+    .stop-card.active {
+      border-color: var(--tadano-yellow);
+      background: #1C1900;
+    }
+    .stop-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: #2C2C2C;
+      color: var(--tadano-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .stop-card.active .stop-num {
+      background: var(--tadano-yellow);
+      color: var(--tadano-black);
+    }
+    .stop-text strong {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--tadano-text);
+      display: block;
+    }
+    .stop-text span {
+      font-size: 0.77rem;
+      color: var(--tadano-muted);
+      line-height: 1.45;
+    }
+
+    /* ── Active stop detail ── */
+    .stop-detail {
+      display: none;
+      padding: 1rem 1.1rem;
+      background: var(--tadano-card);
+      border: 1.5px solid var(--tadano-yellow);
+      border-radius: 8px;
+    }
+    .stop-detail.visible { display: block; }
+    .stop-detail-headline {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .stop-detail-body {
+      font-size: 0.82rem;
+      color: var(--tadano-muted);
+      line-height: 1.65;
+    }
+    .stop-detail-stat {
+      margin-top: 0.75rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      padding: 0.25rem 0.65rem;
+      background: #111;
+      border: 1px solid var(--tadano-border);
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--tadano-yellow);
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Tour controls ── */
+    .tour-controls {
+      display: none;
+      gap: 0.5rem;
+    }
+    .tour-ctrl-btn {
+      flex: 1;
+      padding: 0.65rem;
+      border: 1.5px solid var(--tadano-border);
+      border-radius: 7px;
+      background: var(--tadano-card);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--tadano-text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .tour-ctrl-btn:hover { background: #282828; border-color: #444; }
+    .tour-ctrl-btn.primary {
+      background: var(--tadano-yellow);
+      color: var(--tadano-black);
+      border-color: var(--tadano-yellow);
+    }
+    .tour-ctrl-btn.primary:hover { opacity: 0.9; }
+    .tour-ctrl-btn:disabled { opacity: 0.35; cursor: default; }
+
+    /* ── Spec links ── */
+    .spec-links { display: flex; flex-direction: column; gap: 0.4rem; }
+    .spec-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.9rem;
+      border: 1px solid var(--tadano-border);
+      border-radius: 7px;
+      font-size: 0.8rem;
+      color: var(--tadano-muted);
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .spec-link:hover { border-color: var(--tadano-yellow); color: var(--tadano-yellow); }
+
+    /* ── Tadano wordmark ── */
+    .tadano-wordmark {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: auto;
+      padding-top: 0.5rem;
+    }
+    .tadano-wordmark-text {
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: var(--tadano-yellow);
+    }
+    .tadano-wordmark-sub {
+      font-size: 0.65rem;
+      color: var(--tadano-muted);
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 800px) {
+      .crane-page { grid-template-columns: 1fr; }
+      .crane-viewer-col { position: relative; top: 0; height: 65vw; min-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo"><img src="VNTANA-logo-white-300x37.png" alt="VNTANA" height="18"></a>
+    <nav class="demo-nav">
+      <a href="index.html" class="demo-nav-home">← All Demos</a>
+      <a href="#" class="active">Tadano Crane Explorer</a>
+    </nav>
+  </header>
+
+  <main class="crane-page">
+
+    <!-- LEFT: Viewer -->
+    <div class="crane-viewer-col">
+      <div class="crane-viewer-wrap">
+
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+        <vntana-viewer id="crane-viewer" loading="eager" role="application" aria-label="Tadano GT-1200XL-2 3D crane explorer">
+          <vntana-fs-button></vntana-fs-button>
+          <vntana-center-button></vntana-center-button>
+          <div class="button-container zoom-buttons">
+            <vntana-zoom-in-button></vntana-zoom-in-button>
+            <vntana-zoom-out-button></vntana-zoom-out-button>
+          </div>
+        </vntana-viewer>
+
+        <!-- Start overlay -->
+        <div class="tour-overlay" id="tour-overlay">
+          <div class="tour-overlay-eyebrow">Tadano GT-1200XL-2</div>
+          <div class="tour-overlay-title">120 US Ton Crane Explorer</div>
+          <div class="tour-overlay-sub">An interactive guided tour through the GT-1200XL-2's key systems — from the main boom to the outrigger package.</div>
+          <button class="tour-start-btn" id="tour-start-btn">Begin Tour</button>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="tour-progress" id="tour-progress">
+          <div class="tour-progress-fill" id="tour-progress-fill"></div>
+        </div>
+
+        <!-- Dot indicators -->
+        <div class="tour-stop-indicator" id="tour-stop-indicator"></div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Info panel -->
+    <div class="crane-info-col">
+
+      <div>
+        <div class="crane-eyebrow">Industrial Heavy Lift</div>
+        <h1 class="crane-model">GT-1200XL-2</h1>
+        <div class="crane-spec-line">120 US TON MAX. CAPACITY &nbsp;·&nbsp; 167.3 FT BOOM</div>
+      </div>
+
+      <p class="crane-desc">Explore the key systems of Tadano's GT-1200XL-2 in an interactive 3D experience. Click any stop or use the tour controls to walk through the crane's major components.</p>
+
+      <hr class="crane-divider">
+
+      <div>
+        <div class="stop-list-label">Tour Stops</div>
+        <div class="stop-cards" id="stop-cards"></div>
+      </div>
+
+      <!-- Active stop detail -->
+      <div class="stop-detail" id="stop-detail"></div>
+
+      <!-- Tour controls -->
+      <div class="tour-controls" id="tour-controls">
+        <button class="tour-ctrl-btn" id="tour-prev-btn">← Prev</button>
+        <button class="tour-ctrl-btn" id="tour-pause-btn">Pause</button>
+        <button class="tour-ctrl-btn" id="tour-next-btn">Next →</button>
+      </div>
+
+      <hr class="crane-divider">
+
+      <div>
+        <div class="stop-list-label">Resources</div>
+        <div class="spec-links">
+          <a class="spec-link" href="https://www.tadano.com/products/truck-cranes/gt-1200xl-2/" target="_blank">
+            Product Page <span>→</span>
+          </a>
+          <a class="spec-link" href="https://www.tadano.com/resource/gt-1200xl-2/" target="_blank">
+            Technical Specifications <span>→</span>
+          </a>
+          <a class="spec-link" href="https://www.tadano.com/contact/" target="_blank">
+            Contact Tadano <span>→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="tadano-wordmark">
+        <div>
+          <div class="tadano-wordmark-text">TADANO</div>
+          <div class="tadano-wordmark-sub">MOVING THE WORLD SAFELY</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    const BASE_URL  = "https://api.vntana.com";
+    const ORG       = "DCicero";
+    const WS        = "example-files";
+    const PRODUCT   = "34d4f492-80b8-4f27-9731-f962ba4a66d8";
+    const TOUR_INTERVAL = 6000;
+
+    // ── Tour stop data ──────────────────────────────────────────
+    // Add 5 hotspots in VNTANA in this order to unlock camera snap per stop.
+    // Hotspot camera positions are loaded from the API if they exist.
+    const STOPS = [
+      {
+        label:    "Main Boom",
+        headline: "Five sections. One cylinder. 167 feet of reach.",
+        body:     "The GT-1200XL-2's single-cylinder telescoping boom extends from 41.0 to 167.3 feet — built from round box construction with precision wear pads to keep every section aligned under full load. A pinning system locks each extension point for maximum structural integrity at any length.",
+        stats:    ["41.0 – 167.3 ft", "5-Section", "Single Cylinder", "280 sec full extend"],
+        nodes:    ["GT-1200XL-2_BoomAssy_max"],
+      },
+      {
+        label:    "Lattice Jib",
+        headline: "Add 58 feet. Change the job.",
+        body:     "The bi-fold lattice jib mounts alongside the base boom section and deploys in three offset angles — 3.5°, 25°, or 45°. At its full 58.7-foot extension, the GT-1200XL-2 reaches heights that no main boom alone can touch. Self-storing pins and assistant cylinders make deployment a one-person job.",
+        stats:    ["33.8 ft or 58.7 ft", "3.5° / 25° / 45° offsets", "Quick-reeving", "Self-storing pins"],
+        nodes:    ["GT-1200XL-2_JibAssy"],
+      },
+      {
+        label:    "Elevation System",
+        headline: "Zero to maximum in 40 seconds.",
+        body:     "The double-acting hydraulic elevation cylinder lifts the boom through a full arc from -1.5° to 80.5°. Combination hand and foot controls let the operator choose their preference. Automatic speed reduction and slow-stop function prevent load swing during positioning.",
+        stats:    ["-1.5° to 80.5°", "20° – 60° in 40 sec", "Combo hand/foot controls", "Auto slow-stop"],
+        nodes:    ["GT-1200XL-2_ElevatingCylinderTube", "GT-1200XL-2_ElevatingCylinderRod"],
+      },
+      {
+        label:    "Counterweight",
+        headline: "55,100 pounds of balance.",
+        body:     "The self-removable counterweight system stacks up to five plates — configurable from 0 to 55,100 lbs — to match the required lift capacity and load radius for each job. No additional handling equipment required for removal or installation.",
+        stats:    ["0 – 55,100 lb total", "5 plate configurations", "Self-removable", "On-board storage"],
+        nodes:    ["GT-1200XL-2_Counterweight"],
+      },
+      {
+        label:    "Outrigger System",
+        headline: "134,700 lbs of ground contact.",
+        body:     "Four independently controlled outriggers extend in three positions — minimum, mid, and maximum — with a 23'7\" × 19'8\" maximum footprint. Built-in extension length detectors feed directly into the AML-E2 load moment indicator, which automatically programs the correct lifting capacity table for the selected outrigger state.",
+        stats:    ["23'7\" × 19'8\" max spread", "3 extension positions", "134,700 lb max outrigger load", "AML-E2 auto-programmed"],
+        nodes:    ["GT-1200XL-2_OutriggerCaseMiddle", "GT-1200XL-2_OutriggerFloat", "GT-1200XL-2_JackCylinderRod1", "GT-1200XL-2_JackCylinderRod2"],
+      },
+    ];
+
+    // ── DOM refs ────────────────────────────────────────────────
+    const viewer   = document.getElementById("crane-viewer");
+    const overlay  = document.getElementById("tour-overlay");
+    const startBtn = document.getElementById("tour-start-btn");
+    const progress = document.getElementById("tour-progress");
+    const fill     = document.getElementById("tour-progress-fill");
+    const dots     = document.getElementById("tour-stop-indicator");
+    const cards    = document.getElementById("stop-cards");
+    const detail   = document.getElementById("stop-detail");
+    const controls = document.getElementById("tour-controls");
+    const prevBtn  = document.getElementById("tour-prev-btn");
+    const pauseBtn = document.getElementById("tour-pause-btn");
+    const nextBtn  = document.getElementById("tour-next-btn");
+
+    let current     = 0;
+    let paused      = false;
+    let timer       = null;
+    let tourStarted = false;
+    let cameras     = []; // Populated from VNTANA hotspot API if hotspots exist
+
+    // ── Camera snap ─────────────────────────────────────────────
+    function snapCamera(cam) {
+      if (!cam) return;
+      try {
+        if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
+        if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
+        if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+      } catch(e) {}
+    }
+
+    // ── Build UI ────────────────────────────────────────────────
+    function buildDots() {
+      dots.innerHTML = "";
+      STOPS.forEach(() => {
+        const d = document.createElement("div");
+        d.className = "tour-dot";
+        dots.appendChild(d);
+      });
+    }
+
+    function buildCards() {
+      cards.innerHTML = "";
+      STOPS.forEach((stop, i) => {
+        const card = document.createElement("div");
+        card.className     = "stop-card";
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div class="stop-num">${i + 1}</div>
+          <div class="stop-text">
+            <strong>${stop.label}</strong>
+            <span>${stop.headline}</span>
+          </div>`;
+        card.addEventListener("click", () => { goTo(i); pauseTour(); });
+        cards.appendChild(card);
+      });
+    }
+
+    function renderDetail(index) {
+      const stop = STOPS[index];
+      detail.innerHTML = `
+        <div class="stop-detail-headline">${stop.headline}</div>
+        <div class="stop-detail-body">${stop.body}</div>
+        <div class="stop-detail-stat">
+          ${stop.stats.map(s => `<span class="stat-pill">${s}</span>`).join("")}
+        </div>`;
+      detail.classList.add("visible");
+    }
+
+    // ── Navigation ───────────────────────────────────────────────
+    function goTo(index) {
+      current = ((index % STOPS.length) + STOPS.length) % STOPS.length;
+
+      snapCamera(cameras[current] ?? null);
+      renderDetail(current);
+
+      document.querySelectorAll(".stop-card").forEach((c, i) =>
+        c.classList.toggle("active", i === current));
+      document.querySelectorAll(".tour-dot").forEach((d, i) =>
+        d.classList.toggle("active", i === current));
+      fill.style.width = `${((current + 1) / STOPS.length) * 100}%`;
+
+      prevBtn.disabled = false;
+      nextBtn.disabled = false;
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (paused) return;
+        goTo(current + 1);
+      }, TOUR_INTERVAL);
+    }
+
+    function pauseTour() {
+      paused = true;
+      pauseBtn.textContent = "Resume";
+      pauseBtn.classList.add("primary");
+      clearInterval(timer);
+    }
+
+    function startTour() {
+      tourStarted = true;
+      overlay.classList.add("hidden");
+      progress.style.display = "block";
+      dots.style.display     = "flex";
+      controls.style.display = "flex";
+      paused = false;
+      goTo(0);
+      startTimer();
+    }
+
+    // ── Event listeners ─────────────────────────────────────────
+    startBtn.addEventListener("click", startTour);
+
+    pauseBtn.addEventListener("click", () => {
+      paused = !paused;
+      pauseBtn.textContent = paused ? "Resume" : "Pause";
+      pauseBtn.classList.toggle("primary", paused);
+      if (!paused) startTimer();
+    });
+
+    prevBtn.addEventListener("click", () => {
+      goTo(current - 1);
+      paused = true;
+      pauseBtn.textContent = "Resume";
+      pauseBtn.classList.add("primary");
+    });
+
+    nextBtn.addEventListener("click", () => {
+      goTo(current + 1);
+      paused = true;
+      pauseBtn.textContent = "Resume";
+      pauseBtn.classList.add("primary");
+    });
+
+    // ── Load model + hotspot cameras ─────────────────────────────
+    async function init() {
+      buildDots();
+      buildCards();
+
+      const [product, hsData] = await Promise.all([
+        fetch(`${BASE_URL}/products/${PRODUCT}/organizations/${ORG}/clients/${WS}`).then(r => r.json()),
+        fetch(`${BASE_URL}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productUuid: PRODUCT, page: 1, size: 50 })
+        }).then(r => r.json()).catch(() => ({ response: { grid: [] } }))
+      ]);
+
+      // Apply viewer config (environment, camera defaults)
+      const config = product.response?.viewerSettings?.config;
+      if (config) Object.assign(viewer, JSON.parse(config));
+
+      // Store camera positions from hotspots (order = tour stop order)
+      const grid = hsData.response?.grid ?? [];
+      cameras = grid.map(hs => hs.config?.camera ? JSON.parse(hs.config.camera) : null);
+
+      // Set model GLB
+      const glb    = product.response?.asset?.models?.find(m => (m.conversionFormat ?? m.type) === "GLB");
+      const blobId = glb?.modelBlobId ?? glb?.blobId;
+      if (blobId) {
+        viewer.src = `${BASE_URL}/assets/products/${PRODUCT}/organizations/${ORG}/clients/${WS}/${blobId}`;
+      }
+    }
+
+    await init();
+  </script>
+
+</body>
+</html>
