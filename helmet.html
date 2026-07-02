@@ -130,11 +130,15 @@
       color: var(--rawlings-navy);
     }
 
-    /* Hotspot pin — red */
-    vntana-hotspot::part(button) {
-      background: var(--rawlings-red);
-      border: 2px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    /* Hotspot pin — Rawlings red */
+    .hotspot-pin {
+      background: var(--rawlings-red) !important;
+      box-shadow: 0 3px 12px rgba(200,16,46,0.5) !important;
+    }
+    vntana-hotspot:hover .hotspot-pin,
+    vntana-hotspot.open .hotspot-pin {
+      background: #a50d25 !important;
+      box-shadow: 0 4px 16px rgba(200,16,46,0.6) !important;
     }
     /* ── Hotspot feature cards ── */
     .hotspot-cards {
@@ -501,7 +505,7 @@
 
   </main>
 
-  <script type="module" src="helmet.js?v=3"></script>
+  <script type="module" src="helmet.js?v=4"></script>
 
 </body>
 </html>

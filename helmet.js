@@ -148,16 +148,29 @@ const injectPins = (parsed) => {
   // Remove any previously injected pins
   viewer.querySelectorAll("vntana-hotspot").forEach(el => el.remove());
 
-  parsed.forEach(({ uuid, title, body, dims, cam }) => {
+  parsed.forEach(({ uuid, title, body, dims, cam }, i) => {
     if (!dims?.position || !dims?.normal) return;
     const pin = document.createElement("vntana-hotspot");
-    pin.position   = dims.position;
-    pin.normal     = dims.normal;
+    pin.position     = dims.position;
+    pin.normal       = dims.normal;
     pin.dataset.uuid = uuid;
-    pin.innerHTML = `<strong style="display:block;margin-bottom:0.2rem;font-size:0.8rem">${title}</strong>${body ? `<span style="color:#555;font-size:0.78rem">${body.slice(0, 120)}${body.length > 120 ? "…" : ""}</span>` : ""}`;
-    pin.addEventListener("click", () => {
-      activateCard(uuid);
-      snapCamera(cam);
+    pin.innerHTML = `
+      <span class="hotspot-pin">${i + 1}</span>
+      <div class="hotspot-popup">
+        <div class="hotspot-text">
+          <strong>${title}</strong>
+          ${body ? `<span>${body.slice(0, 140)}${body.length > 140 ? "…" : ""}</span>` : ""}
+        </div>
+      </div>`;
+    pin.addEventListener("click", e => {
+      if (e.target.closest(".hotspot-popup")) return;
+      const isOpen = pin.classList.contains("open");
+      viewer.querySelectorAll("vntana-hotspot.open").forEach(el => el.classList.remove("open"));
+      if (!isOpen) {
+        pin.classList.add("open");
+        activateCard(uuid);
+        snapCamera(cam);
+      }
     });
     viewer.appendChild(pin);
   });
