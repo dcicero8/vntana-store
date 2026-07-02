@@ -129,23 +129,36 @@
       width: 0%;
     }
 
-    /* ── Dot indicators ── */
+    /* ── Step indicators ── */
     .tour-stop-indicator {
       position: absolute;
-      top: 16px;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%);
       display: none;
-      gap: 7px;
+      gap: 6px;
       z-index: 5;
     }
     .tour-dot {
-      width: 7px; height: 7px;
+      width: 26px; height: 26px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.25);
-      transition: background 0.3s;
+      background: rgba(0,0,0,0.45);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.5);
+      font-size: 0.68rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+      cursor: pointer;
     }
-    .tour-dot.active { background: var(--tadano-yellow); }
+    .tour-dot:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+    .tour-dot.active {
+      background: var(--tadano-yellow);
+      border-color: var(--tadano-yellow);
+      color: #fff;
+    }
 
     /* ── Right: Info panel ── */
     .crane-info-col {
@@ -551,9 +564,12 @@
     // ── Build UI ────────────────────────────────────────────────
     function buildDots() {
       dots.innerHTML = "";
-      STOPS.forEach(() => {
+      STOPS.forEach((stop, i) => {
         const d = document.createElement("div");
-        d.className = "tour-dot";
+        d.className   = "tour-dot";
+        d.textContent = i + 1;
+        d.title       = stop.label;
+        d.addEventListener("click", () => { goTo(i); pauseTour(); });
         dots.appendChild(d);
       });
     }
@@ -680,6 +696,7 @@
       const blobId = glb?.modelBlobId ?? glb?.blobId;
       if (blobId) {
         viewer.src = `${BASE_URL}/assets/products/${PRODUCT}/organizations/${ORG}/clients/${WS}/${blobId}`;
+        viewer.addEventListener("load", () => startTour(), { once: true });
       }
     }
 
