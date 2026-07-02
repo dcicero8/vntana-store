@@ -89,38 +89,40 @@ const activateCard = (uuid) => {
   activeCard = uuid;
 };
 
-// ── Build hotspot cards + inject <vntana-hotspot> elements ────
-const buildHotspots = (hotspots) => {
-  hotspots.forEach((hs, i) => {
-    const dims   = hs.config?.dimensions ? JSON.parse(hs.config.dimensions) : null;
-    const cam    = hs.config?.camera     ? JSON.parse(hs.config.camera)     : null;
-    const desc   = hs.description ?? "";
-    const isImg  = hs.type === "IMAGE";
+// ── Parse one hotspot into {title, body, dims, cam, imgSrc} ──
+const parseHotspot = (hs) => {
+  const dims  = hs.config?.dimensions ? JSON.parse(hs.config.dimensions) : null;
+  const cam   = hs.config?.camera     ? JSON.parse(hs.config.camera)     : null;
+  const desc  = hs.text ?? hs.description ?? "";
+  const isImg = hs.type === "IMAGE";
 
-    // Parse title / body from description HTML
-    const tmp = document.createElement("div");
-    tmp.innerHTML = desc;
-    const boldEl = tmp.querySelector("b,strong");
-    let title = boldEl?.textContent?.trim() ?? "";
-    if (boldEl) boldEl.remove();
-    let body = tmp.textContent.trim();
-    if (!title) {
-      // Fallback: first sentence as title
-      const dot = body.indexOf(". ");
-      title = dot > 0 ? body.slice(0, dot + 1) : body.slice(0, 60);
-      body  = dot > 0 ? body.slice(dot + 2) : "";
-    }
+  const tmp = document.createElement("div");
+  tmp.innerHTML = desc;
+  const boldEl = tmp.querySelector("b,strong");
+  let title = boldEl?.textContent?.trim() ?? "";
+  if (boldEl) boldEl.remove();
+  let body = tmp.textContent.trim();
+  if (!title) {
+    const dot = body.indexOf(". ");
+    title = dot > 0 ? body.slice(0, dot + 1) : body.slice(0, 60);
+    body  = dot > 0 ? body.slice(dot + 2) : "";
+  }
 
-    // Hotspot image URL
-    let imgSrc = null;
-    if (isImg && hs.config?.blobId) {
-      imgSrc = `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${hs.config.blobId}`;
-    }
+  let imgSrc = null;
+  if (isImg && hs.config?.blobId) {
+    imgSrc = `${BASE_URL}/hotspots/images/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${hs.config.blobId}`;
+  }
 
-    // Sidebar card
+  return { uuid: hs.uuid, title, body, dims, cam, imgSrc };
+};
+
+// ── Build sidebar cards (called immediately after API load) ───
+const buildCards = (parsed) => {
+  hotspotCards.innerHTML = "";
+  parsed.forEach(({ uuid, title, body, cam, imgSrc }, i) => {
     const card = document.createElement("div");
     card.className = "hotspot-card";
-    card.dataset.uuid = hs.uuid;
+    card.dataset.uuid = uuid;
     card.innerHTML = `
       <div class="hotspot-card-num">${i + 1}</div>
       <div class="hotspot-card-body">
@@ -130,35 +132,33 @@ const buildHotspots = (hotspots) => {
       ${imgSrc ? `<img class="hotspot-card-img" src="${imgSrc}" alt="${title}" loading="lazy">` : ""}
     `;
     card.addEventListener("click", () => {
-      activateCard(hs.uuid);
+      activateCard(uuid);
       snapCamera(cam);
-      // Open the hotspot pin
       document.querySelectorAll("vntana-hotspot").forEach(el => {
-        if (el.dataset.uuid === hs.uuid) el.setAttribute("open", "");
+        if (el.dataset.uuid === uuid) el.setAttribute("open", "");
         else el.removeAttribute("open");
       });
     });
     hotspotCards.appendChild(card);
+  });
+};
 
-    // 3D hotspot pin
+// ── Inject 3D pins into viewer (called after model loads) ─────
+const injectPins = (parsed) => {
+  // Remove any previously injected pins
+  viewer.querySelectorAll("vntana-hotspot").forEach(el => el.remove());
+
+  parsed.forEach(({ uuid, title, body, dims, cam }) => {
     if (!dims?.position || !dims?.normal) return;
     const pin = document.createElement("vntana-hotspot");
-    pin.setAttribute("slot", "hotspot-" + i);
-    pin.setAttribute("data-position", dims.position);
-    pin.setAttribute("data-normal",   dims.normal);
-    pin.dataset.uuid = hs.uuid;
-
-    const tooltip = document.createElement("div");
-    tooltip.setAttribute("slot", "hotspot");
-    tooltip.style.cssText = "max-width:200px; font-size:0.8rem; line-height:1.45; padding:0.1rem 0;";
-    tooltip.innerHTML = `<strong style="display:block;margin-bottom:0.2rem;">${title}</strong>${body ? `<span style="color:#555">${body.slice(0, 120)}${body.length > 120 ? "…" : ""}</span>` : ""}`;
-    pin.appendChild(tooltip);
-
+    pin.position   = dims.position;
+    pin.normal     = dims.normal;
+    pin.dataset.uuid = uuid;
+    pin.innerHTML = `<strong style="display:block;margin-bottom:0.2rem;font-size:0.8rem">${title}</strong>${body ? `<span style="color:#555;font-size:0.78rem">${body.slice(0, 120)}${body.length > 120 ? "…" : ""}</span>` : ""}`;
     pin.addEventListener("click", () => {
-      activateCard(hs.uuid);
+      activateCard(uuid);
       snapCamera(cam);
     });
-
     viewer.appendChild(pin);
   });
 };
@@ -187,19 +187,34 @@ const modelUrl = (format) => {
   return blobId ? `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}` : null;
 };
 
+const hotspots  = hsResp?.response?.grid ?? [];
+const parsed    = hotspots.map(parseHotspot);
+
+// Build sidebar cards right away — no event needed
+if (parsed.length) buildCards(parsed);
+
 Object.assign(viewer, viewerConfig);
 viewer.enableAutoRotate = false;
 
 const glbUrl  = modelUrl("GLB");
 const usdzUrl = modelUrl("USDZ");
 
-Object.assign(viewer, {
-  ...(glbUrl  && { src:     glbUrl }),
-  ...(usdzUrl && { usdzSrc: usdzUrl }),
-});
+// Inject 3D pins once the model is in the scene.
+// Try the load event first; fall back to polling viewer.scene.
+const tryInjectPins = () => {
+  if (viewer.scene) { injectPins(parsed); return; }
+  viewer.addEventListener("load",       () => injectPins(parsed), { once: true });
+  viewer.addEventListener("model-load", () => injectPins(parsed), { once: true });
+  // Polling fallback every 500ms for up to 20s
+  let attempts = 0;
+  const poll = setInterval(() => {
+    if (viewer.scene || ++attempts > 40) {
+      clearInterval(poll);
+      if (viewer.scene) injectPins(parsed);
+    }
+  }, 500);
+};
 
-// Inject hotspots after model loads
-const hotspots = hsResp?.response?.grid ?? [];
-if (hotspots.length) {
-  viewer.addEventListener("load", () => buildHotspots(hotspots), { once: true });
-}
+viewer.src = glbUrl;
+if (usdzUrl) viewer.usdzSrc = usdzUrl;
+if (parsed.length) tryInjectPins();
