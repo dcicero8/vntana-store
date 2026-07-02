@@ -468,7 +468,7 @@
     const TOUR_INTERVAL = 6000;
 
     // ── Tour stop data ──────────────────────────────────────────
-    // Add 5 hotspots in VNTANA in this order to unlock camera snap per stop.
+    // Hotspot order in VNTANA must match this array order (1–5).
     // Hotspot camera positions are loaded from the API if they exist.
     const STOPS = [
       {
@@ -479,32 +479,32 @@
         nodes:    ["GT-1200XL-2_BoomAssy_max"],
       },
       {
-        label:    "Lattice Jib",
-        headline: "Add 58 feet. Change the job.",
-        body:     "The bi-fold lattice jib mounts alongside the base boom section and deploys in three offset angles — 3.5°, 25°, or 45°. At its full 58.7-foot extension, the GT-1200XL-2 reaches heights that no main boom alone can touch. Self-storing pins and assistant cylinders make deployment a one-person job.",
-        stats:    ["33.8 ft or 58.7 ft", "3.5° / 25° / 45° offsets", "Quick-reeving", "Self-storing pins"],
-        nodes:    ["GT-1200XL-2_JibAssy"],
-      },
-      {
-        label:    "Elevation System",
-        headline: "Zero to maximum in 40 seconds.",
-        body:     "The double-acting hydraulic elevation cylinder lifts the boom through a full arc from -1.5° to 80.5°. Combination hand and foot controls let the operator choose their preference. Automatic speed reduction and slow-stop function prevent load swing during positioning.",
-        stats:    ["-1.5° to 80.5°", "20° – 60° in 40 sec", "Combo hand/foot controls", "Auto slow-stop"],
-        nodes:    ["GT-1200XL-2_ElevatingCylinderTube", "GT-1200XL-2_ElevatingCylinderRod"],
-      },
-      {
-        label:    "Counterweight",
-        headline: "55,100 pounds of balance.",
-        body:     "The self-removable counterweight system stacks up to five plates — configurable from 0 to 55,100 lbs — to match the required lift capacity and load radius for each job. No additional handling equipment required for removal or installation.",
-        stats:    ["0 – 55,100 lb total", "5 plate configurations", "Self-removable", "On-board storage"],
-        nodes:    ["GT-1200XL-2_Counterweight"],
+        label:    "Operator Cab",
+        headline: "Everything the operator needs. Nothing they don't.",
+        body:     "The GT-1200XL-2's upper cab integrates Tadano's AML-E2 load moment indicator system — displaying boom angle, load radius, rated capacity, and actual load in real time. The operator's right-hand console includes transmission gear selector, slewing lock, and sight level bubble. Air conditioning and a 3-way adjustable air-cushioned seat come standard.",
+        stats:    ["AML-E2 LMI system", "Auto speed reduction", "Air conditioning", "Drum rotation indicator"],
+        nodes:    ["GT-1200XL-2_CabinUpper", "GT-1200XL-2_CabinLower"],
       },
       {
         label:    "Outrigger System",
         headline: "134,700 lbs of ground contact.",
-        body:     "Four independently controlled outriggers extend in three positions — minimum, mid, and maximum — with a 23'7\" × 19'8\" maximum footprint. Built-in extension length detectors feed directly into the AML-E2 load moment indicator, which automatically programs the correct lifting capacity table for the selected outrigger state.",
+        body:     "Four independently controlled outriggers extend in three positions — minimum, mid, and maximum — with a 23'7\" × 19'8\" maximum footprint. Built-in extension length detectors feed directly into the AML-E2, which automatically programs the correct lifting capacity table for the detected outrigger state. No manual table selection required.",
         stats:    ["23'7\" × 19'8\" max spread", "3 extension positions", "134,700 lb max outrigger load", "AML-E2 auto-programmed"],
         nodes:    ["GT-1200XL-2_OutriggerCaseMiddle", "GT-1200XL-2_OutriggerFloat", "GT-1200XL-2_JackCylinderRod1", "GT-1200XL-2_JackCylinderRod2"],
+      },
+      {
+        label:    "Jib Tip",
+        headline: "Add 58 feet. Change the job.",
+        body:     "The bi-fold lattice jib mounts alongside the base boom section and deploys in three offset angles — 3.5°, 25°, or 45°. At its full 58.7-foot extension, the GT-1200XL-2 reaches heights that no main boom alone can touch. The tip sheave is rated for single-line work, and self-storing pins make deployment a one-person job.",
+        stats:    ["33.8 ft or 58.7 ft", "3.5° / 25° / 45° offsets", "Quick-reeving", "Self-storing pins"],
+        nodes:    ["GT-1200XL-2_JibAssy", "GT-1200XL-2_Jib2", "GT-1200XL-2_Jib2Dummy"],
+      },
+      {
+        label:    "Counterweight",
+        headline: "55,100 pounds of balance.",
+        body:     "The self-removable counterweight system stacks up to five plates — configurable from 0 to 55,100 lbs — to match the required lift capacity and load radius for each job. No additional handling equipment required for removal or installation. The AML-E2 automatically registers counterweight state before each lift.",
+        stats:    ["0 – 55,100 lb total", "5 plate configurations", "Self-removable", "AML-E2 registered"],
+        nodes:    ["GT-1200XL-2_Counterweight"],
       },
     ];
 
