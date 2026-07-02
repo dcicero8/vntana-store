@@ -160,6 +160,42 @@
       color: #fff;
     }
 
+    /* ── Hotspot pins on the model ── */
+    vntana-hotspot {
+      --hotspot-size: 30px;
+      cursor: pointer;
+    }
+    .hotspot-pin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      border: 2px solid rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.72rem;
+      font-weight: 800;
+      font-family: inherit;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+    vntana-hotspot:hover .hotspot-pin {
+      background: rgba(0,137,200,0.75);
+      border-color: #0089c8;
+      color: #fff;
+      transform: scale(1.15);
+    }
+    vntana-hotspot.active-stop .hotspot-pin {
+      background: var(--tadano-yellow);
+      border-color: #fff;
+      color: #fff;
+      transform: scale(1.2);
+      box-shadow: 0 0 0 3px rgba(0,137,200,0.35);
+    }
+
     /* ── Right: Info panel ── */
     .crane-info-col {
       background: var(--tadano-panel);
@@ -547,7 +583,7 @@
     let paused      = false;
     let timer       = null;
     let tourStarted = false;
-    let cameras     = []; // Populated from VNTANA hotspot API if hotspots exist
+    let hotspotEls  = []; // vntana-hotspot elements, one per stop
 
     // ── Camera snap ─────────────────────────────────────────────
     function snapCamera(cam) {
@@ -559,6 +595,36 @@
         if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
         if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
       } catch(e) {}
+    }
+
+    // ── Hotspot injection ────────────────────────────────────────
+    function injectHotspots(grid) {
+      viewer.querySelectorAll("vntana-hotspot").forEach(h => h.remove());
+      hotspotEls = [];
+
+      grid.forEach((hs, i) => {
+        const stop   = STOPS[i];
+        if (!stop) return;
+        const dims   = JSON.parse(hs.config.dimensions);
+        const camera = hs.config.camera ? JSON.parse(hs.config.camera) : null;
+
+        const el = document.createElement("vntana-hotspot");
+        el.position = dims.position;
+        el.normal   = dims.normal;
+        el._camera  = camera;
+
+        // Pin shows the step number; no popup (content is in the right panel)
+        el.innerHTML = `<span class="hotspot-pin">${i + 1}</span>`;
+
+        el.addEventListener("click", e => {
+          if (e.target.closest(".hotspot-popup")) return;
+          goTo(i);
+          pauseTour();
+        });
+
+        viewer.appendChild(el);
+        hotspotEls.push(el);
+      });
     }
 
     // ── Build UI ────────────────────────────────────────────────
@@ -605,14 +671,18 @@
     // ── Navigation ───────────────────────────────────────────────
     function goTo(index) {
       current = ((index % STOPS.length) + STOPS.length) % STOPS.length;
+      const hs = hotspotEls[current];
 
-      snapCamera(cameras[current] ?? null);
+      if (hs) snapCamera(hs._camera);
       renderDetail(current);
 
       document.querySelectorAll(".stop-card").forEach((c, i) =>
         c.classList.toggle("active", i === current));
       document.querySelectorAll(".tour-dot").forEach((d, i) =>
         d.classList.toggle("active", i === current));
+      // Visually mark the active hotspot pin
+      hotspotEls.forEach((h, i) =>
+        h.classList.toggle("active-stop", i === current));
       fill.style.width = `${((current + 1) / STOPS.length) * 100}%`;
 
       prevBtn.disabled = false;
@@ -669,7 +739,7 @@
       pauseBtn.classList.add("primary");
     });
 
-    // ── Load model + hotspot cameras ─────────────────────────────
+    // ── Load model + hotspots ────────────────────────────────────
     async function init() {
       buildDots();
       buildCards();
@@ -687,16 +757,17 @@
       const config = product.response?.viewerSettings?.config;
       if (config) Object.assign(viewer, JSON.parse(config));
 
-      // Store camera positions from hotspots (order = tour stop order)
       const grid = hsData.response?.grid ?? [];
-      cameras = grid.map(hs => hs.config?.camera ? JSON.parse(hs.config.camera) : null);
 
-      // Set model GLB
+      // Set model GLB — inject hotspots + auto-start after load
       const glb    = product.response?.asset?.models?.find(m => (m.conversionFormat ?? m.type) === "GLB");
       const blobId = glb?.modelBlobId ?? glb?.blobId;
       if (blobId) {
         viewer.src = `${BASE_URL}/assets/products/${PRODUCT}/organizations/${ORG}/clients/${WS}/${blobId}`;
-        viewer.addEventListener("load", () => startTour(), { once: true });
+        viewer.addEventListener("load", () => {
+          if (grid.length) injectHotspots(grid);
+          startTour();
+        }, { once: true });
       }
     }
 
