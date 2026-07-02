@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tadano GT-1200XL-2 — Boom Animation</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --navy:  #003087;
+      --blue:  #0089c8;
+      --black: #0A0F1A;
+      --panel: #0E1525;
+      --card:  #141E30;
+      --border:#1E2D45;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--black); color: #fff; font-family: system-ui, sans-serif; }
+
+    /* ── Header ── */
+    .hdr {
+      height: 52px; background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem;
+    }
+    .hdr-left { display: flex; align-items: center; gap: 1rem; }
+    .hdr-logo { height: 22px; }
+    .hdr-title {
+      font-size: .75rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(255,255,255,.6);
+      border-left: 1px solid var(--border); padding-left: 1rem;
+    }
+    .hdr-back {
+      font-size: .72rem; color: rgba(255,255,255,.4); text-decoration: none;
+      letter-spacing: .04em; transition: color .15s;
+    }
+    .hdr-back:hover { color: var(--blue); }
+
+    /* ── Main layout ── */
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      height: calc(100vh - 52px);
+    }
+
+    /* ── Viewer ── */
+    model-viewer {
+      width: 100%; height: 100%;
+      background: transparent;
+      --progress-bar-color: var(--blue);
+    }
+
+    /* ── Right panel ── */
+    .panel {
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .panel-section {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kicker {
+      font-size: .62rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--blue); margin-bottom: .4rem;
+    }
+    .panel-section h2 {
+      font-size: 1.05rem; font-weight: 800; letter-spacing: -.02em;
+      line-height: 1.25; color: #fff; margin-bottom: .5rem;
+    }
+    .panel-section p {
+      font-size: .78rem; color: rgba(255,255,255,.55); line-height: 1.6;
+    }
+
+    /* ── Animation controls ── */
+    .anim-section { padding: 1.5rem; border-bottom: 1px solid var(--border); }
+    .anim-label {
+      font-size: .62rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: rgba(255,255,255,.3);
+      margin-bottom: .85rem;
+    }
+
+    .anim-btn-row {
+      display: flex; gap: .5rem; margin-bottom: 1rem;
+    }
+    .anim-btn {
+      flex: 1; padding: .6rem 0;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: rgba(255,255,255,.6);
+      font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; cursor: pointer;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    .anim-btn:hover { border-color: var(--blue); color: #fff; }
+    .anim-btn.active {
+      background: var(--blue); border-color: var(--blue); color: #fff;
+    }
+
+    .speed-row {
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .speed-label {
+      font-size: .65rem; color: rgba(255,255,255,.35); letter-spacing: .04em; min-width: 48px;
+    }
+    .speed-slider {
+      flex: 1;
+      -webkit-appearance: none; appearance: none;
+      height: 3px; border-radius: 2px;
+      background: linear-gradient(to right, var(--blue) 50%, var(--border) 50%);
+      outline: none; cursor: pointer;
+    }
+    .speed-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #fff; border: 2px solid var(--blue);
+      cursor: pointer;
+    }
+
+    /* ── Spec grid ── */
+    .spec-section { padding: 1.5rem; }
+    .spec-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .5rem;
+    }
+    .spec-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 6px; padding: .65rem .8rem;
+    }
+    .spec-item .sv { font-size: .82rem; font-weight: 700; color: #fff; }
+    .spec-item .sk { font-size: .6rem; color: rgba(255,255,255,.35); letter-spacing: .05em; margin-top: .15rem; }
+
+    /* ── Progress bar ── */
+    .progress-bar-wrap {
+      margin-top: .85rem;
+      height: 3px; border-radius: 2px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; width: 0%;
+      background: var(--blue);
+      transition: width .05s linear;
+    }
+
+    /* ── Footer ── */
+    .panel-footer {
+      margin-top: auto; padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .panel-footer svg { height: 18px; opacity: .45; }
+    .panel-footer span {
+      font-size: .58rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: rgba(255,255,255,.25);
+    }
+
+    @media (max-width: 680px) {
+      .main { grid-template-columns: 1fr; grid-template-rows: 55vh auto; }
+      .panel { border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hdr">
+    <div class="hdr-left">
+      <!-- Tadano SVG logo (white) -->
+      <svg class="hdr-logo" viewBox="0 0 775.9 115.6" xmlns="http://www.w3.org/2000/svg" fill="white">
+        <path d="m28.4 115.6h85v-56.7h45.3v-56.7h-45.3z"/>
+        <path d="m0 87.2 110.6-85h-110.6z" fill="#0089c8"/>
+        <path d="m299.7 28.3h-26.9v70.3h-30.5v-70.3h-26.9v-26.1h84.3z"/>
+        <path d="m286.6 98.6 34.8-96.4h32.9l34.9 96.4h-31.5l-4.3-14h-31l-4.3 14zm51-65.4c-.4 2.8-1 5.5-1.9 8.2l-7 22.8h18.5l-7-22.8c-.9-2.7-1.5-5.4-1.9-8.2z"/>
+        <path d="m476.7 76.1c-6.1 13.7-19.6 22.4-34.5 22.4h-48.2v-96.3h48.2c14.9 0 28.5 8.8 34.5 22.5 3.6 8.1 5.5 16.9 5.5 25.7s-1.9 17.6-5.5 25.7zm-25.5-38.7c-2.5-6.6-8.8-11-15.9-11h-12.8v47.9h12.8c7 0 13.4-4.4 15.9-10.9 1.6-4.2 2.4-8.6 2.4-13s-.8-8.8-2.4-13z"/>
+        <path d="m547 98.6-4.3-14h-31.1l-4.3 14h-31.5l34.9-96.4h32.9l34.9 96.4zm-29.1-34.4h18.5l-7-22.8c-.9-2.7-1.5-5.4-1.9-8.2h-.7c-.4 2.8-1 5.5-1.9 8.2z"/>
+        <path d="m583.6 2.2h28.6l27 43.9c1.9 2.9 3.6 5.8 5.2 8.9h.7c-.2-2.2-.4-4.5-.4-6.8v-46h27.6v96.4h-28.6l-27-43.9c-1.9-2.9-3.6-5.9-5.2-8.9h-.7c.2 2.2.4 4.5.4 6.8v46h-27.6z"/>
+        <path d="m708.8 50.4c0-4.1.5-8.3 1.6-12.3 2-7.6 8.8-12.8 16.6-12.8s14.6 5.3 16.6 12.8c1 4 1.6 8.1 1.6 12.3s-.5 8.3-1.6 12.3c-2 7.6-8.8 12.8-16.6 12.8s-14.6-5.3-16.6-12.8c-1-4-1.6-8.1-1.6-12.3zm-24.3-26.5c-4.2 8.2-6.4 17.2-6.4 26.4s2.2 18.3 6.4 26.4c5.2 10.2 14.3 17.9 25.3 21.3 5.6 1.7 11.4 2.6 17.2 2.6s11.7-.9 17.2-2.6c11-3.4 20.1-11.1 25.3-21.3 4.2-8.2 6.4-17.2 6.4-26.4s-2.2-18.3-6.4-26.4c-5.2-10.2-14.3-17.9-25.3-21.3-5.6-1.7-11.4-2.6-17.2-2.6s-11.7.9-17.2 2.6c-11 3.4-20.1 11.1-25.3 21.3z"/>
+      </svg>
+      <span class="hdr-title">GT-1200XL-2 · Boom Animation</span>
+    </div>
+    <a class="hdr-back" href="tadano-crane-explorer.html">← Crane Explorer</a>
+  </header>
+
+  <div class="main">
+
+    <!-- ── 3D Viewer ── -->
+    <model-viewer
+      id="mv"
+      src="tadano-gt1200xl2-animated.glb"
+      camera-controls
+      auto-rotate
+      auto-rotate-delay="0"
+      rotation-per-second="8deg"
+      shadow-intensity="0.6"
+      exposure="1.1"
+      environment-image="neutral"
+      camera-orbit="35deg 75deg 120%"
+      min-camera-orbit="auto auto 60%"
+      max-camera-orbit="auto auto 200%"
+      animation-name="BoomExtend"
+      animation-crossfade-duration="200"
+      style="background: radial-gradient(ellipse at 30% 60%, #0b1a2e 0%, #060c14 70%);"
+    ></model-viewer>
+
+    <!-- ── Right panel ── -->
+    <div class="panel">
+
+      <div class="panel-section">
+        <div class="kicker">Main Boom · GT-1200XL-2</div>
+        <h2>Five sections.<br>167 feet of reach.</h2>
+        <p>The single-cylinder telescoping boom extends from 41.0 to 167.3 feet, driven by a single hydraulic cylinder — no rope-crowd system, no secondary sync. Watch it compress and extend below.</p>
+      </div>
+
+      <div class="anim-section">
+        <div class="anim-label">Animation</div>
+
+        <div class="anim-btn-row">
+          <button class="anim-btn active" id="btn-play" onclick="playAnim()">▶ Play</button>
+          <button class="anim-btn" id="btn-pause" onclick="pauseAnim()">⏸ Pause</button>
+          <button class="anim-btn" id="btn-reset" onclick="resetAnim()">↺ Reset</button>
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="speed-row" style="margin-top: 1rem;">
+          <span class="speed-label">Speed</span>
+          <input type="range" class="speed-slider" id="speed-slider"
+            min="0.25" max="2" step="0.25" value="1"
+            oninput="setSpeed(this.value)">
+          <span class="speed-label" id="speed-label" style="text-align:right;">1×</span>
+        </div>
+      </div>
+
+      <div class="spec-section">
+        <div class="anim-label" style="margin-bottom:.75rem;">Boom Specs</div>
+        <div class="spec-grid">
+          <div class="spec-item">
+            <div class="sv">41.0 – 167.3 ft</div>
+            <div class="sk">Working range</div>
+          </div>
+          <div class="spec-item">
+            <div class="sv">5-Section</div>
+            <div class="sk">Boom configuration</div>
+          </div>
+          <div class="spec-item">
+            <div class="sv">Single cylinder</div>
+            <div class="sk">Extension drive</div>
+          </div>
+          <div class="spec-item">
+            <div class="sv">280 sec</div>
+            <div class="sk">Full extend time</div>
+          </div>
+          <div class="spec-item">
+            <div class="sv">120 US tons</div>
+            <div class="sk">Max lift capacity</div>
+          </div>
+          <div class="spec-item">
+            <div class="sv">360°</div>
+            <div class="sk">Swing rotation</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <svg viewBox="0 0 775.9 115.6" xmlns="http://www.w3.org/2000/svg" fill="white">
+          <path d="m28.4 115.6h85v-56.7h45.3v-56.7h-45.3z"/>
+          <path d="m0 87.2 110.6-85h-110.6z" fill="#0089c8"/>
+          <path d="m299.7 28.3h-26.9v70.3h-30.5v-70.3h-26.9v-26.1h84.3z"/>
+          <path d="m286.6 98.6 34.8-96.4h32.9l34.9 96.4h-31.5l-4.3-14h-31l-4.3 14zm51-65.4c-.4 2.8-1 5.5-1.9 8.2l-7 22.8h18.5l-7-22.8c-.9-2.7-1.5-5.4-1.9-8.2z"/>
+          <path d="m476.7 76.1c-6.1 13.7-19.6 22.4-34.5 22.4h-48.2v-96.3h48.2c14.9 0 28.5 8.8 34.5 22.5 3.6 8.1 5.5 16.9 5.5 25.7s-1.9 17.6-5.5 25.7zm-25.5-38.7c-2.5-6.6-8.8-11-15.9-11h-12.8v47.9h12.8c7 0 13.4-4.4 15.9-10.9 1.6-4.2 2.4-8.6 2.4-13s-.8-8.8-2.4-13z"/>
+          <path d="m547 98.6-4.3-14h-31.1l-4.3 14h-31.5l34.9-96.4h32.9l34.9 96.4zm-29.1-34.4h18.5l-7-22.8c-.9-2.7-1.5-5.4-1.9-8.2h-.7c-.4 2.8-1 5.5-1.9 8.2z"/>
+          <path d="m583.6 2.2h28.6l27 43.9c1.9 2.9 3.6 5.8 5.2 8.9h.7c-.2-2.2-.4-4.5-.4-6.8v-46h27.6v96.4h-28.6l-27-43.9c-1.9-2.9-3.6-5.9-5.2-8.9h-.7c.2 2.2.4 4.5.4 6.8v46h-27.6z"/>
+          <path d="m708.8 50.4c0-4.1.5-8.3 1.6-12.3 2-7.6 8.8-12.8 16.6-12.8s14.6 5.3 16.6 12.8c1 4 1.6 8.1 1.6 12.3s-.5 8.3-1.6 12.3c-2 7.6-8.8 12.8-16.6 12.8s-14.6-5.3-16.6-12.8c-1-4-1.6-8.1-1.6-12.3zm-24.3-26.5c-4.2 8.2-6.4 17.2-6.4 26.4s2.2 18.3 6.4 26.4c5.2 10.2 14.3 17.9 25.3 21.3 5.6 1.7 11.4 2.6 17.2 2.6s11.7-.9 17.2-2.6c11-3.4 20.1-11.1 25.3-21.3 4.2-8.2 6.4-17.2 6.4-26.4s-2.2-18.3-6.4-26.4c-5.2-10.2-14.3-17.9-25.3-21.3-5.6-1.7-11.4-2.6-17.2-2.6s-11.7.9-17.2 2.6c-11 3.4-20.1 11.1-25.3 21.3z"/>
+        </svg>
+        <span>Moving the world safely</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const mv = document.getElementById('mv');
+    const fill = document.getElementById('progress-fill');
+    const btnPlay  = document.getElementById('btn-play');
+    const btnPause = document.getElementById('btn-pause');
+
+    // Wait for model to load, then auto-play
+    mv.addEventListener('load', () => {
+      mv.play({ repetitions: Infinity });
+      setActiveBtn('play');
+    });
+
+    // Progress bar — model-viewer fires 'progress' during animation via timeupdate
+    mv.addEventListener('timeupdate', () => {
+      const dur = mv.duration;
+      if (dur > 0) {
+        fill.style.width = ((mv.currentTime / dur) * 100).toFixed(1) + '%';
+      }
+    });
+
+    function playAnim() {
+      mv.play({ repetitions: Infinity });
+      setActiveBtn('play');
+    }
+
+    function pauseAnim() {
+      mv.pause();
+      setActiveBtn('pause');
+    }
+
+    function resetAnim() {
+      mv.currentTime = 0;
+      mv.play({ repetitions: Infinity });
+      setActiveBtn('play');
+    }
+
+    function setSpeed(val) {
+      mv.timeScale = parseFloat(val);
+      document.getElementById('speed-label').textContent = val + '×';
+      // Update slider gradient
+      const slider = document.getElementById('speed-slider');
+      const min = parseFloat(slider.min), max = parseFloat(slider.max);
+      const pct = ((val - min) / (max - min) * 100).toFixed(0);
+      slider.style.background = `linear-gradient(to right, #0089c8 ${pct}%, #1E2D45 ${pct}%)`;
+    }
+
+    function setActiveBtn(which) {
+      btnPlay.classList.toggle('active', which === 'play');
+      btnPause.classList.toggle('active', which === 'pause');
+    }
+  </script>
+
+</body>
+</html>
