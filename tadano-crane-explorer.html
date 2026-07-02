@@ -536,68 +536,6 @@
     let tourStarted = false;
     let cameras     = []; // Populated from VNTANA hotspot API if hotspots exist
 
-    // ── Part highlight (ghost all except target nodes) ───────────
-    let _pingRaf = null, _pingFlip = false;
-
-    const startPing = () => {
-      if (_pingRaf) return;
-      const loop = () => {
-        _pingFlip = !_pingFlip;
-        try { viewer.shadowIntensity = _pingFlip ? 0.4001 : 0.4; } catch(e) {}
-        _pingRaf = requestAnimationFrame(loop);
-      };
-      _pingRaf = requestAnimationFrame(loop);
-    };
-
-    const stopPing = () => {
-      cancelAnimationFrame(_pingRaf);
-      _pingRaf = null;
-      try { viewer.shadowIntensity = 0.4; } catch(e) {}
-    };
-
-    function setPartOpacity(nodeNames, targetOpacity, otherOpacity) {
-      if (!viewer.scene) return;
-      const targets = new Set(nodeNames);
-      viewer.scene.traverse(node => {
-        if (!node.isMesh) return;
-        let cur = node, isTarget = false;
-        while (cur) {
-          if (targets.has(cur.name)) { isTarget = true; break; }
-          cur = cur.parent;
-        }
-        const opacity = isTarget ? targetOpacity : otherOpacity;
-        const mats = Array.isArray(node.material) ? node.material : [node.material];
-        mats.forEach(m => {
-          if (!m) return;
-          m.transparent = opacity < 1;
-          m.opacity     = opacity;
-          m.needsUpdate = true;
-        });
-      });
-    }
-
-    function highlightStop(nodes) {
-      setPartOpacity(nodes, 1.0, 0.08);
-      startPing();
-      setTimeout(stopPing, 800); // ping for 800ms then let viewer settle
-    }
-
-    function clearHighlight() {
-      if (!viewer.scene) return;
-      viewer.scene.traverse(node => {
-        if (!node.isMesh) return;
-        const mats = Array.isArray(node.material) ? node.material : [node.material];
-        mats.forEach(m => {
-          if (!m) return;
-          m.transparent = false;
-          m.opacity     = 1.0;
-          m.needsUpdate = true;
-        });
-      });
-      startPing();
-      setTimeout(stopPing, 400);
-    }
-
     // ── Camera snap ─────────────────────────────────────────────
     function snapCamera(cam) {
       if (!cam) return;
@@ -653,7 +591,6 @@
       current = ((index % STOPS.length) + STOPS.length) % STOPS.length;
 
       snapCamera(cameras[current] ?? null);
-      highlightStop(STOPS[current].nodes);
       renderDetail(current);
 
       document.querySelectorAll(".stop-card").forEach((c, i) =>
@@ -693,8 +630,6 @@
     }
 
     // ── Event listeners ─────────────────────────────────────────
-    // Clear highlight if user dismisses back to overlay somehow
-    overlay.addEventListener("click", clearHighlight);
     startBtn.addEventListener("click", startTour);
 
     pauseBtn.addEventListener("click", () => {
