@@ -639,20 +639,20 @@
       }
     };
 
-    const attachSelectionListener = () => {
-      if (!viewer.selection?.highlight?.addEventListener) return false;
-      viewer.selection.highlight.addEventListener("change", (event) => {
-        event.changes.forEach((value, node) => {
-          if (value !== 0) return; // 0 = selected
+    // Use same click+RAF pattern proven on roeslein-uvbc.html with this asset
+    viewer.addEventListener("click", () => requestAnimationFrame(() => {
+      const sel = viewer.selection?.highlight;
+      if (!sel) return;
+      try {
+        for (const entry of sel) {
+          const node = Array.isArray(entry) ? entry[0] : entry;
+          const val  = Array.isArray(entry) ? entry[1] : true;
+          if (!val) continue;
           handleSelection(node);
-        });
-      });
-      return true;
-    };
-
-    if (!attachSelectionListener()) {
-      viewer.addEventListener("load", attachSelectionListener, { once: true });
-    }
+          break;
+        }
+      } catch (_) {}
+    }));
 
     // ── Load product ───────────────────────────────────────────
     (async () => {
