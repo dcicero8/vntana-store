@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UVBC Replacement Parts | Roeslein</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --ro-navy:  #1a2a3a;
+      --ro-red:   #c8102e;
+      --ro-light: #f4f7fa;
+      --header-h: 52px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--ro-light); }
+
+    /* ── Header ── */
+    header { background: var(--ro-navy); border-bottom: none; }
+    header .logo img { filter: none; }
+
+    /* ── Layout ── */
+    main.parts-layout {
+      display: grid;
+      grid-template-columns: 1fr 460px;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Viewer column ── */
+    .viewer-col {
+      position: sticky;
+      top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      background: radial-gradient(ellipse at 50% 60%, #2a3f54 0%, #111c26 100%);
+      display: flex;
+      flex-direction: column;
+    }
+    .viewer-col vntana-viewer {
+      flex: 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      --vntana-viewer-background-color: transparent;
+    }
+    .viewer-hint {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.55);
+      color: rgba(255,255,255,.7);
+      font-size: .72rem;
+      padding: .35rem .85rem;
+      border-radius: 20px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* ── Parts panel ── */
+    .parts-col {
+      background: #fff;
+      border-left: 1px solid #e2e2e0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: calc(100vh - var(--header-h));
+      position: sticky;
+      top: var(--header-h);
+    }
+
+    .parts-header {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid #e8e8e6;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .parts-header .kicker {
+      font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--ro-red); margin-bottom: .4rem;
+    }
+    .parts-header h1 {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: -.02em; color: #111;
+    }
+    .parts-header p {
+      font-size: .8rem; color: #777; margin-top: .3rem; line-height: 1.5;
+    }
+
+    /* assembly filter tabs */
+    .asm-tabs {
+      display: flex; gap: .4rem; flex-wrap: wrap;
+      padding: .85rem 1.5rem; border-bottom: 1px solid #e8e8e6;
+      background: #fafafa;
+    }
+    .asm-tab {
+      font-size: .68rem; font-weight: 700; letter-spacing: .04em;
+      text-transform: uppercase; padding: .3rem .7rem;
+      border-radius: 20px; border: 1.5px solid #ddd;
+      background: #fff; color: #666; cursor: pointer;
+      transition: all .15s;
+    }
+    .asm-tab:hover  { border-color: var(--ro-navy); color: var(--ro-navy); }
+    .asm-tab.active { border-color: var(--ro-navy); background: var(--ro-navy); color: #fff; }
+
+    /* parts list */
+    .parts-list {
+      padding: 1rem 1.25rem;
+      flex: 1;
+    }
+
+    .section-label {
+      font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: #aaa;
+      margin: 1.25rem 0 .6rem;
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: #eee; }
+
+    .part-card {
+      border: 1.5px solid #e8e8e6;
+      border-radius: 10px;
+      padding: .9rem 1rem;
+      margin-bottom: .6rem;
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .part-card:hover { border-color: var(--ro-navy); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .part-card.highlight { border-color: var(--ro-red); box-shadow: 0 0 0 3px rgba(200,16,46,.08); }
+
+    .part-card-top {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: .75rem;
+    }
+    .part-info { flex: 1; min-width: 0; }
+    .part-sku {
+      font-size: .62rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: #999; margin-bottom: .25rem;
+    }
+    .part-name {
+      font-size: .88rem; font-weight: 700; color: #111; line-height: 1.25;
+      margin-bottom: .3rem;
+    }
+    .part-desc {
+      font-size: .75rem; color: #666; line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .part-actions {
+      display: flex; flex-direction: column; align-items: flex-end; gap: .5rem;
+      flex-shrink: 0;
+    }
+    .price-tag {
+      font-size: .72rem; font-weight: 700; color: #555;
+      background: #f4f4f2; padding: .25rem .6rem;
+      border-radius: 6px; white-space: nowrap;
+    }
+    .btn-quote {
+      font-size: .72rem; font-weight: 700;
+      background: var(--ro-navy); color: #fff;
+      border: none; border-radius: 6px;
+      padding: .4rem .85rem; cursor: pointer;
+      white-space: nowrap; text-decoration: none;
+      display: inline-block; text-align: center;
+      transition: background .15s;
+    }
+    .btn-quote:hover { background: #263d54; }
+
+    /* empty state */
+    .empty-state {
+      text-align: center; padding: 3rem 1rem; color: #bbb;
+    }
+    .empty-state p { font-size: .85rem; margin-top: .5rem; }
+
+    /* footer CTA */
+    .parts-footer {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid #e8e8e6;
+      background: #fafafa;
+      display: flex; gap: .75rem; align-items: center;
+    }
+    .parts-footer a {
+      flex: 1; text-align: center;
+      font-size: .78rem; font-weight: 700;
+      padding: .65rem 1rem; border-radius: 8px;
+      text-decoration: none; transition: all .15s;
+    }
+    .parts-footer .btn-primary-footer {
+      background: var(--ro-red); color: #fff;
+    }
+    .parts-footer .btn-primary-footer:hover { background: #a50d26; }
+    .parts-footer .btn-secondary-footer {
+      background: #fff; color: var(--ro-navy);
+      border: 1.5px solid var(--ro-navy);
+    }
+    .parts-footer .btn-secondary-footer:hover { background: var(--ro-navy); color: #fff; }
+
+    @media (max-width: 860px) {
+      main.parts-layout { grid-template-columns: 1fr; }
+      .viewer-col { height: 55vw; position: relative; top: 0; }
+      .parts-col { height: auto; position: static; overflow-y: visible; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="roeslein-uvbc.html" class="logo">
+      <img src="roeslein-logo.webp" alt="Roeslein" height="32">
+    </a>
+    <nav class="demo-nav">
+      <a href="roeslein-uvbc.html" class="demo-nav-home">← UVBC System</a>
+      <a href="#" class="active">Replacement Parts</a>
+    </nav>
+  </header>
+
+  <main class="parts-layout">
+
+    <!-- LEFT: 3D viewer -->
+    <div class="viewer-col">
+      <script src="https://viewer-build.vntana.com/v1.0.4/viewer.min.js"></script>
+      <vntana-viewer id="viewer"
+        shadow-intensity="0.25"
+        shadow-radius="3"
+        loading="eager"
+        role="application"
+        aria-label="UVBC UV Curing System — click any assembly to filter replacement parts"
+      >
+        <vntana-fs-button></vntana-fs-button>
+        <vntana-center-button></vntana-center-button>
+        <div class="button-container zoom-buttons">
+          <vntana-zoom-in-button></vntana-zoom-in-button>
+          <vntana-zoom-out-button></vntana-zoom-out-button>
+        </div>
+      </vntana-viewer>
+      <div class="viewer-hint">Click an assembly to filter parts &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
+    </div>
+
+    <!-- RIGHT: Parts panel -->
+    <div class="parts-col">
+
+      <div class="parts-header">
+        <p class="kicker">UVBC UV Curing System &nbsp;·&nbsp; Replacement Parts</p>
+        <h1 id="panel-title">All Replacement Parts</h1>
+        <p id="panel-subtitle">Click any assembly in the 3D model to filter parts, or browse the full catalog below.</p>
+      </div>
+
+      <div class="asm-tabs" id="asm-tabs">
+        <button class="asm-tab active" data-filter="all">All</button>
+        <button class="asm-tab" data-filter="lamp">UV Lamp</button>
+        <button class="asm-tab" data-filter="coating">Coating Head</button>
+        <button class="asm-tab" data-filter="vtu">Conveyor / VTU</button>
+        <button class="asm-tab" data-filter="blower">Vacuum Blower</button>
+        <button class="asm-tab" data-filter="chiller">Chiller</button>
+        <button class="asm-tab" data-filter="electrical">Electrical</button>
+        <button class="asm-tab" data-filter="safety">Safety</button>
+      </div>
+
+      <div class="parts-list" id="parts-list">
+        <!-- populated by JS -->
+      </div>
+
+      <div class="parts-footer">
+        <a href="https://www.roeslein.com/parts" target="_blank" rel="noopener" class="btn-primary-footer">Log In for Pricing →</a>
+        <a href="roeslein-uvbc.html" class="btn-secondary-footer">View System Explorer</a>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    // ── Parts catalog ──────────────────────────────────────────────
+    // filter: array of assembly keys that match (maps to NODE_MAP keys)
+    const PARTS = [
+      // UV Lamp
+      { sku: "500-0003042", name: "UVLED Lamp 250mm, 395nm, 20W",
+        desc: "UVLED Lamp 250mm long, 395nm, 20 Watts Irradiance, with 3/8\" straight barb connection",
+        filter: ["lamp"] },
+      { sku: "500-0003029", name: "Lamphead, 3.1\" Reflector, Remote Blower",
+        desc: "Lamphead with 3.1\" reflector and remote blower configuration",
+        filter: ["lamp"] },
+      { sku: "500-0000616", name: "UVLED Cable, 5W5 Connector",
+        desc: "Cable for FL400 UV LED Lamp 24W. 5W5 connector, 8AWG, 15 meters in length.",
+        filter: ["lamp", "jbox"] },
+      { sku: "500-0000982", name: "Cable, DC Power, 2W2 Connector, 10AWG",
+        desc: "Cable, DC Power, 2W2 Connector, 10AWG, 20 Meters",
+        filter: ["lamp"] },
+      { sku: "500-0003075", name: "Light Detector Kit CW2",
+        desc: "Light Detector Kit CW2",
+        filter: ["lamp"] },
+      { sku: "500-0002121", name: "48–54VDC 960W Power Supply",
+        desc: "DC Power Supply, Q Series. Input: 2–3 Ph / 380–480 Vac / 50–60 Hz. Output: 48–55 Vdc / 10 A. UL Listed.",
+        filter: ["lamp"] },
+      { sku: "500-0004569", name: "UV LED Lamp, FJ100, 365nm 8W, Air-Cooled",
+        desc: "UV LED Lamp FJ100 225×20mm 365nm 8W, Air-Cooled",
+        filter: ["lamp"] },
+      { sku: "500-0002249", name: "EIT LEDCure L395 Radiometer",
+        desc: "EIT LEDCure L395 Radiometer — UV energy measurement for LED curing process validation",
+        filter: ["lamp"] },
+      { sku: "200-0006477", name: "EIT Power Puck II",
+        desc: "Power Puck II — UV energy and irradiance measurement instrument",
+        filter: ["lamp"] },
+      { sku: "800-0000153", name: "UVBC Radiometer Fixture Base",
+        desc: "Radiometer Fixture Base — 228.60mm × 228.60mm × 74.01mm (9.000\" × 9.000\" × 2.914\")",
+        filter: ["lamp"] },
+      { sku: "800-0000152", name: "UVBC Radiometer Fixture Head — Tall",
+        desc: "Radiometer Fixture Head — 129.30mm × 117.43mm × 95.80mm (5.090\" × 4.623\" × 3.772\")",
+        filter: ["lamp"] },
+      { sku: "800-0000151", name: "UVBC Radiometer Fixture Head — Short",
+        desc: "Radiometer Fixture Head — 117.43mm × 95.80mm × 78.49mm (4.623\" × 3.772\" × 3.090\")",
+        filter: ["lamp"] },
+
+      // Coating Head
+      { sku: "800-0000117", name: "37\" Applicator Roller",
+        desc: "Applicator Roller, 37\" — coating head replacement roller",
+        filter: ["coating"] },
+      { sku: "800-0000010", name: "37\" Metering Roller",
+        desc: "37\" Metering Roller — controls lacquer film thickness",
+        filter: ["coating"] },
+      { sku: "800-0000012", name: "48\" Applicator Roller",
+        desc: "48\" Applicator Roller",
+        filter: ["coating"] },
+      { sku: "800-0000013", name: "48\" Metering Roller",
+        desc: "48\" Metering Roller",
+        filter: ["coating"] },
+      { sku: "800-0000023", name: "Blade, Scraper",
+        desc: "Blade, Scraper — used on all models",
+        filter: ["coating"] },
+      { sku: "800-0000049", name: "Holder, Scraper",
+        desc: "Holder Scraper — used on all models",
+        filter: ["coating"] },
+      { sku: "800-0000104", name: "Support Blade",
+        desc: "Support, Blade — used on all models",
+        filter: ["coating"] },
+      { sku: "020-009409", name: "E Series Metering Pump",
+        desc: "Metering pump with 316SS pump head, PTFE-faced CSPE-backed, PTFE seats/O-rings, 316SS balls, 1/4\" FNPT connections, 230 VAC/50–60 Hz/1 ph",
+        filter: ["coating"] },
+      { sku: "200-0000764", name: "3/4\" Ball Valve",
+        desc: "0.75\", Valve, Ball, Threaded Ends, VBA-10",
+        filter: ["coating"] },
+      { sku: "200-0006562", name: "1/2\" Ball Valve",
+        desc: "0.5\", Ball Valve, Body: 2 pc, 316SS, 150 psig sat. steam, 2000 CWP, lever operated, VBA-10",
+        filter: ["coating"] },
+      { sku: "200-0000096", name: "3/8\" Ball Valve, 316SS",
+        desc: "0.375\", Valve, Ball, Threaded Ends, 316SS, 150 psig, VBA-10",
+        filter: ["coating"] },
+      { sku: "200-0004781", name: "Threaded Diverting Valve, 316SS, 3/8\" NPT",
+        desc: "3/8\" FNPT, Valve, Ball, Diverting, 3-Port, SS, 800#, Threaded Ends",
+        filter: ["coating"] },
+      { sku: "070-128518", name: "Aluminum Hand Wheel, 5\" Spoked",
+        desc: "Aluminum Unthreaded Through-Hole Spoked Hand Wheel, Dished with Stationary Handle, 5\" Diameter (3/32\" × 3/64\" Keyway)",
+        filter: ["coating"] },
+      { sku: "400-0000050", name: "Aluminum Hand Wheel, 4\" Revolving Handle",
+        desc: "Aluminum Unthreaded Through-Hole Spoked Hand Wheel, Dished with Revolving Handle and Keyway, 4\" Diameter, 3/8\" ID",
+        filter: ["coating"] },
+      { sku: "800-0000050", name: "Hose, D35 Natural Rubber",
+        desc: "Hose, D35 Natural Rubber — replacement hose for coating fluid routing",
+        filter: ["coating"] },
+
+      // VTU / Conveyor
+      { sku: "800-0000093", name: "UVBC Roller Bearing",
+        desc: "Roller Bearing — VTU conveyor transport unit",
+        filter: ["vtu"] },
+      { sku: "100-0000103", name: "Screw Jack with Mounting Plate",
+        desc: "Screw Jack, 250 lb. cap., 3\" travel, inverted — VTU height adjustment",
+        filter: ["vtu"] },
+      { sku: "800-0000120", name: "Modified Universal Joint",
+        desc: "Modified Universal Joint — drive train component",
+        filter: ["vtu"] },
+
+      // Vacuum Blower
+      { sku: "400-0000036", name: "Cogged V-Belt, 80\" OL",
+        desc: "3VX800 Notched Belt — vacuum blower drive belt",
+        filter: ["blower"] },
+      { sku: "800-0000033", name: "Dome Down Drive Belt",
+        desc: "Dome Down Drive Belt",
+        filter: ["blower"] },
+
+      // Chiller
+      { sku: "800-0000212", name: "Compressor, Chiller Spare",
+        desc: "Compressor, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000213", name: "Fan, Chiller Spare",
+        desc: "Fan, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000214", name: "Freon Filter, Chiller Spare",
+        desc: "Freon Filter, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000215", name: "Thermostatic Valve, Chiller Spare",
+        desc: "Thermostatic Valve, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000216", name: "Orifice, Chiller Spare",
+        desc: "Orifice, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000217", name: "Hot Gas Bypass Solenoid Valve, Chiller Spare",
+        desc: "Hot Gas Bypass Solenoid Valve, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000218", name: "Solenoid Coil, Chiller Spare",
+        desc: "Solenoid Coil, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000219", name: "Evaporator, Chiller Spare",
+        desc: "Evaporator, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000220", name: "Pump, Chiller Spare",
+        desc: "Pump, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000221", name: "Manometer, Chiller Spare",
+        desc: "Manometer, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000222", name: "Air Filter, Chiller Spare",
+        desc: "Air Filter, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000223", name: "Pressure Sensor, Chiller Spare",
+        desc: "Pressure Sensor, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "800-0000224", name: "Inverter, Chiller Spare",
+        desc: "Inverter, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "500-0003828", name: "Regulation Thermostat, Chiller Spare",
+        desc: "Regulation Thermostat",
+        filter: ["chiller"] },
+      { sku: "500-0004384", name: "Thermostat Probe, Chiller Spare",
+        desc: "Thermostat Probe, Pfannenberg Chiller",
+        filter: ["chiller"] },
+      { sku: "500-0005384", name: "Thermostat Probe w/ Level Sensor",
+        desc: "Continuous level sensor, guided wave radar, 4-digit LED display, G3/4 BSPP process connection, 4-wire DC, 4–20mA analog output and PNP/NPN switching outputs, 4-pin micro DC connector",
+        filter: ["chiller"] },
+      { sku: "500-0005298", name: "High Pressure Switch, Chiller Spare",
+        desc: "Switch, High Pressure, Chiller Spare",
+        filter: ["chiller"] },
+      { sku: "500-0002634", name: "Flow Switch, Chiller Spare",
+        desc: "Flowswitch, Pfannenberg Chiller",
+        filter: ["chiller"] },
+
+      // Electrical
+      { sku: "500-0005291", name: "IEC Load Switch",
+        desc: "Disconnect Switch, 194E IEC Rotary, Enclosed, Non-Fusible, 3-P, 16 A, 10 HP, 600 V, 5 kA, DIN Mount, Painted Steel Enclosure Type 3/4/12, Rotary Handle Gray/Black",
+        filter: ["electrical", "disc_blower", "disc_conveyor"] },
+      { sku: "500-0005292", name: "194E Load Switch with Aux Contact",
+        desc: "Disconnect Switch, 194E IEC Rotary, Enclosed, Non-Fusible, 3-P, 16 A, 10 HP, 600 V, 5 kA, DIN Mount, Aux Contact Block 2-P 1 NO 1 NC",
+        filter: ["electrical", "disc_blower", "disc_conveyor"] },
+      { sku: "200-0006452", name: "SMC 24V DC 3-Way NAMUR Solenoid Valve M12",
+        desc: "SMC 24V DC 3-Way NAMUR Solenoid Valve M12, 1/4\" NPT — CVA1, CVA2, CVB1, CVB2",
+        filter: ["electrical", "jbox"] },
+      { sku: "500-0000227", name: "50' DA15 Female Cable Assembly",
+        desc: "50' DA15 Female straight metalized plastic hood with screws to blunt end (strip jacket back 1 foot, conductors stripped 1/4\")",
+        filter: ["electrical", "jbox"] },
+      { sku: "500-0002525", name: "Extra-Wide Elastic Cable Tie, EPDM, 5\"",
+        desc: "Extra-Wide Elastic Cable Tie, EPDM Rubber, 5\" Long",
+        filter: ["electrical", "jbox"] },
+      { sku: "070-128531", name: "Outlet Filter, 92mm × 92mm, Black",
+        desc: "Outlet filter Standard, 92mm × 92mm cutout Black — electrical enclosure ventilation",
+        filter: ["electrical", "jbox"] },
+      { sku: "500-0002622", name: "Flow / Temperature Sensor",
+        desc: "Flow/temperature sensor with 2 analog outputs, 1/2\" NPT connection",
+        filter: ["electrical", "jbox"] },
+
+      // Safety
+      { sku: "500-0003967", name: "440N Non-Contact Safety Switch",
+        desc: "SensaGuard Non-Contact, Plastic Rectangular, 2 NC Safety / 1 NO Aux, 24 Vdc, 15 mm sensing dist., LED indicator, 6\" cable with 8-pin M12 connector, UL Listed",
+        filter: ["safety", "guard"] },
+      { sku: "500-0003449", name: "Photo Eye Sensor",
+        desc: "Photo Eye with M12 4-Pin Connector",
+        filter: ["safety", "sensor"] },
+      { sku: "500-0003278", name: "Photo Sensor Bracket",
+        desc: "Mounting bracket for photoelectric sensor",
+        filter: ["safety", "sensor"] },
+      { sku: "500-0002631", name: "Thermo Air Flow Switch, 24 VDC",
+        desc: "Thermo air flow switch, 24 VDC",
+        filter: ["safety", "sensor"] },
+    ];
+
+    // ── Assembly display names ──────────────────────────────────
+    const ASM_LABELS = {
+      lamp:     "UV Lamp Assembly",
+      coating:  "Coating Head Assembly",
+      vtu:      "UV Conveyor Transport Unit",
+      blower:   "Vacuum Blower",
+      chiller:  "Chiller Spares",
+      electrical: "Electrical / Disconnects",
+      safety:   "Safety Systems",
+      disc_blower:   "Disconnect — Vacuum Blower",
+      disc_conveyor: "Disconnect — Vacuum Conveyor",
+      guard:    "Guard Interlock Switches",
+      sensor:   "Photoelectric Sensors",
+      jbox:     "Junction Box",
+    };
+
+    // ── Filter state ────────────────────────────────────────────
+    let activeFilter = "all";
+
+    function setFilter(filter, label) {
+      activeFilter = filter;
+
+      // update tabs
+      document.querySelectorAll(".asm-tab").forEach(t => {
+        t.classList.toggle("active", t.dataset.filter === filter ||
+          (filter !== "all" && !document.querySelector(`.asm-tab[data-filter="${filter}"]`) && t.dataset.filter === "all"));
+      });
+
+      // update header
+      const title = document.getElementById("panel-title");
+      const sub   = document.getElementById("panel-subtitle");
+      if (filter === "all") {
+        title.textContent = "All Replacement Parts";
+        sub.textContent   = "Click any assembly in the 3D model to filter parts, or browse the full catalog below.";
+      } else {
+        title.textContent = label || ASM_LABELS[filter] || filter;
+        sub.textContent   = `Showing replacement parts for the ${title.textContent}.`;
+      }
+
+      renderParts();
+    }
+
+    function renderParts() {
+      const list = document.getElementById("parts-list");
+
+      let filtered = activeFilter === "all"
+        ? PARTS
+        : PARTS.filter(p => p.filter.includes(activeFilter));
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <p>No parts mapped to this assembly yet.<br>Browse All Parts for the full catalog.</p>
+        </div>`;
+        return;
+      }
+
+      // Group by section label if showing all
+      if (activeFilter === "all") {
+        const sections = [
+          { key: "lamp",       label: "UV Lamp Assembly" },
+          { key: "coating",    label: "Coating Head Assembly" },
+          { key: "vtu",        label: "Conveyor / VTU" },
+          { key: "blower",     label: "Vacuum Blower" },
+          { key: "chiller",    label: "Chiller Spares (Pfannenberg)" },
+          { key: "electrical", label: "Electrical / Disconnects" },
+          { key: "safety",     label: "Safety Systems" },
+        ];
+        let html = "";
+        for (const sec of sections) {
+          const items = PARTS.filter(p => p.filter[0] === sec.key);
+          if (!items.length) continue;
+          html += `<div class="section-label">${sec.label}</div>`;
+          html += items.map(renderCard).join("");
+        }
+        list.innerHTML = html;
+      } else {
+        list.innerHTML = filtered.map(renderCard).join("");
+      }
+    }
+
+    function renderCard(p) {
+      return `<div class="part-card" data-sku="${p.sku}">
+        <div class="part-card-top">
+          <div class="part-info">
+            <div class="part-sku">SKU: ${p.sku}</div>
+            <div class="part-name">${p.name}</div>
+            <div class="part-desc">${p.desc}</div>
+          </div>
+          <div class="part-actions">
+            <span class="price-tag">Log in for pricing</span>
+            <a href="https://www.roeslein.com/parts" target="_blank" rel="noopener" class="btn-quote">Request Quote</a>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // ── Tab click handlers ─────────────────────────────────────
+    document.getElementById("asm-tabs").addEventListener("click", e => {
+      const tab = e.target.closest(".asm-tab");
+      if (!tab) return;
+      const filter = tab.dataset.filter;
+      document.querySelectorAll(".asm-tab").forEach(t => t.classList.toggle("active", t === tab));
+      setFilter(filter, tab.textContent.trim());
+    });
+
+    // ── Viewer init ────────────────────────────────────────────
+    const viewer = document.getElementById("viewer");
+
+    const BASE_URL  = "https://api.vntana.com";
+    const UUID      = "657f3fe0-1188-4988-8d02-122750504c86";
+    const ORG       = "DCicero";
+    const WORKSPACE = "n8n-work";
+
+    const NODE_MAP = {
+      "VTU RH 36in Single Lamp":                                         "vtu",
+      "RP001-092-15-2009":                                               "lamp",
+      "RP001-092-04-1003":                                               "coating",
+      "36 RH DD Bottom Coater":                                          "coating",
+      "116-423 SQAF270-4-CWUB-160_2":                                   "blower",
+      "AB 194E-FA Electrical Disconnect_DS-MA001 - Vacuum Blower":       "disc_blower",
+      "AB 194E-FA16 Electrical Disconnect_DS-MA003 - Vacuum Conveyor":   "disc_conveyor",
+      "AB 194E-FA16 Electrical Disconnect_DS-MA005 - Applicator Roller": "disc_applicator",
+      "AB 194E-FA16 Electrical Disconnect_DS-MA006 - Day Tank Mixer":    "disc_daytank",
+      "AB 194E-FA16 Electrical Disconnect_DS-MA015 - Lacquer Pump":      "disc_lacquer",
+      "ESPB01 - 8017.685 Estop Pushbutton Station":                      "estop",
+      "AB 440N-Z21SS2H, Guard Switch, Base_GS-01 - Lamp Front":         "guard",
+      "AB 440N-Z21SS2H, Guard Switch, Base_GS-02 - Roller Front":       "guard",
+      "AB 440N-Z21SS2H, Guard Switch, Base_GS-03 - Lamp Rear":          "guard",
+      "AB 440N-Z21SS2H, Guard Switch, Base_GS-04 - Can Entrance":       "guard",
+      "AB 44N-Z21SS2H, Guard Switch, Actuator":                         "guard",
+      "SICK WL9-3P2432 Photoelectric Sensor with BEF-WN-W9-2 B_74579a9": "sensor",
+      "SICK WL9-3P2432 Photoelectric Sensor with BEF-WN-W9-2 B_5b5eeeb": "sensor",
+      "SICK WL9-3P2432 Photoelectric Sensor with BEF-WN-W9-2 B_53d1321": "sensor",
+      "SICK WL9-3P2432 Photoelectric Sensor with BEF-WN-W9-2 B_d283af2": "sensor",
+      "SICK PL80A Photoelectric Sensor Reflector":                       "sensor",
+      "SICK WL9-3P2432 Photoelectric Sensor":                           "sensor",
+      "UVBC03 - 8017.545, Machine Mounted Junction Box":                 "jbox",
+    };
+
+    // Map 3D assembly key → panel filter key
+    const ASM_TO_FILTER = {
+      vtu: "vtu", lamp: "lamp", coating: "coating", blower: "blower",
+      disc_blower: "electrical", disc_conveyor: "electrical",
+      disc_applicator: "electrical", disc_daytank: "electrical", disc_lacquer: "electrical",
+      estop: "safety", guard: "safety", sensor: "safety", jbox: "electrical",
+    };
+
+    const normalize = t => t?.replace(/\s*\(\d+\)\s*$/, "").replace(/\.\d{3}$/, "").trim() ?? "";
+
+    // ── Viewer click → filter parts ────────────────────────────
+    const resolveClick = () => {
+      const sel = viewer.selection?.highlight;
+      if (!sel) return;
+      let matched = null;
+      try {
+        for (const entry of sel) {
+          const node = Array.isArray(entry) ? entry[0] : entry;
+          const val  = Array.isArray(entry) ? entry[1] : true;
+          if (!val) continue;
+          let n = node;
+          while (n) {
+            const key = NODE_MAP[normalize(n.name ?? "")];
+            if (key) { matched = key; break; }
+            n = n.parent;
+          }
+          if (matched) break;
+        }
+      } catch (_) {}
+      if (matched) {
+        const filter = ASM_TO_FILTER[matched] || matched;
+        const label  = ASM_LABELS[matched] || ASM_LABELS[filter];
+        // sync tab
+        const matchingTab = document.querySelector(`.asm-tab[data-filter="${filter}"]`);
+        document.querySelectorAll(".asm-tab").forEach(t => t.classList.remove("active"));
+        if (matchingTab) matchingTab.classList.add("active");
+        setFilter(filter, label);
+      }
+    };
+
+    viewer.addEventListener("click", () => requestAnimationFrame(resolveClick));
+
+    // ── Load product ───────────────────────────────────────────
+    (async () => {
+      try {
+        const product = await fetch(
+          `${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}`
+        ).then(r => r.json());
+        const { asset, viewerSettings } = product.response;
+        const blobId = asset.models[0].modelBlobId;
+        if (viewerSettings?.config) Object.assign(viewer, JSON.parse(viewerSettings.config));
+        viewer.enableAutoRotate = false;
+        viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+      } catch (e) { console.error("Viewer init failed:", e); }
+    })();
+
+    // ── Initial render ─────────────────────────────────────────
+    renderParts();
+  </script>
+
+</body>
+</html>
