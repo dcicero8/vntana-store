@@ -664,20 +664,50 @@
       }
     };
 
-    // Use same click+RAF pattern proven on roeslein-uvbc.html with this asset
-    viewer.addEventListener("click", () => requestAnimationFrame(() => {
-      const sel = viewer.selection?.highlight;
-      if (!sel) return;
-      try {
-        for (const entry of sel) {
-          const node = Array.isArray(entry) ? entry[0] : entry;
-          const val  = Array.isArray(entry) ? entry[1] : true;
-          if (!val) continue;
-          handleSelection(node);
-          break;
-        }
-      } catch (_) {}
-    }));
+    // ── Selection: background channel tracks hover, used on click ──
+    // The highlight channel is unreliable without hotspots.
+    // background fires on pointermove and correctly identifies the hovered mesh.
+    let lastBackgroundNode = null;
+    let _bgAttached = null;
+
+    const attachBackgroundListener = () => {
+      const bg = viewer.selection?.background;
+      if (!bg || bg === _bgAttached) return;
+      if (_bgAttached) _bgAttached.removeEventListener("change", onBgChange);
+      bg.addEventListener("change", onBgChange);
+      _bgAttached = bg;
+    };
+
+    const onBgChange = (event) => {
+      event.changes.forEach((v, n) => {
+        if (v) lastBackgroundNode = n;
+        else if (lastBackgroundNode === n) lastBackgroundNode = null;
+      });
+    };
+
+    viewer.addEventListener("load",       attachBackgroundListener);
+    viewer.addEventListener("model-load", attachBackgroundListener);
+
+    viewer.addEventListener("click", () => {
+      if (lastBackgroundNode) {
+        handleSelection(lastBackgroundNode);
+        return;
+      }
+      // Fallback: read highlight channel via RAF
+      requestAnimationFrame(() => {
+        const sel = viewer.selection?.highlight;
+        if (!sel) return;
+        try {
+          for (const entry of sel) {
+            const node = Array.isArray(entry) ? entry[0] : entry;
+            const val  = Array.isArray(entry) ? entry[1] : true;
+            if (!val) continue;
+            handleSelection(node);
+            break;
+          }
+        } catch (_) {}
+      });
+    });
 
     // ── Load product ───────────────────────────────────────────
     (async () => {
@@ -690,6 +720,7 @@
         if (viewerSettings?.config) Object.assign(viewer, JSON.parse(viewerSettings.config));
         viewer.enableAutoRotate = false;
         viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+        attachBackgroundListener();
       } catch (e) { console.error("Viewer init failed:", e); }
     })();
 
