@@ -621,37 +621,38 @@
 
     const normalize = t => t?.replace(/\s*\(\d+\)\s*$/, "").replace(/\.\d{3}$/, "").trim() ?? "";
 
-    // ── Viewer click → filter parts ────────────────────────────
-    const resolveClick = () => {
-      const sel = viewer.selection?.highlight;
-      if (!sel) return;
-      let matched = null;
-      try {
-        for (const entry of sel) {
-          const node = Array.isArray(entry) ? entry[0] : entry;
-          const val  = Array.isArray(entry) ? entry[1] : true;
-          if (!val) continue;
-          let n = node;
-          while (n) {
-            const key = NODE_MAP[normalize(n.name ?? "")];
-            if (key) { matched = key; break; }
-            n = n.parent;
-          }
-          if (matched) break;
+    // ── Viewer selection → filter parts ───────────────────────
+    const handleSelection = (node) => {
+      let n = node;
+      while (n) {
+        const key = NODE_MAP[normalize(n.name ?? "")];
+        if (key) {
+          const filter = ASM_TO_FILTER[key] || key;
+          const label  = ASM_LABELS[key] || ASM_LABELS[filter];
+          const matchingTab = document.querySelector(`.asm-tab[data-filter="${filter}"]`);
+          document.querySelectorAll(".asm-tab").forEach(t => t.classList.remove("active"));
+          if (matchingTab) matchingTab.classList.add("active");
+          setFilter(filter, label);
+          return;
         }
-      } catch (_) {}
-      if (matched) {
-        const filter = ASM_TO_FILTER[matched] || matched;
-        const label  = ASM_LABELS[matched] || ASM_LABELS[filter];
-        // sync tab
-        const matchingTab = document.querySelector(`.asm-tab[data-filter="${filter}"]`);
-        document.querySelectorAll(".asm-tab").forEach(t => t.classList.remove("active"));
-        if (matchingTab) matchingTab.classList.add("active");
-        setFilter(filter, label);
+        n = n.parent;
       }
     };
 
-    viewer.addEventListener("click", () => requestAnimationFrame(resolveClick));
+    const attachSelectionListener = () => {
+      if (!viewer.selection?.highlight?.addEventListener) return false;
+      viewer.selection.highlight.addEventListener("change", (event) => {
+        event.changes.forEach((value, node) => {
+          if (value !== 0) return; // 0 = selected
+          handleSelection(node);
+        });
+      });
+      return true;
+    };
+
+    if (!attachSelectionListener()) {
+      viewer.addEventListener("load", attachSelectionListener, { once: true });
+    }
 
     // ── Load product ───────────────────────────────────────────
     (async () => {
