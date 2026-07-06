@@ -69,132 +69,86 @@
       top: var(--header-h);
     }
 
-    .parts-header {
+    /* default / idle state */
+    .pdp-default {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2.5rem 2rem; text-align: center; color: #bbb;
+      gap: 1rem;
+    }
+    .pdp-default svg { opacity: .35; }
+    .pdp-default h2 { font-size: 1rem; font-weight: 700; color: #444; }
+    .pdp-default p  { font-size: .82rem; color: #999; line-height: 1.6; max-width: 260px; }
+
+    /* active PDP */
+    .pdp-active { display: none; flex-direction: column; flex: 1; }
+    .pdp-active.visible { display: flex; }
+
+    .pdp-asm-header {
       padding: 1.5rem 1.5rem 1rem;
       border-bottom: 1px solid #e8e8e6;
-      background: #fff;
-      position: sticky;
-      top: 0;
-      z-index: 10;
     }
-    .parts-header .kicker {
-      font-size: .62rem; font-weight: 700; letter-spacing: .1em;
-      text-transform: uppercase; color: var(--ro-red); margin-bottom: .4rem;
+    .pdp-asm-header .kicker {
+      font-size: .6rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--ro-red); margin-bottom: .35rem;
     }
-    .parts-header h1 {
-      font-size: 1.25rem; font-weight: 800; letter-spacing: -.02em; color: #111;
+    .pdp-asm-header h2 {
+      font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; color: #111;
+      margin-bottom: .3rem;
     }
-    .parts-header p {
-      font-size: .8rem; color: #777; margin-top: .3rem; line-height: 1.5;
+    .pdp-asm-header p {
+      font-size: .78rem; color: #777; line-height: 1.5;
     }
+    .pdp-back {
+      font-size: .72rem; font-weight: 600; color: #999;
+      cursor: pointer; margin-bottom: .75rem;
+      display: inline-flex; align-items: center; gap: .3rem;
+    }
+    .pdp-back:hover { color: var(--ro-navy); }
 
-    /* assembly filter tabs */
-    .asm-tabs {
-      display: flex; gap: .4rem; flex-wrap: wrap;
-      padding: .85rem 1.5rem; border-bottom: 1px solid #e8e8e6;
-      background: #fafafa;
-    }
-    .asm-tab {
-      font-size: .68rem; font-weight: 700; letter-spacing: .04em;
-      text-transform: uppercase; padding: .3rem .7rem;
-      border-radius: 20px; border: 1.5px solid #ddd;
-      background: #fff; color: #666; cursor: pointer;
-      transition: all .15s;
-    }
-    .asm-tab:hover  { border-color: var(--ro-navy); color: var(--ro-navy); }
-    .asm-tab.active { border-color: var(--ro-navy); background: var(--ro-navy); color: #fff; }
-
-    /* parts list */
-    .parts-list {
-      padding: 1rem 1.25rem;
-      flex: 1;
-    }
-
-    .section-label {
-      font-size: .62rem; font-weight: 700; letter-spacing: .1em;
-      text-transform: uppercase; color: #aaa;
-      margin: 1.25rem 0 .6rem;
-      display: flex; align-items: center; gap: .6rem;
-    }
-    .section-label::after { content: ''; flex: 1; height: 1px; background: #eee; }
+    /* parts list inside PDP */
+    .pdp-parts { padding: 1rem 1.25rem 1.5rem; flex: 1; overflow-y: auto; }
 
     .part-card {
       border: 1.5px solid #e8e8e6;
       border-radius: 10px;
-      padding: .9rem 1rem;
-      margin-bottom: .6rem;
+      padding: 1rem 1.1rem;
+      margin-bottom: .75rem;
       background: #fff;
       transition: border-color .15s, box-shadow .15s;
     }
     .part-card:hover { border-color: var(--ro-navy); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
-    .part-card.highlight { border-color: var(--ro-red); box-shadow: 0 0 0 3px rgba(200,16,46,.08); }
 
-    .part-card-top {
-      display: flex; justify-content: space-between; align-items: flex-start; gap: .75rem;
-    }
-    .part-info { flex: 1; min-width: 0; }
     .part-sku {
-      font-size: .62rem; font-weight: 700; letter-spacing: .06em;
-      text-transform: uppercase; color: #999; margin-bottom: .25rem;
+      font-size: .6rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: #aaa; margin-bottom: .2rem;
     }
     .part-name {
-      font-size: .88rem; font-weight: 700; color: #111; line-height: 1.25;
-      margin-bottom: .3rem;
+      font-size: .9rem; font-weight: 700; color: #111; line-height: 1.3;
+      margin-bottom: .35rem;
     }
     .part-desc {
-      font-size: .75rem; color: #666; line-height: 1.5;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-size: .75rem; color: #666; line-height: 1.55; margin-bottom: .75rem;
     }
-
-    .part-actions {
-      display: flex; flex-direction: column; align-items: flex-end; gap: .5rem;
-      flex-shrink: 0;
+    .part-footer {
+      display: flex; align-items: center; justify-content: space-between; gap: .5rem;
     }
-    .price-tag {
-      font-size: .72rem; font-weight: 700; color: #555;
-      background: #f4f4f2; padding: .25rem .6rem;
-      border-radius: 6px; white-space: nowrap;
+    .part-price {
+      font-size: 1rem; font-weight: 800; color: var(--ro-navy);
     }
-    .btn-quote {
-      font-size: .72rem; font-weight: 700;
-      background: var(--ro-navy); color: #fff;
-      border: none; border-radius: 6px;
-      padding: .4rem .85rem; cursor: pointer;
-      white-space: nowrap; text-decoration: none;
-      display: inline-block; text-align: center;
-      transition: background .15s;
+    .part-price.no-price {
+      font-size: .78rem; font-weight: 600; color: #999;
     }
-    .btn-quote:hover { background: #263d54; }
-
-    /* empty state */
-    .empty-state {
-      text-align: center; padding: 3rem 1rem; color: #bbb;
-    }
-    .empty-state p { font-size: .85rem; margin-top: .5rem; }
-
-    /* footer CTA */
-    .parts-footer {
-      padding: 1.25rem 1.5rem;
-      border-top: 1px solid #e8e8e6;
-      background: #fafafa;
-      display: flex; gap: .75rem; align-items: center;
-    }
-    .parts-footer a {
-      flex: 1; text-align: center;
-      font-size: .78rem; font-weight: 700;
-      padding: .65rem 1rem; border-radius: 8px;
-      text-decoration: none; transition: all .15s;
-    }
-    .parts-footer .btn-primary-footer {
+    .btn-cart {
+      font-size: .75rem; font-weight: 700;
       background: var(--ro-red); color: #fff;
+      border: none; border-radius: 7px;
+      padding: .5rem 1.1rem; cursor: pointer;
+      white-space: nowrap; text-decoration: none;
+      display: inline-block; transition: background .15s;
     }
-    .parts-footer .btn-primary-footer:hover { background: #a50d26; }
-    .parts-footer .btn-secondary-footer {
-      background: #fff; color: var(--ro-navy);
-      border: 1.5px solid var(--ro-navy);
-    }
-    .parts-footer .btn-secondary-footer:hover { background: var(--ro-navy); color: #fff; }
+    .btn-cart:hover { background: #a50d26; }
 
     @media (max-width: 860px) {
       main.parts-layout { grid-template-columns: 1fr; }
@@ -240,38 +194,30 @@
     <!-- RIGHT: Parts panel -->
     <div class="parts-col">
 
-      <div class="parts-header">
-        <p class="kicker">UVBC UV Curing System &nbsp;·&nbsp; Replacement Parts</p>
-        <h1 id="panel-title">All Replacement Parts</h1>
-        <p id="panel-subtitle">Click any assembly in the 3D model to filter parts, or browse the full catalog below.</p>
+      <!-- default idle state -->
+      <div class="pdp-default" id="pdp-default">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0D2240" stroke-width="1.3"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <h2>Click any component</h2>
+        <p>Select an assembly in the 3D model to see its replacement parts and pricing.</p>
       </div>
 
-      <div class="asm-tabs" id="asm-tabs">
-        <button class="asm-tab active" data-filter="all">All</button>
-        <button class="asm-tab" data-filter="lamp">UV Lamp</button>
-        <button class="asm-tab" data-filter="coating">Coating Head</button>
-        <button class="asm-tab" data-filter="vtu">Conveyor / VTU</button>
-        <button class="asm-tab" data-filter="blower">Vacuum Blower</button>
-        <button class="asm-tab" data-filter="chiller">Chiller</button>
-        <button class="asm-tab" data-filter="electrical">Electrical</button>
-        <button class="asm-tab" data-filter="safety">Safety</button>
-      </div>
-
-      <div class="parts-list" id="parts-list">
-        <!-- populated by JS -->
-      </div>
-
-      <div class="parts-footer">
-        <a href="https://www.roeslein.com/parts" target="_blank" rel="noopener" class="btn-primary-footer">Log In for Pricing →</a>
-        <a href="roeslein-uvbc.html" class="btn-secondary-footer">View System Explorer</a>
+      <!-- active PDP shown after click -->
+      <div class="pdp-active" id="pdp-active">
+        <div class="pdp-asm-header">
+          <div class="pdp-back" id="pdp-back">← All assemblies</div>
+          <p class="kicker" id="pdp-kicker">UVBC &nbsp;·&nbsp; Replacement Parts</p>
+          <h2 id="pdp-title"></h2>
+          <p id="pdp-desc"></p>
+        </div>
+        <div class="pdp-parts" id="pdp-parts">
+          <!-- populated by JS -->
+        </div>
       </div>
 
     </div>
   </main>
 
   <script type="module">
-    // ── Parts catalog ──────────────────────────────────────────────
-    // filter: array of assembly keys that match (maps to NODE_MAP keys)
     const PARTS = [
       // UV Lamp
       { sku: "500-0003042", name: "UVLED Lamp 250mm, 395nm, 20W",
@@ -471,135 +417,92 @@
         filter: ["safety", "sensor"] },
     ];
 
-    // ── Assembly display names ──────────────────────────────────
-    const ASM_LABELS = {
-      lamp:     "UV Lamp Assembly",
-      coating:  "Coating Head Assembly",
-      vtu:      "UV Conveyor Transport Unit",
-      blower:   "Vacuum Blower",
-      chiller:  "Chiller Spares",
-      electrical: "Electrical / Disconnects",
-      safety:   "Safety Systems",
-      disc_blower:   "Disconnect — Vacuum Blower",
-      disc_conveyor: "Disconnect — Vacuum Conveyor",
-      guard:    "Guard Interlock Switches",
-      sensor:   "Photoelectric Sensors",
-      jbox:     "Junction Box",
+    // ── Assembly metadata ──────────────────────────────────────
+    const ASM_META = {
+      lamp:      { label: "UV Lamp Assembly",            desc: "UV LED curing lamp, power supply, cables, and measurement instruments." },
+      coating:   { label: "Coating Head Assembly",       desc: "Bottom coater rollers, scrapers, valves, pump, and fluid-handling components." },
+      vtu:       { label: "UV Conveyor Transport Unit",  desc: "Vacuum transport unit bearings, screw jacks, and drive components." },
+      blower:    { label: "Vacuum Blower",               desc: "Drive belts for the SQAF 270 rotary screw vacuum blower." },
+      chiller:   { label: "Chiller Spares (Pfannenberg)",desc: "Compressor, fan, refrigerant circuit, and control spare parts." },
+      electrical:{ label: "Electrical / Disconnects",   desc: "Disconnect switches, solenoid valves, sensors, and junction box components." },
+      safety:    { label: "Safety Systems",              desc: "Guard interlock switches, photoelectric sensors, and air flow switches." },
+      disc_blower:   { label: "Disconnect — Vacuum Blower",   desc: "Allen-Bradley 194E lockout/tagout disconnect for the vacuum blower circuit." },
+      disc_conveyor: { label: "Disconnect — Vacuum Conveyor", desc: "Allen-Bradley 194E lockout/tagout disconnect for the vacuum conveyor drive." },
+      disc_applicator:{ label: "Disconnect — Applicator Roller", desc: "Allen-Bradley 194E disconnect for the applicator roller motor." },
+      disc_daytank:  { label: "Disconnect — Day Tank Mixer",  desc: "Allen-Bradley 194E disconnect for the day tank mixer motor." },
+      disc_lacquer:  { label: "Disconnect — Lacquer Pump",    desc: "Allen-Bradley 194E disconnect for the lacquer pump motor." },
+      estop:     { label: "E-Stop Station",              desc: "Machine-mounted emergency stop pushbutton — NFPA 79 / ISO 13850 compliant." },
+      guard:     { label: "Guard Interlock Switches",    desc: "440N SensaGuard non-contact interlock switches for all four guard positions." },
+      sensor:    { label: "Photoelectric Sensors",       desc: "SICK WL9-3P2432 can-presence sensors, brackets, and reflectors." },
+      jbox:      { label: "Machine Junction Box",        desc: "NEMA 4 / IP65 junction box components — solenoids, cables, and filters." },
     };
 
-    // ── Filter state ────────────────────────────────────────────
-    let activeFilter = "all";
-
-    function setFilter(filter, label) {
-      activeFilter = filter;
-
-      // update tabs
-      document.querySelectorAll(".asm-tab").forEach(t => {
-        t.classList.toggle("active", t.dataset.filter === filter ||
-          (filter !== "all" && !document.querySelector(`.asm-tab[data-filter="${filter}"]`) && t.dataset.filter === "all"));
-      });
-
-      // update header
-      const title = document.getElementById("panel-title");
-      const sub   = document.getElementById("panel-subtitle");
-      if (filter === "all") {
-        title.textContent = "All Replacement Parts";
-        sub.textContent   = "Click any assembly in the 3D model to filter parts, or browse the full catalog below.";
-      } else {
-        title.textContent = label || ASM_LABELS[filter] || filter;
-        sub.textContent   = `Showing replacement parts for the ${title.textContent}.`;
-      }
-
-      renderParts();
-    }
-
-    function renderParts() {
-      const list = document.getElementById("parts-list");
-
-      let filtered = activeFilter === "all"
-        ? PARTS
-        : PARTS.filter(p => p.filter.includes(activeFilter));
-
-      if (!filtered.length) {
-        list.innerHTML = `<div class="empty-state">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <p>No parts mapped to this assembly yet.<br>Browse All Parts for the full catalog.</p>
-        </div>`;
-        return;
-      }
-
-      // Group by section label if showing all
-      if (activeFilter === "all") {
-        const sections = [
-          { key: "lamp",       label: "UV Lamp Assembly" },
-          { key: "coating",    label: "Coating Head Assembly" },
-          { key: "vtu",        label: "Conveyor / VTU" },
-          { key: "blower",     label: "Vacuum Blower" },
-          { key: "chiller",    label: "Chiller Spares (Pfannenberg)" },
-          { key: "electrical", label: "Electrical / Disconnects" },
-          { key: "safety",     label: "Safety Systems" },
-        ];
-        let html = "";
-        for (const sec of sections) {
-          const items = PARTS.filter(p => p.filter[0] === sec.key);
-          if (!items.length) continue;
-          html += `<div class="section-label">${sec.label}</div>`;
-          html += items.map(renderCard).join("");
-        }
-        list.innerHTML = html;
-      } else {
-        list.innerHTML = filtered.map(renderCard).join("");
-      }
-    }
-
+    // ── Prices ─────────────────────────────────────────────────
     const PRICES = {
-      "500-0003042": "$21,987.73", "500-0003029": "$11,188.24", "500-0000616": "$1,448.62",
-      "500-0000982": "$1,098.55",  "500-0003075": "$848.75",    "500-0002121": "$1,049.38",
-      "500-0004569": "$12,922.58", "500-0002249": "$3,325.67",  "200-0006477": "$6,392.95",
-      "800-0000153": "$499.00",    "800-0000152": "$410.30",    "800-0000151": "$319.93",
-      "800-0000117": "$9,185.17",  "800-0000010": "$6,632.99",  "800-0000012": "$11,252.25",
-      "800-0000013": "$8,388.34",  "800-0000023": "$320.06",    "800-0000049": "$590.12",
-      "800-0000104": "$106.69",    "200-0000764": "$157.21",    "200-0006562": "$94.04",
-      "200-0000096": "$90.43",     "200-0004781": "$346.89",    "400-0000050": "$100.69",
-      "800-0000050": "$953.36",    "800-0000093": "$486.76",    "100-0000103": "$538.36",
-      "800-0000120": "$658.47",    "400-0000036": "$32.82",     "800-0000033": "$426.75",
-      "800-0000212": "$2,307.13",  "800-0000213": "$2,070.41",  "800-0000214": "$238.38",
-      "800-0000215": "$415.08",    "800-0000216": "$351.74",    "800-0000217": "$581.78",
-      "800-0000218": "$355.07",    "800-0000219": "$1,631.99",  "800-0000220": "$3,944.12",
-      "800-0000221": "$220.04",    "800-0000222": "$1,295.26",  "800-0000223": "$453.42",
-      "800-0000224": "$3,737.41",  "500-0003828": "$1,993.73",  "500-0004384": "$201.71",
-      "500-0005298": "$325.07",    "500-0002634": "$645.13",    "500-0005291": "$241.72",
-      "500-0005292": "$220.26",    "200-0006452": "$502.43",    "500-0000227": "$583.45",
-      "500-0002525": "$21.67",     "500-0002622": "$646.30",    "500-0003967": "$222.41",
+      "500-0003042":"$21,987.73","500-0003029":"$11,188.24","500-0000616":"$1,448.62",
+      "500-0000982":"$1,098.55", "500-0003075":"$848.75",   "500-0002121":"$1,049.38",
+      "500-0004569":"$12,922.58","500-0002249":"$3,325.67", "200-0006477":"$6,392.95",
+      "800-0000153":"$499.00",   "800-0000152":"$410.30",   "800-0000151":"$319.93",
+      "800-0000117":"$9,185.17", "800-0000010":"$6,632.99", "800-0000012":"$11,252.25",
+      "800-0000013":"$8,388.34", "800-0000023":"$320.06",   "800-0000049":"$590.12",
+      "800-0000104":"$106.69",   "200-0000764":"$157.21",   "200-0006562":"$94.04",
+      "200-0000096":"$90.43",    "200-0004781":"$346.89",   "400-0000050":"$100.69",
+      "800-0000050":"$953.36",   "800-0000093":"$486.76",   "100-0000103":"$538.36",
+      "800-0000120":"$658.47",   "400-0000036":"$32.82",    "800-0000033":"$426.75",
+      "800-0000212":"$2,307.13", "800-0000213":"$2,070.41", "800-0000214":"$238.38",
+      "800-0000215":"$415.08",   "800-0000216":"$351.74",   "800-0000217":"$581.78",
+      "800-0000218":"$355.07",   "800-0000219":"$1,631.99", "800-0000220":"$3,944.12",
+      "800-0000221":"$220.04",   "800-0000222":"$1,295.26", "800-0000223":"$453.42",
+      "800-0000224":"$3,737.41", "500-0003828":"$1,993.73", "500-0004384":"$201.71",
+      "500-0005298":"$325.07",   "500-0002634":"$645.13",   "500-0005291":"$241.72",
+      "500-0005292":"$220.26",   "200-0006452":"$502.43",   "500-0000227":"$583.45",
+      "500-0002525":"$21.67",    "500-0002622":"$646.30",   "500-0003967":"$222.41",
     };
 
-    function renderCard(p) {
-      const price = PRICES[p.sku];
-      const priceHtml = price
-        ? `<span class="price-tag" style="color:#0D2240;font-weight:700">${price}</span>`
-        : `<span class="price-tag">Log in for pricing</span>`;
-      return `<div class="part-card" data-sku="${p.sku}">
-        <div class="part-card-top">
-          <div class="part-info">
-            <div class="part-sku">SKU: ${p.sku}</div>
+    // ── Show assembly PDP ───────────────────────────────────────
+    const pdpDefault = document.getElementById("pdp-default");
+    const pdpActive  = document.getElementById("pdp-active");
+
+    function showAssembly(asmKey) {
+      // resolve to a primary filter key (disc_blower → electrical, etc.)
+      const filterKey = ASM_TO_FILTER[asmKey] || asmKey;
+      // prefer specific meta, fall back to filter meta
+      const meta = ASM_META[asmKey] || ASM_META[filterKey] || { label: asmKey, desc: "" };
+
+      document.getElementById("pdp-title").textContent = meta.label;
+      document.getElementById("pdp-desc").textContent  = meta.desc;
+
+      const parts = PARTS.filter(p => p.filter.includes(filterKey) || p.filter.includes(asmKey));
+      const container = document.getElementById("pdp-parts");
+
+      if (!parts.length) {
+        container.innerHTML = `<p style="color:#aaa;font-size:.82rem;padding:1rem 0">No parts mapped to this assembly yet.</p>`;
+      } else {
+        container.innerHTML = parts.map(p => {
+          const price = PRICES[p.sku];
+          const priceHtml = price && price !== "$0.00"
+            ? `<span class="part-price">${price}</span>`
+            : `<span class="part-price no-price">Contact for pricing</span>`;
+          return `<div class="part-card">
+            <div class="part-sku">SKU ${p.sku}</div>
             <div class="part-name">${p.name}</div>
             <div class="part-desc">${p.desc}</div>
-          </div>
-          <div class="part-actions">
-            ${priceHtml}
-            <a href="https://parts.roeslein.com/d-i-canmaking-parts/roeslein-associates/uvbc/" target="_blank" rel="noopener" class="btn-quote">Buy on Roeslein Parts</a>
-          </div>
-        </div>
-      </div>`;
+            <div class="part-footer">
+              ${priceHtml}
+              <a href="https://parts.roeslein.com/d-i-canmaking-parts/roeslein-associates/uvbc/" target="_blank" rel="noopener" class="btn-cart">Order Part</a>
+            </div>
+          </div>`;
+        }).join("");
+      }
+
+      pdpDefault.style.display = "none";
+      pdpActive.classList.add("visible");
+      pdpActive.scrollTop = 0;
     }
 
-    // ── Tab click handlers ─────────────────────────────────────
-    document.getElementById("asm-tabs").addEventListener("click", e => {
-      const tab = e.target.closest(".asm-tab");
-      if (!tab) return;
-      const filter = tab.dataset.filter;
-      document.querySelectorAll(".asm-tab").forEach(t => t.classList.toggle("active", t === tab));
-      setFilter(filter, tab.textContent.trim());
+    document.getElementById("pdp-back").addEventListener("click", () => {
+      pdpActive.classList.remove("visible");
+      pdpDefault.style.display = "";
     });
 
     // ── Viewer init ────────────────────────────────────────────
@@ -646,20 +549,12 @@
 
     const normalize = t => t?.replace(/\s*\(\d+\)\s*$/, "").replace(/\.\d{3}$/, "").trim() ?? "";
 
-    // ── Viewer selection → filter parts ───────────────────────
+    // ── Viewer selection → show assembly PDP ──────────────────
     const handleSelection = (node) => {
       let n = node;
       while (n) {
         const key = NODE_MAP[normalize(n.name ?? "")];
-        if (key) {
-          const filter = ASM_TO_FILTER[key] || key;
-          const label  = ASM_LABELS[key] || ASM_LABELS[filter];
-          const matchingTab = document.querySelector(`.asm-tab[data-filter="${filter}"]`);
-          document.querySelectorAll(".asm-tab").forEach(t => t.classList.remove("active"));
-          if (matchingTab) matchingTab.classList.add("active");
-          setFilter(filter, label);
-          return;
-        }
+        if (key) { showAssembly(key); return; }
         n = n.parent;
       }
     };
@@ -696,8 +591,6 @@
       } catch (e) { console.error("Viewer init failed:", e); }
     })();
 
-    // ── Initial render ─────────────────────────────────────────
-    renderParts();
   </script>
 
 </body>
