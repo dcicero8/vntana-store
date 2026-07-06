@@ -472,7 +472,7 @@
 
       <div class="uvbc-footer">
         <a class="ro-btn primary" href="https://roeslein.com" target="_blank" rel="noopener">Visit Roeslein.com &rarr;</a>
-        <a class="ro-btn secondary" href="https://parts.roeslein.com" target="_blank" rel="noopener">Shop Replacement Parts</a>
+        <a class="ro-btn secondary" href="parts.html">Shop Replacement Parts</a>
       </div>
 
     </div><!-- /uvbc-info -->
@@ -673,11 +673,21 @@
     t?.replace(/\s*\(\d+\)\s*$/, "").replace(/\.\d{3}$/, "").trim() ?? "";
 
   let activeKey = null;
+  const HOTSPOT_CAMERAS = {};   // key → {cameraTarget, cameraDistance, cameraRotation}
 
   function selectAssembly(key) {
     if (!key || !ASSEMBLIES[key]) return;
     if (activeKey === key) return;
     activeKey = key;
+
+    const cam = HOTSPOT_CAMERAS[key];
+    if (cam) {
+      try {
+        if (cam.cameraTarget)   viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.cameraDistance) viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
+      } catch (_) {}
+    }
 
     cards.forEach(c => c.classList.toggle("active", c.dataset.key === key));
 
@@ -758,6 +768,11 @@
       let dims;
       try { dims = JSON.parse(hs.config?.dimensions ?? "{}"); } catch { return; }
       if (!dims.position) return;
+
+      // Store camera config for snap-on-click
+      if (hs.config?.camera) {
+        try { HOTSPOT_CAMERAS[key] = JSON.parse(hs.config.camera); } catch (_) {}
+      }
 
       const el = document.createElement("vntana-hotspot");
       el.setAttribute("position", dims.position);
