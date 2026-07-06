@@ -54,6 +54,39 @@
       white-space: nowrap;
     }
 
+    /* ── Hotspot pins ── */
+    vntana-hotspot {
+      --hotspot-size: 32px;
+      cursor: pointer;
+    }
+    .hs-pin {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--ro-navy);
+      border: 2px solid rgba(255,255,255,0.6);
+      color: #fff;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.1;
+      backdrop-filter: blur(4px);
+      transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+      pointer-events: none;
+    }
+    vntana-hotspot:hover .hs-pin,
+    vntana-hotspot.active .hs-pin {
+      background: var(--ro-red);
+      border-color: #fff;
+      transform: scale(1.15);
+      box-shadow: 0 0 0 3px rgba(200,16,46,0.3);
+    }
+
     /* ── Info panel ── */
     .uvbc-info {
       background: #fff;
@@ -696,6 +729,75 @@
   };
 
   viewer.addEventListener("click", () => requestAnimationFrame(resolveHighlight));
+
+  // ── Hotspot injection ─────────────────────────────────────────
+  // UUID → assembly key (order matches creation order)
+  const HS_MAP = {
+    "c89047ed-f6ed-47cd-aa7d-d9c414e14deb": "vtu",
+    "a72c665a-543e-42b4-b2ba-e7a42071abbe": "lamp",
+    "f6de2fd9-f1e8-453e-b426-a92a4ae02cb1": "coating",
+    "c87e5e48-b432-453d-810b-4a8985b11964": "blower",
+    "6ce5247f-74c1-4aa0-98f3-050228be32c3": "disc_blower",
+    "b9e94c3b-3904-4a9f-a843-fe30778b5e96": "disc_conveyor",
+    "1be6b7c1-4cb6-462b-b1d9-95fb59f296fc": "estop",
+    "173691ff-b099-45f3-9de9-7ef9b9b82305": "guard",
+    "3619cfc4-5f87-443a-b9e5-e81788f50bc6": "sensor",
+    "888efaae-a173-44a4-b6e6-770fb44c184b": "jbox",
+  };
+
+  // Short badge label per key (shown inside the pin)
+  const HS_LABEL = {
+    vtu: "VTU", lamp: "UV", coating: "APP", blower: "VAC",
+    disc_blower: "DS1", disc_conveyor: "DS3",
+    estop: "ES", guard: "GS", sensor: "SN", jbox: "JB",
+  };
+
+  let activeHotspot = null;
+
+  function injectHotspots(grid) {
+    grid.forEach(hs => {
+      const key = HS_MAP[hs.uuid];
+      if (!key) return;
+      let dims;
+      try { dims = JSON.parse(hs.config?.dimensions ?? "{}"); } catch { return; }
+      if (!dims.position) return;
+
+      const el = document.createElement("vntana-hotspot");
+      el.setAttribute("position", dims.position);
+      el.setAttribute("normal",   dims.normal ?? "0m 1m 0m");
+
+      const pin = document.createElement("div");
+      pin.className = "hs-pin";
+      pin.textContent = HS_LABEL[key] ?? key.toUpperCase().slice(0, 3);
+      el.appendChild(pin);
+
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (activeHotspot) activeHotspot.classList.remove("active");
+        el.classList.add("active");
+        activeHotspot = el;
+        selectAssembly(key);
+      });
+
+      viewer.appendChild(el);
+    });
+  }
+
+  // Fetch hotspots after model loads
+  const loadHotspots = async () => {
+    try {
+      const resp = await fetch(
+        "https://api.vntana.com/hotspots/search/organizations/DCicero/clients/n8n-work",
+        { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productUuid: "657f3fe0-1188-4988-8d02-122750504c86", page: 1, size: 20 }) }
+      ).then(r => r.json());
+      const grid = resp?.response?.grid ?? [];
+      if (grid.length) injectHotspots(grid);
+    } catch (_) {}
+  };
+
+  viewer.addEventListener("load",       loadHotspots, { once: true });
+  viewer.addEventListener("model-load", loadHotspots, { once: true });
   </script>
 
 </body>
