@@ -320,9 +320,6 @@
       <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
       <vntana-viewer
         id="viewer"
-        product-uuid="657f3fe0-1188-4988-8d02-122750504c86"
-        client-slug="n8n-work"
-        organization-slug="DCicero"
         shadow-intensity="0.3"
         shadow-radius="2"
         loading="eager"
@@ -798,6 +795,26 @@
 
   viewer.addEventListener("load",       loadHotspots, { once: true });
   viewer.addEventListener("model-load", loadHotspots, { once: true });
+
+  // ── Load product and set viewer.src ───────────────────────────
+  const BASE_URL   = "https://api.vntana.com";
+  const UUID       = "657f3fe0-1188-4988-8d02-122750504c86";
+  const ORG        = "DCicero";
+  const WORKSPACE  = "n8n-work";
+
+  const product = await fetch(
+    `${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}`
+  ).then(r => r.json());
+
+  const { asset, viewerSettings } = product.response;
+  const blobId = asset.models[0].modelBlobId;
+
+  if (viewerSettings?.config) {
+    Object.assign(viewer, JSON.parse(viewerSettings.config));
+  }
+
+  viewer.enableAutoRotate = false;
+  viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
   </script>
 
 </body>
