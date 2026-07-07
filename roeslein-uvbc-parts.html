@@ -583,28 +583,27 @@
 
     const showSkuPart = (sku, nodeName) => {
       const partLabel = nodeName.replace(/\s*\(\d{3}-\d{3,7}\)\s*$/, "").trim();
-      const price = PRICES[sku] ?? null;
+      const price = PRICES[sku];
       const url = SKU_URLS[sku] ?? `${ROESLEIN_BASE}/search/?q=${encodeURIComponent(sku)}`;
-      document.getElementById("pdp-default").style.display = "none";
-      const active = document.getElementById("pdp-active");
-      active.style.display = "flex";
-      const imgSrc = `assets/parts/${sku}.jpg`;
-      active.innerHTML = `
-        <div class="pdp-header">
-          <div class="pdp-asm-name">${partLabel}</div>
-          <div class="pdp-asm-desc">SKU: ${sku}</div>
-          <a class="back-link" href="#" onclick="document.getElementById('pdp-default').style.display='flex';document.getElementById('pdp-active').style.display='none';return false;">← All parts</a>
+      const priceHtml = price && price !== "$0.00"
+        ? `<span class="part-price">${price}</span>`
+        : `<span class="part-price no-price">Contact for pricing</span>`;
+
+      document.getElementById("pdp-title").textContent = partLabel;
+      document.getElementById("pdp-desc").textContent  = `SKU: ${sku}`;
+      document.getElementById("pdp-back").style.display = "";
+
+      document.getElementById("pdp-parts").innerHTML = `<div class="part-card">
+        <img src="assets/parts/${sku}.jpg" alt="${partLabel}"
+             onerror="this.style.display='none'"
+             style="width:100%;max-height:200px;object-fit:contain;border-radius:6px;background:#f4f7fa;margin-bottom:.6rem;display:block;">
+        <div class="part-sku">SKU ${sku}</div>
+        <div class="part-name">${partLabel}</div>
+        <div class="part-footer">
+          ${priceHtml}
+          <a href="${url}" target="_blank" rel="noopener" class="btn-cart">Order Part</a>
         </div>
-        <div class="parts-list">
-          <div class="part-card">
-            <img class="part-img" src="${imgSrc}" alt="${partLabel}"
-                 onerror="this.style.display='none'" style="width:100%;border-radius:6px;margin-bottom:12px;object-fit:contain;max-height:200px;background:#f4f7fa;">
-            <div class="part-sku">${sku}</div>
-            <div class="part-name">${partLabel}</div>
-            <div class="part-price">${price && price !== "$0.00" ? price : "Contact for pricing"}</div>
-            <a class="order-btn" href="${url}" target="_blank" rel="noopener">Order Part →</a>
-          </div>
-        </div>`;
+      </div>`;
     };
 
     // ── Selection detection (same pattern as parts.js) ────────────
