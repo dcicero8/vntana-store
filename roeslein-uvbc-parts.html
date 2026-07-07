@@ -566,6 +566,9 @@
       "500-0005291": "IEC Load Switch",
       "172-017":     "Gearmotor",
     };
+    const SKU_DESCS = {
+      "172-017": "1 HP, 100:1 Ratio, 17.5 RPM, 1.19/1.25 Bore, 60 Hz",
+    };
 
     // ── Viewer selection → show assembly PDP or direct SKU link ──
     const handleSelection = (node) => {
@@ -597,12 +600,14 @@
       document.getElementById("pdp-desc").textContent  = `SKU: ${sku}`;
       document.getElementById("pdp-back").style.display = "";
 
+      const desc = SKU_DESCS[sku] ?? "";
       document.getElementById("pdp-parts").innerHTML = `<div class="part-card">
         <img src="assets/parts/${sku}.jpg" alt="${partLabel}"
              onerror="this.style.display='none'"
              style="width:100%;max-height:200px;object-fit:contain;border-radius:6px;background:#f4f7fa;margin-bottom:.6rem;display:block;">
         <div class="part-sku">SKU ${sku}</div>
         <div class="part-name">${partLabel}</div>
+        ${desc ? `<div class="part-desc" style="font-size:.8rem;color:#64748b;margin:.25rem 0 .5rem;">${desc}</div>` : ""}
         <div class="part-footer">
           ${priceHtml}
           <a href="${url}" target="_blank" rel="noopener" class="btn-cart">Order Part</a>
