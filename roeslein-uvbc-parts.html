@@ -551,14 +551,60 @@
 
     const normalize = t => t?.replace(/\s*\(\d+\)\s*$/, "").replace(/\.\d{3}$/, "").trim() ?? "";
 
-    // ── Viewer selection → show assembly PDP ──────────────────
+    // Extract SKU from node names like "IEC Load Switch (500-0005291)" or "Gearmotor (172-017)"
+    const extractSku = name => {
+      const m = name?.match(/\((\d{3}-\d{3,7})\)\s*$/);
+      return m ? m[1] : null;
+    };
+
+    const ROESLEIN_BASE = "https://parts.roeslein.com";
+    const SKU_URLS = {
+      "500-0005291": `${ROESLEIN_BASE}/iec-load-switch/`,
+      "172-017":     `${ROESLEIN_BASE}/gearmotor-1-hp-100-1-ratio-17-5-rpm-rpm-1-19-1-25-bore-60-hz/`,
+    };
+
+    // ── Viewer selection → show assembly PDP or direct SKU link ──
     const handleSelection = (node) => {
+      // Walk up looking for a direct SKU name first
       let n = node;
+      while (n) {
+        const sku = extractSku(n.name ?? "");
+        if (sku) { showSkuPart(sku, n.name); return; }
+        n = n.parent;
+      }
+      // Fall back to assembly-level lookup
+      n = node;
       while (n) {
         const key = NODE_MAP[normalize(n.name ?? "")];
         if (key) { showAssembly(key); return; }
         n = n.parent;
       }
+    };
+
+    const showSkuPart = (sku, nodeName) => {
+      const partLabel = nodeName.replace(/\s*\(\d{3}-\d{3,7}\)\s*$/, "").trim();
+      const price = PRICES[sku] ?? null;
+      const url = SKU_URLS[sku] ?? `${ROESLEIN_BASE}/search/?q=${encodeURIComponent(sku)}`;
+      document.getElementById("pdp-default").style.display = "none";
+      const active = document.getElementById("pdp-active");
+      active.style.display = "flex";
+      const imgSrc = `assets/parts/${sku}.jpg`;
+      active.innerHTML = `
+        <div class="pdp-header">
+          <div class="pdp-asm-name">${partLabel}</div>
+          <div class="pdp-asm-desc">SKU: ${sku}</div>
+          <a class="back-link" href="#" onclick="document.getElementById('pdp-default').style.display='flex';document.getElementById('pdp-active').style.display='none';return false;">← All parts</a>
+        </div>
+        <div class="parts-list">
+          <div class="part-card">
+            <img class="part-img" src="${imgSrc}" alt="${partLabel}"
+                 onerror="this.style.display='none'" style="width:100%;border-radius:6px;margin-bottom:12px;object-fit:contain;max-height:200px;background:#f4f7fa;">
+            <div class="part-sku">${sku}</div>
+            <div class="part-name">${partLabel}</div>
+            <div class="part-price">${price && price !== "$0.00" ? price : "Contact for pricing"}</div>
+            <a class="order-btn" href="${url}" target="_blank" rel="noopener">Order Part →</a>
+          </div>
+        </div>`;
     };
 
     // ── Selection detection (same pattern as parts.js) ────────────
