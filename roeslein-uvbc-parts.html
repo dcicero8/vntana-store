@@ -562,6 +562,10 @@
       "500-0005291": `${ROESLEIN_BASE}/iec-load-switch/`,
       "172-017":     `${ROESLEIN_BASE}/gearmotor-1-hp-100-1-ratio-17-5-rpm-rpm-1-19-1-25-bore-60-hz/`,
     };
+    const SKU_LABELS = {
+      "500-0005291": "IEC Load Switch",
+      "172-017":     "Gearmotor",
+    };
 
     // ── Viewer selection → show assembly PDP or direct SKU link ──
     const handleSelection = (node) => {
@@ -582,7 +586,7 @@
     };
 
     const showSkuPart = (sku, nodeName) => {
-      const partLabel = nodeName.replace(/\s*\(\d{3}-\d{3,7}\)\s*$/, "").trim();
+      const partLabel = SKU_LABELS[sku] ?? nodeName.replace(/\s*\(\d{3}-\d{3,7}\)\s*$/, "").trim();
       const price = PRICES[sku];
       const url = SKU_URLS[sku] ?? `${ROESLEIN_BASE}/search/?q=${encodeURIComponent(sku)}`;
       const priceHtml = price && price !== "$0.00"
