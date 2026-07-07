@@ -194,24 +194,17 @@
     <!-- RIGHT: Parts panel -->
     <div class="parts-col">
 
-      <!-- default idle state -->
-      <div class="pdp-default" id="pdp-default">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0D2240" stroke-width="1.3"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        <h2>Click any component</h2>
-        <p>Select an assembly in the 3D model to see its replacement parts and pricing.</p>
+      <!-- header -->
+      <div class="pdp-asm-header">
+        <div class="pdp-back" id="pdp-back" style="display:none">← All parts</div>
+        <p class="kicker">UVBC UV Curing System &nbsp;·&nbsp; Replacement Parts</p>
+        <h2 id="pdp-title">All Parts</h2>
+        <p id="pdp-desc">Click any component in the 3D model to filter by assembly.</p>
       </div>
 
-      <!-- active PDP shown after click -->
-      <div class="pdp-active" id="pdp-active">
-        <div class="pdp-asm-header">
-          <div class="pdp-back" id="pdp-back">← All assemblies</div>
-          <p class="kicker" id="pdp-kicker">UVBC &nbsp;·&nbsp; Replacement Parts</p>
-          <h2 id="pdp-title"></h2>
-          <p id="pdp-desc"></p>
-        </div>
-        <div class="pdp-parts" id="pdp-parts">
-          <!-- populated by JS -->
-        </div>
+      <!-- parts list — always visible, filtered on click -->
+      <div class="pdp-parts" id="pdp-parts">
+        <!-- populated by JS on load -->
       </div>
 
     </div>
@@ -459,51 +452,57 @@
       "500-0002525":"$21.67",    "500-0002622":"$646.30",   "500-0003967":"$222.41",
     };
 
-    // ── Show assembly PDP ───────────────────────────────────────
-    const pdpDefault = document.getElementById("pdp-default");
-    const pdpActive  = document.getElementById("pdp-active");
+    // ── Render parts list ───────────────────────────────────────
+    const ROESLEIN_PARTS_URL = "https://parts.roeslein.com/d-i-canmaking-parts/roeslein-associates/uvbc/";
 
-    function showAssembly(asmKey) {
-      // resolve to a primary filter key (disc_blower → electrical, etc.)
-      const filterKey = ASM_TO_FILTER[asmKey] || asmKey;
-      // prefer specific meta, fall back to filter meta
-      const meta = ASM_META[asmKey] || ASM_META[filterKey] || { label: asmKey, desc: "" };
-
-      document.getElementById("pdp-title").textContent = meta.label;
-      document.getElementById("pdp-desc").textContent  = meta.desc;
-
-      const parts = PARTS.filter(p => p.filter.includes(filterKey) || p.filter.includes(asmKey));
+    function renderParts(parts) {
       const container = document.getElementById("pdp-parts");
-
       if (!parts.length) {
         container.innerHTML = `<p style="color:#aaa;font-size:.82rem;padding:1rem 0">No parts mapped to this assembly yet.</p>`;
-      } else {
-        container.innerHTML = parts.map(p => {
-          const price = PRICES[p.sku];
-          const priceHtml = price && price !== "$0.00"
-            ? `<span class="part-price">${price}</span>`
-            : `<span class="part-price no-price">Contact for pricing</span>`;
-          return `<div class="part-card">
-            <div class="part-sku">SKU ${p.sku}</div>
-            <div class="part-name">${p.name}</div>
-            <div class="part-desc">${p.desc}</div>
-            <div class="part-footer">
-              ${priceHtml}
-              <a href="https://parts.roeslein.com/d-i-canmaking-parts/roeslein-associates/uvbc/" target="_blank" rel="noopener" class="btn-cart">Order Part</a>
-            </div>
-          </div>`;
-        }).join("");
+        return;
       }
-
-      pdpDefault.style.display = "none";
-      pdpActive.classList.add("visible");
-      pdpActive.scrollTop = 0;
+      container.innerHTML = parts.map(p => {
+        const price = PRICES[p.sku];
+        const priceHtml = price && price !== "$0.00"
+          ? `<span class="part-price">${price}</span>`
+          : `<span class="part-price no-price">Contact for pricing</span>`;
+        const imgTag = `<img src="assets/parts/${p.sku}.jpg" alt="" onerror="this.style.display='none'"
+          style="width:100%;max-height:160px;object-fit:contain;border-radius:6px;background:#f4f7fa;margin-bottom:.6rem;display:block;">`;
+        return `<div class="part-card">
+          ${imgTag}
+          <div class="part-sku">SKU ${p.sku}</div>
+          <div class="part-name">${p.name}</div>
+          <div class="part-desc">${p.desc}</div>
+          <div class="part-footer">
+            ${priceHtml}
+            <a href="${ROESLEIN_PARTS_URL}" target="_blank" rel="noopener" class="btn-cart">Order Part</a>
+          </div>
+        </div>`;
+      }).join("");
     }
 
-    document.getElementById("pdp-back").addEventListener("click", () => {
-      pdpActive.classList.remove("visible");
-      pdpDefault.style.display = "";
-    });
+    function showAll() {
+      document.getElementById("pdp-title").textContent = "All Parts";
+      document.getElementById("pdp-desc").textContent  = "Click any component in the 3D model to filter by assembly.";
+      document.getElementById("pdp-back").style.display = "none";
+      renderParts(PARTS);
+    }
+
+    function showAssembly(asmKey) {
+      const filterKey = ASM_TO_FILTER[asmKey] || asmKey;
+      const meta = ASM_META[asmKey] || ASM_META[filterKey] || { label: asmKey, desc: "" };
+      document.getElementById("pdp-title").textContent = meta.label;
+      document.getElementById("pdp-desc").textContent  = meta.desc;
+      document.getElementById("pdp-back").style.display = "";
+      const parts = PARTS.filter(p => p.filter.includes(filterKey) || p.filter.includes(asmKey));
+      renderParts(parts);
+      document.getElementById("pdp-parts").scrollTop = 0;
+    }
+
+    document.getElementById("pdp-back").addEventListener("click", showAll);
+
+    // Show all parts on load
+    showAll();
 
     // ── Viewer init ────────────────────────────────────────────
     const viewer = document.getElementById("viewer");
