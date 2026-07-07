@@ -537,6 +537,7 @@
       "SICK PL80A Photoelectric Sensor Reflector":                       "sensor",
       "SICK WL9-3P2432 Photoelectric Sensor":                           "sensor",
       "UVBC03 - 8017.545, Machine Mounted Junction Box":                 "jbox",
+      "Chiller, Pfannenberg EB95WT":                                    "chiller",
     };
 
     // Map 3D assembly key → panel filter key
@@ -545,6 +546,7 @@
       disc_blower: "electrical", disc_conveyor: "electrical",
       disc_applicator: "electrical", disc_daytank: "electrical", disc_lacquer: "electrical",
       estop: "safety", guard: "safety", sensor: "safety", jbox: "electrical",
+      chiller: "chiller",
     };
 
     const normalize = t => t?.replace(/\s*\(\d+\)\s*$/, "").replace(/\.\d{3}$/, "").trim() ?? "";
