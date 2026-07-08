@@ -679,8 +679,10 @@
         ).then(r => r.json());
         const { asset, viewerSettings } = product.response;
         const blobId = asset.models[0].modelBlobId;
-        if (viewerSettings?.config) Object.assign(viewer, JSON.parse(viewerSettings.config));
-        viewer.enableAutoRotate = false;
+        viewer.fieldOfView        = "0.45388026263868764rad";
+        viewer.cameraOrbit        = "-0.09681147405211399rad 1.2084210694495519rad 2.2834088005122672r";
+        viewer.cameraTarget       = "0.06471588831502915r -0.06945806114824285r -0.18088923918153488r";
+        viewer.enableAutoRotate   = false;
         viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
         mainSrc = viewer.src;
         attachSelectionListener();
