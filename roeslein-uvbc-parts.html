@@ -483,7 +483,10 @@
       document.getElementById("pdp-title").textContent = "All Parts";
       document.getElementById("pdp-desc").textContent  = "Click any component in the 3D model to filter by assembly.";
       document.getElementById("pdp-back").style.display = "none";
-      renderParts(PARTS);
+      // Only show parts that are actually clickable in the main model
+      const subModelSkus = new Set(Object.values(SWAP_NODES).flatMap(e => e.parts ?? []));
+      const clickable = PARTS.filter(p => SKU_LABELS[p.sku] && !subModelSkus.has(p.sku));
+      renderParts(clickable);
     }
 
     function showAssembly(asmKey) {
