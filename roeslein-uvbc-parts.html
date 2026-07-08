@@ -553,7 +553,7 @@
 
     // Extract SKU from node names like "IEC Load Switch (500-0005291)" or "Gearmotor (172-017)"
     const extractSku = name => {
-      const m = name?.match(/\((\d{3}-\d{3,7})\)\s*$/);
+      const m = name?.match(/\((\d{3}-\d{3,7})\)/);
       return m ? m[1] : null;
     };
 
@@ -590,7 +590,7 @@
     };
 
     const showSkuPart = (sku, nodeName) => {
-      const partLabel = SKU_LABELS[sku] ?? nodeName.replace(/\s*\(\d{3}-\d{3,7}\)\s*$/, "").trim();
+      const partLabel = SKU_LABELS[sku] ?? nodeName.replace(/\s*\(\d{3}-\d{3,7}\)\s*/, " ").trim();
       const price = PRICES[sku];
       const url = SKU_URLS[sku] ?? `${ROESLEIN_BASE}/search/?q=${encodeURIComponent(sku)}`;
       const priceHtml = price && price !== "$0.00"
