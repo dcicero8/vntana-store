@@ -731,6 +731,8 @@
   });
 
   // ── Viewer click resolution ───────────────────────────────────
+  const SKU_PART_NODES = new Set(["500-0005291", "172-017"]); // IEC, Gearmotor
+
   const resolveHighlight = () => {
     const sel = viewer.selection?.highlight;
     if (!sel) return;
@@ -744,6 +746,12 @@
 
         let n = node;
         while (n) {
+          // SKU node → navigate to parts page
+          const skuMatch = (n.name ?? "").match(/\((\d{3}-\d{3,7})\)/);
+          if (skuMatch && SKU_PART_NODES.has(skuMatch[1])) {
+            window.location.href = "roeslein-uvbc-parts.html";
+            return;
+          }
           const name = normalize(n.name ?? "");
           const key  = NODE_MAP[name];
           if (key) { matched = key; break; }
