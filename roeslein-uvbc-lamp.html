@@ -318,15 +318,63 @@
     document.getElementById("part-card").classList.add("visible");
   }
 
-  // Load the lamp model
+  // Viewer element
   const viewer = document.getElementById("viewer");
 
+  // Build a SKU → part index map for click resolution
+  const SKU_INDEX = {};
+  PARTS.forEach((p, i) => { SKU_INDEX[p.sku] = i; });
+
+  // Normalize node names: strip " (N)" duplicate suffix
+  const normalize = t => t?.replace(/\s*\(\d+\)\s*$/, "").trim() ?? "";
+
+  // Build a plain-name → part index map as a fallback
+  const NAME_INDEX = {};
+  PARTS.forEach((p, i) => { NAME_INDEX[p.name.toLowerCase()] = i; });
+
+  function showPartByNode(node) {
+    let n = node;
+    while (n) {
+      // Try SKU in parentheses: e.g. "Hand Wheel (070-128518)"
+      const skuMatch = (n.name ?? "").match(/\((\d{3}-\d{3,7})\)/);
+      if (skuMatch && SKU_INDEX[skuMatch[1]] !== undefined) {
+        const row = document.querySelectorAll(".ro-parts-table tbody tr")[SKU_INDEX[skuMatch[1]]];
+        showPart(SKU_INDEX[skuMatch[1]], row);
+        return;
+      }
+      // Try plain normalized name
+      const norm = normalize(n.name ?? "").toLowerCase();
+      if (NAME_INDEX[norm] !== undefined) {
+        const row = document.querySelectorAll(".ro-parts-table tbody tr")[NAME_INDEX[norm]];
+        showPart(NAME_INDEX[norm], row);
+        return;
+      }
+      n = n.parent;
+    }
+  }
+
+  const attachSelectionListener = () => {
+    if (!viewer.selection?.highlight?.addEventListener) return false;
+    viewer.selection.highlight.addEventListener("change", (event) => {
+      event.changes.forEach((value, node) => {
+        if (value !== 0) return; // 0 = selected
+        showPartByNode(node);
+      });
+    });
+    return true;
+  };
+  if (!attachSelectionListener()) {
+    viewer.addEventListener("load", attachSelectionListener, { once: true });
+  }
+
+  // Apply camera and hide loading overlay after model loads
   viewer.addEventListener("load", () => {
     Object.assign(viewer, LAMP_CAMERA);
     const loading = document.getElementById("viewer-loading");
     if (loading) loading.style.display = "none";
   }, { once: true });
 
+  // Fetch product and set viewer src
   try {
     const product = await fetch(
       `${BASE_URL}/products/${LAMP_UUID}/organizations/${ORG}/clients/${WORKSPACE}`
