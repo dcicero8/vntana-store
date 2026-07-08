@@ -500,7 +500,12 @@
       document.getElementById("pdp-parts").scrollTop = 0;
     }
 
-    document.getElementById("pdp-back").addEventListener("click", showAll);
+    document.getElementById("pdp-back").addEventListener("click", () => {
+      if (mainSrc && viewer.src !== mainSrc) {
+        viewer.src = mainSrc;
+      }
+      showAll();
+    });
 
     // Show all parts on load
     showAll();
@@ -565,22 +570,60 @@
     const SKU_LABELS = {
       "500-0005291": "IEC Load Switch",
       "172-017":     "Gearmotor",
+      "500-0002622": "Flow / Temperature Sensor",
+      "070-128518":  "Hand Wheel",
+      "100-0000103": "Screw Jack with Mounting Plate",
     };
     const SKU_DESCS = {
       "500-0005291": "Disconnect Switch, 194E IEC Rotary, Enclosed, Non-Fusible, 3-P, 16 A, 10 HP, 600 V, 5 kA, DIN Mount, Painted Steel Enclosure Type 3/4/12, Rotary Handle Gray/Black",
       "172-017":     "1 HP, 100:1 Ratio, 17.5 RPM, 1.19/1.25 Bore, 60 Hz",
+      "070-128518":  "Aluminum Unthreaded Through-Hole Spoked Hand Wheel",
+    };
+
+    // Sub-models: clicking these node names in the main model swaps the viewer
+    // Key = lowercase normalized node name as it appears in the Figurement scene graph
+    const LAMP_UUID = "71503a0c-1051-4028-b438-d387337c9d2c";
+    const SWAP_NODES = {
+      // TODO: confirm exact node name from main UVBC Figurement scene
+      "led uvbc-lamp system assembly": LAMP_UUID,
+      "led uvbc lamp system assembly": LAMP_UUID,
+      "uvbc lamp system assembly":     LAMP_UUID,
+    };
+
+    // ── Model swap state ──────────────────────────────────────────
+    let mainSrc = null; // stored on first load so back button can restore it
+
+    const loadSubModel = async (uuid, label) => {
+      document.getElementById("pdp-title").textContent = label;
+      document.getElementById("pdp-desc").textContent  = "Click a component to view replacement parts";
+      document.getElementById("pdp-back").style.display = "";
+      document.getElementById("pdp-parts").innerHTML =
+        `<div style="color:#64748b;font-size:.9rem;padding:1rem 0;">Loading ${label}…</div>`;
+      const product = await fetch(
+        `${BASE_URL}/products/${uuid}/organizations/${ORG}/clients/${WORKSPACE}`
+      ).then(r => r.json());
+      const blobId = product.response.asset.models[0].modelBlobId;
+      viewer.src = `${BASE_URL}/assets/products/${uuid}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+      document.getElementById("pdp-parts").innerHTML = "";
     };
 
     // ── Viewer selection → show assembly PDP or direct SKU link ──
     const handleSelection = (node) => {
-      // Walk up looking for a direct SKU name first
+      // 1. Direct SKU match — walk up tree
       let n = node;
       while (n) {
         const sku = extractSku(n.name ?? "");
         if (sku) { showSkuPart(sku, n.name); return; }
         n = n.parent;
       }
-      // Fall back to assembly-level lookup
+      // 2. Sub-model swap — walk up tree
+      n = node;
+      while (n) {
+        const swapUuid = SWAP_NODES[normalize(n.name ?? "").toLowerCase()];
+        if (swapUuid) { loadSubModel(swapUuid, n.name); return; }
+        n = n.parent;
+      }
+      // 3. Assembly-level parts filter
       n = node;
       while (n) {
         const key = NODE_MAP[normalize(n.name ?? "")];
@@ -644,6 +687,7 @@
         if (viewerSettings?.config) Object.assign(viewer, JSON.parse(viewerSettings.config));
         viewer.enableAutoRotate = false;
         viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+        mainSrc = viewer.src;
         attachSelectionListener();
       } catch (e) { console.error("Viewer init failed:", e); }
     })();
