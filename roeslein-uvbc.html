@@ -870,10 +870,6 @@
   const SKU_PART_NODES = new Set(["500-0005291", "172-017"]); // IEC, Gearmotor
 
   const handleNodeSelection = (node) => {
-    let dbg = node; const chain = [];
-    while (dbg) { chain.push(JSON.stringify(dbg.name)); dbg = dbg.parent; }
-    console.log("CLICK CHAIN:", chain.join(" > "));
-
     let n = node;
     while (n) {
       const skuMatch = (n.name ?? "").match(/\((\d{3}-\d{3,7})\)/);
@@ -965,7 +961,7 @@
       const resp = await fetch(
         "https://api.vntana.com/hotspots/search/organizations/DCicero/clients/n8n-work",
         { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productUuid: "657f3fe0-1188-4988-8d02-122750504c86", page: 1, size: 20 }) }
+          body: JSON.stringify({ productUuid: "d72e48cd-052b-41b4-ad71-fef3d28f367b", page: 1, size: 20 }) }
       ).then(r => r.json());
       const grid = resp?.response?.grid ?? [];
       if (grid.length) injectHotspots(grid);
@@ -977,7 +973,7 @@
 
   // ── Load product and set viewer.src ───────────────────────────
   const BASE_URL   = "https://api.vntana.com";
-  const UUID       = "657f3fe0-1188-4988-8d02-122750504c86";
+  const UUID       = "d72e48cd-052b-41b4-ad71-fef3d28f367b";
   const ORG        = "DCicero";
   const WORKSPACE  = "n8n-work";
 
