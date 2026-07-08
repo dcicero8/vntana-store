@@ -361,7 +361,7 @@
           </div>
         </div>
 
-        <div class="asm-card" data-key="iec" style="cursor:pointer;border-color:var(--ro-red)" onclick="window.location.href='roeslein-uvbc-parts.html'">
+        <div class="asm-card" data-key="iec" data-sku="500-0005291" style="cursor:pointer;border-color:var(--ro-red)">
           <div class="asm-badge" style="background:var(--ro-red)">IEC</div>
           <div class="asm-text">
             <strong>IEC Load Switch</strong>
@@ -370,7 +370,7 @@
           </div>
         </div>
 
-        <div class="asm-card" data-key="gear" style="cursor:pointer;border-color:var(--ro-red)" onclick="window.location.href='roeslein-uvbc-parts.html'">
+        <div class="asm-card" data-key="gear" data-sku="172-017" style="cursor:pointer;border-color:var(--ro-red)">
           <div class="asm-badge" style="background:var(--ro-red)">GR</div>
           <div class="asm-text">
             <strong>Gearmotor</strong>
@@ -484,11 +484,26 @@
       </div><!-- /uvbc-body -->
 
       <div class="uvbc-detail" id="uvbc-detail">
-        <div class="detail-eyebrow">Selected Assembly</div>
-        <h2 class="detail-title" id="detail-title"></h2>
-        <div class="detail-pn" id="detail-pn"></div>
-        <p class="detail-desc" id="detail-desc"></p>
-        <table class="spec-table" id="spec-table"></table>
+        <!-- Assembly info (shown when assembly node clicked) -->
+        <div id="asm-detail-inner">
+          <div class="detail-eyebrow">Selected Assembly</div>
+          <h2 class="detail-title" id="detail-title"></h2>
+          <div class="detail-pn" id="detail-pn"></div>
+          <p class="detail-desc" id="detail-desc"></p>
+          <table class="spec-table" id="spec-table"></table>
+        </div>
+        <!-- Part card (shown when IEC / Gearmotor clicked) -->
+        <div id="sku-detail-inner" style="display:none">
+          <div class="detail-eyebrow">Replacement Part</div>
+          <img id="sku-img" src="" alt="" style="width:100%;max-height:180px;object-fit:contain;border-radius:6px;background:#f4f7fa;margin:.5rem 0;display:block;">
+          <div class="detail-pn" id="sku-number"></div>
+          <h2 class="detail-title" id="sku-name"></h2>
+          <p class="detail-desc" id="sku-desc"></p>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1rem;gap:.75rem;">
+            <span id="sku-price" style="font-size:1.1rem;font-weight:700;color:#1a1a2e;"></span>
+            <a id="sku-order" href="#" target="_blank" rel="noopener" class="ro-btn primary" style="font-size:.8rem;padding:.45rem 1rem;">Order Part</a>
+          </div>
+        </div>
       </div>
 
       <div class="uvbc-footer">
@@ -688,6 +703,42 @@
   const specTable  = document.getElementById("spec-table");
   const cards      = document.querySelectorAll(".asm-card");
 
+  // ── SKU part data (IEC, Gearmotor) ───────────────────────────
+  const ROESLEIN_BASE = "https://parts.roeslein.com";
+  const SKU_DATA = {
+    "500-0005291": {
+      name:  "IEC Load Switch",
+      desc:  "Disconnect Switch, 194E IEC Rotary, Enclosed, Non-Fusible, 3-P, 16 A, 10 HP, 600 V, 5 kA, DIN Mount, Painted Steel Enclosure Type 3/4/12, Rotary Handle Gray/Black",
+      price: "$241.72",
+      url:   `${ROESLEIN_BASE}/iec-load-switch/`,
+      img:   "assets/parts/500-0005291.jpg",
+    },
+    "172-017": {
+      name:  "Gearmotor",
+      desc:  "1 HP, 100:1 Ratio, 17.5 RPM, 1.19/1.25 Bore, 60 Hz",
+      price: null,
+      url:   `${ROESLEIN_BASE}/gearmotor-1-hp-100-1-ratio-17-5-rpm-rpm-1-19-1-25-bore-60-hz/`,
+      img:   "assets/parts/172-017.jpg",
+    },
+  };
+
+  function showSkuPart(sku) {
+    const d = SKU_DATA[sku];
+    if (!d) return;
+    document.getElementById("sku-img").src           = d.img;
+    document.getElementById("sku-img").alt           = d.name;
+    document.getElementById("sku-number").textContent = `SKU ${sku}`;
+    document.getElementById("sku-name").textContent  = d.name;
+    document.getElementById("sku-desc").textContent  = d.desc;
+    document.getElementById("sku-price").textContent = d.price ?? "Contact for pricing";
+    document.getElementById("sku-order").href        = d.url;
+    document.getElementById("asm-detail-inner").style.display = "none";
+    document.getElementById("sku-detail-inner").style.display = "";
+    detailPane.classList.add("visible");
+    detailPane.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    cards.forEach(c => c.classList.remove("active"));
+  }
+
   // ── Selection helpers ─────────────────────────────────────────
   // Normalize: strip (N) duplicate suffix and .NNN Blender suffix
   const normalize = t =>
@@ -721,13 +772,18 @@
       .map(([label, value]) => `<tr><td>${label}</td><td>${value}</td></tr>`)
       .join("");
 
+    document.getElementById("asm-detail-inner").style.display = "";
+    document.getElementById("sku-detail-inner").style.display = "none";
     detailPane.classList.add("visible");
     detailPane.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   // Panel card clicks
   cards.forEach(card => {
-    card.addEventListener("click", () => selectAssembly(card.dataset.key));
+    card.addEventListener("click", () => {
+      if (card.dataset.sku) { showSkuPart(card.dataset.sku); return; }
+      selectAssembly(card.dataset.key);
+    });
   });
 
   // ── Viewer click resolution ───────────────────────────────────
@@ -746,10 +802,10 @@
 
         let n = node;
         while (n) {
-          // SKU node → navigate to parts page
+          // SKU node → show part card in right panel
           const skuMatch = (n.name ?? "").match(/\((\d{3}-\d{3,7})\)/);
           if (skuMatch && SKU_PART_NODES.has(skuMatch[1])) {
-            window.location.href = "roeslein-uvbc-parts.html";
+            showSkuPart(skuMatch[1]);
             return;
           }
           const name = normalize(n.name ?? "");
