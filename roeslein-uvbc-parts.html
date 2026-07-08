@@ -505,6 +505,9 @@
       cameraDistance: "2.2834088005122672r",
       cameraTarget:   "0.06471588831502915r -0.06945806114824285r -0.18088923918153488r",
       fieldOfView:    "0.45388026263868764rad",
+      environmentSrc: "Neutral.hdr",
+      lightRig:       "",
+      lightRigColor:  "#ffffff",
     };
 
     document.getElementById("pdp-back").addEventListener("click", () => {
@@ -627,11 +630,11 @@
         `${BASE_URL}/products/${uuid}/organizations/${ORG}/clients/${WORKSPACE}`
       ).then(r => r.json());
       const blobId = product.response.asset.models[0].modelBlobId;
-      viewer.src = `${BASE_URL}/assets/products/${uuid}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
       viewer.addEventListener("load", () => {
         if (camera) Object.assign(viewer, camera);
         attachSelectionListener();
       }, { once: true });
+      viewer.src = `${BASE_URL}/assets/products/${uuid}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
       // Show parts list for this sub-assembly
       if (parts?.length) {
         const subParts = parts.map(sku => ({
@@ -697,14 +700,19 @@
 
     // ── Selection detection (same pattern as parts.js) ────────────
     // highlight "change" fires on viewport click; value 0 = selected.
+    let selectionHandler = null;
     const attachSelectionListener = () => {
       if (!viewer.selection?.highlight?.addEventListener) return false;
-      viewer.selection.highlight.addEventListener("change", (event) => {
+      if (selectionHandler) {
+        viewer.selection.highlight.removeEventListener("change", selectionHandler);
+      }
+      selectionHandler = (event) => {
         event.changes.forEach((value, node) => {
           if (value !== 0) return; // 0 = selected, skip deselect events
           handleSelection(node);
         });
-      });
+      };
+      viewer.selection.highlight.addEventListener("change", selectionHandler);
       return true;
     };
 
@@ -718,10 +726,14 @@
         viewer.enableAutoRotate = false;
         // Camera + selection listener must be applied AFTER model loads
         viewer.addEventListener("load", () => {
-          Object.assign(viewer, MAIN_CAMERA);
-          attachSelectionListener();
           const sub = new URLSearchParams(location.search).get("sub");
-          if (sub === "lamp") loadSubModel(SWAP_NODES["rp001-092-15-2009"]);
+          if (sub === "lamp") {
+            // Skip main-model camera/listener — loadSubModel will set its own
+            loadSubModel(SWAP_NODES["rp001-092-15-2009"]);
+          } else {
+            Object.assign(viewer, MAIN_CAMERA);
+            attachSelectionListener();
+          }
         }, { once: true });
         viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
         mainSrc = viewer.src;
