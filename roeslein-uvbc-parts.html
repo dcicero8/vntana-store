@@ -500,8 +500,19 @@
       document.getElementById("pdp-parts").scrollTop = 0;
     }
 
+    const MAIN_CAMERA = {
+      cameraRotation: "-0.09681147405211399rad 1.2084210694495519rad 0rad",
+      cameraDistance: "2.2834088005122672r",
+      cameraTarget:   "0.06471588831502915r -0.06945806114824285r -0.18088923918153488r",
+      fieldOfView:    "0.45388026263868764rad",
+    };
+
     document.getElementById("pdp-back").addEventListener("click", () => {
       if (mainSrc && viewer.src !== mainSrc) {
+        viewer.addEventListener("load", () => {
+          Object.assign(viewer, MAIN_CAMERA);
+          attachSelectionListener();
+        }, { once: true });
         viewer.src = mainSrc;
       }
       showAll();
@@ -697,29 +708,23 @@
       return true;
     };
 
-    if (!attachSelectionListener()) {
-      viewer.addEventListener("load", attachSelectionListener, { once: true });
-    }
-
     // ── Load product ───────────────────────────────────────────
     (async () => {
       try {
         const product = await fetch(
           `${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}`
         ).then(r => r.json());
-        const { asset, viewerSettings } = product.response;
-        const blobId = asset.models[0].modelBlobId;
-        viewer.cameraRotation  = "-0.09681147405211399rad 1.2084210694495519rad 0rad";
-        viewer.cameraDistance  = "2.2834088005122672r";
-        viewer.cameraTarget    = "0.06471588831502915r -0.06945806114824285r -0.18088923918153488r";
-        viewer.fieldOfView     = "0.45388026263868764rad";
+        const blobId = product.response.asset.models[0].modelBlobId;
         viewer.enableAutoRotate = false;
+        // Camera + selection listener must be applied AFTER model loads
+        viewer.addEventListener("load", () => {
+          Object.assign(viewer, MAIN_CAMERA);
+          attachSelectionListener();
+          const sub = new URLSearchParams(location.search).get("sub");
+          if (sub === "lamp") loadSubModel(SWAP_NODES["rp001-092-15-2009"]);
+        }, { once: true });
         viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
         mainSrc = viewer.src;
-        attachSelectionListener();
-        // Auto-load sub-model if URL param present (e.g. ?sub=lamp)
-        const sub = new URLSearchParams(location.search).get("sub");
-        if (sub === "lamp") loadSubModel(SWAP_NODES["rp001-092-15-2009"]);
       } catch (e) { console.error("Viewer init failed:", e); }
     })();
 
