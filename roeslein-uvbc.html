@@ -326,7 +326,7 @@
       >
         <vntana-fs-button></vntana-fs-button>
         <vntana-center-button></vntana-center-button>
-        <vntana-scene-graph-button></vntana-scene-graph-button>
+        <vntana-scene-graph-button active></vntana-scene-graph-button>
         <div class="button-container zoom-buttons">
           <vntana-zoom-in-button></vntana-zoom-in-button>
           <vntana-zoom-out-button></vntana-zoom-out-button>
@@ -345,6 +345,36 @@
         <div class="uvbc-hint">
           <div class="uvbc-hint-dot"></div>
           Click any component in the 3D model to view assembly details
+        </div>
+      </div>
+
+      <div class="uvbc-detail" id="uvbc-detail">
+        <!-- Lamp sub-model (shown when UV Lamp Assembly clicked) -->
+        <div id="lamp-detail-inner" style="display:none">
+          <button id="lamp-back" style="background:none;border:none;color:var(--ro-red);font-size:.82rem;font-weight:600;cursor:pointer;padding:0;margin-bottom:.75rem;">← Back to Full System</button>
+          <div class="detail-eyebrow">UV Lamp Assembly</div>
+          <p style="font-size:.82rem;color:#64748b;margin:.2rem 0 .75rem">Click a component to view its replacement part</p>
+          <div id="lamp-parts-list"></div>
+        </div>
+        <!-- Assembly info (shown when assembly node clicked) -->
+        <div id="asm-detail-inner">
+          <div class="detail-eyebrow">Selected Assembly</div>
+          <h2 class="detail-title" id="detail-title"></h2>
+          <div class="detail-pn" id="detail-pn"></div>
+          <p class="detail-desc" id="detail-desc"></p>
+          <table class="spec-table" id="spec-table"></table>
+        </div>
+        <!-- Part card (shown when IEC / Gearmotor clicked) -->
+        <div id="sku-detail-inner" style="display:none">
+          <div class="detail-eyebrow">Replacement Part</div>
+          <img id="sku-img" src="" alt="" style="width:100%;max-height:180px;object-fit:contain;border-radius:6px;background:#f4f7fa;margin:.5rem 0;display:block;">
+          <div class="detail-pn" id="sku-number"></div>
+          <h2 class="detail-title" id="sku-name"></h2>
+          <p class="detail-desc" id="sku-desc"></p>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1rem;gap:.75rem;">
+            <span id="sku-price" style="font-size:1.1rem;font-weight:700;color:#1a1a2e;"></span>
+            <a id="sku-order" href="#" target="_blank" rel="noopener" class="ro-btn primary" style="font-size:.8rem;padding:.45rem 1rem;">Order Part</a>
+          </div>
         </div>
       </div>
 
@@ -482,36 +512,6 @@
         </div>
 
       </div><!-- /uvbc-body -->
-
-      <div class="uvbc-detail" id="uvbc-detail">
-        <!-- Lamp sub-model (shown when UV Lamp Assembly clicked) -->
-        <div id="lamp-detail-inner" style="display:none">
-          <button id="lamp-back" style="background:none;border:none;color:var(--ro-red);font-size:.82rem;font-weight:600;cursor:pointer;padding:0;margin-bottom:.75rem;">← Back to Full System</button>
-          <div class="detail-eyebrow">UV Lamp Assembly</div>
-          <p style="font-size:.82rem;color:#64748b;margin:.2rem 0 .75rem">Click a component to view its replacement part</p>
-          <div id="lamp-parts-list"></div>
-        </div>
-        <!-- Assembly info (shown when assembly node clicked) -->
-        <div id="asm-detail-inner">
-          <div class="detail-eyebrow">Selected Assembly</div>
-          <h2 class="detail-title" id="detail-title"></h2>
-          <div class="detail-pn" id="detail-pn"></div>
-          <p class="detail-desc" id="detail-desc"></p>
-          <table class="spec-table" id="spec-table"></table>
-        </div>
-        <!-- Part card (shown when IEC / Gearmotor clicked) -->
-        <div id="sku-detail-inner" style="display:none">
-          <div class="detail-eyebrow">Replacement Part</div>
-          <img id="sku-img" src="" alt="" style="width:100%;max-height:180px;object-fit:contain;border-radius:6px;background:#f4f7fa;margin:.5rem 0;display:block;">
-          <div class="detail-pn" id="sku-number"></div>
-          <h2 class="detail-title" id="sku-name"></h2>
-          <p class="detail-desc" id="sku-desc"></p>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1rem;gap:.75rem;">
-            <span id="sku-price" style="font-size:1.1rem;font-weight:700;color:#1a1a2e;"></span>
-            <a id="sku-order" href="#" target="_blank" rel="noopener" class="ro-btn primary" style="font-size:.8rem;padding:.45rem 1rem;">Order Part</a>
-          </div>
-        </div>
-      </div>
 
       <div class="uvbc-footer">
         <a class="ro-btn primary" href="https://roeslein.com" target="_blank" rel="noopener">Visit Roeslein.com &rarr;</a>
@@ -802,7 +802,7 @@
     document.getElementById("asm-detail-inner").style.display = "none";
     document.getElementById("sku-detail-inner").style.display = "";
     detailPane.classList.add("visible");
-    detailPane.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    document.querySelector(".uvbc-info").scrollTop = 0;
     cards.forEach(c => c.classList.remove("active"));
   }
 
@@ -842,7 +842,7 @@
     document.getElementById("asm-detail-inner").style.display = "";
     document.getElementById("sku-detail-inner").style.display = "none";
     detailPane.classList.add("visible");
-    detailPane.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    document.querySelector(".uvbc-info").scrollTop = 0;
   }
 
   // Panel card clicks
