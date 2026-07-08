@@ -682,9 +682,11 @@
       current = ((index % STOPS.length) + STOPS.length) % STOPS.length;
       const hs = hotspotEls[current];
 
-      if (hs) snapCamera(hs._camera);
-      // Apply the stop's exploded strength (reset to 0 on stops without one)
+      // Apply the stop's exploded strength FIRST (reset to 0 on stops without
+      // one) — hotspot cameras use bounds-relative "r" units, so the camera
+      // must be applied after the explode state it was saved in.
       if (viewer.scene) viewer.scene.explodedStrength = hs?._exploded?.explodedStrength ?? 0;
+      if (hs) requestAnimationFrame(() => snapCamera(hs._camera));
       renderDetail(current);
 
       document.querySelectorAll(".stop-card").forEach((c, i) =>
