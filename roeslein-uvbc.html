@@ -869,38 +869,33 @@
   // ── Viewer click resolution ───────────────────────────────────
   const SKU_PART_NODES = new Set(["500-0005291", "172-017"]); // IEC, Gearmotor
 
-  const resolveHighlight = () => {
-    const sel = viewer.selection?.highlight;
-    if (!sel) return;
-
-    let matched = null;
-    try {
-      for (const entry of sel) {
-        const node  = Array.isArray(entry) ? entry[0] : entry;
-        const value = Array.isArray(entry) ? entry[1] : true;
-        if (!value) continue;
-
-        let n = node;
-        while (n) {
-          // SKU node → show part card in right panel
-          const skuMatch = (n.name ?? "").match(/\((\d{3}-\d{3,7})\)/);
-          if (skuMatch && SKU_PART_NODES.has(skuMatch[1])) {
-            showSkuPart(skuMatch[1]);
-            return;
-          }
-          const name = normalize(n.name ?? "");
-          const key  = NODE_MAP[name];
-          if (key) { matched = key; break; }
-          n = n.parent;
-        }
-        if (matched) break;
+  const handleNodeSelection = (node) => {
+    let n = node;
+    while (n) {
+      const skuMatch = (n.name ?? "").match(/\((\d{3}-\d{3,7})\)/);
+      if (skuMatch && SKU_PART_NODES.has(skuMatch[1])) {
+        showSkuPart(skuMatch[1]);
+        return;
       }
-    } catch (_) {}
-
-    if (matched) selectAssembly(matched);
+      const key = NODE_MAP[normalize(n.name ?? "")];
+      if (key) { selectAssembly(key); return; }
+      n = n.parent;
+    }
   };
 
-  viewer.addEventListener("click", () => requestAnimationFrame(resolveHighlight));
+  const attachSelectionListener = () => {
+    if (!viewer.selection?.highlight?.addEventListener) return false;
+    viewer.selection.highlight.addEventListener("change", (event) => {
+      event.changes.forEach((value, node) => {
+        if (value !== 0) return; // 0 = selected
+        handleNodeSelection(node);
+      });
+    });
+    return true;
+  };
+  if (!attachSelectionListener()) {
+    viewer.addEventListener("load", attachSelectionListener, { once: true });
+  }
 
   // ── Hotspot injection ─────────────────────────────────────────
   // UUID → assembly key (order matches creation order)
