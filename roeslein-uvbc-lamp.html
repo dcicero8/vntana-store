@@ -324,6 +324,8 @@
   // Build a SKU → part index map for click resolution
   const SKU_INDEX = {};
   PARTS.forEach((p, i) => { SKU_INDEX[p.sku] = i; });
+  // GLB node uses a different SKU for the temperature sensor — alias it
+  SKU_INDEX["500-0000395"] = 1;
 
   // Normalize node names: strip " (N)" duplicate suffix
   const normalize = t => t?.replace(/\s*\(\d+\)\s*$/, "").trim() ?? "";
@@ -333,11 +335,6 @@
   PARTS.forEach((p, i) => { NAME_INDEX[p.name.toLowerCase()] = i; });
 
   function showPartByNode(node) {
-    // DEBUG: log the full node hierarchy
-    let dbg = node; const chain = [];
-    while (dbg) { chain.push(JSON.stringify(dbg.name)); dbg = dbg.parent; }
-    console.log("CLICK CHAIN:", chain.join(" → "));
-
     let n = node;
     while (n) {
       // Try SKU in parentheses: e.g. "Hand Wheel (070-128518)"
