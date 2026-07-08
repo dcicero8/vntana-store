@@ -804,6 +804,18 @@
   function showSkuPart(sku) {
     const d = SKU_DATA[sku];
     if (!d) return;
+
+    // Snap camera to the part's hotspot view (if a hotspot provided one)
+    const cam = SKU_CAMERAS[sku];
+    if (cam) {
+      try {
+        if (cam.cameraTarget)   viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.cameraDistance) viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
+      } catch (_) {}
+    }
+
+    activeKey = null; // allow re-selecting the previous assembly afterwards
     document.getElementById("sku-img").src           = d.img;
     document.getElementById("sku-img").alt           = d.name;
     document.getElementById("sku-number").textContent = `SKU ${sku}`;
@@ -901,40 +913,49 @@
   }
 
   // ── Hotspot injection ─────────────────────────────────────────
-  // UUID → assembly key (order matches creation order)
-  const HS_MAP = {
-    "c89047ed-f6ed-47cd-aa7d-d9c414e14deb": "vtu",
-    "a72c665a-543e-42b4-b2ba-e7a42071abbe": "lamp",
-    "f6de2fd9-f1e8-453e-b426-a92a4ae02cb1": "coating",
-    "c87e5e48-b432-453d-810b-4a8985b11964": "blower",
-    "6ce5247f-74c1-4aa0-98f3-050228be32c3": "disc_blower",
-    "b9e94c3b-3904-4a9f-a843-fe30778b5e96": "disc_conveyor",
-    "1be6b7c1-4cb6-462b-b1d9-95fb59f296fc": "estop",
-    "173691ff-b099-45f3-9de9-7ef9b9b82305": "guard",
-    "3619cfc4-5f87-443a-b9e5-e81788f50bc6": "sensor",
-    "888efaae-a173-44a4-b6e6-770fb44c184b": "jbox",
+  // Hotspots are matched by their TEXT label (not UUID), so new hotspots
+  // added in the VNTANA platform work without code changes when:
+  //   1. the text contains a SKU like (500-0005291) or "500-0005291", OR
+  //   2. the text exactly matches a SKU_DATA part name, OR
+  //   3. the text has an entry in HS_TEXT_ALIASES below.
+  const HS_TEXT_ALIASES = {
+    "IEC Controller": "500-0005291",
   };
 
-  // Short badge label per key (shown inside the pin)
-  const HS_LABEL = {
-    vtu: "VTU", lamp: "UV", coating: "APP", blower: "VAC",
-    disc_blower: "DS1", disc_conveyor: "DS3",
-    estop: "ES", guard: "GS", sensor: "SN", jbox: "JB",
-  };
+  // Short badge label shown inside the pin, keyed by SKU
+  const HS_PIN_LABEL = { "500-0005291": "IEC", "172-017": "GR" };
 
+  const SKU_CAMERAS = {};   // sku → camera config from its hotspot
   let activeHotspot = null;
+
+  const stripHtml = (html) => {
+    const div = document.createElement("div");
+    div.innerHTML = html ?? "";
+    return div.textContent.trim();
+  };
+
+  function resolveHotspotSku(label) {
+    const skuInText = label.match(/(\d{3}-\d{3,7})/);
+    if (skuInText && SKU_DATA[skuInText[1]]) return skuInText[1];
+    for (const [sku, d] of Object.entries(SKU_DATA)) {
+      if (d.name.toLowerCase() === label.toLowerCase()) return sku;
+    }
+    return HS_TEXT_ALIASES[label] ?? null;
+  }
 
   function injectHotspots(grid) {
     grid.forEach(hs => {
-      const key = HS_MAP[hs.uuid];
-      if (!key) return;
+      const label = stripHtml(hs.text);
+      const sku = resolveHotspotSku(label);
+      if (!sku) return;
+
       let dims;
       try { dims = JSON.parse(hs.config?.dimensions ?? "{}"); } catch { return; }
       if (!dims.position) return;
 
-      // Store camera config for snap-on-click
+      // Store camera for snap-on-click (used by pins AND sidebar cards)
       if (hs.config?.camera) {
-        try { HOTSPOT_CAMERAS[key] = JSON.parse(hs.config.camera); } catch (_) {}
+        try { SKU_CAMERAS[sku] = JSON.parse(hs.config.camera); } catch (_) {}
       }
 
       const el = document.createElement("vntana-hotspot");
@@ -943,7 +964,7 @@
 
       const pin = document.createElement("div");
       pin.className = "hs-pin";
-      pin.textContent = HS_LABEL[key] ?? key.toUpperCase().slice(0, 3);
+      pin.textContent = HS_PIN_LABEL[sku] ?? label.slice(0, 3).toUpperCase();
       el.appendChild(pin);
 
       el.addEventListener("click", (e) => {
@@ -951,7 +972,7 @@
         if (activeHotspot) activeHotspot.classList.remove("active");
         el.classList.add("active");
         activeHotspot = el;
-        selectAssembly(key);
+        showSkuPart(sku);
       });
 
       viewer.appendChild(el);
