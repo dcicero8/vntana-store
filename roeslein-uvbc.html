@@ -870,6 +870,10 @@
   const SKU_PART_NODES = new Set(["500-0005291", "172-017"]); // IEC, Gearmotor
 
   const handleNodeSelection = (node) => {
+    let dbg = node; const chain = [];
+    while (dbg) { chain.push(JSON.stringify(dbg.name)); dbg = dbg.parent; }
+    console.log("CLICK CHAIN:", chain.join(" → "));
+
     let n = node;
     while (n) {
       const skuMatch = (n.name ?? "").match(/\((\d{3}-\d{3,7})\)/);
