@@ -467,10 +467,7 @@
         const priceHtml = price && price !== "$0.00"
           ? `<span class="part-price">${price}</span>`
           : `<span class="part-price no-price">Contact for pricing</span>`;
-        const imgTag = `<img src="assets/parts/${p.sku}.jpg" alt="" onerror="this.style.display='none'"
-          style="width:100%;max-height:160px;object-fit:contain;border-radius:6px;background:#f4f7fa;margin-bottom:.6rem;display:block;">`;
         return `<div class="part-card">
-          ${imgTag}
           <div class="part-sku">SKU ${p.sku}</div>
           <div class="part-name">${p.name}</div>
           <div class="part-desc">${p.desc}</div>
