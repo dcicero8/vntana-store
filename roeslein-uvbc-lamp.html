@@ -333,6 +333,11 @@
   PARTS.forEach((p, i) => { NAME_INDEX[p.name.toLowerCase()] = i; });
 
   function showPartByNode(node) {
+    // DEBUG: log the full node hierarchy
+    let dbg = node; const chain = [];
+    while (dbg) { chain.push(JSON.stringify(dbg.name)); dbg = dbg.parent; }
+    console.log("CLICK CHAIN:", chain.join(" → "));
+
     let n = node;
     while (n) {
       // Try SKU in parentheses: e.g. "Hand Wheel (070-128518)"
