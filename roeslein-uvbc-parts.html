@@ -507,9 +507,6 @@
       showAll();
     });
 
-    // Show all parts on load
-    showAll();
-
     // ── Viewer init ────────────────────────────────────────────
     const viewer = document.getElementById("viewer");
 
@@ -601,6 +598,9 @@
         parts: ["500-0002622","070-128518","100-0000103","200-0006562"],
       },
     };
+
+    // Show clickable parts on load (must be after SKU_LABELS + SWAP_NODES are defined)
+    showAll();
 
     // ── Model swap state ──────────────────────────────────────────
     let mainSrc = null; // stored on first load so back button can restore it
