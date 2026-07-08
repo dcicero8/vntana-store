@@ -520,7 +520,6 @@
 
     const NODE_MAP = {
       "VTU RH 36in Single Lamp":                                         "vtu",
-      "RP001-092-15-2009":                                               "lamp",
       "RP001-092-04-1003":                                               "coating",
       "36 RH DD Bottom Coater":                                          "coating",
       "116-423 SQAF270-4-CWUB-160_2":                                   "blower",
@@ -586,10 +585,7 @@
     // Key = lowercase normalized node name as it appears in the Figurement scene graph
     const LAMP_UUID = "71503a0c-1051-4028-b438-d387337c9d2c";
     const SWAP_NODES = {
-      // TODO: confirm exact node name from main UVBC Figurement scene
-      "led uvbc-lamp system assembly": LAMP_UUID,
-      "led uvbc lamp system assembly": LAMP_UUID,
-      "uvbc lamp system assembly":     LAMP_UUID,
+      "rp001-092-15-2009": LAMP_UUID,
     };
 
     // ── Model swap state ──────────────────────────────────────────
