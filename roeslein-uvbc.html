@@ -352,7 +352,7 @@
 
         <div class="sec-label" style="color:var(--ro-red)">Explore in 3D</div>
 
-        <div class="asm-card" data-key="lamp" style="cursor:pointer;border-color:var(--ro-red)" onclick="window.location.href='roeslein-uvbc-parts.html?sub=lamp'">
+        <div class="asm-card" data-key="lamp" data-action="lamp" style="cursor:pointer;border-color:var(--ro-red)">
           <div class="asm-badge" style="background:var(--ro-red)">UV</div>
           <div class="asm-text">
             <strong>UV Lamp Assembly</strong>
@@ -484,6 +484,13 @@
       </div><!-- /uvbc-body -->
 
       <div class="uvbc-detail" id="uvbc-detail">
+        <!-- Lamp sub-model (shown when UV Lamp Assembly clicked) -->
+        <div id="lamp-detail-inner" style="display:none">
+          <button id="lamp-back" style="background:none;border:none;color:var(--ro-red);font-size:.82rem;font-weight:600;cursor:pointer;padding:0;margin-bottom:.75rem;">← Back to Full System</button>
+          <div class="detail-eyebrow">UV Lamp Assembly</div>
+          <p style="font-size:.82rem;color:#64748b;margin:.2rem 0 .75rem">Click a component to view its replacement part</p>
+          <div id="lamp-parts-list"></div>
+        </div>
         <!-- Assembly info (shown when assembly node clicked) -->
         <div id="asm-detail-inner">
           <div class="detail-eyebrow">Selected Assembly</div>
@@ -704,6 +711,66 @@
   const cards      = document.querySelectorAll(".asm-card");
 
   // ── SKU part data (IEC, Gearmotor) ───────────────────────────
+  // ── Lamp sub-model ────────────────────────────────────────────
+  const LAMP_UUID   = "71503a0c-1051-4028-b438-d387337c9d2c";
+  const LAMP_CAMERA = {
+    cameraRotation: "-0.24814390825699162rad 0.6612419046565234rad 0rad",
+    cameraDistance: "2.209552101197594r",
+    cameraTarget:   "-0.09916862575879966r -0.0017824996838312116r 0.11507526146703506r",
+    fieldOfView:    "0.41314008421541476rad",
+    environmentSrc: "https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr",
+    lightRigColor:  "#ffffff",
+    lightRig:       "directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m",
+  };
+  const LAMP_PARTS = [
+    { sku: "500-0003042", name: "UVLED Lamp 250mm, 395nm, 20W",     price: "$21,987.73" },
+    { sku: "500-0002622", name: "Flow / Temperature Sensor",         price: "$646.30" },
+    { sku: "070-128518",  name: "Hand Wheel",                        price: "Contact for pricing" },
+    { sku: "100-0000103", name: "Screw Jack with Mounting Plate",    price: "$538.36" },
+    { sku: "200-0006562", name: "Ball Valve",                        price: "$94.04" },
+  ];
+
+  let mainSrc = null;
+
+  async function loadLampSubModel() {
+    const detailPane = document.getElementById("uvbc-detail");
+    document.getElementById("lamp-detail-inner").style.display = "";
+    document.getElementById("asm-detail-inner").style.display  = "none";
+    document.getElementById("sku-detail-inner").style.display  = "none";
+    detailPane.classList.add("visible");
+
+    // Render parts list
+    document.getElementById("lamp-parts-list").innerHTML = LAMP_PARTS.map(p => `
+      <div style="border:1px solid #e5e7eb;border-radius:8px;padding:.6rem .75rem;margin-bottom:.5rem;">
+        <div style="font-size:.72rem;color:#94a3b8;font-weight:600;">SKU ${p.sku}</div>
+        <div style="font-size:.88rem;font-weight:700;color:#1a1a2e;margin:.1rem 0;">${p.name}</div>
+        <div style="font-size:.8rem;color:#64748b;">${p.price}</div>
+      </div>`).join("");
+
+    try {
+      const product = await fetch(
+        `${BASE_URL}/products/${LAMP_UUID}/organizations/${ORG}/clients/${WORKSPACE}`
+      ).then(r => r.json());
+      const blobId = product.response.asset.models[0].modelBlobId;
+      viewer.addEventListener("load", () => {
+        Object.assign(viewer, LAMP_CAMERA);
+      }, { once: true });
+      viewer.src = `${BASE_URL}/assets/products/${LAMP_UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+    } catch(e) { console.error("Lamp load failed:", e); }
+  }
+
+  function restoreMainModel() {
+    if (mainSrc) viewer.src = mainSrc;
+    document.getElementById("lamp-detail-inner").style.display = "none";
+    document.getElementById("asm-detail-inner").style.display  = "";
+    document.getElementById("uvbc-detail").classList.remove("visible");
+    activeKey = null;
+    cards.forEach(c => c.classList.remove("active"));
+  }
+
+  document.getElementById("lamp-back").addEventListener("click", restoreMainModel);
+
+  // ── SKU part data (IEC, Gearmotor) ───────────────────────────
   const ROESLEIN_BASE = "https://parts.roeslein.com";
   const SKU_DATA = {
     "500-0005291": {
@@ -781,6 +848,7 @@
   // Panel card clicks
   cards.forEach(card => {
     card.addEventListener("click", () => {
+      if (card.dataset.action === "lamp") { loadLampSubModel(); return; }
       if (card.dataset.sku) { showSkuPart(card.dataset.sku); return; }
       selectAssembly(card.dataset.key);
     });
@@ -915,6 +983,7 @@
     viewer.addEventListener("load", () => Object.assign(viewer, config), { once: true });
   }
   viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+  mainSrc = viewer.src;
   </script>
 
 </body>
