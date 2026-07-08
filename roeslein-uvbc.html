@@ -872,7 +872,7 @@
   const handleNodeSelection = (node) => {
     let dbg = node; const chain = [];
     while (dbg) { chain.push(JSON.stringify(dbg.name)); dbg = dbg.parent; }
-    console.log("CLICK CHAIN:", chain.join(" → "));
+    console.log("CLICK CHAIN:", chain.join(" > "));
 
     let n = node;
     while (n) {
