@@ -853,11 +853,11 @@
   const { asset, viewerSettings } = product.response;
   const blobId = asset.models[0].modelBlobId;
 
-  if (viewerSettings?.config) {
-    Object.assign(viewer, JSON.parse(viewerSettings.config));
-  }
-
   viewer.enableAutoRotate = false;
+  if (viewerSettings?.config) {
+    const config = JSON.parse(viewerSettings.config);
+    viewer.addEventListener("load", () => Object.assign(viewer, config), { once: true });
+  }
   viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
   </script>
 
