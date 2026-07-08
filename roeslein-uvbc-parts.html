@@ -570,6 +570,7 @@
       "070-128518":  "Hand Wheel",
       "100-0000103": "Screw Jack with Mounting Plate",
       "200-0006562": "Ball Valve",
+      "500-0003042": "UVLED Lamp 250mm, 395nm, 20W",
     };
     const SKU_DESCS = {
       "500-0005291": "Disconnect Switch, 194E IEC Rotary, Enclosed, Non-Fusible, 3-P, 16 A, 10 HP, 600 V, 5 kA, DIN Mount, Painted Steel Enclosure Type 3/4/12, Rotary Handle Gray/Black",
@@ -613,8 +614,10 @@
       ).then(r => r.json());
       const blobId = product.response.asset.models[0].modelBlobId;
       viewer.src = `${BASE_URL}/assets/products/${uuid}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
-      if (camera) Object.assign(viewer, camera);
-      viewer.addEventListener("load", attachSelectionListener, { once: true });
+      viewer.addEventListener("load", () => {
+        if (camera) Object.assign(viewer, camera);
+        attachSelectionListener();
+      }, { once: true });
       // Show parts list for this sub-assembly
       if (parts?.length) {
         const subParts = parts.map(sku => ({
