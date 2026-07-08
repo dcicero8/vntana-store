@@ -582,13 +582,24 @@
     // Key = lowercase normalized node name as it appears in the Figurement scene graph
     const LAMP_UUID = "71503a0c-1051-4028-b438-d387337c9d2c";
     const SWAP_NODES = {
-      "rp001-092-15-2009": LAMP_UUID,
+      "rp001-092-15-2009": {
+        uuid:  LAMP_UUID,
+        label: "UV Lamp Assembly",
+        camera: {
+          cameraRotation: "-0.24814390825699162rad 0.6612419046565234rad 0rad",
+          cameraDistance: "2.209552101197594r",
+          cameraTarget:   "-0.09916862575879966r -0.0017824996838312116r 0.11507526146703506r",
+          fieldOfView:    "0.41314008421541476rad",
+        },
+        parts: ["500-0002622","070-128518","100-0000103","200-0006562"],
+      },
     };
 
     // ── Model swap state ──────────────────────────────────────────
     let mainSrc = null; // stored on first load so back button can restore it
 
-    const loadSubModel = async (uuid, label) => {
+    const loadSubModel = async (entry) => {
+      const { uuid, label, camera, parts } = entry;
       document.getElementById("pdp-title").textContent = label;
       document.getElementById("pdp-desc").textContent  = "Click a component to view replacement parts";
       document.getElementById("pdp-back").style.display = "";
@@ -599,8 +610,17 @@
       ).then(r => r.json());
       const blobId = product.response.asset.models[0].modelBlobId;
       viewer.src = `${BASE_URL}/assets/products/${uuid}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
-      document.getElementById("pdp-parts").innerHTML = "";
+      if (camera) Object.assign(viewer, camera);
       viewer.addEventListener("load", attachSelectionListener, { once: true });
+      // Show parts list for this sub-assembly
+      if (parts?.length) {
+        const subParts = parts.map(sku => ({
+          sku, name: SKU_LABELS[sku] ?? sku, desc: SKU_DESCS[sku] ?? "", filter: []
+        }));
+        renderParts(subParts);
+      } else {
+        document.getElementById("pdp-parts").innerHTML = "";
+      }
     };
 
     // ── Viewer selection → show assembly PDP or direct SKU link ──
@@ -615,8 +635,8 @@
       // 2. Sub-model swap — walk up tree
       n = node;
       while (n) {
-        const swapUuid = SWAP_NODES[normalize(n.name ?? "").toLowerCase()];
-        if (swapUuid) { loadSubModel(swapUuid, n.name); return; }
+        const entry = SWAP_NODES[normalize(n.name ?? "").toLowerCase()];
+        if (entry) { loadSubModel(entry); return; }
         n = n.parent;
       }
       // 3. Assembly-level parts filter
@@ -690,7 +710,7 @@
         attachSelectionListener();
         // Auto-load sub-model if URL param present (e.g. ?sub=lamp)
         const sub = new URLSearchParams(location.search).get("sub");
-        if (sub === "lamp") loadSubModel(LAMP_UUID, "UV Lamp Assembly");
+        if (sub === "lamp") loadSubModel(SWAP_NODES["rp001-092-15-2009"]);
       } catch (e) { console.error("Viewer init failed:", e); }
     })();
 
