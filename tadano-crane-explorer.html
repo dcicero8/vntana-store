@@ -57,6 +57,27 @@
       height: 100%;
       display: block;
     }
+    .explode-control {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      z-index: 10;
+    }
+    .explode-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      white-space: nowrap;
+    }
+    #explode-slider { width: 110px; cursor: pointer; }
 
     /* ── Start overlay ── */
     .tour-overlay {
@@ -430,12 +451,15 @@
         <vntana-viewer id="crane-viewer" loading="eager" role="application" aria-label="Tadano GT-1200XL-2 3D crane explorer">
           <vntana-fs-button></vntana-fs-button>
           <vntana-center-button></vntana-center-button>
-          <vntana-explode-button></vntana-explode-button>
           <div class="button-container zoom-buttons">
             <vntana-zoom-in-button></vntana-zoom-in-button>
             <vntana-zoom-out-button></vntana-zoom-out-button>
           </div>
         </vntana-viewer>
+        <div class="explode-control">
+          <span class="explode-label">Explode</span>
+          <input type="range" id="explode-slider" min="0" max="1" step="0.01" value="0">
+        </div>
 
         <!-- Start overlay -->
         <div class="tour-overlay" id="tour-overlay">
@@ -568,6 +592,9 @@
 
     // ── DOM refs ────────────────────────────────────────────────
     const viewer   = document.getElementById("crane-viewer");
+    document.getElementById("explode-slider").addEventListener("input", (e) => {
+      if (viewer.scene) viewer.scene.explodedStrength = parseFloat(e.target.value);
+    });
     const overlay  = document.getElementById("tour-overlay");
     const startBtn = document.getElementById("tour-start-btn");
     const progress = document.getElementById("tour-progress");
