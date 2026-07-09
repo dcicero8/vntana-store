@@ -948,19 +948,30 @@
 
     const grouped = Object.values(GROUP).reduce((s, a) => s + a.length, 0);
     if (grouped + NON_SELECTABLE.length === 0) { retry(); return; }   // graph not ready
-
-    // State 3: dim non-selectable geometry from load (also makes it unpickable).
-    for (const u of NON_SELECTABLE) viewer.setEffect(u, "dim");
+    // NOTE: no dim on load — the machine loads looking normal. Dimming happens
+    // only after a selectable part is clicked (see selectPart / resetView).
   };
 
   const uuidsFor = (target) => GROUP[keyOf(target)] || [];
 
-  // State 2 (click): outline + highlight the selected part.
+  // Dim all non-selectable geometry (called when a part is selected).
+  const applyDim = () => { for (const u of NON_SELECTABLE) viewer.setEffect(u, "dim"); };
+
+  // Return the machine to its normal look: clear dim + any selection paint.
+  const resetView = () => {
+    viewer.clearEffect("dim");
+    viewer.clearEffect("outline");
+    viewer.clearEffect("highlight");
+    viewer.clearEffect("glow");
+  };
+
+  // Selection paint: outline + highlight the selected part, and dim the rest.
   const paintSelection = (target) => {
     if (!isSelectable(target)) return;
     viewer.clearEffect("outline");
     viewer.clearEffect("highlight");
     for (const u of uuidsFor(target)) viewer.setEffect(u, "outline", "highlight");
+    applyDim();
   };
 
   // State 1 (hover): glow the hovered part (selection outline persists under it).
@@ -973,11 +984,13 @@
     for (const u of uuidsFor(target)) viewer.setEffect(u, "glow");
   });
 
-  // Click: SKU parts open their PDP card; the UV Lamp Assembly navigates.
+  // Click: SKU parts open their PDP card (and dim the rest); the UV Lamp
+  // Assembly navigates. Clicking anything non-selectable (or empty space)
+  // resets the machine to its normal, un-dimmed look.
   viewer.addEventListener("object-select", (e) => {
     const hit = e.detail?.intersections?.[0];
     const target = hit && UUID_TARGET[hit.uuid];
-    if (!isSelectable(target)) return;
+    if (!isSelectable(target)) { resetView(); return; }
     if (target.type === "nav") { window.location.href = target.url; return; }
     paintSelection(target);
     showSkuPart(target.id);
