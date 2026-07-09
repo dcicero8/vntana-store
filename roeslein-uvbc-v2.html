@@ -807,14 +807,14 @@
     const d = SKU_DATA[sku];
     if (!d) return;
 
-    // Snap camera to the part's hotspot view (if a hotspot provided one)
+    // Snap camera to the part's hotspot view (if a hotspot provided one).
+    // This build controls the camera via properties, not setCameraTarget().
     const cam = SKU_CAMERAS[sku];
     if (cam) {
-      try {
-        if (cam.cameraTarget)   viewer.setCameraTarget(cam.cameraTarget);
-        if (cam.cameraDistance) viewer.setCameraDistance(cam.cameraDistance);
-        if (cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
-      } catch (_) {}
+      if (cam.cameraTarget)   viewer.cameraTarget   = cam.cameraTarget;
+      if (cam.cameraDistance) viewer.cameraDistance = cam.cameraDistance;
+      if (cam.cameraRotation) viewer.cameraRotation = cam.cameraRotation;
+      if (cam.fieldOfView)    viewer.fieldOfView    = cam.fieldOfView;
     }
 
     activeKey = null; // allow re-selecting the previous assembly afterwards

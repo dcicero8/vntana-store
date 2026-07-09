@@ -417,11 +417,23 @@
     viewer.clearEffect("glow");
   };
 
+  // Camera saved on each part's hotspot (populated by injectHotspots).
+  const PART_CAMERAS = {};   // part index → camera config
+  const snapCamera = (cam) => {
+    if (!cam) return;
+    // This build controls the camera via properties (no setCameraTarget()).
+    if (cam.cameraTarget)   viewer.cameraTarget   = cam.cameraTarget;
+    if (cam.cameraDistance) viewer.cameraDistance = cam.cameraDistance;
+    if (cam.cameraRotation) viewer.cameraRotation = cam.cameraRotation;
+    if (cam.fieldOfView)    viewer.fieldOfView    = cam.fieldOfView;
+  };
+
   // Select a part by index: show its card, and (if it has geometry) outline +
-  // highlight it and dim the rest. Parts with no node (e.g. ball valve) just
-  // show the card and leave the model normal.
+  // highlight it and dim the rest, then snap the camera to its hotspot view.
+  // Parts with no node just show the card and leave the model normal.
   const selectPart = (i, row) => {
     showPart(i, row ?? rowFor(i));
+    snapCamera(PART_CAMERAS[i]);
     const uuids = GROUP[PARTS[i].sku];
     if (uuids && uuids.length) {
       viewer.clearEffect("outline");
@@ -481,6 +493,9 @@
       if (idx === null) return;
       let dims; try { dims = JSON.parse(hs.config?.dimensions ?? "{}"); } catch { return; }
       if (!dims.position) return;
+
+      // Save this part's camera so clicking the part (pin, mesh, or table row) snaps to it.
+      if (hs.config?.camera) { try { PART_CAMERAS[idx] = JSON.parse(hs.config.camera); } catch (_) {} }
 
       const el = document.createElement("vntana-hotspot");
       el.setAttribute("position", dims.position);
