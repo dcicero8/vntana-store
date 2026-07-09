@@ -888,91 +888,82 @@
   // assembly a node belongs to, then drive hover/select via object-* events
   // and paint feedback with setEffect / removeEffect / clearEffect.
 
-  const SKU_UUIDS = {};        // sku  → [primitive uuid, ...]
-  const ASM_UUIDS = {};        // asm key → [primitive uuid, ...]
-  const UUID_TARGET = {};      // primitive uuid → { type:"sku"|"asm", id }
+  // Grouping model (v2): only "selectable" nodes are grouped, and each owns its
+  // ENTIRE subtree as one clickable part. Selectable =
+  //   • SKU parts (IEC, Gearmotor)  → open their PDP card in the panel
+  //   • the UV Lamp Assembly folder → navigates to the lamp page
+  // Everything else is non-selectable: dimmed from load and unpickable.
+  const GROUP = {};            // "type:id" → [primitive uuid, ...]
+  const UUID_TARGET = {};      // primitive uuid → target object
+  const NON_SELECTABLE = [];   // primitive uuids to dim
+
+  const LAMP_NODE_NAME = "RP001-092-15-2009";     // UV Lamp Assembly folder
+  const LAMP_URL       = "roeslein-uvbc-lamp.html";
+
+  const keyOf = (t) => `${t.type}:${t.id}`;
 
   const collectPrimitiveUUIDs = (node) => {
     const out = [];
-    const walk = (n) => {
-      if (n.type === "primitive") out.push(n.uuid);
-      (n.children || []).forEach(walk);
-    };
+    const walk = (n) => { if (n.type === "primitive") out.push(n.uuid); (n.children || []).forEach(walk); };
     walk(node);
     return out;
   };
 
-  // Resolve a scene-graph node to a target (SKU part or assembly), by name.
+  // A node is a selectable target if it is a SKU part or the lamp assembly.
   const nodeTarget = (name) => {
-    const skuMatch = (name ?? "").match(/\((\d{3}-\d{3,7})\)/);
-    if (skuMatch && SKU_DATA[skuMatch[1]]) return { type: "sku", id: skuMatch[1] };
-    const key = NODE_MAP[normalize(name ?? "")];
-    if (key) return { type: "asm", id: key };
+    const m = (name ?? "").match(/\((\d{3}-\d{3,7})\)/);
+    if (m && SKU_DATA[m[1]]) return { type: "sku", id: m[1] };
+    if ((name ?? "").replace(/\.\d{3}$/, "").trim() === LAMP_NODE_NAME)
+      return { type: "nav", id: "lamp", url: LAMP_URL };
     return null;
   };
 
-  // Selectable in-scene parts = the ones with a PDP (SKU parts: IEC, Gearmotor).
-  // The UV Lamp has no node in this model, so it is sidebar-only.
-  const isSelectable = (t) => !!t && t.type === "sku";
+  const isSelectable = (t) => !!t && (t.type === "sku" || t.type === "nav");
 
-  const ALL_PRIMS = [];        // every primitive uuid in the model
-
-  // Build groups. IMPORTANT: deepest node wins. We walk top-down and OVERWRITE
-  // UUID_TARGET as we descend, so a nested part (Gearmotor) reclaims meshes that
-  // its enclosing assembly (VTU) would otherwise have claimed. This mirrors the
-  // old viewer's "walk up from the mesh, nearest ancestor wins" behavior.
   let buildTries = 0;
   const buildGroups = () => {
     const root = viewer.sceneGraph;
-    // The "load" event can fire before the scene graph is populated in this
-    // build. Retry with setTimeout (fires even when the tab is backgrounded,
-    // unlike requestAnimationFrame) until primitives appear.
+    // "load" can fire before the scene graph is populated in this build; retry
+    // with setTimeout (fires even in a backgrounded tab, unlike rAF).
     const retry = () => { if (buildTries++ < 60) setTimeout(buildGroups, 120); };
     if (!root) { retry(); return; }
-    // Reset accumulators so a retry doesn't double-count.
-    ALL_PRIMS.length = 0;
+    Object.keys(GROUP).forEach(k => delete GROUP[k]);
     Object.keys(UUID_TARGET).forEach(k => delete UUID_TARGET[k]);
-    Object.keys(SKU_UUIDS).forEach(k => delete SKU_UUIDS[k]);
-    Object.keys(ASM_UUIDS).forEach(k => delete ASM_UUIDS[k]);
+    NON_SELECTABLE.length = 0;
+
     const walk = (n) => {
-      if (n.type === "primitive") ALL_PRIMS.push(n.uuid);
       const target = nodeTarget(n.name);
       if (target) {
+        // Claim the whole subtree as ONE part; stop descending so the assembly
+        // stays a single unit and nested nodes can't split it apart.
         const uuids = collectPrimitiveUUIDs(n);
-        const bucket = target.type === "sku" ? SKU_UUIDS : ASM_UUIDS;
-        bucket[target.id] = (bucket[target.id] || []).concat(uuids);
-        uuids.forEach(u => { UUID_TARGET[u] = target; }); // deepest wins (overwrite)
+        GROUP[keyOf(target)] = (GROUP[keyOf(target)] || []).concat(uuids);
+        uuids.forEach(u => { UUID_TARGET[u] = target; });
+        return;
       }
+      if (n.type === "primitive") NON_SELECTABLE.push(n.uuid);
       (n.children || []).forEach(walk);
     };
     walk(root);
 
-    // Scene graph object existed but had no primitives yet — retry.
-    if (ALL_PRIMS.length === 0) { retry(); return; }
+    const grouped = Object.values(GROUP).reduce((s, a) => s + a.length, 0);
+    if (grouped + NON_SELECTABLE.length === 0) { retry(); return; }   // graph not ready
 
-    // State 3: dim everything that is NOT a selectable part, from load.
-    // Dimmed meshes are also excluded from picking, so only selectable
-    // parts fire hover/select — non-selectable geometry is inert.
-    const selectableSet = new Set();
-    for (const u of ALL_PRIMS) if (isSelectable(UUID_TARGET[u])) selectableSet.add(u);
-    for (const u of ALL_PRIMS) if (!selectableSet.has(u)) viewer.setEffect(u, "dim");
+    // State 3: dim non-selectable geometry from load (also makes it unpickable).
+    for (const u of NON_SELECTABLE) viewer.setEffect(u, "dim");
   };
 
-  const uuidsFor = (target) =>
-    target.type === "sku" ? (SKU_UUIDS[target.id] || []) : (ASM_UUIDS[target.id] || []);
+  const uuidsFor = (target) => GROUP[keyOf(target)] || [];
 
-  // State 2 (click): outline + highlight the selected selectable part.
-  let selectedTarget = null;
+  // State 2 (click): outline + highlight the selected part.
   const paintSelection = (target) => {
     if (!isSelectable(target)) return;
-    selectedTarget = target;
     viewer.clearEffect("outline");
     viewer.clearEffect("highlight");
     for (const u of uuidsFor(target)) viewer.setEffect(u, "outline", "highlight");
   };
 
-  // State 1 (hover): glow the hovered selectable part. Selection outline/
-  // highlight is left untouched so it persists under the hover glow.
+  // State 1 (hover): glow the hovered part (selection outline persists under it).
   viewer.addEventListener("object-hover", (e) => {
     viewer.clearEffect("glow");
     const hit = e.detail?.intersections?.[0];
@@ -982,11 +973,12 @@
     for (const u of uuidsFor(target)) viewer.setEffect(u, "glow");
   });
 
-  // Click select — only selectable parts reach here (others are dimmed/inert).
+  // Click: SKU parts open their PDP card; the UV Lamp Assembly navigates.
   viewer.addEventListener("object-select", (e) => {
     const hit = e.detail?.intersections?.[0];
     const target = hit && UUID_TARGET[hit.uuid];
     if (!isSelectable(target)) return;
+    if (target.type === "nav") { window.location.href = target.url; return; }
     paintSelection(target);
     showSkuPart(target.id);
   });
