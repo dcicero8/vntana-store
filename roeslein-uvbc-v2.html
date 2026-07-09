@@ -931,21 +931,35 @@
     target.type === "sku" ? (SKU_UUIDS[target.id] || []) : (ASM_UUIDS[target.id] || []);
 
   // Paint the current selection: clear old, outline + highlight the new group.
+  let selectedTarget = null;
   const paintSelection = (target) => {
+    selectedTarget = target || null;
     viewer.clearEffect("outline");
     viewer.clearEffect("highlight");
     if (!target) return;
     for (const u of uuidsFor(target)) viewer.setEffect(u, "outline", "highlight");
   };
 
-  // Hover glow
+  // Hover: only parts that have a PDP (i.e. are in SKU_DATA) react.
+  // "highlight" overrides the material with the viewer's solid selection
+  // color; "glow" adds an emissive rim. We stack both so the hovered PDP
+  // part clearly changes color. NOTE: the color is fixed by the viewer
+  // build — the effect API takes no color argument — so if it must be a
+  // specific green, that's a request to Neven (make highlight configurable).
+  const isPdpTarget = (t) => t && t.type === "sku";   // only SKU parts have PDPs
+
   viewer.addEventListener("object-hover", (e) => {
     viewer.clearEffect("glow");
+    viewer.clearEffect("highlight");
+    // keep any selection outline; re-apply highlight to the selected part
+    if (selectedTarget && !isPdpTarget(selectedTarget)) { /* asm: nothing */ }
+    else if (selectedTarget) for (const u of uuidsFor(selectedTarget)) viewer.setEffect(u, "highlight");
+
     const hit = e.detail?.intersections?.[0];
     const target = hit && UUID_TARGET[hit.uuid];
-    if (!target) { viewer.style.cursor = ""; return; }
+    if (!isPdpTarget(target)) { viewer.style.cursor = ""; return; }
     viewer.style.cursor = "pointer";
-    for (const u of uuidsFor(target)) viewer.setEffect(u, "glow");
+    for (const u of uuidsFor(target)) viewer.setEffect(u, "highlight", "glow");
   });
 
   // Click select
