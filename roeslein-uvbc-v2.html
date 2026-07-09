@@ -911,68 +911,92 @@
     return null;
   };
 
+  // Selectable in-scene parts = the ones with a PDP (SKU parts: IEC, Gearmotor).
+  // The UV Lamp has no node in this model, so it is sidebar-only.
+  const isSelectable = (t) => !!t && t.type === "sku";
+
+  const ALL_PRIMS = [];        // every primitive uuid in the model
+
+  // Build groups. IMPORTANT: deepest node wins. We walk top-down and OVERWRITE
+  // UUID_TARGET as we descend, so a nested part (Gearmotor) reclaims meshes that
+  // its enclosing assembly (VTU) would otherwise have claimed. This mirrors the
+  // old viewer's "walk up from the mesh, nearest ancestor wins" behavior.
+  let buildTries = 0;
   const buildGroups = () => {
     const root = viewer.sceneGraph;
-    if (!root) return;
+    // The "load" event can fire before the scene graph is populated in this
+    // build. Retry with setTimeout (fires even when the tab is backgrounded,
+    // unlike requestAnimationFrame) until primitives appear.
+    const retry = () => { if (buildTries++ < 60) setTimeout(buildGroups, 120); };
+    if (!root) { retry(); return; }
+    // Reset accumulators so a retry doesn't double-count.
+    ALL_PRIMS.length = 0;
+    Object.keys(UUID_TARGET).forEach(k => delete UUID_TARGET[k]);
+    Object.keys(SKU_UUIDS).forEach(k => delete SKU_UUIDS[k]);
+    Object.keys(ASM_UUIDS).forEach(k => delete ASM_UUIDS[k]);
     const walk = (n) => {
+      if (n.type === "primitive") ALL_PRIMS.push(n.uuid);
       const target = nodeTarget(n.name);
       if (target) {
         const uuids = collectPrimitiveUUIDs(n);
         const bucket = target.type === "sku" ? SKU_UUIDS : ASM_UUIDS;
         bucket[target.id] = (bucket[target.id] || []).concat(uuids);
-        uuids.forEach(u => { if (!UUID_TARGET[u]) UUID_TARGET[u] = target; });
+        uuids.forEach(u => { UUID_TARGET[u] = target; }); // deepest wins (overwrite)
       }
       (n.children || []).forEach(walk);
     };
     walk(root);
+
+    // Scene graph object existed but had no primitives yet — retry.
+    if (ALL_PRIMS.length === 0) { retry(); return; }
+
+    // State 3: dim everything that is NOT a selectable part, from load.
+    // Dimmed meshes are also excluded from picking, so only selectable
+    // parts fire hover/select — non-selectable geometry is inert.
+    const selectableSet = new Set();
+    for (const u of ALL_PRIMS) if (isSelectable(UUID_TARGET[u])) selectableSet.add(u);
+    for (const u of ALL_PRIMS) if (!selectableSet.has(u)) viewer.setEffect(u, "dim");
   };
 
   const uuidsFor = (target) =>
     target.type === "sku" ? (SKU_UUIDS[target.id] || []) : (ASM_UUIDS[target.id] || []);
 
-  // Paint the current selection: clear old, outline + highlight the new group.
+  // State 2 (click): outline + highlight the selected selectable part.
   let selectedTarget = null;
   const paintSelection = (target) => {
-    selectedTarget = target || null;
+    if (!isSelectable(target)) return;
+    selectedTarget = target;
     viewer.clearEffect("outline");
     viewer.clearEffect("highlight");
-    if (!target) return;
     for (const u of uuidsFor(target)) viewer.setEffect(u, "outline", "highlight");
   };
 
-  // Hover: only parts that have a PDP (i.e. are in SKU_DATA) react.
-  // "highlight" overrides the material with the viewer's solid selection
-  // color; "glow" adds an emissive rim. We stack both so the hovered PDP
-  // part clearly changes color. NOTE: the color is fixed by the viewer
-  // build — the effect API takes no color argument — so if it must be a
-  // specific green, that's a request to Neven (make highlight configurable).
-  const isPdpTarget = (t) => t && t.type === "sku";   // only SKU parts have PDPs
-
+  // State 1 (hover): glow the hovered selectable part. Selection outline/
+  // highlight is left untouched so it persists under the hover glow.
   viewer.addEventListener("object-hover", (e) => {
     viewer.clearEffect("glow");
-    viewer.clearEffect("highlight");
-    // keep any selection outline; re-apply highlight to the selected part
-    if (selectedTarget && !isPdpTarget(selectedTarget)) { /* asm: nothing */ }
-    else if (selectedTarget) for (const u of uuidsFor(selectedTarget)) viewer.setEffect(u, "highlight");
-
     const hit = e.detail?.intersections?.[0];
     const target = hit && UUID_TARGET[hit.uuid];
-    if (!isPdpTarget(target)) { viewer.style.cursor = ""; return; }
+    if (!isSelectable(target)) { viewer.style.cursor = ""; return; }
     viewer.style.cursor = "pointer";
-    for (const u of uuidsFor(target)) viewer.setEffect(u, "highlight", "glow");
+    for (const u of uuidsFor(target)) viewer.setEffect(u, "glow");
   });
 
-  // Click select
+  // Click select — only selectable parts reach here (others are dimmed/inert).
   viewer.addEventListener("object-select", (e) => {
     const hit = e.detail?.intersections?.[0];
     const target = hit && UUID_TARGET[hit.uuid];
-    if (!target) return;
+    if (!isSelectable(target)) return;
     paintSelection(target);
-    if (target.type === "sku") showSkuPart(target.id);
-    else selectAssembly(target.id);
+    showSkuPart(target.id);
   });
 
-  viewer.addEventListener("load", buildGroups, { once: true });
+  // This build dispatches "scene-loaded" when the scene graph is ready, and
+  // "updates-loaded" after progressive mesh updates. "load" alone can fire
+  // before the graph is populated. Listen to all three (not once); buildGroups
+  // resets its accumulators each run, so re-firing just rebuilds cleanly.
+  ["scene-loaded", "updates-loaded", "load"].forEach(ev =>
+    viewer.addEventListener(ev, buildGroups));
 
   // ── Hotspot injection ─────────────────────────────────────────
   // Hotspots are matched by their TEXT label (not UUID), so new hotspots
