@@ -1013,8 +1013,8 @@
     "IEC Controller": "500-0005291",
   };
 
-  // Short badge label shown inside the pin, keyed by SKU
-  const HS_PIN_LABEL = { "500-0005291": "IEC", "172-017": "GR" };
+  // Short badge label shown inside the pin, keyed by SKU (+ the lamp nav pin)
+  const HS_PIN_LABEL = { "500-0005291": "IEC", "172-017": "GR", "lamp": "UV" };
 
   const SKU_CAMERAS = {};   // sku → camera config from its hotspot
   let activeHotspot = null;
@@ -1025,28 +1025,34 @@
     return div.textContent.trim();
   };
 
-  function resolveHotspotSku(label) {
-    const skuInText = label.match(/(\d{3}-\d{3,7})/);
-    if (skuInText && SKU_DATA[skuInText[1]]) return skuInText[1];
-    for (const [sku, d] of Object.entries(SKU_DATA)) {
-      if (d.name.toLowerCase() === label.toLowerCase()) return sku;
-    }
-    return HS_TEXT_ALIASES[label] ?? null;
+  // Resolve a hotspot's text label to a target:
+  //   • { type:"sku", id }  → clicking opens that part's PDP card
+  //   • { type:"nav", id:"lamp" } → clicking navigates to the lamp page
+  // To add the UV Lamp Assembly pin, place a hotspot whose text is
+  // "UV Lamp Assembly" or contains "lamp" or the part number RP001-092-15-2009.
+  function resolveHotspotTarget(label) {
+    const sku = label.match(/(\d{3}-\d{3,7})/);
+    if (sku && SKU_DATA[sku[1]]) return { type: "sku", id: sku[1] };
+    for (const [id, d] of Object.entries(SKU_DATA))
+      if (d.name.toLowerCase() === label.toLowerCase()) return { type: "sku", id };
+    if (HS_TEXT_ALIASES[label]) return { type: "sku", id: HS_TEXT_ALIASES[label] };
+    if (/lamp|RP001-092-15-2009/i.test(label)) return { type: "nav", id: "lamp" };
+    return null;
   }
 
   function injectHotspots(grid) {
     grid.forEach(hs => {
       const label = stripHtml(hs.text);
-      const sku = resolveHotspotSku(label);
-      if (!sku) return;
+      const target = resolveHotspotTarget(label);
+      if (!target) return;
 
       let dims;
       try { dims = JSON.parse(hs.config?.dimensions ?? "{}"); } catch { return; }
       if (!dims.position) return;
 
-      // Store camera for snap-on-click (used by pins AND sidebar cards)
-      if (hs.config?.camera) {
-        try { SKU_CAMERAS[sku] = JSON.parse(hs.config.camera); } catch (_) {}
+      // Store camera for snap-on-click (SKU parts only)
+      if (target.type === "sku" && hs.config?.camera) {
+        try { SKU_CAMERAS[target.id] = JSON.parse(hs.config.camera); } catch (_) {}
       }
 
       const el = document.createElement("vntana-hotspot");
@@ -1055,23 +1061,28 @@
 
       const pin = document.createElement("div");
       pin.className = "hs-pin";
-      pin.textContent = HS_PIN_LABEL[sku] ?? label.slice(0, 3).toUpperCase();
+      pin.textContent = HS_PIN_LABEL[target.id] ?? label.slice(0, 3).toUpperCase();
       el.appendChild(pin);
 
       el.addEventListener("click", (e) => {
         e.stopPropagation();
+        if (target.type === "nav") { window.location.href = LAMP_URL; return; }
         if (activeHotspot) activeHotspot.classList.remove("active");
         el.classList.add("active");
         activeHotspot = el;
-        showSkuPart(sku);
+        showSkuPart(target.id);
       });
 
       viewer.appendChild(el);
     });
   }
 
-  // Fetch hotspots after model loads
+  // Fetch hotspots once the model is ready. Uses the same reliable events as
+  // buildGroups — this build's "load"/"model-load" are unreliable here.
+  let hotspotsLoaded = false;
   const loadHotspots = async () => {
+    if (hotspotsLoaded) return;
+    hotspotsLoaded = true;
     try {
       const resp = await fetch(
         "https://api.vntana.com/hotspots/search/organizations/DCicero/clients/n8n-work",
@@ -1083,8 +1094,8 @@
     } catch (_) {}
   };
 
-  viewer.addEventListener("load",       loadHotspots, { once: true });
-  viewer.addEventListener("model-load", loadHotspots, { once: true });
+  ["scene-loaded", "updates-loaded", "load"].forEach(ev =>
+    viewer.addEventListener(ev, loadHotspots));
 
   // ── Load product and set viewer.src ───────────────────────────
   const BASE_URL   = "https://api.vntana.com";

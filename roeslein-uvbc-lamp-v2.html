@@ -150,6 +150,23 @@
     }
     .ro-btn:hover { opacity: 0.82; }
     .ro-btn.primary { background: var(--ro-red); color: #fff; }
+
+    /* Floating 3D badge pins (positioned from VNTANA hotspots) */
+    vntana-hotspot { --hotspot-size: 32px; cursor: pointer; }
+    .hs-pin {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--ro-navy); border: 2px solid rgba(255,255,255,0.6);
+      color: #fff; font-size: 0.55rem; font-weight: 800; letter-spacing: 0.02em;
+      text-transform: uppercase; display: flex; align-items: center;
+      justify-content: center; text-align: center; line-height: 1.1;
+      backdrop-filter: blur(4px); pointer-events: none;
+      transition: background .18s, border-color .18s, transform .18s, box-shadow .18s;
+    }
+    vntana-hotspot:hover .hs-pin,
+    vntana-hotspot.active .hs-pin {
+      background: var(--ro-red); border-color: #fff;
+      transform: scale(1.15); box-shadow: 0 0 0 3px rgba(200,16,46,0.3);
+    }
   </style>
 </head>
 <body>
@@ -427,11 +444,74 @@
     selectPart(target.index, rowFor(target.index));
   });
 
+  // ── Floating badge pins (positioned from VNTANA hotspots) ─────────────────
+  // To show a pin on a part, place a hotspot in VNTANA whose text is the part's
+  // SKU (or contains it), e.g. "070-128518" or "Hand Wheel (070-128518)".
+  // The GLB temp-sensor SKU (500-0000395) is aliased to the catalog part.
+  const HS_PIN_LABEL = {
+    "500-0003042": "UV",   // UVLED Lamp
+    "500-0002622": "FS",   // Flow / Temp Sensor
+    "070-128518":  "HW",   // Hand Wheel
+    "100-0000103": "SJ",   // Screw Jack
+    "200-0006562": "BV",   // Ball Valve
+  };
+  const stripHtml = (html) => { const d = document.createElement("div"); d.innerHTML = html ?? ""; return d.textContent.trim(); };
+
+  // Resolve a hotspot label to a part index (SKU in text, or exact name).
+  const resolveHotspotIndex = (label) => {
+    const m = label.match(/(\d{3}-\d{3,7})/);
+    if (m && SKU_INDEX[m[1]] !== undefined) return SKU_INDEX[m[1]];
+    const byName = PARTS.findIndex(p => p.name.toLowerCase() === label.toLowerCase());
+    return byName >= 0 ? byName : null;
+  };
+
+  let activeHotspot = null;
+  const injectHotspots = (grid) => {
+    grid.forEach(hs => {
+      const idx = resolveHotspotIndex(stripHtml(hs.text));
+      if (idx === null) return;
+      let dims; try { dims = JSON.parse(hs.config?.dimensions ?? "{}"); } catch { return; }
+      if (!dims.position) return;
+
+      const el = document.createElement("vntana-hotspot");
+      el.setAttribute("position", dims.position);
+      el.setAttribute("normal",   dims.normal ?? "0m 1m 0m");
+      const pin = document.createElement("div");
+      pin.className = "hs-pin";
+      pin.textContent = HS_PIN_LABEL[PARTS[idx].sku] ?? PARTS[idx].sku.slice(0, 2);
+      el.appendChild(pin);
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (activeHotspot) activeHotspot.classList.remove("active");
+        el.classList.add("active");
+        activeHotspot = el;
+        selectPart(idx, rowFor(idx));
+      });
+      viewer.appendChild(el);
+    });
+  };
+
+  let hotspotsLoaded = false;
+  const loadHotspots = async () => {
+    if (hotspotsLoaded) return;
+    hotspotsLoaded = true;
+    try {
+      const resp = await fetch(
+        `${BASE_URL}/hotspots/search/organizations/${ORG}/clients/${WORKSPACE}`,
+        { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productUuid: LAMP_UUID, page: 1, size: 50 }) }
+      ).then(r => r.json());
+      const grid = resp?.response?.grid ?? [];
+      if (grid.length) injectHotspots(grid);
+    } catch (_) {}
+  };
+
   // This build fires "scene-loaded" when the graph is ready; "load" can fire
   // before it. Build on all three (idempotent). Apply camera + hide overlay once.
   let inited = false;
   const onReady = () => {
     buildGroups();
+    loadHotspots();
     if (inited) return;
     inited = true;
     Object.assign(viewer, LAMP_CAMERA);
