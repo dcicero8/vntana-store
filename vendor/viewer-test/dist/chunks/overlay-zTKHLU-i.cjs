@@ -1,0 +1,27 @@
+"use strict";var n,t,e,i,o,s,a,r,l,d,h=require("./tslib.es6-CYOYv8XF.cjs"),c=require("./element-base-u7ywLdPN.cjs"),f=require("./translation-B1qcYgrv.cjs"),u=require("./unsafe-html-Dzr_hgBS.cjs"),p=require("./close-4-5ZJ4pOQX.cjs");class m extends c.UIElement{static get styles(){return[...c.getStylesArray(super.styles),f.r(p.css_248z),f.r(":host {\n  all: initial;\n\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10000;\n\n  background-color: var(--_vn-modal-overlay-color);\n\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n[part=modal] {\n  all: initial;\n  max-width: 90%;\n  max-height: 90%;\n\n  position: relative;\n  box-sizing: border-box;\n\n  padding: 20px;\n  margin: 0;\n\n  display: flex;\n  flex-flow: column nowrap;\n  justify-content: flex-start;\n  align-items: center;\n  gap: 16px;\n\n  color: var(--_vn-modal-fg-color);\n  background-color: var(--_vn-modal-bg-color);\n\n  font-family: var(--_vn-font-family);\n  font-size: 14px;\n  font-weight: 400;\n  line-height: 100%;\n  text-align: center;\n}\n\n[part=modal] header {\n  display: flex;\n  flex-flow: column nowrap;\n  justify-content: flex-start;\n  align-items: stretch;\n\n  flex: 0 0 auto;\n  width: 100%;\n  max-width: 100%;\n  overflow: hidden;\n\n  box-sizing: border-box;\n}\n\n[part=modal] header div.close-container {\n    margin-left: auto;\n  }\n\n[part=modal] header div.close-container button.close {\n      width: 16px;\n      height: 16px;\n      z-index: 5;\n    }\n\n[part=modal] header div.close-container button.close > svg {\n        color: var(--_vn-modal-close-icon-color);\n      }\n\n[part=modal] header div.title-container {\n    min-height: 0;\n\n    font-size: 16px;\n    font-weight: 700;\n    line-height: 20px;\n\n    flex-shrink: 0;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n\n    color: var(--_vn-modal-fg-color);\n  }\n\n[part=modal] section {\n  width: 100%;\n  max-width: 100%;\n  min-height: 0;\n  overflow: hidden;\n\n  flex: 1 1 auto;\n\n  display: flex;\n  flex-flow: column nowrap;\n  justify-content: flex-start;\n  align-items: center;\n  gap: 10px;\n}\n")]}constructor(){super(),n.add(this),t.set(this,!1),e.set(this,null),i.set(this,!1),o.set(this,!1),s.set(this,(()=>{h.__classPrivateFieldSet(this,o,!0,"f")})),a.set(this,(()=>{requestAnimationFrame((()=>{h.__classPrivateFieldSet(this,o,!1,"f")}))})),r.set(this,(n=>{if(h.__classPrivateFieldGet(this,o,"f"))return;const t=n.relatedTarget;if(!t||!this.shadowRoot.contains(t)){const n=this.shadowRoot.querySelector('[role="dialog"]');n?.focus()}})),l.set(this,(t=>{if("Escape"===t.key)return void(this.isDismissible()&&this.remove());if("Tab"!==t.key)return;const e=h.__classPrivateFieldGet(this,n,"m",d).call(this);if(!e.length)return;const i=e[0],o=e[e.length-1];t.shiftKey&&this.shadowRoot.activeElement===i?(t.preventDefault(),o.focus()):t.shiftKey||this.shadowRoot.activeElement!==o||(t.preventDefault(),i.focus())})),this.addEventListener("click",(n=>{if(this.isDismissible()){n.composedPath()[0]===this&&this.remove()}}))}connectedCallback(){super.connectedCallback(),h.__classPrivateFieldSet(this,e,this.getRootNode().activeElement,"f"),document.addEventListener("pointerdown",h.__classPrivateFieldGet(this,s,"f")),document.addEventListener("pointerup",h.__classPrivateFieldGet(this,a,"f"))}disconnectedCallback(){super.disconnectedCallback(),h.__classPrivateFieldGet(this,t,"f")&&h.__classPrivateFieldGet(this,e,"f")?.focus({focusVisible:h.__classPrivateFieldGet(this,i,"f")}),h.__classPrivateFieldSet(this,e,null,"f"),h.__classPrivateFieldSet(this,i,!1,"f"),h.__classPrivateFieldSet(this,t,!1,"f"),document.removeEventListener("pointerdown",h.__classPrivateFieldGet(this,s,"f")),document.removeEventListener("pointerup",h.__classPrivateFieldGet(this,a,"f"))}remove(){h.__classPrivateFieldSet(this,t,this.matches(":focus-within")||null!==this.shadowRoot.activeElement,"f"),h.__classPrivateFieldSet(this,i,!h.__classPrivateFieldGet(this,o,"f"),"f"),super.remove()}isDismissible(){return!0}render(){const n=this.constructor.ariaConfig?.label;return f.x`
+      <div 
+        part="modal"
+        aria-modal="true"
+        aria-label=${n?f.t(n):f.E}
+        role="dialog"
+        tabindex="0"
+        @keydown=${h.__classPrivateFieldGet(this,l,"f")}
+        @focusout=${h.__classPrivateFieldGet(this,r,"f")}
+      >
+        ${this.renderContent()}
+      </div>
+    `}renderContent(){return f.E}renderHeader(n){return f.x`
+      <header>
+        <div class="close-container">
+          <button 
+            type="button"
+            class="icon close"
+            aria-label=${f.t("ARIA_CLOSE")}
+            @click=${()=>{this.remove()}}
+          >
+            ${u.o(p.closeIcon)}
+          </button>
+        </div>
+        ${n?f.x`<div class="title-container">${f.t(n)}</div>`:f.E}
+      </header>
+    `}}t=new WeakMap,e=new WeakMap,i=new WeakMap,o=new WeakMap,s=new WeakMap,a=new WeakMap,r=new WeakMap,l=new WeakMap,n=new WeakSet,d=function(){return[...this.shadowRoot.querySelector('[role="dialog"]').querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])')]},m.shadowRootOptions={...f.i.shadowRootOptions,delegatesFocus:!0},m.ariaConfig={...c.UIElement.ariaConfig,role:"none",tabindex:-1},exports.Overlay=m;

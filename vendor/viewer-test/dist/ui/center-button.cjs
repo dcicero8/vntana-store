@@ -1,0 +1,5 @@
+"use strict";var s,e=require("../chunks/tslib.es6-CYOYv8XF.cjs"),t=require("../chunks/element-base-u7ywLdPN.cjs"),r=require("../chunks/translation-B1qcYgrv.cjs"),n=require("../chunks/unsafe-html-Dzr_hgBS.cjs"),c=require("../chunks/center-1pva30sn.cjs");require("../chunks/state-CdzEw7iT.cjs"),exports.VntanaCenterButton=class extends(t.ViewerMixin(t.ButtonBase)){constructor(){super(),s.set(this,(()=>{this.computedViewer&&(this.computedViewer.centerCamera(),this.computedViewer.setExplodedStrength(this.computedViewer.explodedStrength),t.announce(r.t("ARIA_CAMERA_CENTERED")))})),this.addEventListener("click",e.__classPrivateFieldGet(this,s,"f")),this.addEventListener("keydown",(t=>{" "!==t.key&&"Enter"!==t.key||(e.__classPrivateFieldGet(this,s,"f").call(this),t.preventDefault())}))}render(){return r.x`
+      <slot>
+        ${n.o(c.centerIcon)}
+      </slot>
+    `}},s=new WeakMap,exports.VntanaCenterButton.ariaConfig={...t.ButtonBase.ariaConfig,label:"ARIA_CENTER_CAMERA"},exports.VntanaCenterButton=e.__decorate([t.t("vntana-center-button")],exports.VntanaCenterButton);
