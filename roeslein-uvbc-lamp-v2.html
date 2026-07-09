@@ -285,6 +285,14 @@
       url:   "https://parts.roeslein.com",
     },
     {
+      sku:   "500-0000395",
+      name:  "Temperature & Humidity Sensor",
+      desc:  "Ambient temperature and humidity sensor for the UV lamp enclosure.",
+      price: null,
+      img:   "assets/parts/500-0000395.jpg",
+      url:   "https://parts.roeslein.com",
+    },
+    {
       sku:   "070-128518",
       name:  "Hand Wheel",
       desc:  "Manual adjustment hand wheel for lamp height positioning.",
@@ -350,7 +358,6 @@
   // SKU → part index (with the GLB's alternate temp-sensor SKU aliased)
   const SKU_INDEX = {};
   PARTS.forEach((p, i) => { SKU_INDEX[p.sku] = i; });
-  SKU_INDEX["500-0000395"] = 1;   // GLB temp-sensor node → Flow/Temperature Sensor
 
   const GROUP = {};            // canonical sku → [primitive uuid, ...]
   const UUID_TARGET = {};      // primitive uuid → { index, sku }
@@ -447,10 +454,12 @@
   // ── Floating badge pins (positioned from VNTANA hotspots) ─────────────────
   // To show a pin on a part, place a hotspot in VNTANA whose text is the part's
   // SKU (or contains it), e.g. "070-128518" or "Hand Wheel (070-128518)".
-  // The GLB temp-sensor SKU (500-0000395) is aliased to the catalog part.
+  // Each SKU is its own part (Flow/Temp 500-0002622 and Temp/Humidity 500-0000395
+  // are separate sensors, not the same part).
   const HS_PIN_LABEL = {
     "500-0003042": "UV",   // UVLED Lamp
     "500-0002622": "FS",   // Flow / Temp Sensor
+    "500-0000395": "TH",   // Temperature & Humidity Sensor
     "070-128518":  "HW",   // Hand Wheel
     "100-0000103": "SJ",   // Screw Jack
     "200-0006562": "BV",   // Ball Valve
