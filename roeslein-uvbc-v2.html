@@ -876,7 +876,7 @@
   // Panel card clicks
   cards.forEach(card => {
     card.addEventListener("click", () => {
-      if (card.dataset.action === "lamp") { window.location.href = "roeslein-uvbc-lamp.html"; return; }
+      if (card.dataset.action === "lamp") { window.location.href = "roeslein-uvbc-lamp-v2.html"; return; }
       if (card.dataset.sku) { showSkuPart(card.dataset.sku); return; }
       selectAssembly(card.dataset.key);
     });
@@ -898,7 +898,7 @@
   const NON_SELECTABLE = [];   // primitive uuids to dim
 
   const LAMP_NODE_NAME = "RP001-092-15-2009";     // UV Lamp Assembly folder
-  const LAMP_URL       = "roeslein-uvbc-lamp.html";
+  const LAMP_URL       = "roeslein-uvbc-lamp-v2.html";
 
   const keyOf = (t) => `${t.type}:${t.id}`;
 

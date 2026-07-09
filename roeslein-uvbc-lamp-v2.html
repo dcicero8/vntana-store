@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UV Lamp Assembly (v2) — Roeslein</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
+  <style>
+    :root { --ro-navy: #1a2a3a; --ro-red: #c8102e; }
+    body { background: #fff; }
+    header { background: var(--ro-navy); border-bottom: none; }
+    header .logo img { filter: none; }
+    .demo-nav a { color: rgba(255,255,255,.5); }
+    .demo-nav a:hover, .demo-nav a.active { color: #fff; }
+    .demo-nav-home { border-color: rgba(255,255,255,.2) !important; }
+
+    .parts-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ro-red);
+      margin-bottom: 0.4rem;
+    }
+    .parts-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--ro-navy);
+      margin: 0 0 0.5rem;
+    }
+    .parts-subtitle {
+      font-size: 0.84rem;
+      color: #555;
+      line-height: 1.65;
+      margin: 0 0 1rem;
+    }
+
+    .ro-parts-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-top: 0.75rem;
+    }
+    .ro-parts-table th {
+      text-align: left;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+      padding: 0.4rem 0.5rem;
+      border-bottom: 2px solid #e8e8e8;
+    }
+    .ro-parts-table td {
+      padding: 0.65rem 0.5rem;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+    }
+    .ro-parts-table tr { cursor: pointer; transition: background 0.12s; }
+    .ro-parts-table tr:hover td { background: #fdf5f5; }
+    .ro-parts-table tr.active td { background: #fff5f6; }
+    .ro-parts-table .sku-cell {
+      font-family: monospace;
+      font-size: 0.73rem;
+      color: #888;
+    }
+    .ro-parts-table .name-cell {
+      font-weight: 600;
+      color: var(--ro-navy);
+    }
+    .ro-parts-table .price-cell {
+      font-weight: 700;
+      color: var(--ro-navy);
+      white-space: nowrap;
+    }
+
+    /* Part detail card */
+    .part-card {
+      display: none;
+      border: 1.5px solid var(--ro-red);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      margin-top: 1rem;
+      background: #fff5f6;
+    }
+    .part-card.visible { display: block; }
+    .part-card-eyebrow {
+      font-size: 0.63rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #bbb;
+      margin-bottom: 0.5rem;
+    }
+    .part-card img {
+      width: 100%;
+      max-height: 160px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #f4f7fa;
+      margin: 0.5rem 0;
+      display: block;
+    }
+    .part-card .sku-badge {
+      font-family: monospace;
+      font-size: 0.73rem;
+      background: #eee;
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+    .part-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ro-navy);
+      margin: 0 0 0.35rem;
+    }
+    .part-card p {
+      font-size: 0.81rem;
+      color: #555;
+      line-height: 1.65;
+      margin: 0 0 0.75rem;
+    }
+    .part-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .part-price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ro-navy);
+    }
+    .ro-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .ro-btn:hover { opacity: 0.82; }
+    .ro-btn.primary { background: var(--ro-red); color: #fff; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="roeslein-uvbc.html" class="logo">
+      <img src="roeslein-logo.webp" alt="Roeslein" height="32">
+    </a>
+    <nav class="demo-nav">
+      <a href="roeslein-uvbc-v2.html" class="demo-nav-home">← UVBC System</a>
+      <a href="#" class="active">UV Lamp Assembly</a>
+    </nav>
+  </header>
+
+  <main class="product-page">
+
+    <!-- LEFT: 3D viewer -->
+    <div class="viewer-column">
+      <div class="viewer-loading" id="viewer-loading">
+        <div class="viewer-loading-bg" id="viewer-loading-bg"></div>
+        <div class="viewer-loading-inner">
+          <div class="viewer-loading-spinner"></div>
+          <div class="viewer-loading-text">Loading 3D model…</div>
+        </div>
+      </div>
+
+      <!-- v2: internal test build of the viewer (scene-graph API). Do NOT swap this back to @vntana/viewer. -->
+      <script type="module" src="vendor/viewer-test/dist/index.js"></script>
+      <vntana-viewer
+        id="viewer"
+        shadow-intensity="0.3"
+        shadow-radius="2"
+        loading="eager"
+        picking="true"
+        role="application"
+        aria-label="UV Lamp Assembly 3D viewer"
+      >
+        <vntana-fs-button></vntana-fs-button>
+        <vntana-center-button></vntana-center-button>
+        <div class="button-container zoom-buttons">
+          <vntana-zoom-in-button></vntana-zoom-in-button>
+          <vntana-zoom-out-button></vntana-zoom-out-button>
+        </div>
+      </vntana-viewer>
+
+      <div class="viewer-hint">Click a part to view details &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
+    </div>
+
+    <!-- RIGHT: parts panel -->
+    <div class="product-column">
+
+      <div class="parts-eyebrow">Can Manufacturing · UV Curing</div>
+      <h1 class="parts-title">UV Lamp Assembly</h1>
+      <p class="parts-subtitle">Phoseon FL400-250 UV LED curing system. Select a part below or click in the 3D model to view replacement part details.</p>
+
+      <hr class="divider">
+
+      <table class="ro-parts-table" id="parts-table">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Part</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody id="parts-tbody"></tbody>
+      </table>
+
+      <div class="part-card" id="part-card">
+        <div class="part-card-eyebrow">Replacement Part</div>
+        <img id="card-img" src="" alt="">
+        <div class="sku-badge" id="card-sku"></div>
+        <h2 id="card-name"></h2>
+        <p id="card-desc"></p>
+        <div class="part-card-footer">
+          <span class="part-price" id="card-price"></span>
+          <a id="card-order" href="https://parts.roeslein.com" target="_blank" rel="noopener" class="ro-btn primary">Order Part</a>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script type="module">
+  const BASE_URL  = "https://api.vntana.com";
+  const LAMP_UUID = "71503a0c-1051-4028-b438-d387337c9d2c";
+  const ORG       = "DCicero";
+  const WORKSPACE = "n8n-work";
+
+  const LAMP_CAMERA = {
+    cameraRotation: "-0.24814390825699162rad 0.6612419046565234rad 0rad",
+    cameraDistance: "2.209552101197594r",
+    cameraTarget:   "-0.09916862575879966r -0.0017824996838312116r 0.11507526146703506r",
+    fieldOfView:    "0.41314008421541476rad",
+    environmentSrc: "https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr",
+    lightRigColor:  "#ffffff",
+    lightRig:       "directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m",
+  };
+
+  const PARTS = [
+    {
+      sku:   "500-0003042",
+      name:  "UVLED Lamp 250mm, 395nm, 20W",
+      desc:  "Phoseon FL400-250 replacement UV LED lamp module. 250 mm cure window, 395 nm wavelength, 20 W output.",
+      price: "$21,987.73",
+      img:   "assets/parts/500-0003042.jpg",
+      url:   "https://parts.roeslein.com",
+    },
+    {
+      sku:   "500-0002622",
+      name:  "Flow / Temperature Sensor",
+      desc:  "Coolant flow and temperature monitoring sensor for the UV lamp water-cooling loop.",
+      price: "$646.30",
+      img:   "assets/parts/500-0002622.jpg",
+      url:   "https://parts.roeslein.com",
+    },
+    {
+      sku:   "070-128518",
+      name:  "Hand Wheel",
+      desc:  "Manual adjustment hand wheel for lamp height positioning.",
+      price: null,
+      img:   "assets/parts/070-128518.jpg",
+      url:   "https://parts.roeslein.com",
+    },
+    {
+      sku:   "100-0000103",
+      name:  "Screw Jack with Mounting Plate",
+      desc:  "Screw jack assembly for precise vertical adjustment of the UV lamp assembly.",
+      price: "$538.36",
+      img:   "assets/parts/100-0000103.jpg",
+      url:   "https://parts.roeslein.com",
+    },
+    {
+      sku:   "200-0006562",
+      name:  "Ball Valve",
+      desc:  "Coolant circuit ball valve for isolating the UV lamp water-cooling loop during service.",
+      price: "$94.04",
+      img:   "assets/parts/200-0006562.jpg",
+      url:   "https://parts.roeslein.com",
+    },
+  ];
+
+  // Build parts table
+  const tbody = document.getElementById("parts-tbody");
+  PARTS.forEach((p, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="sku-cell">${p.sku}</td>
+      <td class="name-cell">${p.name}</td>
+      <td class="price-cell">${p.price ?? "Contact"}</td>
+    `;
+    tr.addEventListener("click", () => selectPart(i, tr));
+    tbody.appendChild(tr);
+  });
+
+  function showPart(i, row) {
+    document.querySelectorAll(".ro-parts-table tr").forEach(r => r.classList.remove("active"));
+    if (row) row.classList.add("active");
+    const p = PARTS[i];
+    document.getElementById("card-img").src        = p.img;
+    document.getElementById("card-img").alt        = p.name;
+    document.getElementById("card-sku").textContent  = `SKU ${p.sku}`;
+    document.getElementById("card-name").textContent = p.name;
+    document.getElementById("card-desc").textContent = p.desc;
+    document.getElementById("card-price").textContent = p.price ?? "Contact for pricing";
+    document.getElementById("card-order").href = p.url;
+    document.getElementById("part-card").classList.add("visible");
+  }
+
+  // Viewer element
+  const viewer = document.getElementById("viewer");
+
+  // ── Scene-graph interaction (v2, same model as the main UVBC v2 page) ──────
+  // Selectable = the lamp's SKU parts. Each SKU node owns its ENTIRE subtree as
+  // one part (so all three UVLED lamps, or both screw jacks, act as one group).
+  // Three states: hover = glow; click = outline+highlight + dim the rest;
+  // click a non-selectable part = reset to the normal (un-dimmed) look.
+  // No dim on load — the assembly shows normal until a part is picked.
+
+  // SKU → part index (with the GLB's alternate temp-sensor SKU aliased)
+  const SKU_INDEX = {};
+  PARTS.forEach((p, i) => { SKU_INDEX[p.sku] = i; });
+  SKU_INDEX["500-0000395"] = 1;   // GLB temp-sensor node → Flow/Temperature Sensor
+
+  const GROUP = {};            // canonical sku → [primitive uuid, ...]
+  const UUID_TARGET = {};      // primitive uuid → { index, sku }
+  const NON_SELECTABLE = [];   // primitive uuids to dim
+
+  const collectPrimitiveUUIDs = (node) => {
+    const out = [];
+    const walk = (n) => { if (n.type === "primitive") out.push(n.uuid); (n.children || []).forEach(walk); };
+    walk(node);
+    return out;
+  };
+
+  // A node is a selectable target if its name carries a known (or aliased) SKU.
+  const nodeTarget = (name) => {
+    const m = (name ?? "").match(/\((\d{3}-\d{3,7})\)/);
+    if (m && SKU_INDEX[m[1]] !== undefined) {
+      const index = SKU_INDEX[m[1]];
+      return { index, sku: PARTS[index].sku };
+    }
+    return null;
+  };
+
+  const rowFor = (i) => document.querySelectorAll(".ro-parts-table tbody tr")[i];
+
+  let buildTries = 0;
+  const buildGroups = () => {
+    const root = viewer.sceneGraph;
+    const retry = () => { if (buildTries++ < 60) setTimeout(buildGroups, 120); };
+    if (!root) { retry(); return; }
+    Object.keys(GROUP).forEach(k => delete GROUP[k]);
+    Object.keys(UUID_TARGET).forEach(k => delete UUID_TARGET[k]);
+    NON_SELECTABLE.length = 0;
+
+    const walk = (n) => {
+      const target = nodeTarget(n.name);
+      if (target) {
+        const uuids = collectPrimitiveUUIDs(n);          // whole subtree = one part
+        GROUP[target.sku] = (GROUP[target.sku] || []).concat(uuids);
+        uuids.forEach(u => { UUID_TARGET[u] = target; });
+        return;                                          // stop descending
+      }
+      if (n.type === "primitive") NON_SELECTABLE.push(n.uuid);
+      (n.children || []).forEach(walk);
+    };
+    walk(root);
+
+    const grouped = Object.values(GROUP).reduce((s, a) => s + a.length, 0);
+    if (grouped + NON_SELECTABLE.length === 0) { retry(); return; }   // graph not ready
+    // No dim on load — normal look until a part is selected.
+  };
+
+  const applyDim  = () => { for (const u of NON_SELECTABLE) viewer.setEffect(u, "dim"); };
+  const resetView = () => {
+    viewer.clearEffect("dim");
+    viewer.clearEffect("outline");
+    viewer.clearEffect("highlight");
+    viewer.clearEffect("glow");
+  };
+
+  // Select a part by index: show its card, and (if it has geometry) outline +
+  // highlight it and dim the rest. Parts with no node (e.g. ball valve) just
+  // show the card and leave the model normal.
+  const selectPart = (i, row) => {
+    showPart(i, row ?? rowFor(i));
+    const uuids = GROUP[PARTS[i].sku];
+    if (uuids && uuids.length) {
+      viewer.clearEffect("outline");
+      viewer.clearEffect("highlight");
+      for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
+      applyDim();
+    } else {
+      resetView();   // no geometry to highlight — keep the model normal
+    }
+  };
+
+  // Hover: glow the hovered selectable part.
+  viewer.addEventListener("object-hover", (e) => {
+    viewer.clearEffect("glow");
+    const hit = e.detail?.intersections?.[0];
+    const target = hit && UUID_TARGET[hit.uuid];
+    if (!target) { viewer.style.cursor = ""; return; }
+    viewer.style.cursor = "pointer";
+    for (const u of (GROUP[target.sku] || [])) viewer.setEffect(u, "glow");
+  });
+
+  // Click: selectable part → card + highlight + dim; anything else → reset.
+  viewer.addEventListener("object-select", (e) => {
+    const hit = e.detail?.intersections?.[0];
+    const target = hit && UUID_TARGET[hit.uuid];
+    if (!target) { resetView(); return; }
+    selectPart(target.index, rowFor(target.index));
+  });
+
+  // This build fires "scene-loaded" when the graph is ready; "load" can fire
+  // before it. Build on all three (idempotent). Apply camera + hide overlay once.
+  let inited = false;
+  const onReady = () => {
+    buildGroups();
+    if (inited) return;
+    inited = true;
+    Object.assign(viewer, LAMP_CAMERA);
+    const loading = document.getElementById("viewer-loading");
+    if (loading) loading.style.display = "none";
+  };
+  ["scene-loaded", "updates-loaded", "load"].forEach(ev => viewer.addEventListener(ev, onReady));
+
+  // Fetch product and set viewer src (pick the GLB by format, not models[0]).
+  try {
+    const product = await fetch(
+      `${BASE_URL}/products/${LAMP_UUID}/organizations/${ORG}/clients/${WORKSPACE}`
+    ).then(r => r.json());
+    const models = product.response.asset.models;
+    const glb = models.find(m => (m.conversionFormat ?? m.type) === "GLB") ?? models[0];
+    const blobId = glb.modelBlobId ?? glb.blobId;
+    viewer.src = `${BASE_URL}/assets/products/${LAMP_UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+  } catch(e) {
+    console.error("Lamp model load failed:", e);
+  }
+  </script>
+
+</body>
+</html>
