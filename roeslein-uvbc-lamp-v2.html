@@ -151,6 +151,9 @@
     .ro-btn:hover { opacity: 0.82; }
     .ro-btn.primary { background: var(--ro-red); color: #fff; }
 
+    /* Bottom hint bar must not intercept clicks/hover on the model beneath it */
+    .viewer-hint { pointer-events: none; }
+
     /* Floating 3D badge pins (positioned from VNTANA hotspots) */
     vntana-hotspot { --hotspot-size: 32px; cursor: pointer; }
     .hs-pin {
@@ -504,6 +507,15 @@
       pin.className = "hs-pin";
       pin.textContent = HS_PIN_LABEL[PARTS[idx].sku] ?? PARTS[idx].sku.slice(0, 2);
       el.appendChild(pin);
+      // Hovering the pin glows the part's mesh too (same as hovering the mesh).
+      const grp = () => GROUP[PARTS[idx].sku] || [];
+      el.addEventListener("mouseenter", () => {
+        viewer.clearEffect("glow");
+        for (const u of grp()) viewer.setEffect(u, "glow");
+      });
+      el.addEventListener("mouseleave", () => {
+        for (const u of grp()) viewer.removeEffect(u, "glow");
+      });
       el.addEventListener("click", (e) => {
         e.stopPropagation();
         if (activeHotspot) activeHotspot.classList.remove("active");
