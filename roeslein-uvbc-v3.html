@@ -1072,12 +1072,13 @@
       pin.textContent = HS_PIN_LABEL[target.id] ?? label.slice(0, 3).toUpperCase();
       el.appendChild(pin);
 
-      // Hovering the pin glows the associated mesh group too.
-      el.addEventListener("mouseenter", () => {
+      // Hovering the pin glows the associated mesh group too. Content is
+      // slotted into the viewer, so mouseenter never fires; pointerover bubbles.
+      el.addEventListener("pointerover", () => {
         viewer.clearEffect("glow");
         for (const u of uuidsFor(target)) viewer.setEffect(u, "glow");
       });
-      el.addEventListener("mouseleave", () => {
+      el.addEventListener("pointerout", () => {
         for (const u of uuidsFor(target)) viewer.removeEffect(u, "glow");
       });
 

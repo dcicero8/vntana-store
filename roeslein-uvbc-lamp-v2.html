@@ -508,12 +508,14 @@
       pin.textContent = HS_PIN_LABEL[PARTS[idx].sku] ?? PARTS[idx].sku.slice(0, 2);
       el.appendChild(pin);
       // Hovering the pin glows the part's mesh too (same as hovering the mesh).
+      // Content is slotted into the viewer, so mouseenter never fires here;
+      // pointerover/pointerout DO bubble through the slot.
       const grp = () => GROUP[PARTS[idx].sku] || [];
-      el.addEventListener("mouseenter", () => {
+      el.addEventListener("pointerover", () => {
         viewer.clearEffect("glow");
         for (const u of grp()) viewer.setEffect(u, "glow");
       });
-      el.addEventListener("mouseleave", () => {
+      el.addEventListener("pointerout", () => {
         for (const u of grp()) viewer.removeEffect(u, "glow");
       });
       el.addEventListener("click", (e) => {
