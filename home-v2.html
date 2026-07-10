@@ -65,6 +65,13 @@
       transform: scale(1.12);
       box-shadow: 0 2px 9px rgba(0,0,0,0.45);
     }
+    /* Occluded hotspots get a .hide class in style.css (muted BLUE) at higher
+       specificity — override it to a muted grey so pins never flash blue. */
+    vntana-hotspot.hide .hotspot-pin {
+      background: #9ca3af !important;
+      box-shadow: none;
+      animation: none !important;
+    }
 
     /* ── Hotspot popup: image + text side by side, compact ── */
     .hotspot-popup {
