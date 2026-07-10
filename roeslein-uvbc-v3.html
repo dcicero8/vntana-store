@@ -1,0 +1,1140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UVBC UV Curing System (v3 - inline lamp) | Roeslein</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
+  <style>
+    :root {
+      --ro-navy: #1a2a3a;
+      --ro-red:  #c8102e;
+    }
+
+    body { background: #fff; }
+
+    header { background: var(--ro-navy); border-bottom: none; }
+    header .logo img { filter: none; }
+    .demo-nav a { color: rgba(255,255,255,.5); }
+    .demo-nav a:hover, .demo-nav a.active { color: #fff; }
+    .demo-nav-home { border-color: rgba(255,255,255,.2) !important; }
+
+    .uvbc-page {
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── Viewer column ── */
+    .uvbc-viewer-col {
+      position: sticky;
+      top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      background: radial-gradient(#e4e4e4, #8e8e8e);
+      overflow: hidden;
+    }
+
+    vntana-viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .viewer-hint {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.72rem;
+      color: rgba(255,255,255,.8);
+      background: rgba(0,0,0,.45);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ── Hotspot pins ── */
+    vntana-hotspot {
+      --hotspot-size: 32px;
+      cursor: pointer;
+    }
+    .hs-pin {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--ro-navy);
+      border: 2px solid rgba(255,255,255,0.6);
+      color: #fff;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.1;
+      backdrop-filter: blur(4px);
+      transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+      pointer-events: none;
+    }
+    vntana-hotspot:hover .hs-pin,
+    vntana-hotspot.active .hs-pin {
+      background: var(--ro-red);
+      border-color: #fff;
+      transform: scale(1.15);
+      box-shadow: 0 0 0 3px rgba(200,16,46,0.3);
+    }
+
+    /* ── Info panel ── */
+    .uvbc-info {
+      background: #fff;
+      border-left: 1px solid #e5e5e5;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .uvbc-header {
+      padding: 1.75rem 1.75rem 1.25rem;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    .uvbc-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ro-red);
+      margin-bottom: 0.4rem;
+    }
+    .uvbc-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--ro-navy);
+      margin: 0 0 0.6rem;
+    }
+    .uvbc-desc {
+      font-size: 0.84rem;
+      color: #555;
+      line-height: 1.65;
+      margin: 0;
+    }
+    .uvbc-hint {
+      margin-top: 0.85rem;
+      font-size: 0.78rem;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .uvbc-hint-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ro-red);
+      flex-shrink: 0;
+      animation: blink 1.8s ease infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    /* Assembly list */
+    .uvbc-body {
+      padding: 1.1rem 1.75rem 0.5rem;
+      flex: 1;
+    }
+
+    .sec-label {
+      font-size: 0.63rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #c0c0c0;
+      margin: 0.6rem 0 0.45rem;
+    }
+    .sec-label:first-child { margin-top: 0; }
+
+    .asm-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0.875rem;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 9px;
+      background: #fafafa;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+      margin-bottom: 0.45rem;
+    }
+    .asm-card:hover { border-color: #c5c5c5; }
+    .asm-card.active {
+      border-color: var(--ro-red);
+      background: #fff5f6;
+    }
+
+    .asm-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      background: #e9edf0;
+      color: var(--ro-navy);
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.18s, color 0.18s;
+    }
+    .asm-card.active .asm-badge {
+      background: var(--ro-red);
+      color: #fff;
+    }
+
+    .asm-text strong {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ro-navy);
+      display: block;
+      line-height: 1.3;
+    }
+    .asm-text .asm-pn {
+      font-size: 0.69rem;
+      color: #999;
+      font-family: monospace;
+    }
+
+    /* Detail pane */
+    .uvbc-detail {
+      padding: 1.25rem 1.75rem 1.4rem;
+      border-top: 1px solid #e5e5e5;
+      display: none;
+    }
+    .uvbc-detail.visible { display: block; }
+
+    .detail-eyebrow {
+      font-size: 0.63rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #bbb;
+      margin-bottom: 0.6rem;
+    }
+    .detail-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ro-navy);
+      margin: 0 0 0.35rem;
+      line-height: 1.3;
+    }
+    .detail-pn {
+      font-size: 0.7rem;
+      font-family: monospace;
+      background: #f2f2f2;
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      display: inline-block;
+      margin-bottom: 0.7rem;
+      color: #555;
+    }
+    .detail-desc {
+      font-size: 0.81rem;
+      color: #555;
+      line-height: 1.65;
+      margin: 0 0 0.85rem;
+    }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+    .spec-table td {
+      padding: 0.38rem 0.4rem;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+    }
+    .spec-table td:first-child {
+      font-weight: 600;
+      color: #444;
+      width: 44%;
+    }
+    .spec-table td:last-child { color: #666; }
+
+    /* Footer */
+    .uvbc-footer {
+      padding: 1.1rem 1.75rem 1.5rem;
+      border-top: 1px solid #e5e5e5;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .ro-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.62rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .ro-btn:hover { opacity: 0.82; }
+    .ro-btn.primary { background: var(--ro-red); color: #fff; }
+    .ro-btn.secondary {
+      background: #f4f4f4;
+      color: var(--ro-navy);
+      border: 1px solid #e5e5e5;
+    }
+
+    @media (max-width: 800px) {
+      .uvbc-page { grid-template-columns: 1fr; }
+      .uvbc-viewer-col { position: relative; height: 65vw; min-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">
+      <img src="roeslein-logo.webp" alt="Roeslein" height="32">
+    </a>
+    <nav class="demo-nav">
+      <a href="index.html" class="demo-nav-home">← Demos</a>
+      <a href="#" class="active">Roeslein — UVBC UV Curing System</a>
+    </nav>
+  </header>
+
+  <main class="uvbc-page">
+
+    <!-- LEFT: viewer -->
+    <div class="uvbc-viewer-col">
+      <!-- v2: internal test build of the viewer (scene-graph API). Do NOT swap this back to @vntana/viewer. -->
+      <script type="module" src="vendor/viewer-test/dist/index.js"></script>
+      <vntana-viewer
+        id="viewer"
+        shadow-intensity="0.3"
+        shadow-radius="2"
+        loading="eager"
+        picking="true"
+      >
+        <vntana-fs-button></vntana-fs-button>
+        <vntana-center-button></vntana-center-button>
+        <div class="button-container zoom-buttons">
+          <vntana-zoom-in-button></vntana-zoom-in-button>
+          <vntana-zoom-out-button></vntana-zoom-out-button>
+        </div>
+      </vntana-viewer>
+      <div class="viewer-hint">Click a component to explore &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
+    </div>
+
+    <!-- RIGHT: info panel -->
+    <div class="uvbc-info">
+
+      <div class="uvbc-header">
+        <div class="uvbc-eyebrow">Can Manufacturing · UV Curing</div>
+        <h1 class="uvbc-title">UVBC UV Curing System</h1>
+        <p class="uvbc-desc">Full-assembly UV bottom coat curing system by Roeslein. Integrates vacuum transport, UV LED curing, coating application, and machine safety systems.</p>
+        <div class="uvbc-hint">
+          <div class="uvbc-hint-dot"></div>
+          Click any component in the 3D model to view assembly details
+        </div>
+      </div>
+
+      <div class="uvbc-detail" id="uvbc-detail">
+        <!-- Lamp sub-model (shown when UV Lamp Assembly clicked) -->
+        <div id="lamp-detail-inner" style="display:none">
+          <button id="lamp-back" style="background:none;border:none;color:var(--ro-red);font-size:.82rem;font-weight:600;cursor:pointer;padding:0;margin-bottom:.75rem;">← Back to Full System</button>
+          <div class="detail-eyebrow">UV Lamp Assembly</div>
+          <p style="font-size:.82rem;color:#64748b;margin:.2rem 0 .75rem">Click a component to view its replacement part</p>
+          <div id="lamp-parts-list"></div>
+        </div>
+        <!-- Assembly info (shown when assembly node clicked) -->
+        <div id="asm-detail-inner">
+          <div class="detail-eyebrow">Selected Assembly</div>
+          <h2 class="detail-title" id="detail-title"></h2>
+          <div class="detail-pn" id="detail-pn"></div>
+          <p class="detail-desc" id="detail-desc"></p>
+          <table class="spec-table" id="spec-table"></table>
+        </div>
+        <!-- Part card (shown when IEC / Gearmotor clicked) -->
+        <div id="sku-detail-inner" style="display:none">
+          <div class="detail-eyebrow">Replacement Part</div>
+          <img id="sku-img" src="" alt="" style="width:100%;max-height:180px;object-fit:contain;border-radius:6px;background:#f4f7fa;margin:.5rem 0;display:block;">
+          <div class="detail-pn" id="sku-number"></div>
+          <h2 class="detail-title" id="sku-name"></h2>
+          <p class="detail-desc" id="sku-desc"></p>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1rem;gap:.75rem;">
+            <span id="sku-price" style="font-size:1.1rem;font-weight:700;color:#1a1a2e;"></span>
+            <a id="sku-order" href="#" target="_blank" rel="noopener" class="ro-btn primary" style="font-size:.8rem;padding:.45rem 1rem;">Order Part</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="uvbc-body" id="uvbc-body">
+
+        <div class="sec-label" style="color:var(--ro-red)">Explore in 3D</div>
+
+        <div class="sec-label">Major Assemblies</div>
+
+        <div class="asm-card" data-key="uvbc" style="cursor:pointer">
+          <div class="asm-badge">UVBC</div>
+          <div class="asm-text">
+            <strong>UVBC UV Curing System</strong>
+            <span class="asm-pn">Full system overview</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="lamp" data-action="lamp" style="cursor:pointer;border-color:var(--ro-red)">
+          <div class="asm-badge" style="background:var(--ro-red)">UV</div>
+          <div class="asm-text">
+            <strong>UV Lamp Assembly</strong>
+            <span class="asm-pn">RP001-092-15-2009</span>
+            <span class="asm-pn" style="color:var(--ro-red);font-weight:600;margin-top:2px">→ View replacement parts</span>
+          </div>
+        </div>
+
+        <div class="sec-label">Parts</div>
+
+        <div class="asm-card" data-key="iec" data-sku="500-0005291" style="cursor:pointer;border-color:var(--ro-red)">
+          <div class="asm-badge" style="background:var(--ro-red)">IEC</div>
+          <div class="asm-text">
+            <strong>IEC Load Switch</strong>
+            <span class="asm-pn">500-0005291</span>
+            <span class="asm-pn" style="color:var(--ro-red);font-weight:600;margin-top:2px">→ View replacement parts</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="gear" data-sku="172-017" style="cursor:pointer;border-color:var(--ro-red)">
+          <div class="asm-badge" style="background:var(--ro-red)">GR</div>
+          <div class="asm-text">
+            <strong>Gearmotor</strong>
+            <span class="asm-pn">172-017</span>
+            <span class="asm-pn" style="color:var(--ro-red);font-weight:600;margin-top:2px">→ View replacement parts</span>
+          </div>
+        </div>
+
+        <div class="sec-label" style="margin-top:1.2rem">Other Assemblies</div>
+
+        <div class="asm-card" data-key="vtu" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">VTU</div>
+          <div class="asm-text">
+            <strong>UV Conveyor Transport Unit</strong>
+            <span class="asm-pn">DI001-STD-0310001</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="coating" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">APP</div>
+          <div class="asm-text">
+            <strong>Coating Head Assembly</strong>
+            <span class="asm-pn">RP001-092-04-1003</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="blower" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">VAC</div>
+          <div class="asm-text">
+            <strong>Vacuum Blower</strong>
+            <span class="asm-pn">116-423 SQAF270-4</span>
+          </div>
+        </div>
+
+        <div class="sec-label">Electrical Disconnects</div>
+
+        <div class="asm-card" data-key="disc_blower" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">DS1</div>
+          <div class="asm-text">
+            <strong>Disconnect — Vacuum Blower</strong>
+            <span class="asm-pn">DS-MA001 / AB 194E-FA</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="disc_conveyor" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">DS3</div>
+          <div class="asm-text">
+            <strong>Disconnect — Vacuum Conveyor</strong>
+            <span class="asm-pn">DS-MA003 / AB 194E-FA16</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="disc_applicator" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">DS5</div>
+          <div class="asm-text">
+            <strong>Disconnect — Applicator Roller</strong>
+            <span class="asm-pn">DS-MA005 / AB 194E-FA16</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="disc_daytank" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">DS6</div>
+          <div class="asm-text">
+            <strong>Disconnect — Day Tank Mixer</strong>
+            <span class="asm-pn">DS-MA006 / AB 194E-FA16</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="disc_lacquer" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">DS15</div>
+          <div class="asm-text">
+            <strong>Disconnect — Lacquer Pump</strong>
+            <span class="asm-pn">DS-MA015 / AB 194E-FA16</span>
+          </div>
+        </div>
+
+        <div class="sec-label">Safety Systems</div>
+
+        <div class="asm-card" data-key="estop" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">ES</div>
+          <div class="asm-text">
+            <strong>E-Stop Pushbutton Station</strong>
+            <span class="asm-pn">ESPB01 / 8017.685</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="guard" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">GS</div>
+          <div class="asm-text">
+            <strong>Guard Interlock Switches</strong>
+            <span class="asm-pn">AB 440N-Z21SS2H</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="sensor" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">SN</div>
+          <div class="asm-text">
+            <strong>Photoelectric Sensors</strong>
+            <span class="asm-pn">SICK WL9-3P2432</span>
+          </div>
+        </div>
+
+        <div class="asm-card" data-key="jbox" style="opacity:0.4;pointer-events:none">
+          <div class="asm-badge">JB</div>
+          <div class="asm-text">
+            <strong>Machine Junction Box</strong>
+            <span class="asm-pn">UVBC03 / 8017.545</span>
+          </div>
+        </div>
+
+      </div><!-- /uvbc-body -->
+
+      <div class="uvbc-footer">
+        <a class="ro-btn primary" href="https://roeslein.com" target="_blank" rel="noopener">Visit Roeslein.com &rarr;</a>
+        <a class="ro-btn secondary" href="roeslein-uvbc-parts.html">Shop Replacement Parts</a>
+      </div>
+
+    </div><!-- /uvbc-info -->
+
+  </main>
+
+  <script type="module">
+  // ── Assembly data ──────────────────────────────────────────────
+  const ASSEMBLIES = {
+    vtu: {
+      title: "UV Conveyor Transport Unit (VTU)",
+      partNumber: "DI001-STD-0310001",
+      description: "Vacuum transport unit that conveys cans through the UV cure zone. 36 in single-lamp configuration with integrated vacuum plenum, drive rollers, and variable speed control.",
+      specs: [
+        ["Width", "36 in"],
+        ["Config", "Single lamp pass-through"],
+        ["Drive", "Variable speed"],
+        ["Transport", "Vacuum plenum"],
+        ["Manufacturer", "Roeslein"]
+      ]
+    },
+    lamp: {
+      title: "UV Lamp Assembly",
+      partNumber: "RP001-092-15-2009",
+      description: "Phoseon FL400-250 UV LED curing system with water-cooled heat sink. 250 mm cure window delivers high-intensity UV output for bottom coat cure.",
+      specs: [
+        ["Manufacturer", "Phoseon Technology"],
+        ["Model", "FL400-250"],
+        ["Cure window", "250 mm"],
+        ["Cooling", "Water — closed loop"],
+        ["Output", "UV LED array"]
+      ]
+    },
+    coating: {
+      title: "Coating Head Assembly",
+      partNumber: "RP001-092-04-1003",
+      description: "Bottom coating applicator system. Delivers UV-cure lacquer to can bottoms prior to the cure zone. Includes 36 in DD bottom coater, day tank, pump, and fluid routing.",
+      specs: [
+        ["Application", "Bottom coat (DD)"],
+        ["Coater", "36 RH DD Bottom Coater"],
+        ["Lacquer", "UV-cure"],
+        ["Width", "36 in"]
+      ]
+    },
+    blower: {
+      title: "Vacuum Blower",
+      partNumber: "116-423 SQAF270-4-CWUB-160",
+      description: "SQAF 270 series rotary screw vacuum blower. Provides the negative pressure for can transport through the VTU vacuum plenum. Dedicated 194E-FA disconnect (DS-MA001).",
+      specs: [
+        ["Model", "SQAF270-4-CWUB-160"],
+        ["Type", "Rotary screw"],
+        ["Function", "VTU vacuum source"],
+        ["Disconnect", "DS-MA001"]
+      ]
+    },
+    disc_blower: {
+      title: "Electrical Disconnect — Vacuum Blower",
+      partNumber: "DS-MA001",
+      description: "Allen-Bradley 194E-FA lockout/tagout disconnect for the vacuum blower motor circuit. NFPA 79 compliant.",
+      specs: [
+        ["Manufacturer", "Allen-Bradley"],
+        ["Model", "194E-FA"],
+        ["Circuit", "Vacuum Blower"],
+        ["Standard", "NFPA 79"]
+      ]
+    },
+    disc_conveyor: {
+      title: "Electrical Disconnect — Vacuum Conveyor",
+      partNumber: "DS-MA003",
+      description: "Allen-Bradley 194E-FA16 lockout/tagout disconnect for the vacuum conveyor drive circuit. Enables safe maintenance isolation.",
+      specs: [
+        ["Manufacturer", "Allen-Bradley"],
+        ["Model", "194E-FA16"],
+        ["Circuit", "Vacuum Conveyor"],
+        ["Standard", "NFPA 79"]
+      ]
+    },
+    disc_applicator: {
+      title: "Electrical Disconnect — Applicator Roller",
+      partNumber: "DS-MA005",
+      description: "Allen-Bradley 194E-FA16 disconnect for the applicator roller motor circuit.",
+      specs: [
+        ["Manufacturer", "Allen-Bradley"],
+        ["Model", "194E-FA16"],
+        ["Circuit", "Applicator Roller"],
+        ["Standard", "NFPA 79"]
+      ]
+    },
+    disc_daytank: {
+      title: "Electrical Disconnect — Day Tank Mixer",
+      partNumber: "DS-MA006",
+      description: "Allen-Bradley 194E-FA16 disconnect for the day tank mixer motor.",
+      specs: [
+        ["Manufacturer", "Allen-Bradley"],
+        ["Model", "194E-FA16"],
+        ["Circuit", "Day Tank Mixer"],
+        ["Standard", "NFPA 79"]
+      ]
+    },
+    disc_lacquer: {
+      title: "Electrical Disconnect — Lacquer Pump",
+      partNumber: "DS-MA015",
+      description: "Allen-Bradley 194E-FA16 disconnect for the lacquer pump motor circuit.",
+      specs: [
+        ["Manufacturer", "Allen-Bradley"],
+        ["Model", "194E-FA16"],
+        ["Circuit", "Lacquer Pump"],
+        ["Standard", "NFPA 79"]
+      ]
+    },
+    estop: {
+      title: "E-Stop Pushbutton Station",
+      partNumber: "ESPB01 / 8017.685",
+      description: "Machine-mounted emergency stop pushbutton station. Dual redundant NC contacts, padlockable mushroom head. NFPA 79 / ISO 13850 compliant.",
+      specs: [
+        ["Type", "Mushroom head E-Stop"],
+        ["Contacts", "Dual NC, safety rated"],
+        ["Padlockable", "Yes"],
+        ["Standards", "NFPA 79, ISO 13850"]
+      ]
+    },
+    guard: {
+      title: "Guard Interlock Switches",
+      partNumber: "AB 440N-Z21SS2H",
+      description: "Allen-Bradley 440N guard door interlock switches at lamp front (GS-01), roller front (GS-02), lamp rear (GS-03), and can entrance (GS-04) guard positions. Prevent access during UV operation.",
+      specs: [
+        ["Manufacturer", "Allen-Bradley"],
+        ["Model", "440N-Z21SS2H"],
+        ["Positions", "GS-01, GS-02, GS-03, GS-04"],
+        ["Function", "Guard door interlock"]
+      ]
+    },
+    sensor: {
+      title: "Photoelectric Presence Sensors",
+      partNumber: "SICK WL9-3P2432",
+      description: "SICK WL9-3P2432 photoelectric sensors with BEF-WN-W9-2 mounting brackets for can presence detection. SICK PL80A reflectors complete each sensor pair.",
+      specs: [
+        ["Manufacturer", "SICK"],
+        ["Model", "WL9-3P2432"],
+        ["Bracket", "BEF-WN-W9-2"],
+        ["Reflector", "PL80A"],
+        ["Function", "Can presence detection"]
+      ]
+    },
+    jbox: {
+      title: "Machine Mounted Junction Box",
+      partNumber: "UVBC03 / 8017.545",
+      description: "Central machine-mounted junction box. Consolidates field wiring for sensors, disconnects, and interlocks. NEMA 4 / IP65 rated enclosure.",
+      specs: [
+        ["Drawing", "8017.545"],
+        ["Rating", "NEMA 4 / IP65"],
+        ["Function", "Field wiring consolidation"]
+      ]
+    }
+  };
+
+  // ── Node name → assembly key ───────────────────────────────────
+  // Parent-walk in resolveHighlight handles all child nodes automatically.
+  // Only top-level and directly-clicked nodes need explicit entries here.
+  const NODE_MAP = {
+    "VTU RH 36in Single Lamp":                                         "vtu",
+    "RP001-092-15-2009":                                               "lamp",
+    "RP001-092-04-1003":                                               "coating",
+    "36 RH DD Bottom Coater":                                          "coating",
+    "116-423 SQAF270-4-CWUB-160_2":                                   "blower",
+    "AB 194E-FA Electrical Disconnect_DS-MA001 - Vacuum Blower":       "disc_blower",
+    "AB 194E-FA16 Electrical Disconnect_DS-MA003 - Vacuum Conveyor":   "disc_conveyor",
+    "AB 194E-FA16 Electrical Disconnect_DS-MA005 - Applicator Roller": "disc_applicator",
+    "AB 194E-FA16 Electrical Disconnect_DS-MA006 - Day Tank Mixer":    "disc_daytank",
+    "AB 194E-FA16 Electrical Disconnect_DS-MA015 - Lacquer Pump":      "disc_lacquer",
+    "ESPB01 - 8017.685 Estop Pushbutton Station":                      "estop",
+    "AB 440N-Z21SS2H, Guard Switch, Base_GS-01 - Lamp Front":         "guard",
+    "AB 440N-Z21SS2H, Guard Switch, Base_GS-02 - Roller Front":       "guard",
+    "AB 440N-Z21SS2H, Guard Switch, Base_GS-03 - Lamp Rear":          "guard",
+    "AB 440N-Z21SS2H, Guard Switch, Base_GS-04 - Can Entrance":       "guard",
+    "AB 44N-Z21SS2H, Guard Switch, Actuator":                         "guard",
+    "SICK WL9-3P2432 Photoelectric Sensor with BEF-WN-W9-2 B_74579a9": "sensor",
+    "SICK WL9-3P2432 Photoelectric Sensor with BEF-WN-W9-2 B_5b5eeeb": "sensor",
+    "SICK WL9-3P2432 Photoelectric Sensor with BEF-WN-W9-2 B_53d1321": "sensor",
+    "SICK WL9-3P2432 Photoelectric Sensor with BEF-WN-W9-2 B_d283af2": "sensor",
+    "SICK PL80A Photoelectric Sensor Reflector":                       "sensor",
+    "SICK WL9-3P2432 Photoelectric Sensor":                           "sensor",
+    "UVBC03 - 8017.545, Machine Mounted Junction Box":                 "jbox"
+  };
+
+  // ── DOM refs ──────────────────────────────────────────────────
+  const viewer     = document.getElementById("viewer");
+  const detailPane = document.getElementById("uvbc-detail");
+  const detailTitle = document.getElementById("detail-title");
+  const detailPn   = document.getElementById("detail-pn");
+  const detailDesc = document.getElementById("detail-desc");
+  const specTable  = document.getElementById("spec-table");
+  const cards      = document.querySelectorAll(".asm-card");
+
+  // ── SKU part data (IEC, Gearmotor) ───────────────────────────
+  // ── Lamp sub-model ────────────────────────────────────────────
+  const LAMP_UUID   = "71503a0c-1051-4028-b438-d387337c9d2c";
+  const LAMP_CAMERA = {
+    cameraRotation: "-0.24814390825699162rad 0.6612419046565234rad 0rad",
+    cameraDistance: "2.209552101197594r",
+    cameraTarget:   "-0.09916862575879966r -0.0017824996838312116r 0.11507526146703506r",
+    fieldOfView:    "0.41314008421541476rad",
+    environmentSrc: "https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr",
+    lightRigColor:  "#ffffff",
+    lightRig:       "directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m",
+  };
+  const LAMP_PARTS = [
+    { sku: "500-0003042", name: "UVLED Lamp 250mm, 395nm, 20W",     price: "$21,987.73" },
+    { sku: "500-0002622", name: "Flow / Temperature Sensor",         price: "$646.30" },
+    { sku: "500-0000395", name: "Temperature & Humidity Sensor",     price: "Contact for pricing" },
+    { sku: "070-128518",  name: "Hand Wheel",                        price: "Contact for pricing" },
+    { sku: "100-0000103", name: "Screw Jack with Mounting Plate",    price: "$538.36" },
+    { sku: "200-0006562", name: "Ball Valve",                        price: "$94.04" },
+  ];
+
+  // v3 EXPERIMENT: instead of navigating to a separate lamp page (and loading a
+  // SECOND model, per Neven's note), focus the UV Lamp Assembly IN PLACE by
+  // dimming everything else in the current model. No page load, no second model.
+  function focusLampInline() {
+    const detailPane = document.getElementById("uvbc-detail");
+    document.getElementById("lamp-detail-inner").style.display = "";
+    document.getElementById("asm-detail-inner").style.display  = "none";
+    document.getElementById("sku-detail-inner").style.display  = "none";
+    detailPane.classList.add("visible");
+    document.querySelector(".uvbc-info").scrollTop = 0;
+    cards.forEach(c => c.classList.remove("active"));
+
+    document.getElementById("lamp-parts-list").innerHTML = LAMP_PARTS.map(p => `
+      <div style="border:1px solid #e5e7eb;border-radius:8px;padding:.6rem .75rem;margin-bottom:.5rem;">
+        <div style="font-size:.72rem;color:#94a3b8;font-weight:600;">SKU ${p.sku}</div>
+        <div style="font-size:.88rem;font-weight:700;color:#1a1a2e;margin:.1rem 0;">${p.name}</div>
+        <div style="font-size:.8rem;color:#64748b;">${p.price}</div>
+      </div>`).join("");
+
+    // Dim everything EXCEPT the lamp assembly group (keeps lamp full color).
+    const lampUuids = new Set(uuidsFor({ type: "nav", id: "lamp" }));
+    viewer.clearEffect("outline"); viewer.clearEffect("highlight"); viewer.clearEffect("glow");
+    const toDim = [...NON_SELECTABLE];
+    for (const [k, arr] of Object.entries(GROUP)) if (k !== "nav:lamp") toDim.push(...arr);
+    for (const u of toDim) if (!lampUuids.has(u)) viewer.setEffect(u, "dim");
+
+    // Camera focus if a lamp hotspot supplied a view
+    const cam = SKU_CAMERAS["lamp"];
+    if (cam) {
+      if (cam.cameraTarget)   viewer.cameraTarget   = cam.cameraTarget;
+      if (cam.cameraDistance) viewer.cameraDistance = cam.cameraDistance;
+      if (cam.cameraRotation) viewer.cameraRotation = cam.cameraRotation;
+      if (cam.fieldOfView)    viewer.fieldOfView    = cam.fieldOfView;
+    }
+  }
+
+  function exitLampFocus() {
+    document.getElementById("lamp-detail-inner").style.display = "none";
+    document.getElementById("asm-detail-inner").style.display  = "";
+    document.getElementById("uvbc-detail").classList.remove("visible");
+    activeKey = null;
+    cards.forEach(c => c.classList.remove("active"));
+    resetView();
+  }
+
+  document.getElementById("lamp-back").addEventListener("click", exitLampFocus);
+
+  // ── SKU part data (IEC, Gearmotor) ───────────────────────────
+  const ROESLEIN_BASE = "https://parts.roeslein.com";
+  const SKU_DATA = {
+    "500-0005291": {
+      name:  "IEC Load Switch",
+      desc:  "Disconnect Switch, 194E IEC Rotary, Enclosed, Non-Fusible, 3-P, 16 A, 10 HP, 600 V, 5 kA, DIN Mount, Painted Steel Enclosure Type 3/4/12, Rotary Handle Gray/Black",
+      price: "$241.72",
+      url:   `${ROESLEIN_BASE}/iec-load-switch/`,
+      img:   "assets/parts/500-0005291.jpg",
+    },
+    "172-017": {
+      name:  "Gearmotor",
+      desc:  "1 HP, 100:1 Ratio, 17.5 RPM, 1.19/1.25 Bore, 60 Hz",
+      price: null,
+      url:   `${ROESLEIN_BASE}/gearmotor-1-hp-100-1-ratio-17-5-rpm-rpm-1-19-1-25-bore-60-hz/`,
+      img:   "assets/parts/172-017.jpg",
+    },
+  };
+
+  function showSkuPart(sku) {
+    const d = SKU_DATA[sku];
+    if (!d) return;
+
+    // Snap camera to the part's hotspot view (if a hotspot provided one).
+    // This build controls the camera via properties, not setCameraTarget().
+    const cam = SKU_CAMERAS[sku];
+    if (cam) {
+      if (cam.cameraTarget)   viewer.cameraTarget   = cam.cameraTarget;
+      if (cam.cameraDistance) viewer.cameraDistance = cam.cameraDistance;
+      if (cam.cameraRotation) viewer.cameraRotation = cam.cameraRotation;
+      if (cam.fieldOfView)    viewer.fieldOfView    = cam.fieldOfView;
+    }
+
+    activeKey = null; // allow re-selecting the previous assembly afterwards
+    if (typeof paintSelection === "function") paintSelection({ type: "sku", id: sku });
+    document.getElementById("sku-img").src           = d.img;
+    document.getElementById("sku-img").alt           = d.name;
+    document.getElementById("sku-number").textContent = `SKU ${sku}`;
+    document.getElementById("sku-name").textContent  = d.name;
+    document.getElementById("sku-desc").textContent  = d.desc;
+    document.getElementById("sku-price").textContent = d.price ?? "Contact for pricing";
+    document.getElementById("sku-order").href        = d.url;
+    document.getElementById("asm-detail-inner").style.display = "none";
+    document.getElementById("sku-detail-inner").style.display = "";
+    detailPane.classList.add("visible");
+    document.querySelector(".uvbc-info").scrollTop = 0;
+    cards.forEach(c => c.classList.remove("active"));
+  }
+
+  // ── Selection helpers ─────────────────────────────────────────
+  // Normalize: strip (N) duplicate suffix and .NNN Blender suffix
+  const normalize = t =>
+    t?.replace(/\s*\(\d+\)\s*$/, "").replace(/\.\d{3}$/, "").trim() ?? "";
+
+  let activeKey = null;
+  const HOTSPOT_CAMERAS = {};   // key → {cameraTarget, cameraDistance, cameraRotation}
+
+  function selectAssembly(key) {
+    if (!key || !ASSEMBLIES[key]) return;
+    if (activeKey === key) return;
+    activeKey = key;
+    if (typeof paintSelection === "function") paintSelection({ type: "asm", id: key });
+
+    const cam = HOTSPOT_CAMERAS[key];
+    if (cam) {
+      try {
+        if (cam.cameraTarget)   viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.cameraDistance) viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
+      } catch (_) {}
+    }
+
+    cards.forEach(c => c.classList.toggle("active", c.dataset.key === key));
+
+    const asm = ASSEMBLIES[key];
+    detailTitle.textContent = asm.title;
+    detailPn.textContent    = asm.partNumber;
+    detailDesc.textContent  = asm.description;
+
+    specTable.innerHTML = asm.specs
+      .map(([label, value]) => `<tr><td>${label}</td><td>${value}</td></tr>`)
+      .join("");
+
+    document.getElementById("asm-detail-inner").style.display = "";
+    document.getElementById("sku-detail-inner").style.display = "none";
+    detailPane.classList.add("visible");
+    document.querySelector(".uvbc-info").scrollTop = 0;
+  }
+
+  // Panel card clicks
+  cards.forEach(card => {
+    card.addEventListener("click", () => {
+      if (card.dataset.action === "lamp") { focusLampInline(); return; }
+      if (card.dataset.sku) { showSkuPart(card.dataset.sku); return; }
+      selectAssembly(card.dataset.key);
+    });
+  });
+
+  // ── Viewer interaction: new scene-graph API (v2) ──────────────
+  // No more <vntana-scene-graph-button> and no viewer.selection.highlight.
+  // On load we walk viewer.sceneGraph, group primitive UUIDs by the SKU or
+  // assembly a node belongs to, then drive hover/select via object-* events
+  // and paint feedback with setEffect / removeEffect / clearEffect.
+
+  // Grouping model (v2): only "selectable" nodes are grouped, and each owns its
+  // ENTIRE subtree as one clickable part. Selectable =
+  //   • SKU parts (IEC, Gearmotor)  → open their PDP card in the panel
+  //   • the UV Lamp Assembly folder → navigates to the lamp page
+  // Everything else is non-selectable: dimmed from load and unpickable.
+  const GROUP = {};            // "type:id" → [primitive uuid, ...]
+  const UUID_TARGET = {};      // primitive uuid → target object
+  const NON_SELECTABLE = [];   // primitive uuids to dim
+
+  const LAMP_NODE_NAME = "RP001-092-15-2009";     // UV Lamp Assembly folder
+  const LAMP_URL       = "roeslein-uvbc-lamp-v2.html";
+
+  const keyOf = (t) => `${t.type}:${t.id}`;
+
+  const collectPrimitiveUUIDs = (node) => {
+    const out = [];
+    const walk = (n) => { if (n.type === "primitive") out.push(n.uuid); (n.children || []).forEach(walk); };
+    walk(node);
+    return out;
+  };
+
+  // A node is a selectable target if it is a SKU part or the lamp assembly.
+  const nodeTarget = (name) => {
+    const m = (name ?? "").match(/\((\d{3}-\d{3,7})\)/);
+    if (m && SKU_DATA[m[1]]) return { type: "sku", id: m[1] };
+    if ((name ?? "").replace(/\.\d{3}$/, "").trim() === LAMP_NODE_NAME)
+      return { type: "nav", id: "lamp", url: LAMP_URL };
+    return null;
+  };
+
+  const isSelectable = (t) => !!t && (t.type === "sku" || t.type === "nav");
+
+  let buildTries = 0;
+  const buildGroups = () => {
+    const root = viewer.sceneGraph;
+    // "load" can fire before the scene graph is populated in this build; retry
+    // with setTimeout (fires even in a backgrounded tab, unlike rAF).
+    const retry = () => { if (buildTries++ < 60) setTimeout(buildGroups, 120); };
+    if (!root) { retry(); return; }
+    Object.keys(GROUP).forEach(k => delete GROUP[k]);
+    Object.keys(UUID_TARGET).forEach(k => delete UUID_TARGET[k]);
+    NON_SELECTABLE.length = 0;
+
+    const walk = (n) => {
+      const target = nodeTarget(n.name);
+      if (target) {
+        // Claim the whole subtree as ONE part; stop descending so the assembly
+        // stays a single unit and nested nodes can't split it apart.
+        const uuids = collectPrimitiveUUIDs(n);
+        GROUP[keyOf(target)] = (GROUP[keyOf(target)] || []).concat(uuids);
+        uuids.forEach(u => { UUID_TARGET[u] = target; });
+        return;
+      }
+      if (n.type === "primitive") NON_SELECTABLE.push(n.uuid);
+      (n.children || []).forEach(walk);
+    };
+    walk(root);
+
+    const grouped = Object.values(GROUP).reduce((s, a) => s + a.length, 0);
+    if (grouped + NON_SELECTABLE.length === 0) { retry(); return; }   // graph not ready
+    // NOTE: no dim on load — the machine loads looking normal. Dimming happens
+    // only after a selectable part is clicked (see selectPart / resetView).
+  };
+
+  const uuidsFor = (target) => GROUP[keyOf(target)] || [];
+
+  // Dim all non-selectable geometry (called when a part is selected).
+  const applyDim = () => { for (const u of NON_SELECTABLE) viewer.setEffect(u, "dim"); };
+
+  // Return the machine to its normal look: clear dim + any selection paint.
+  const resetView = () => {
+    viewer.clearEffect("dim");
+    viewer.clearEffect("outline");
+    viewer.clearEffect("highlight");
+    viewer.clearEffect("glow");
+  };
+
+  // Selection paint: outline + highlight the selected part, and dim the rest.
+  const paintSelection = (target) => {
+    if (!isSelectable(target)) return;
+    viewer.clearEffect("outline");
+    viewer.clearEffect("highlight");
+    for (const u of uuidsFor(target)) viewer.setEffect(u, "outline", "highlight");
+    applyDim();
+  };
+
+  // State 1 (hover): glow the hovered part (selection outline persists under it).
+  viewer.addEventListener("object-hover", (e) => {
+    viewer.clearEffect("glow");
+    const hit = e.detail?.intersections?.[0];
+    const target = hit && UUID_TARGET[hit.uuid];
+    if (!isSelectable(target)) { viewer.style.cursor = ""; return; }
+    viewer.style.cursor = "pointer";
+    for (const u of uuidsFor(target)) viewer.setEffect(u, "glow");
+  });
+
+  // Click: SKU parts open their PDP card (and dim the rest); the UV Lamp
+  // Assembly navigates. Clicking anything non-selectable (or empty space)
+  // resets the machine to its normal, un-dimmed look.
+  viewer.addEventListener("object-select", (e) => {
+    const hit = e.detail?.intersections?.[0];
+    const target = hit && UUID_TARGET[hit.uuid];
+    if (!isSelectable(target)) { resetView(); return; }
+    if (target.type === "nav") { focusLampInline(); return; }   // v3: inline focus, no page load
+    paintSelection(target);
+    showSkuPart(target.id);
+  });
+
+  // This build dispatches "scene-loaded" when the scene graph is ready, and
+  // "updates-loaded" after progressive mesh updates. "load" alone can fire
+  // before the graph is populated. Listen to all three (not once); buildGroups
+  // resets its accumulators each run, so re-firing just rebuilds cleanly.
+  ["scene-loaded", "updates-loaded", "load"].forEach(ev =>
+    viewer.addEventListener(ev, buildGroups));
+
+  // ── Hotspot injection ─────────────────────────────────────────
+  // Hotspots are matched by their TEXT label (not UUID), so new hotspots
+  // added in the VNTANA platform work without code changes when:
+  //   1. the text contains a SKU like (500-0005291) or "500-0005291", OR
+  //   2. the text exactly matches a SKU_DATA part name, OR
+  //   3. the text has an entry in HS_TEXT_ALIASES below.
+  const HS_TEXT_ALIASES = {
+    "IEC Controller": "500-0005291",
+  };
+
+  // Short badge label shown inside the pin, keyed by SKU (+ the lamp nav pin)
+  const HS_PIN_LABEL = { "500-0005291": "IEC", "172-017": "GR", "lamp": "UV" };
+
+  const SKU_CAMERAS = {};   // sku → camera config from its hotspot
+  let activeHotspot = null;
+
+  const stripHtml = (html) => {
+    const div = document.createElement("div");
+    div.innerHTML = html ?? "";
+    return div.textContent.trim();
+  };
+
+  // Resolve a hotspot's text label to a target:
+  //   • { type:"sku", id }  → clicking opens that part's PDP card
+  //   • { type:"nav", id:"lamp" } → clicking navigates to the lamp page
+  // To add the UV Lamp Assembly pin, place a hotspot whose text is
+  // "UV Lamp Assembly" or contains "lamp" or the part number RP001-092-15-2009.
+  function resolveHotspotTarget(label) {
+    const sku = label.match(/(\d{3}-\d{3,7})/);
+    if (sku && SKU_DATA[sku[1]]) return { type: "sku", id: sku[1] };
+    for (const [id, d] of Object.entries(SKU_DATA))
+      if (d.name.toLowerCase() === label.toLowerCase()) return { type: "sku", id };
+    if (HS_TEXT_ALIASES[label]) return { type: "sku", id: HS_TEXT_ALIASES[label] };
+    if (/lamp|RP001-092-15-2009/i.test(label)) return { type: "nav", id: "lamp" };
+    return null;
+  }
+
+  function injectHotspots(grid) {
+    grid.forEach(hs => {
+      const label = stripHtml(hs.text);
+      const target = resolveHotspotTarget(label);
+      if (!target) return;
+
+      let dims;
+      try { dims = JSON.parse(hs.config?.dimensions ?? "{}"); } catch { return; }
+      if (!dims.position) return;
+
+      // Store camera for snap-on-click (SKU parts + the lamp nav target)
+      if (hs.config?.camera) {
+        try { SKU_CAMERAS[target.id] = JSON.parse(hs.config.camera); } catch (_) {}
+      }
+
+      const el = document.createElement("vntana-hotspot");
+      el.setAttribute("position", dims.position);
+      el.setAttribute("normal",   dims.normal ?? "0m 1m 0m");
+
+      const pin = document.createElement("div");
+      pin.className = "hs-pin";
+      pin.textContent = HS_PIN_LABEL[target.id] ?? label.slice(0, 3).toUpperCase();
+      el.appendChild(pin);
+
+      // Hovering the pin glows the associated mesh group too.
+      el.addEventListener("mouseenter", () => {
+        viewer.clearEffect("glow");
+        for (const u of uuidsFor(target)) viewer.setEffect(u, "glow");
+      });
+      el.addEventListener("mouseleave", () => {
+        for (const u of uuidsFor(target)) viewer.removeEffect(u, "glow");
+      });
+
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (target.type === "nav") { focusLampInline(); return; }   // v3: inline focus, no page load
+        if (activeHotspot) activeHotspot.classList.remove("active");
+        el.classList.add("active");
+        activeHotspot = el;
+        showSkuPart(target.id);
+      });
+
+      viewer.appendChild(el);
+    });
+  }
+
+  // Fetch hotspots once the model is ready. Uses the same reliable events as
+  // buildGroups — this build's "load"/"model-load" are unreliable here.
+  let hotspotsLoaded = false;
+  const loadHotspots = async () => {
+    if (hotspotsLoaded) return;
+    hotspotsLoaded = true;
+    try {
+      const resp = await fetch(
+        "https://api.vntana.com/hotspots/search/organizations/DCicero/clients/n8n-work",
+        { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productUuid: "d72e48cd-052b-41b4-ad71-fef3d28f367b", page: 1, size: 20 }) }
+      ).then(r => r.json());
+      const grid = resp?.response?.grid ?? [];
+      if (grid.length) injectHotspots(grid);
+    } catch (_) {}
+  };
+
+  ["scene-loaded", "updates-loaded", "load"].forEach(ev =>
+    viewer.addEventListener(ev, loadHotspots));
+
+  // ── Load product and set viewer.src ───────────────────────────
+  const BASE_URL   = "https://api.vntana.com";
+  const UUID       = "d72e48cd-052b-41b4-ad71-fef3d28f367b";
+  const ORG        = "DCicero";
+  const WORKSPACE  = "n8n-work";
+
+  const product = await fetch(
+    `${BASE_URL}/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}`
+  ).then(r => r.json());
+
+  const { asset, viewerSettings } = product.response;
+  const blobId = asset.models[0].modelBlobId;
+
+  viewer.enableAutoRotate = false;
+  if (viewerSettings?.config) {
+    const config = JSON.parse(viewerSettings.config);
+    viewer.addEventListener("load", () => Object.assign(viewer, config), { once: true });
+  }
+  viewer.src = `${BASE_URL}/assets/products/${UUID}/organizations/${ORG}/clients/${WORKSPACE}/${blobId}`;
+  mainSrc = viewer.src;
+  </script>
+
+</body>
+</html>
