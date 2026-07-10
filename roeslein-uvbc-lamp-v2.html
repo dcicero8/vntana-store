@@ -512,11 +512,10 @@
       // pointerover/pointerout DO bubble through the slot.
       const grp = () => GROUP[PARTS[idx].sku] || [];
       el.addEventListener("pointerover", () => {
-        viewer.clearEffect("glow");
-        for (const u of grp()) viewer.setEffect(u, "glow");
+        for (const u of grp()) viewer.setEffect(u, "highlight", "outline");
       });
       el.addEventListener("pointerout", () => {
-        for (const u of grp()) viewer.removeEffect(u, "glow");
+        for (const u of grp()) viewer.removeEffect(u, "highlight", "outline");
       });
       el.addEventListener("click", (e) => {
         e.stopPropagation();
