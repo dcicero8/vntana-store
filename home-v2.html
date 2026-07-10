@@ -64,15 +64,20 @@
       transform: scale(1.12);
       box-shadow: 0 2px 9px rgba(0,0,0,0.45);
     }
-    /* When a hotspot's card is open, hide its pin so it doesn't sit on the card */
-    vntana-hotspot.open .hotspot-pin { display: none; }
-    /* Occluded hotspots get a .hide class in style.css (muted BLUE) at higher
-       specificity — override it to a muted grey so pins never flash blue. */
+    /* The viewer adds .hide to occluded pins; style.css then dims them (muted
+       blue, opacity 0.45, scaled down). Force them fully solid grey so every
+       pin looks the same as the default embed, occluded or not. */
     vntana-hotspot.hide .hotspot-pin {
-      background: #9ca3af !important;
-      box-shadow: none;
+      background: #6b7280 !important;
+      opacity: 1 !important;
+      transform: none !important;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.35) !important;
       animation: none !important;
     }
+    /* When any card is open, hide ALL pins so none overlap the card (clicking a
+       pin zooms in and bunches neighboring pins onto the card). Click empty
+       space or the ✕ to close and the pins return. */
+    vntana-viewer.card-open .hotspot-pin { display: none; }
 
     /* ── Hotspot popup: image + text side by side, compact ── */
     .hotspot-popup {
@@ -178,6 +183,7 @@
 
     const closeAll = () => {
       viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+      viewer.classList.remove("card-open");
     };
 
     // ── Build self-guided hotspots (no tour) ───────────────────
@@ -221,7 +227,7 @@
           if (e.target.closest(".hotspot-popup")) return;
           const isOpen = el.classList.contains("open");
           closeAll();
-          if (!isOpen) { el.classList.add("open"); snapCamera(camera); }
+          if (!isOpen) { el.classList.add("open"); viewer.classList.add("card-open"); snapCamera(camera); }
         });
         el.querySelector(".hotspot-close").addEventListener("click", closeAll);
 
