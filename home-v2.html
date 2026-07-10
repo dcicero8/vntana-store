@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home Product Explorer (v2) | VNTANA Store</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Full-width viewer, no sidebar */
+    .home-page {
+      height: calc(100vh - var(--header-h));
+    }
+    .home-viewer-col {
+      position: relative;
+      height: 100%;
+      background: #f5f4f2;
+      overflow: hidden;
+    }
+    .home-viewer-wrap { position: relative; width: 100%; height: 100%; }
+    vntana-viewer { width: 100%; height: 100%; display: block; }
+
+    /* View switcher — lives in the top header bar */
+    .view-switcher {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+    .view-btn {
+      padding: 0.4rem 1.1rem;
+      border: none;
+      background: transparent;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .view-btn + .view-btn { border-left: 1.5px solid var(--border); }
+    .view-btn.active { background: #111; color: #fff; }
+    .view-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Hotspot pins: grey, default-embed size, numbered, no pulse ── */
+    .hotspot-pin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #6b7280;            /* grey, like the default embed */
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.35);
+      animation: none !important;     /* no pulse */
+      transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    vntana-hotspot:hover .hotspot-pin,
+    vntana-hotspot.open .hotspot-pin {
+      background: #4b5563;
+      transform: scale(1.12);
+      box-shadow: 0 2px 9px rgba(0,0,0,0.45);
+    }
+
+    /* ── Hotspot popup: image + text side by side, compact ── */
+    .hotspot-popup {
+      width: 300px !important;
+      max-width: 300px !important;
+      position: relative !important;
+      z-index: 9999 !important;
+      padding-top: 4px;
+    }
+    .hotspot-popup-body {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .hotspot-popup img {
+      width: 92px;
+      height: 92px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      margin: 0;
+    }
+    .hotspot-text { min-width: 0; }
+    .hotspot-text strong {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+      line-height: 1.25;
+    }
+    .hotspot-text p {
+      font-size: 0.7rem;
+      color: #555;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+    }
+    .hotspot-close {
+      position: absolute;
+      top: 4px; right: 6px;
+      background: none; border: none; cursor: pointer;
+      font-size: 0.72rem; color: var(--muted); padding: 2px 4px; line-height: 1;
+      z-index: 1;
+    }
+    .hotspot-close:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo"><img src="VNTANA-logo-black.png" alt="VNTANA" height="18"></a>
+    <nav class="demo-nav">
+      <a href="personalized-demos.html" class="demo-nav-home">← Personalized Demos</a>
+      <a href="#" class="active">Home / Building Materials</a>
+    </nav>
+    <!-- View switcher moved to the top bar for full viewer real estate -->
+    <div class="view-switcher" style="margin-left:auto">
+      <button class="view-btn active" id="btn-exterior" data-view="exterior">Exterior</button>
+      <button class="view-btn" id="btn-interior" data-view="interior">Interior</button>
+    </div>
+  </header>
+
+  <main class="home-page">
+    <div class="home-viewer-col">
+      <div class="home-viewer-wrap">
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+        <vntana-viewer id="home-viewer" loading="eager" role="application" aria-label="Hexion Building Material Solutions 3D viewer">
+          <vntana-fs-button></vntana-fs-button>
+          <vntana-center-button></vntana-center-button>
+          <div class="button-container zoom-buttons">
+            <vntana-zoom-in-button></vntana-zoom-in-button>
+            <vntana-zoom-out-button></vntana-zoom-out-button>
+          </div>
+        </vntana-viewer>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    const BASE_URL = "https://api.vntana.com";
+    const ORG      = "hexion";
+    const WS       = "demo-room";
+
+    const VIEWS = {
+      exterior: { uuid: "39f54c5d-6a80-4337-b974-c5e0d2dcc8da" },
+      interior: { uuid: "b86d5716-d564-481b-bea3-5e7aa0446449" },
+    };
+
+    const viewer = document.getElementById("home-viewer");
+    let activeView = "exterior";
+
+    const stripHtml = html => { const d = document.createElement("div"); d.innerHTML = html; return d.textContent.trim(); };
+
+    function snapCamera(cam) {
+      if (!cam) return;
+      try {
+        if (cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
+        if (cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
+        if (cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
+        if (cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
+        if (cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+      } catch(e) {}
+    }
+
+    const closeAll = () => {
+      viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+    };
+
+    // ── Build self-guided hotspots (no tour) ───────────────────
+    function injectHotspots(grid, uuid) {
+      viewer.querySelectorAll("vntana-hotspot").forEach(h => h.remove());
+
+      grid.forEach((hs, idx) => {
+        const dims   = JSON.parse(hs.config.dimensions);
+        const camera = hs.config.camera ? JSON.parse(hs.config.camera) : null;
+
+        const rawHtml = hs.description ?? hs.text ?? "";
+        const d0 = document.createElement("div");
+        d0.innerHTML = rawHtml;
+        const boldEl = d0.querySelector("strong, b");
+        const title  = boldEl ? boldEl.textContent.trim() : (stripHtml(rawHtml).split("\n")[0] || `Stop ${idx + 1}`);
+        if (boldEl) boldEl.remove();
+        const desc = d0.textContent.trim();
+
+        const imgUrl = hs.blobId
+          ? `${BASE_URL}/hotspots/images/products/${uuid}/organizations/${ORG}/clients/${WS}/${hs.blobId}`
+          : null;
+
+        const el = document.createElement("vntana-hotspot");
+        el.position = dims.position;
+        el.normal   = dims.normal;
+
+        el.innerHTML = `
+          <span class="hotspot-pin">${idx + 1}</span>
+          <div class="hotspot-popup">
+            <button class="hotspot-close" aria-label="Close">✕</button>
+            <div class="hotspot-popup-body">
+              ${imgUrl ? `<img src="${imgUrl}" alt="" onerror="this.closest('.hotspot-popup-body').querySelector('img').style.display='none'">` : ""}
+              <div class="hotspot-text">
+                <strong>${title}</strong>
+                ${desc ? `<p>${desc}</p>` : ""}
+              </div>
+            </div>
+          </div>`;
+
+        el.addEventListener("click", e => {
+          if (e.target.closest(".hotspot-popup")) return;
+          const isOpen = el.classList.contains("open");
+          closeAll();
+          if (!isOpen) { el.classList.add("open"); snapCamera(camera); }
+        });
+        el.querySelector(".hotspot-close").addEventListener("click", closeAll);
+
+        viewer.appendChild(el);
+      });
+    }
+
+    // ── Load a view (model + hotspots) ─────────────────────────
+    async function loadView(viewKey) {
+      const { uuid } = VIEWS[viewKey];
+      document.querySelectorAll(".view-btn").forEach(b => b.disabled = true);
+      closeAll();
+      viewer.querySelectorAll("vntana-hotspot").forEach(h => h.remove());
+
+      const [product, hsData] = await Promise.all([
+        fetch(`${BASE_URL}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r => r.json()),
+        fetch(`${BASE_URL}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productUuid: uuid, page: 1, size: 100 })
+        }).then(r => r.json())
+      ]);
+
+      const config = JSON.parse(product.response.viewerSettings.config);
+      Object.assign(viewer, config);
+
+      const glb = product.response.asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB");
+      const blobId = glb?.modelBlobId ?? glb?.blobId;
+      const grid = hsData.response?.grid ?? [];
+
+      viewer.addEventListener("load", () => {
+        injectHotspots(grid, uuid);
+        document.querySelectorAll(".view-btn").forEach(b => b.disabled = false);
+      }, { once: true });
+
+      // Close any open popup when clicking empty space
+      viewer.addEventListener("click", e => {
+        if (!e.target.closest("vntana-hotspot")) closeAll();
+      });
+
+      if (blobId) {
+        viewer.src = `${BASE_URL}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${blobId}`;
+      }
+    }
+
+    // ── View switcher ──────────────────────────────────────────
+    document.querySelectorAll(".view-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const view = btn.dataset.view;
+        if (view === activeView) return;
+        activeView = view;
+        document.querySelectorAll(".view-btn").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+        await loadView(view);
+      });
+    });
+
+    await loadView("exterior");
+  </script>
+
+</body>
+</html>
