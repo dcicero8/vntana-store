@@ -59,12 +59,13 @@
       transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
-    vntana-hotspot:hover .hotspot-pin,
-    vntana-hotspot.open .hotspot-pin {
+    vntana-hotspot:hover .hotspot-pin {
       background: #4b5563;
       transform: scale(1.12);
       box-shadow: 0 2px 9px rgba(0,0,0,0.45);
     }
+    /* When a hotspot's card is open, hide its pin so it doesn't sit on the card */
+    vntana-hotspot.open .hotspot-pin { display: none; }
     /* Occluded hotspots get a .hide class in style.css (muted BLUE) at higher
        specificity — override it to a muted grey so pins never flash blue. */
     vntana-hotspot.hide .hotspot-pin {
