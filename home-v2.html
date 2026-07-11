@@ -74,17 +74,35 @@
       box-shadow: 0 1px 5px rgba(0,0,0,0.35) !important;
       animation: none !important;
     }
-    /* Hide only the OPEN hotspot's own pin (it sits on its own card), and lift
-       the open hotspot above its siblings so its card renders on top of other
-       pins — the other pins stay visible and clickable. */
-    vntana-hotspot.open { z-index: 2147483000 !important; }
-    vntana-hotspot.open .hotspot-pin { display: none; }
+    /* The open hotspot's pin stays visible (highlighted dark) so visitors keep
+       their bearings, and the card opens to its LEFT — clear of the pin and of
+       most neighbouring pins. Note: z-index can't fix pin/card overlap here;
+       the viewer depth-sorts each hotspot in its own shadow-DOM wrapper, so
+       page CSS can't re-stack them. Offsetting the card is what works. */
+    vntana-hotspot { position: relative; }
+    vntana-hotspot.open .hotspot-pin {
+      background: #111;
+      box-shadow: 0 2px 9px rgba(0,0,0,0.5);
+    }
 
-    /* ── Hotspot popup: image + text side by side, compact ── */
+    /* A pin that would sit on top of the open card fades out (it's unreadable
+       there anyway); every other pin stays fully visible so visitors can see
+       where to go next. Toggled per-frame by watchOverlaps(). */
+    vntana-hotspot .hotspot-pin.behind-card {
+      opacity: 0.12 !important;
+      pointer-events: none;
+    }
+
+    /* ── Hotspot popup: opens left of the pin, image + text side by side ── */
     .hotspot-popup {
       width: 300px !important;
       max-width: 300px !important;
-      position: relative !important;
+      position: absolute !important;
+      right: calc(100% + 12px) !important;
+      left: auto !important;
+      top: 50% !important;
+      bottom: auto !important;
+      transform: translateY(-50%) !important;
       z-index: 9999 !important;
       padding-top: 4px;
     }
@@ -184,7 +202,33 @@
 
     const closeAll = () => {
       viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+      watchOverlaps();
     };
+
+    // While a card is open, fade any pin that would paint on top of it (the viewer
+    // depth-sorts hotspots inside its shadow DOM, so page CSS can't re-stack them —
+    // fading the overlapping pin is the only way to keep the card readable). Runs
+    // per-frame so it tracks the camera snap and user orbiting; 9 pins is cheap.
+    let overlapRaf = null;
+    function watchOverlaps() {
+      cancelAnimationFrame(overlapRaf);
+      viewer.querySelectorAll(".hotspot-pin.behind-card").forEach(p => p.classList.remove("behind-card"));
+      const open = viewer.querySelector("vntana-hotspot.open");
+      if (!open) return;
+      const step = () => {
+        if (!open.classList.contains("open")) return; // closed since last frame
+        const card = open.querySelector(".hotspot-popup")?.getBoundingClientRect();
+        if (card && card.width) {
+          viewer.querySelectorAll("vntana-hotspot:not(.open) .hotspot-pin").forEach(pin => {
+            const r = pin.getBoundingClientRect();
+            const hit = r.left < card.right && r.right > card.left && r.top < card.bottom && r.bottom > card.top;
+            pin.classList.toggle("behind-card", hit);
+          });
+        }
+        overlapRaf = requestAnimationFrame(step);
+      };
+      step();
+    }
 
     // ── Build self-guided hotspots (no tour) ───────────────────
     function injectHotspots(grid, uuid) {
@@ -227,7 +271,7 @@
           if (e.target.closest(".hotspot-popup")) return;
           const isOpen = el.classList.contains("open");
           closeAll();
-          if (!isOpen) { el.classList.add("open"); snapCamera(camera); }
+          if (!isOpen) { el.classList.add("open"); snapCamera(camera); watchOverlaps(); }
         });
         el.querySelector(".hotspot-close").addEventListener("click", closeAll);
 
