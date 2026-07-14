@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Michaels Demo | VNTANA.com</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="preconnect" href="https://api.vntana.com" crossorigin/>
+  <link rel="preconnect" href="https://storage.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin/>
+  <script src="webgl-memory.js"></script>
+  <script>
+    window.__capturedGL = null;
+    (function () {
+      var orig = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type) {
+        var ctx = orig.apply(this, arguments);
+        if (ctx && (type === 'webgl' || type === 'webgl2' || type === 'experimental-webgl')) {
+          window.__capturedGL = ctx;
+        }
+        return ctx;
+      };
+    })();
+  </script>
+</head>
+
+<body>
+  <header>
+    <div class="header-strip header-strip--white"></div>
+    <div class="header-strip header-strip--blue"></div>
+  </header>
+
+  <!--Main-->
+  <main class="main-content">
+    <div class="preview-panel">
+      <div class="preview-main">
+        <div class="preview-main__image-wrap" id="preview-frame-wrap">
+          <ready-made-frame>
+            <div slot="error">
+              <span>There was an error</span>
+            </div>
+          </ready-made-frame>
+        </div>
+
+        <photo-picker id="photo-picker"></photo-picker>
+      </div>
+    </div>
+
+    <!-- right: all the selectors -->
+    <div class="details-panel">
+        <div class="spec-section">
+          <dropdown-element id="frame-style" label="Frame Style"></dropdown-element>
+          <dropdown-element id="orientation" label="Orientation"></dropdown-element>
+        </div>
+
+        <hr class="section-divider"/>
+
+        <div>
+          <button class="action-button" id="generate-usdz">Download USDZ</button>
+          <div id="memory-stats" style="margin-top: 12px; font-family: monospace; font-size: 11px; color: #555; line-height: 1.5; white-space: pre;"></div>
+        </div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      function fmt(b) {
+        if (!b) return '0 B';
+        var u = ['B', 'KB', 'MB', 'GB'];
+        var i = Math.floor(Math.log(b) / Math.log(1024));
+        return (b / Math.pow(1024, i)).toFixed(2) + ' ' + u[i];
+      }
+      function findGL() {
+        return window.__capturedGL || null;
+      }
+      function update() {
+        var el = document.getElementById('memory-stats');
+        if (!el) return;
+        var lines = [];
+        var gl = findGL();
+        lines.push('— GPU —');
+        if (gl) {
+          var ext = gl.getExtension('GMAN_webgl_memory');
+          if (ext) {
+            var info = ext.getMemoryInfo();
+            var m = info.memory, r = info.resources;
+            lines.push('Total:        ' + fmt(m.total));
+            lines.push('Buffer:       ' + fmt(m.buffer) + '  (' + r.buffer + ')');
+            lines.push('Texture:      ' + fmt(m.texture) + '  (' + r.texture + ')');
+            lines.push('Renderbuffer: ' + fmt(m.renderbuffer) + '  (' + r.renderbuffer + ')');
+            lines.push('Drawingbuf:   ' + fmt(m.drawingbuffer));
+          } else {
+            lines.push('webgl-memory extension not available');
+          }
+        } else {
+          lines.push('no WebGL context yet');
+        }
+        lines.push('');
+        lines.push('— RAM (JS Heap) —');
+        if (performance && performance.memory) {
+          lines.push('Used:  ' + fmt(performance.memory.usedJSHeapSize));
+          lines.push('Total: ' + fmt(performance.memory.totalJSHeapSize));
+          lines.push('Limit: ' + fmt(performance.memory.jsHeapSizeLimit));
+        } else {
+          lines.push('performance.memory not available (Chromium only)');
+        }
+        el.textContent = lines.join('\n');
+      }
+      setInterval(update, 500);
+      update();
+    })();
+  </script>
+
+  <script type="module" src="build/main-ready-made-frame.js"></script>
+</body>
+</html>

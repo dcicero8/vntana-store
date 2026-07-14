@@ -1,0 +1,262 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  width: 100%;
+  flex: 0 0 auto;
+
+  > .header-strip {
+    width: 100%;
+    height: 36px;
+  }
+
+  > .header-strip--white {
+    background-color: white;
+  }
+
+  > .header-strip--blue {
+    background-color: #24567a;
+  }
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  color: #1c1c1c;
+  background: #fff;
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: start;
+  align-items: center;
+}
+
+
+
+/* ── MAIN LAYOUT ── */
+.main-content {
+  flex: 1 1 auto;
+  width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  gap: 32px;
+  padding: 24px 32px 48px;
+  max-width: 1440px;
+  align-items: flex-start;
+}
+
+/* ── LEFT: image preview ── */
+.preview-panel {
+  display: flex;
+  gap: 10px;
+  /* grow to fill available space; details panel stays fixed-width */
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+
+.preview-main {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/*
+ * The viewer wrap is intentionally flexible so it fills the left panel.
+ * When the 3D embed replaces the <img>, it will slot in here at full size.
+ * aspect-ratio keeps it proportional; min-height prevents it collapsing
+ * on very wide screens where height would otherwise be unconstrained.
+ */
+.preview-main__image-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  min-height: 480px;
+  max-height: calc(100vh - 220px);
+  border: 1px solid #e0e0e0;
+  background: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.preview-main__image-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* ── RIGHT: product details ── */
+.details-panel {
+  flex: 0 0 420px;
+  min-width: 360px;
+}
+
+.product-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+hr.section-divider {
+  border: none;
+  border-top: 1px solid #ebebeb;
+  margin: 14px 0;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+  accent-color: #2e4557;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* ── GENERATE USDZ BUTTON ── */
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  margin: 16px 0;
+  background: #2e4557;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.action-button::before {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+#action-button:hover {
+  background: #3a5870;
+  box-shadow: 0 2px 8px rgba(46, 69, 87, 0.3);
+}
+
+#action-button:active {
+  background: #243748;
+  box-shadow: none;
+}
+
+vntana-qr-button {
+  max-width: unset;
+  --vn-button-icon-color: #ffffff;
+  --vn-button-fg-color: #ffffff;
+
+  &::part(default-icon) {
+    margin: 0;
+    width: 18px;
+    height: 18px;
+  }
+
+  &::part(default-text) {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+}
+
+#generate-usdz::before {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+:is(custom-frame,ready-made-frame) {
+  width: 100%;
+  height: 100%;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    padding: 12px 16px 40px;
+    gap: 0;
+  }
+
+  .preview-panel {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  /* Shrink the viewer to a sensible mobile height */
+  .preview-main__image-wrap {
+    aspect-ratio: unset;
+    height: 75vh;
+    max-height: none;
+    min-height: 0;
+  }
+
+  /* Details panel: full width, add top spacing */
+  .details-panel {
+    flex: none;
+    min-width: 0;
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+/* ── TABLET (iPad) ── */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .main-content {
+    padding: 16px 20px 40px;
+    gap: 16px;
+  }
+
+  .details-panel {
+    flex: 0 0 300px;
+    min-width: 260px;
+  }
+
+  .preview-main__image-wrap {
+    min-height: 380px;
+  }
+}
+
+ready-made-frame:not(:defined) div[slot=error] {
+  display: none;
+}
+
+div[slot=error] {
+  background-color: red;
+  color: white;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
