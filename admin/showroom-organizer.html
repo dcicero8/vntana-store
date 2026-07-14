@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VNTANA Showroom Organizer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f4f2;
+      color: #111;
+      min-height: 100vh;
+      padding: 2rem;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page-header { max-width: 720px; margin: 0 auto 1.5rem; }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    .page-header p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; margin-top: 0.3rem; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e2e2e0;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 720px;
+      margin: 0 auto 1.5rem;
+    }
+    h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+    p  { color: #6b6b6b; font-size: 0.85rem; line-height: 1.6; }
+
+    label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; }
+    textarea {
+      width: 100%;
+      min-height: 68px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.9rem;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-family: inherit;
+      resize: vertical;
+    }
+    textarea:focus { outline: none; border-color: #111; }
+
+    .primary-btn {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 0.8rem 1.75rem;
+      background: #111; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .primary-btn:hover    { opacity: 0.8; }
+    .primary-btn:disabled { opacity: 0.35; cursor: default; }
+
+    .result { margin-top: 1.5rem; display: none; }
+    .status {
+      font-size: 0.85rem; font-weight: 600;
+      padding: 0.7rem 1rem; border-radius: 8px; margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    .status.ok  { background: #dcfce7; color: #166534; }
+    .status.err { background: #fee2e2; color: #991b1b; }
+
+    .group {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .group h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .group h3 .count { color: #9ca3af; font-weight: 400; }
+    .group ul { margin: 0.3rem 0 0; padding-left: 1.2rem; color: #374151; font-size: 0.82rem; }
+    .group li { margin-bottom: 0.1rem; }
+
+    .hint {
+      max-width: 720px; margin: 0 auto;
+      color: #6b6b6b; font-size: 0.8rem; line-height: 1.6;
+    }
+    .hint b { color: #111; }
+    code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 0.78rem; }
+
+    .spinner {
+      display: inline-block; width: 15px; height: 15px;
+      border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -3px; margin-right: 7px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <h1>Showroom Organizer</h1>
+    <p>Paste a showroom link (or its ID) and click Organize. Assets are grouped by style and sorted by color code, automatically.</p>
+  </div>
+
+  <div class="card">
+    <label for="in">Showroom link or ID</label>
+    <textarea id="in" placeholder="https://embed.vntana.com/v2/showroom?organizationSlug=DCicero&amp;uuid=..."></textarea>
+    <button class="primary-btn" id="go">Organize Showroom</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="hint">
+    <p><b>For this to work, every asset in the showroom needs:</b><br>
+      1. A <b>Style</b> attribute (this becomes the group name)<br>
+      2. A file name like <code>STYLE_COLOR.glb</code> (for example <code>41795_CVMI.glb</code>)</p>
+    <p style="margin-top:.75rem">If the showroom won't organize, an asset is usually missing its Style attribute or isn't named correctly. Fix it in VNTANA and try again, or send the showroom link to Derek.</p>
+  </div>
+
+  <script>
+    var WEBHOOK = "https://vntana.app.n8n.cloud/webhook/vntana-showroom-export";
+    var input  = document.getElementById("in");
+    var btn    = document.getElementById("go");
+    var result = document.getElementById("result");
+
+    function extractUuid(text) {
+      text = (text || "").trim();
+      var q = text.match(/uuid=([0-9a-fA-F-]{36})/);
+      if (q) return q[1];
+      var b = text.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+      return b ? b[0] : null;
+    }
+
+    function show(html) { result.innerHTML = html; result.style.display = "block"; }
+
+    function parseCsv(text) {
+      var lines = text.trim().split(/\r?\n/);
+      if (lines.length < 2) return null;
+      var groups = {};
+      for (var i = 1; i < lines.length; i++) {
+        var cols = lines[i].split(",");
+        if (cols.length < 3) continue;
+        (groups[cols[2]] = groups[cols[2]] || []).push(cols[1]);
+      }
+      return groups;
+    }
+
+    function renderGroups(groups) {
+      var names = Object.keys(groups), total = 0;
+      names.forEach(function(g){ total += groups[g].length; });
+      var html = '<div class="status ok">Done. Organized ' + total + ' assets into ' + names.length + ' group' + (names.length === 1 ? '' : 's') + '. Reload the showroom in VNTANA to see them.</div>';
+      names.forEach(function(g){
+        html += '<div class="group"><h3>' + g + ' <span class="count">(' + groups[g].length + ')</span></h3><ul>';
+        groups[g].forEach(function(n){ html += '<li>' + n + '</li>'; });
+        html += '</ul></div>';
+      });
+      show(html);
+    }
+
+    btn.addEventListener("click", function() {
+      var uuid = extractUuid(input.value);
+      if (!uuid) {
+        show('<div class="status err">That doesn\'t look like a showroom link or ID. Paste the full link from your browser\'s address bar.</div>');
+        return;
+      }
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Organizing...';
+      result.style.display = "none";
+
+      fetch(WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ showroomUuid: uuid })
+      })
+      .then(function(r){ return r.text(); })
+      .then(function(text){
+        var groups = parseCsv(text);
+        if (!groups || Object.keys(groups).length === 0) {
+          show('<div class="status err">Couldn\'t organize this showroom. Usually that means an asset is missing its <b>Style</b> attribute or isn\'t named <code>STYLE_COLOR</code>. Check the assets in VNTANA and try again, or send the link to Derek.</div>');
+        } else {
+          renderGroups(groups);
+        }
+      })
+      .catch(function(err){
+        show('<div class="status err">Couldn\'t reach the organizer service. Check your internet connection and try again. (' + err.message + ')</div>');
+      })
+      .then(function(){
+        btn.disabled = false;
+        btn.textContent = "Organize Showroom";
+      });
+    });
+
+    input.addEventListener("keydown", function(e){
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") btn.click();
+    });
+  </script>
+
+</body>
+</html>
