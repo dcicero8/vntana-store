@@ -103,10 +103,13 @@ const VIEWER_ATTRS = {
 /* Rotation format: "pitch yaw roll" — negative pitch looks from above,
    positive yaw orbits toward the right end (where the side unit sits). */
 const TOUR_CAMERAS = {
-  assembly: { cameraRotation: "-0.35 -0.45 0", cameraDistance: "1.15r" },
-  sideUnit: { cameraRotation: "-0.15 0.55 0",  cameraDistance: "0.95r" },
-  corner:   { cameraRotation: "-0.25 1.1 0",   cameraDistance: "1.05r" },
-  finish:   { cameraRotation: "-0.2 0 0",      cameraDistance: "0.9r" },
+  assembly:       { cameraRotation: "-0.35 -0.45 0", cameraDistance: "1.15r" },
+  // The pizza oven sits RIGHT of the 4-burner in its duo model; the pellet
+  // smoker sits LEFT in its duo model — so each gets a mirrored angle.
+  sideUnitPizza:  { cameraRotation: "-0.15 0.55 0",  cameraDistance: "0.95r" },
+  sideUnitSmoker: { cameraRotation: "-0.15 -0.55 0", cameraDistance: "0.95r" },
+  corner:         { cameraRotation: "-0.25 1.1 0",   cameraDistance: "1.05r" },
+  finish:         { cameraRotation: "-0.2 0 0",      cameraDistance: "0.9r" },
 };
 
 /* Guided tour copy — edit callout text here */
@@ -526,8 +529,8 @@ let tourPaused = false;
 
 function buildTourStops() {
   const stops = [{ ...TOUR_STOPS.assembly, cam: TOUR_CAMERAS.assembly }];
-  if (state.sideUnit === "pizza")  stops.push({ ...TOUR_STOPS.sideUnitPizza,  cam: TOUR_CAMERAS.sideUnit });
-  if (state.sideUnit === "smoker") stops.push({ ...TOUR_STOPS.sideUnitSmoker, cam: TOUR_CAMERAS.sideUnit });
+  if (state.sideUnit === "pizza")  stops.push({ ...TOUR_STOPS.sideUnitPizza,  cam: TOUR_CAMERAS.sideUnitPizza });
+  if (state.sideUnit === "smoker") stops.push({ ...TOUR_STOPS.sideUnitSmoker, cam: TOUR_CAMERAS.sideUnitSmoker });
   if (state.corner) stops.push({ ...TOUR_STOPS.corner, cam: TOUR_CAMERAS.corner });
   if (state.stone)  stops.push({ ...TOUR_STOPS.finish, cam: TOUR_CAMERAS.finish });
   stops.push({ ...TOUR_STOPS.ar, cam: TOUR_CAMERAS.finish });  // always last
