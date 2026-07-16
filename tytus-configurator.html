@@ -73,17 +73,21 @@ const VNTANA_ASSETS = "https://api.vntana.com/assets/products";
 const ORG = "DCicero", WORKSPACE = "tytus";
 const glb = (uuid, blob) => `${VNTANA_ASSETS}/${uuid}/organizations/${ORG}/clients/${WORKSPACE}/${blob}.glb`;
 
-const MODELS = {
+const ASSET_IDS = {
   // TDT-011-GMOD_v3 — 4-burner base
-  "base":        glb("58a6c265-7d08-432a-8676-fc031647f4ad", "c8506ef9-2ca4-49d9-8032-b6d9229a8ffb"),
+  "base":        ["58a6c265-7d08-432a-8676-fc031647f4ad", "c8506ef9-2ca4-49d9-8032-b6d9229a8ffb"],
   // TDT-GHS-SMOK_PELLET + 4BURNER duo
-  "base+smoker": glb("b493f0ca-219e-43b1-bc32-9d0e7bfda4e0", "de911bf5-bf0d-45b5-84bb-d2669c260481"),
+  "base+smoker": ["b493f0ca-219e-43b1-bc32-9d0e7bfda4e0", "de911bf5-bf0d-45b5-84bb-d2669c260481"],
   // 4BURNER + TDT-GHS-GPZA_PIZZA OVEN duo
-  "base+pizza":  glb("5de3fff3-781f-4411-a4b7-3763ba9e0ac2", "db71d2e8-5964-4608-871b-3563686d3152"),
+  "base+pizza":  ["5de3fff3-781f-4411-a4b7-3763ba9e0ac2", "db71d2e8-5964-4608-871b-3563686d3152"],
   // No combo assets exist yet for corner kit / stone finish — lookup falls
   // back to the closest combo above. Add keys like "base+pizza+corner" here
   // when TYTUS produces those models.
 };
+const MODELS = Object.fromEntries(Object.entries(ASSET_IDS).map(([k, [u, b]]) => [k, glb(u, b)]));
+// USDZ versions of the same assets — powers AR Quick Look on iOS
+const USDZ = Object.fromEntries(Object.entries(ASSET_IDS).map(([k, [u, b]]) =>
+  [k, glb(u, b).replace(/\.glb$/, ".usdz")]));
 
 /* Viewer environment/lighting — pulled from the products' VNTANA viewerSettings.
    Without an environment map the model renders black. */
@@ -131,6 +135,12 @@ const TOUR_STOPS = {
     num: 4,
     title: "Faux Stone Panels",
     body: "Faux stone panels give the built-in kitchen look without the built-in cost.",
+  },
+  ar: {
+    num: 5,
+    title: "See It in Your Space",
+    body: "Scan the QR code with your phone to open this exact build and place it on your patio in AR.",
+    qr: true,
   },
 };
 
@@ -233,6 +243,8 @@ const SIDE_UNITS = {
           <h3 id="tour-title" class="font-bold text-lg"></h3>
         </div>
         <p id="tour-body" class="text-neutral-600 text-sm mb-4"></p>
+        <img id="tour-qr" class="hidden w-32 h-32 mx-auto mb-4 rounded-lg border border-neutral-200" alt="QR code — open this build on your phone">
+
         <div class="flex items-center justify-between">
           <span id="tour-count" class="text-xs uppercase tracking-widest text-neutral-400"></span>
           <button onclick="tourNext(true)" class="bg-[var(--titus-charcoal)] hover:bg-black text-white text-sm font-bold uppercase tracking-widest px-5 py-2 rounded-md transition">Next</button>
@@ -279,15 +291,17 @@ const configKey = () => {
   return parts.join("+");
 };
 
-const resolveModel = () => {
+const resolveFrom = (map) => {
   // Fall back from most-specific key toward "base"
   const parts = configKey().split("+");
   for (let n = parts.length; n >= 1; n--) {
     const key = parts.slice(0, n).join("+");
-    if (MODELS[key]) return MODELS[key];
+    if (map[key]) return map[key];
   }
   return null;
 };
+const resolveModel = () => resolveFrom(MODELS);
+const resolveUsdz  = () => resolveFrom(USDZ);
 
 /* One shared viewer element, moved between slots */
 let viewerEl = null;
@@ -302,6 +316,8 @@ const renderViewer = (slotId) => {
       Object.entries(VIEWER_ATTRS).forEach(([k, v]) => viewerEl.setAttribute(k, v));
     }
     if (viewerEl.getAttribute("src") !== url) viewerEl.setAttribute("src", url);
+    const usdz = resolveUsdz();
+    if (usdz && viewerEl.getAttribute("usdz-src") !== usdz) viewerEl.setAttribute("usdz-src", usdz);
     slot.innerHTML = "";
     slot.appendChild(viewerEl);
   } else {
@@ -514,8 +530,18 @@ function buildTourStops() {
   if (state.sideUnit === "smoker") stops.push({ ...TOUR_STOPS.sideUnitSmoker, cam: TOUR_CAMERAS.sideUnit });
   if (state.corner) stops.push({ ...TOUR_STOPS.corner, cam: TOUR_CAMERAS.corner });
   if (state.stone)  stops.push({ ...TOUR_STOPS.finish, cam: TOUR_CAMERAS.finish });
+  stops.push({ ...TOUR_STOPS.ar, cam: TOUR_CAMERAS.finish });  // always last
   return stops;
 }
+
+/* Deep link to this exact build, for the AR QR code */
+const buildDeepLink = () => {
+  const p = new URLSearchParams({ step: "5" });
+  if (state.sideUnit !== "none") p.set("side", state.sideUnit);
+  if (state.corner) p.set("corner", "1");
+  if (state.stone)  p.set("stone", "1");
+  return `${location.origin}${location.pathname}?${p}`;
+};
 
 function startTour() {
   tourStops = buildTourStops();
@@ -527,10 +553,19 @@ function startTour() {
 
 function showTourStop() {
   const stop = tourStops[tourIndex];
-  document.getElementById("tour-pin-num").textContent = stop.num;
+  document.getElementById("tour-pin-num").textContent = tourIndex + 1;
   document.getElementById("tour-title").textContent = stop.title;
   document.getElementById("tour-body").textContent = stop.body;
   document.getElementById("tour-count").textContent = `Feature ${tourIndex + 1} of ${tourStops.length}`;
+
+  // AR stop: show a QR code that opens this exact build on a phone
+  const qrEl = document.getElementById("tour-qr");
+  if (stop.qr) {
+    qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=${encodeURIComponent(buildDeepLink())}`;
+    qrEl.classList.remove("hidden");
+  } else {
+    qrEl.classList.add("hidden");
+  }
 
   // Camera move (no-op on the placeholder rig)
   if (viewerEl && stop.cam) {
