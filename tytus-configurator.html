@@ -96,11 +96,13 @@ const VIEWER_ATTRS = {
 
 /* Camera positions for guided-tour stops (VNTANA viewer units).
    Adjust once real models are in. */
+/* Rotation format: "pitch yaw roll" — negative pitch looks from above,
+   positive yaw orbits toward the right end (where the side unit sits). */
 const TOUR_CAMERAS = {
-  assembly: { cameraRotation: "-0.6 0.2 0",  cameraDistance: "1.4r" },
-  sideUnit: { cameraRotation: "0.9 0.15 0",  cameraDistance: "1.1r" },
-  corner:   { cameraRotation: "0.4 0.35 0",  cameraDistance: "1.2r" },
-  finish:   { cameraRotation: "-0.2 0.05 0", cameraDistance: "0.9r" },
+  assembly: { cameraRotation: "-0.35 -0.45 0", cameraDistance: "1.15r" },
+  sideUnit: { cameraRotation: "-0.15 0.55 0",  cameraDistance: "0.95r" },
+  corner:   { cameraRotation: "-0.25 1.1 0",   cameraDistance: "1.05r" },
+  finish:   { cameraRotation: "-0.2 0 0",      cameraDistance: "0.9r" },
 };
 
 /* Guided tour copy — edit callout text here */
@@ -149,7 +151,7 @@ const SIDE_UNITS = {
       <span class="font-display text-2xl font-black tracking-widest">TYTUS</span>
       <span class="text-neutral-400 text-xs uppercase tracking-widest border-l border-neutral-600 pl-3">Kitchen Configurator</span>
     </div>
-    <span class="text-[10px] uppercase tracking-widest text-neutral-500">Concept Demo</span>
+    <a href="configurator-pitch.html" class="text-[11px] uppercase tracking-widest text-neutral-400 hover:text-white transition font-bold">&larr; Back to Overview</a>
   </div>
 </header>
 
@@ -453,27 +455,27 @@ function renderStepPanel() {
   if (currentStep === 1) {
     el.innerHTML = h("CHOOSE YOUR GRILL", "Every TYTUS kitchen starts with the grill.") +
       card({ selected: true, onclick: "", title: "TYTUS 4-Burner Gas Grill",
-             desc: "60,000 BTU across four stainless burners. The foundation of your modular kitchen." }) +
-      updateBar(null, 2);
+             desc: "60,000 BTU across four stainless burners. The foundation of your modular kitchen." });
+    updateBar(null, 2);
   }
   if (currentStep === 2) {
     el.innerHTML = h("ADD A SIDE UNIT", "Expand your kitchen with a specialty cooker — or keep it simple.") +
       Object.entries(SIDE_UNITS).map(([key, u]) =>
         card({ selected: state.sideUnit === key, onclick: `setSideUnit('${key}')`, title: u.label, desc: u.desc })
-      ).join("") +
-      updateBar(1, 3);
+      ).join("");
+    updateBar(1, 3);
   }
   if (currentStep === 3) {
     el.innerHTML = h("CORNER KIT", "Wrap your kitchen into an L shape with the new 2027 corner cart.") +
       card({ selected: !state.corner, onclick: "setCorner(false)", title: "Straight Layout", desc: "Units sit side by side in a single run." }) +
-      card({ selected: state.corner, onclick: "setCorner(true)", title: "Add Corner Kit", desc: "A corner cart joins your units into a wrapped, rounded layout.", badge: "New 2027" }) +
-      updateBar(2, 4);
+      card({ selected: state.corner, onclick: "setCorner(true)", title: "Add Corner Kit", desc: "A corner cart joins your units into a wrapped, rounded layout.", badge: "New 2027" });
+    updateBar(2, 4);
   }
   if (currentStep === 4) {
     el.innerHTML = h("CHOOSE A FINISH", "Dress the exterior for a built-in look.") +
       card({ selected: !state.stone, onclick: "setStone(false)", title: "Standard Finish", desc: "Powder-coated steel panels in charcoal." }) +
-      card({ selected: state.stone, onclick: "setStone(true)", title: "Faux Stone Panels", desc: "The built-in outdoor kitchen look — without masonry.", badge: "New 2027" }) +
-      updateBar(3, 5, "See My Kitchen");
+      card({ selected: state.stone, onclick: "setStone(true)", title: "Faux Stone Panels", desc: "The built-in outdoor kitchen look — without masonry.", badge: "New 2027" });
+    updateBar(3, 5, "See My Kitchen");
   }
 }
 
@@ -578,6 +580,7 @@ document.getElementById("tour-stage").addEventListener("mouseleave", () => {
 /* Deep-link entry: jump straight to a step (1–5) */
 const stepParam = parseInt(params.get("step"), 10);
 if (stepParam >= 1 && stepParam <= 5) goToStep(stepParam);
+if (params.get("tour") === "1") startTour();
 </script>
 </body>
 </html>
