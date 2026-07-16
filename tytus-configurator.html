@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TYTUS — Build Your Kitchen</title><!-- v2 -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+<style>
+  :root {
+    --titus-charcoal: #1c1e21;
+    --titus-flame: #e8590c;
+    --titus-steel: #8d939c;
+  }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  .font-display { letter-spacing: 0.06em; }
+
+  vntana-viewer { width: 100%; height: 100%; display: block; }
+
+  /* Step transition */
+  .screen { display: none; }
+  .screen.active { display: flex; animation: fadeUp .35s ease both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* Option cards */
+  .opt-card { transition: all .15s ease; cursor: pointer; border: 2px solid #e5e7eb; }
+  .opt-card:hover { border-color: var(--titus-steel); transform: translateY(-2px); }
+  .opt-card.selected { border-color: var(--titus-flame); box-shadow: 0 0 0 3px rgba(232,89,12,.15); }
+  .opt-card.selected .opt-check { opacity: 1; }
+  .opt-check { opacity: 0; transition: opacity .15s; }
+
+  /* Step dots */
+  .step-dot { width: 34px; height: 34px; border-radius: 9999px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; border: 2px solid #d1d5db; color: #9ca3af; background: #fff; transition: all .2s; }
+  .step-dot.done   { background: var(--titus-charcoal); border-color: var(--titus-charcoal); color: #fff; }
+  .step-dot.current{ background: var(--titus-flame); border-color: var(--titus-flame); color: #fff; }
+  .step-line { height: 2px; flex: 1; background: #d1d5db; }
+  .step-line.done { background: var(--titus-charcoal); }
+
+  /* Tour callout */
+  .tour-card { animation: fadeUp .3s ease both; }
+  .tour-progress { transition: width linear; }
+
+  /* Placeholder rig */
+  #placeholder-rig svg { width: 100%; height: 100%; }
+  .rig-part { transition: opacity .4s ease; }
+
+  /* Tour pin pulse */
+  .tour-pin {
+    width: 34px; height: 34px; border-radius: 9999px; background: var(--titus-flame); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px;
+    box-shadow: 0 0 0 0 rgba(232,89,12,.5); animation: pinpulse 1.6s infinite;
+  }
+  @keyframes pinpulse {
+    0% { box-shadow: 0 0 0 0 rgba(232,89,12,.5); }
+    70% { box-shadow: 0 0 0 14px rgba(232,89,12,0); }
+    100% { box-shadow: 0 0 0 0 rgba(232,89,12,0); }
+  }
+</style>
+</head>
+<body class="bg-neutral-100 text-neutral-900">
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   CONFIG — swap in real assets & copy here
+   ════════════════════════════════════════════════════════════════ */
+
+/* GLB model paths, keyed by configuration.
+   Key format: base [+ smoker|pizza] [+ corner] [+ stone], joined with "+".
+   Lookup falls back from most-specific to "base". Leave "" to use the
+   built-in 2D placeholder rig instead of the 3D viewer. */
+const VNTANA_ASSETS = "https://api.vntana.com/assets/products";
+const ORG = "DCicero", WORKSPACE = "tytus";
+const glb = (uuid, blob) => `${VNTANA_ASSETS}/${uuid}/organizations/${ORG}/clients/${WORKSPACE}/${blob}.glb`;
+
+const MODELS = {
+  // TDT-011-GMOD_v3 — 4-burner base
+  "base":        glb("58a6c265-7d08-432a-8676-fc031647f4ad", "c8506ef9-2ca4-49d9-8032-b6d9229a8ffb"),
+  // TDT-GHS-SMOK_PELLET + 4BURNER duo
+  "base+smoker": glb("b493f0ca-219e-43b1-bc32-9d0e7bfda4e0", "de911bf5-bf0d-45b5-84bb-d2669c260481"),
+  // 4BURNER + TDT-GHS-GPZA_PIZZA OVEN duo
+  "base+pizza":  glb("5de3fff3-781f-4411-a4b7-3763ba9e0ac2", "db71d2e8-5964-4608-871b-3563686d3152"),
+  // No combo assets exist yet for corner kit / stone finish — lookup falls
+  // back to the closest combo above. Add keys like "base+pizza+corner" here
+  // when TYTUS produces those models.
+};
+
+/* Viewer environment/lighting — pulled from the products' VNTANA viewerSettings.
+   Without an environment map the model renders black. */
+const VIEWER_ATTRS = {
+  "environment-src": "https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr",
+  "light-rig-color": "#ffffff",
+  "light-rig": "directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m",
+  "background": "#ffffff",
+};
+
+/* Camera positions for guided-tour stops (VNTANA viewer units).
+   Adjust once real models are in. */
+const TOUR_CAMERAS = {
+  assembly: { cameraRotation: "-0.6 0.2 0",  cameraDistance: "1.4r" },
+  sideUnit: { cameraRotation: "0.9 0.15 0",  cameraDistance: "1.1r" },
+  corner:   { cameraRotation: "0.4 0.35 0",  cameraDistance: "1.2r" },
+  finish:   { cameraRotation: "-0.2 0.05 0", cameraDistance: "0.9r" },
+};
+
+/* Guided tour copy — edit callout text here */
+const TOUR_STOPS = {
+  assembly: {
+    num: 1,
+    title: "Tool-Free Modular Assembly",
+    body: "Patented no-tool assembly. Grill goes together in under 10 minutes.",
+  },
+  sideUnitPizza: {
+    num: 2,
+    title: "TYTUS Pizza Oven",
+    body: "Pizza oven reaches 700°F for true Neapolitan-style bakes in minutes.",
+  },
+  sideUnitSmoker: {
+    num: 2,
+    title: "TYTUS Pellet Smoker",
+    body: "Pellet smoker with precise temp control for low-and-slow cooks.",
+  },
+  corner: {
+    num: 3,
+    title: "2027 Corner Kit",
+    body: "New 2027 corner kit lets you wrap the kitchen into an L or U shape.",
+  },
+  finish: {
+    num: 4,
+    title: "Faux Stone Panels",
+    body: "Faux stone panels give the built-in kitchen look without the built-in cost.",
+  },
+};
+
+const TOUR_AUTO_ADVANCE_MS = 5000;
+
+/* Step copy */
+const SIDE_UNITS = {
+  none:   { label: "No Side Unit",   desc: "Keep it classic — just the grill." },
+  smoker: { label: "Pellet Smoker",  desc: "Low-and-slow with precise temperature control." },
+  pizza:  { label: "Pizza Oven",     desc: "Reaches 700°F for restaurant-grade pizza." },
+};
+</script>
+
+<!-- ══════════════ Header ══════════════ -->
+<header class="bg-[var(--titus-charcoal)] text-white">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="font-display text-2xl font-black tracking-widest">TYTUS</span>
+      <span class="text-neutral-400 text-xs uppercase tracking-widest border-l border-neutral-600 pl-3">Kitchen Configurator</span>
+    </div>
+    <span class="text-[10px] uppercase tracking-widest text-neutral-500">Concept Demo</span>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-8 min-h-[calc(100vh-64px)]">
+
+  <!-- ══════════════ Landing ══════════════ -->
+  <section id="screen-landing" class="screen active flex-col items-center justify-center text-center py-24">
+    <p class="uppercase tracking-[0.3em] text-sm text-[var(--titus-flame)] font-bold mb-4">Modular Outdoor Kitchens</p>
+    <h1 class="font-display text-5xl md:text-6xl font-black mb-6">BUILD YOUR<br>TYTUS KITCHEN</h1>
+    <p class="max-w-xl text-neutral-500 text-lg mb-10">Start with the grill. Add a smoker or pizza oven. Wrap it with the new 2027 corner kit and stone finish. See your kitchen come together in 3D.</p>
+    <button onclick="goToStep(1)" class="bg-[var(--titus-flame)] hover:bg-orange-700 text-white font-bold uppercase tracking-widest px-10 py-4 rounded-md text-lg transition">Start Building</button>
+  </section>
+
+  <!-- ══════════════ Configurator (steps 1–4 share this shell) ══════════════ -->
+  <section id="screen-config" class="screen flex-col gap-6">
+
+    <!-- Step indicator -->
+    <div class="flex items-center gap-3 max-w-xl mx-auto w-full" id="step-indicator"></div>
+
+    <div class="grid md:grid-cols-2 gap-8 items-start">
+      <!-- Viewer -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden aspect-square sticky top-6" id="viewer-shell">
+        <div id="viewer-slot" class="w-full h-full relative"></div>
+      </div>
+
+      <!-- Step panel -->
+      <div id="step-panel" class="flex flex-col gap-4"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ Summary ══════════════ -->
+  <section id="screen-summary" class="screen flex-col gap-6">
+    <div class="text-center">
+      <p class="uppercase tracking-[0.3em] text-sm text-[var(--titus-flame)] font-bold mb-2">Your Configuration</p>
+      <h2 class="font-display text-4xl font-black">YOUR TYTUS KITCHEN</h2>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8 items-start">
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden aspect-square" id="summary-viewer-shell">
+        <div id="summary-viewer-slot" class="w-full h-full relative"></div>
+      </div>
+      <div class="flex flex-col gap-4">
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+          <h3 class="font-bold uppercase tracking-widest text-sm text-neutral-400 mb-4">Selections</h3>
+          <ul id="summary-list" class="divide-y divide-neutral-100"></ul>
+        </div>
+        <button onclick="startTour()" class="bg-[var(--titus-flame)] hover:bg-orange-700 text-white font-bold uppercase tracking-widest px-8 py-4 rounded-md text-lg transition">Take a Guided Tour of Your Kitchen</button>
+        <button onclick="goToStep(1)" class="text-neutral-500 hover:text-neutral-800 text-sm underline underline-offset-4">Start over / edit configuration</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ Guided tour ══════════════ -->
+  <section id="screen-tour" class="screen flex-col gap-6">
+    <div class="text-center">
+      <p class="uppercase tracking-[0.3em] text-sm text-[var(--titus-flame)] font-bold mb-2">Guided Tour</p>
+      <h2 class="font-display text-3xl font-black">EXPLORE YOUR KITCHEN</h2>
+    </div>
+    <div class="relative bg-white rounded-2xl shadow-sm overflow-hidden mx-auto w-full max-w-3xl aspect-[4/3]" id="tour-stage">
+      <div id="tour-viewer-slot" class="w-full h-full relative"></div>
+      <!-- Callout card -->
+      <div id="tour-card" class="tour-card absolute bottom-6 left-6 right-6 md:right-auto md:max-w-sm bg-white/95 backdrop-blur rounded-xl shadow-lg p-5 border border-neutral-200">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="tour-pin" id="tour-pin-num">1</div>
+          <h3 id="tour-title" class="font-bold text-lg"></h3>
+        </div>
+        <p id="tour-body" class="text-neutral-600 text-sm mb-4"></p>
+        <div class="flex items-center justify-between">
+          <span id="tour-count" class="text-xs uppercase tracking-widest text-neutral-400"></span>
+          <button onclick="tourNext(true)" class="bg-[var(--titus-charcoal)] hover:bg-black text-white text-sm font-bold uppercase tracking-widest px-5 py-2 rounded-md transition">Next</button>
+        </div>
+        <div class="h-1 bg-neutral-200 rounded mt-3 overflow-hidden">
+          <div id="tour-progress" class="tour-progress h-full bg-[var(--titus-flame)] w-0"></div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <button onclick="endTour()" class="text-neutral-500 hover:text-neutral-800 text-sm underline underline-offset-4">Back to summary</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   State
+   ════════════════════════════════════════════════════════════════ */
+const state = {
+  base: "grill4",      // fixed — one grill in this demo
+  sideUnit: "none",    // none | smoker | pizza
+  corner: false,
+  stone: false,
+};
+
+let currentStep = 0;   // 0 = landing, 1–4 = steps, 5 = summary, 6 = tour
+
+/* ════════════════════════════════════════════════════════════════
+   Model resolution + viewer / placeholder rendering
+   ════════════════════════════════════════════════════════════════ */
+const configKey = () => {
+  const parts = ["base"];
+  if (state.sideUnit !== "none") parts.push(state.sideUnit);
+  if (state.corner) parts.push("corner");
+  if (state.stone) parts.push("stone");
+  return parts.join("+");
+};
+
+const resolveModel = () => {
+  // Fall back from most-specific key toward "base"
+  const parts = configKey().split("+");
+  for (let n = parts.length; n >= 1; n--) {
+    const key = parts.slice(0, n).join("+");
+    if (MODELS[key]) return MODELS[key];
+  }
+  return null;
+};
+
+/* One shared viewer element, moved between slots */
+let viewerEl = null;
+
+const renderViewer = (slotId) => {
+  const slot = document.getElementById(slotId);
+  const url = resolveModel();
+
+  if (url) {
+    if (!viewerEl) {
+      viewerEl = document.createElement("vntana-viewer");
+      Object.entries(VIEWER_ATTRS).forEach(([k, v]) => viewerEl.setAttribute(k, v));
+      viewerEl.setAttribute("enable-auto-rotate", "");
+    }
+    if (viewerEl.getAttribute("src") !== url) viewerEl.setAttribute("src", url);
+    slot.innerHTML = "";
+    slot.appendChild(viewerEl);
+  } else {
+    slot.innerHTML = placeholderSVG();
+  }
+};
+
+/* 2D placeholder rig — visually reflects the current configuration
+   until real GLBs are plugged into MODELS above. */
+let svgUid = 0;
+const placeholderSVG = () => {
+  const uid = ++svgUid;
+  const side = state.sideUnit;
+  const stoneFill = state.stone ? `url(#stone-${uid})` : "#3a3f46";
+  const stoneCart = state.stone ? `url(#stone-${uid})` : "#4a5058";
+  return `
+  <div id="placeholder-rig" class="w-full h-full bg-gradient-to-b from-neutral-50 to-neutral-200 flex items-center justify-center">
+  <svg viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="stone-${uid}" width="46" height="30" patternUnits="userSpaceOnUse">
+        <rect width="46" height="30" fill="#b8a48c"/>
+        <rect x="1" y="1" width="20" height="13" rx="2" fill="#a08a70"/>
+        <rect x="23" y="1" width="22" height="13" rx="2" fill="#c4b096"/>
+        <rect x="1" y="16" width="26" height="13" rx="2" fill="#ab967c"/>
+        <rect x="29" y="16" width="16" height="13" rx="2" fill="#9d8668"/>
+      </pattern>
+      <linearGradient id="steel-${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#c8cdd4"/><stop offset="1" stop-color="#8d939c"/>
+      </linearGradient>
+    </defs>
+
+    <!-- ground shadow -->
+    <ellipse cx="320" cy="420" rx="270" ry="22" fill="#000" opacity="0.08"/>
+
+    <!-- BASE: 4-burner grill (always shown) -->
+    <g class="rig-part">
+      <rect x="230" y="250" width="180" height="150" rx="8" fill="${stoneFill}"/>
+      <rect x="230" y="215" width="180" height="42" rx="6" fill="url(#steel-${uid})"/>
+      <path d="M232 215 Q320 158 408 215 Z" fill="url(#steel-${uid})"/>
+      <rect x="300" y="188" width="40" height="7" rx="3.5" fill="#1c1e21"/>
+      ${[0,1,2,3].map(i => `<circle cx="${262 + i*39}" cy="272" r="8" fill="#1c1e21" stroke="#e8590c" stroke-width="2"/>`).join("")}
+      <rect x="248" y="300" width="144" height="82" rx="5" fill="#23262b"/>
+      <text x="320" y="460" text-anchor="middle" font-size="15" font-weight="700" fill="#6b7280" letter-spacing="2">TYTUS 4-BURNER</text>
+    </g>
+
+    <!-- CORNER KIT (between base and side unit) -->
+    <g class="rig-part" style="opacity:${state.corner ? 1 : 0}">
+      <path d="M410 400 L410 268 Q452 250 478 288 L478 400 Z" fill="${stoneCart}"/>
+      <path d="M410 268 Q452 250 478 288 L478 300 Q452 262 410 280 Z" fill="url(#steel-${uid})"/>
+      <circle cx="444" cy="336" r="10" fill="none" stroke="#e8590c" stroke-width="3"/>
+      <text x="444" y="426" text-anchor="middle" font-size="11" font-weight="700" fill="#e8590c" letter-spacing="1">2027 CORNER</text>
+    </g>
+
+    <!-- SIDE UNIT: smoker -->
+    <g class="rig-part" style="opacity:${side === "smoker" ? 1 : 0}">
+      <rect x="${state.corner ? 486 : 420}" y="260" width="110" height="140" rx="8" fill="${stoneFill}"/>
+      <rect x="${state.corner ? 486 : 420}" y="228" width="110" height="38" rx="19" fill="url(#steel-${uid})"/>
+      <rect x="${state.corner ? 576 : 510}" y="180" width="14" height="56" rx="4" fill="#23262b"/>
+      <circle cx="${state.corner ? 541 : 475}" cy="330" r="20" fill="#23262b" stroke="#e8590c" stroke-width="2"/>
+      <text x="${state.corner ? 541 : 475}" y="426" text-anchor="middle" font-size="11" font-weight="700" fill="#6b7280" letter-spacing="1">PELLET SMOKER</text>
+    </g>
+
+    <!-- SIDE UNIT: pizza oven -->
+    <g class="rig-part" style="opacity:${side === "pizza" ? 1 : 0}">
+      <rect x="${state.corner ? 486 : 420}" y="290" width="110" height="110" rx="8" fill="${stoneFill}"/>
+      <path d="M${state.corner ? 486 : 420} 290 Q${state.corner ? 541 : 475} 205 ${state.corner ? 596 : 530} 290 Z" fill="url(#steel-${uid})"/>
+      <path d="M${state.corner ? 511 : 445} 290 Q${state.corner ? 541 : 475} 248 ${state.corner ? 571 : 505} 290 Z" fill="#1c1e21"/>
+      <path d="M${state.corner ? 531 : 465} 288 Q${state.corner ? 541 : 475} 268 ${state.corner ? 551 : 485} 288 Z" fill="#e8590c" opacity="0.85"/>
+      <text x="${state.corner ? 541 : 475}" y="426" text-anchor="middle" font-size="11" font-weight="700" fill="#6b7280" letter-spacing="1">PIZZA OVEN</text>
+    </g>
+
+    ${resolveModel() ? "" : `<text x="320" y="30" text-anchor="middle" font-size="11" fill="#9ca3af" letter-spacing="1">PLACEHOLDER PREVIEW — SWAP IN GLB PATHS IN index.html</text>`}
+  </svg>
+  </div>`;
+};
+
+/* ════════════════════════════════════════════════════════════════
+   Screens & steps
+   ════════════════════════════════════════════════════════════════ */
+const SCREENS = ["screen-landing", "screen-config", "screen-summary", "screen-tour"];
+const showScreen = (id) => {
+  SCREENS.forEach(s => document.getElementById(s).classList.toggle("active", s === id));
+  window.scrollTo({ top: 0 });
+};
+
+const STEP_TITLES = ["Choose Your Grill", "Add a Side Unit", "Corner Kit", "Choose a Finish"];
+
+function goToStep(n) {
+  currentStep = n;
+  if (n >= 1 && n <= 4) {
+    showScreen("screen-config");
+    renderStepIndicator();
+    renderStepPanel();
+    renderViewer("viewer-slot");
+  } else if (n === 5) {
+    showScreen("screen-summary");
+    renderSummary();
+    renderViewer("summary-viewer-slot");
+  }
+}
+
+function renderStepIndicator() {
+  const el = document.getElementById("step-indicator");
+  el.innerHTML = STEP_TITLES.map((t, i) => {
+    const s = i + 1;
+    const cls = s < currentStep ? "done" : s === currentStep ? "current" : "";
+    const dot = `<div class="flex flex-col items-center gap-1">
+        <div class="step-dot ${cls}">${s < currentStep ? "✓" : s}</div>
+        <span class="text-[10px] uppercase tracking-wider ${s === currentStep ? "text-neutral-900 font-bold" : "text-neutral-400"} hidden sm:block">${t}</span>
+      </div>`;
+    const line = i < 3 ? `<div class="step-line ${s < currentStep ? "done" : ""} mb-4"></div>` : "";
+    return dot + line;
+  }).join("");
+}
+
+const navButtons = (backStep, nextStep, nextLabel = "Next") => `
+  <div class="flex gap-3 mt-2">
+    ${backStep !== null ? `<button onclick="goToStep(${backStep})" class="flex-1 border-2 border-neutral-300 hover:border-neutral-500 text-neutral-600 font-bold uppercase tracking-widest py-3 rounded-md transition">Back</button>` : ""}
+    <button onclick="goToStep(${nextStep})" class="flex-[2] bg-[var(--titus-charcoal)] hover:bg-black text-white font-bold uppercase tracking-widest py-3 rounded-md transition">${nextLabel}</button>
+  </div>`;
+
+const card = ({ selected, onclick, title, desc, badge }) => `
+  <div class="opt-card ${selected ? "selected" : ""} bg-white rounded-xl p-5 relative" onclick="${onclick}">
+    ${badge ? `<span class="absolute top-3 right-3 bg-[var(--titus-flame)] text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded">${badge}</span>` : ""}
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <h4 class="font-bold text-lg">${title}</h4>
+        <p class="text-neutral-500 text-sm mt-1">${desc}</p>
+      </div>
+      <div class="opt-check text-[var(--titus-flame)] text-2xl font-black leading-none mt-0.5">✓</div>
+    </div>
+  </div>`;
+
+function renderStepPanel() {
+  const el = document.getElementById("step-panel");
+  const h = (t, sub) => `<div><p class="uppercase tracking-[0.25em] text-xs text-[var(--titus-flame)] font-bold mb-1">Step ${currentStep} of 4</p><h2 class="font-display text-3xl font-black">${t}</h2><p class="text-neutral-500 mt-1">${sub}</p></div>`;
+
+  if (currentStep === 1) {
+    el.innerHTML = h("CHOOSE YOUR GRILL", "Every TYTUS kitchen starts with the grill.") +
+      card({ selected: true, onclick: "", title: "TYTUS 4-Burner Gas Grill",
+             desc: "60,000 BTU across four stainless burners. The foundation of your modular kitchen." }) +
+      navButtons(null, 2);
+  }
+  if (currentStep === 2) {
+    el.innerHTML = h("ADD A SIDE UNIT", "Expand your kitchen with a specialty cooker — or keep it simple.") +
+      Object.entries(SIDE_UNITS).map(([key, u]) =>
+        card({ selected: state.sideUnit === key, onclick: `setSideUnit('${key}')`, title: u.label, desc: u.desc })
+      ).join("") +
+      navButtons(1, 3);
+  }
+  if (currentStep === 3) {
+    el.innerHTML = h("CORNER KIT", "Wrap your kitchen into an L shape with the new 2027 corner cart.") +
+      card({ selected: !state.corner, onclick: "setCorner(false)", title: "Straight Layout", desc: "Units sit side by side in a single run." }) +
+      card({ selected: state.corner, onclick: "setCorner(true)", title: "Add Corner Kit", desc: "A corner cart joins your units into a wrapped, rounded layout.", badge: "New 2027" }) +
+      navButtons(2, 4);
+  }
+  if (currentStep === 4) {
+    el.innerHTML = h("CHOOSE A FINISH", "Dress the exterior for a built-in look.") +
+      card({ selected: !state.stone, onclick: "setStone(false)", title: "Standard Finish", desc: "Powder-coated steel panels in charcoal." }) +
+      card({ selected: state.stone, onclick: "setStone(true)", title: "Faux Stone Panels", desc: "The built-in outdoor kitchen look — without masonry.", badge: "New 2027" }) +
+      navButtons(3, 5, "See My Kitchen");
+  }
+}
+
+function setSideUnit(v) { state.sideUnit = v; renderStepPanel(); renderViewer("viewer-slot"); }
+function setCorner(v)   { state.corner = v;  renderStepPanel(); renderViewer("viewer-slot"); }
+function setStone(v)    { state.stone = v;   renderStepPanel(); renderViewer("viewer-slot"); }
+
+/* ════════════════════════════════════════════════════════════════
+   Summary
+   ════════════════════════════════════════════════════════════════ */
+function renderSummary() {
+  const rows = [
+    ["Grill", "TYTUS 4-Burner Gas Grill"],
+    ["Side Unit", SIDE_UNITS[state.sideUnit].label],
+    ["Corner Kit", state.corner ? "Included — New 2027" : "Not included"],
+    ["Finish", state.stone ? "Faux Stone Panels — New 2027" : "Standard Charcoal"],
+  ];
+  document.getElementById("summary-list").innerHTML = rows.map(([k, v]) => `
+    <li class="flex justify-between py-3">
+      <span class="text-neutral-500 text-sm uppercase tracking-wider">${k}</span>
+      <span class="font-semibold text-right">${v}</span>
+    </li>`).join("");
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Guided tour
+   ════════════════════════════════════════════════════════════════ */
+let tourStops = [];
+let tourIndex = 0;
+let tourTimer = null;
+let tourPaused = false;
+
+function buildTourStops() {
+  const stops = [{ ...TOUR_STOPS.assembly, cam: TOUR_CAMERAS.assembly }];
+  if (state.sideUnit === "pizza")  stops.push({ ...TOUR_STOPS.sideUnitPizza,  cam: TOUR_CAMERAS.sideUnit });
+  if (state.sideUnit === "smoker") stops.push({ ...TOUR_STOPS.sideUnitSmoker, cam: TOUR_CAMERAS.sideUnit });
+  if (state.corner) stops.push({ ...TOUR_STOPS.corner, cam: TOUR_CAMERAS.corner });
+  if (state.stone)  stops.push({ ...TOUR_STOPS.finish, cam: TOUR_CAMERAS.finish });
+  return stops;
+}
+
+function startTour() {
+  tourStops = buildTourStops();
+  tourIndex = 0;
+  showScreen("screen-tour");
+  renderViewer("tour-viewer-slot");
+  showTourStop();
+}
+
+function showTourStop() {
+  const stop = tourStops[tourIndex];
+  document.getElementById("tour-pin-num").textContent = stop.num;
+  document.getElementById("tour-title").textContent = stop.title;
+  document.getElementById("tour-body").textContent = stop.body;
+  document.getElementById("tour-count").textContent = `Feature ${tourIndex + 1} of ${tourStops.length}`;
+
+  // Camera move (no-op on the placeholder rig)
+  if (viewerEl && stop.cam) {
+    try { Object.entries(stop.cam).forEach(([k, v]) => { viewerEl[k] = v; }); } catch (_) {}
+  }
+
+  // Restart card animation
+  const cardEl = document.getElementById("tour-card");
+  cardEl.classList.remove("tour-card"); void cardEl.offsetWidth; cardEl.classList.add("tour-card");
+
+  restartTourTimer();
+}
+
+function restartTourTimer() {
+  clearTimeout(tourTimer);
+  const bar = document.getElementById("tour-progress");
+  bar.style.transitionDuration = "0ms"; bar.style.width = "0%";
+  void bar.offsetWidth;
+  bar.style.transitionDuration = TOUR_AUTO_ADVANCE_MS + "ms";
+  bar.style.width = "100%";
+  tourTimer = setTimeout(() => { if (!tourPaused) tourNext(false); }, TOUR_AUTO_ADVANCE_MS);
+}
+
+function tourNext(manual) {
+  tourIndex = (tourIndex + 1) % tourStops.length;
+  showTourStop();
+}
+
+function endTour() {
+  clearTimeout(tourTimer);
+  goToStep(5);
+}
+
+/* Pause auto-advance on hover */
+document.getElementById("tour-stage").addEventListener("mouseenter", () => {
+  tourPaused = true;
+  clearTimeout(tourTimer);
+  const bar = document.getElementById("tour-progress");
+  const w = getComputedStyle(bar).width;
+  bar.style.transitionDuration = "0ms"; bar.style.width = w;
+});
+document.getElementById("tour-stage").addEventListener("mouseleave", () => {
+  tourPaused = false;
+  restartTourTimer();
+});
+</script>
+</body>
+</html>
