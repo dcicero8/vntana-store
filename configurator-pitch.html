@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Build a 3D Configurator — VNTANA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { --vn-ink:#0e1116; --vn-accent:#e8590c; --vn-blue:#2563eb; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; scroll-behavior:smooth; }
+  .num-badge { width:56px; height:56px; border-radius:9999px; display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:26px; color:#fff; background:var(--vn-accent); flex:none; }
+  .section-anchor { scroll-margin-top: 90px; }
+  .stat-card { background:linear-gradient(160deg,#151a22,#0e1116); }
+  .fade-in { animation: fadeUp .5s ease both; }
+  @keyframes fadeUp { from {opacity:0; transform:translateY(14px);} to {opacity:1; transform:none;} }
+  .quote-mark { font-size:64px; line-height:0.6; color:var(--vn-accent); font-family: Georgia, serif; }
+</style>
+</head>
+<body class="bg-neutral-50 text-neutral-900">
+
+<!-- Sticky nav -->
+<header class="sticky top-0 z-50 bg-[var(--vn-ink)] text-white shadow-lg">
+  <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-xl font-black tracking-widest">VNTANA</span>
+      <span class="text-neutral-400 text-xs uppercase tracking-widest border-l border-neutral-600 pl-3 hidden sm:inline">3D Configurators</span>
+    </div>
+    <nav class="flex items-center gap-2 text-sm font-semibold">
+      <a href="#why" class="px-3 py-1.5 rounded-full hover:bg-white/10 transition"><span class="text-[var(--vn-accent)]">1</span> Why</a>
+      <a href="#proof" class="px-3 py-1.5 rounded-full hover:bg-white/10 transition"><span class="text-[var(--vn-accent)]">2</span> Proof</a>
+      <a href="#demo" class="px-3 py-1.5 rounded-full hover:bg-white/10 transition"><span class="text-[var(--vn-accent)]">3</span> Demo</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="bg-[var(--vn-ink)] text-white">
+  <div class="max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
+    <p class="uppercase tracking-[0.3em] text-sm text-[var(--vn-accent)] font-bold mb-4">A self-guided walkthrough</p>
+    <h1 class="text-4xl md:text-6xl font-black leading-tight mb-6">LET CUSTOMERS BUILD<br>THE PRODUCT THEY WANT</h1>
+    <p class="max-w-2xl mx-auto text-neutral-300 text-lg mb-10">Three things, in order: why product configurators win, the ones VNTANA has already built, and a live demo you can drive yourself.</p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="#why" class="bg-[var(--vn-accent)] hover:bg-orange-700 text-white font-bold uppercase tracking-widest px-8 py-3.5 rounded-md transition">Start the Tour</a>
+      <a href="#demo" class="border border-neutral-600 hover:border-white text-white font-bold uppercase tracking-widest px-8 py-3.5 rounded-md transition">Skip to the Demo</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 1 · WHY ═══════════ -->
+<section id="why" class="section-anchor max-w-6xl mx-auto px-6 py-20">
+  <div class="flex items-center gap-4 mb-3">
+    <div class="num-badge">1</div>
+    <h2 class="text-3xl md:text-4xl font-black">Why Build a Configurator</h2>
+  </div>
+  <p class="text-neutral-500 text-lg max-w-3xl mb-12 ml-0 md:ml-[72px]">Configurable products create a visualization gap: the customer is buying something that doesn't exist yet. A 3D configurator closes that gap — and the numbers show what happens when it does.</p>
+
+  <!-- Stats -->
+  <div class="grid sm:grid-cols-3 gap-5 mb-14">
+    <div class="stat-card rounded-2xl p-7 text-white">
+      <div class="text-5xl font-black text-[var(--vn-accent)] mb-2">2×</div>
+      <p class="font-bold mb-1">Conversion increase</p>
+      <p class="text-neutral-400 text-sm">Kohler e-commerce after deploying VNTANA 3D</p>
+    </div>
+    <div class="stat-card rounded-2xl p-7 text-white">
+      <div class="text-5xl font-black text-[var(--vn-accent)] mb-2">70%</div>
+      <p class="font-bold mb-1">Buyer adoption increase</p>
+      <p class="text-neutral-400 text-sm">Patagonia wholesale buyers on 3D product content</p>
+    </div>
+    <div class="stat-card rounded-2xl p-7 text-white">
+      <div class="text-5xl font-black text-[var(--vn-accent)] mb-2">Months → Minutes</div>
+      <p class="font-bold mb-1">Sales cycle compression</p>
+      <p class="text-neutral-400 text-sm">YKK trim selection: multiple consultations to a single meeting</p>
+    </div>
+  </div>
+
+  <!-- Benefits grid -->
+  <div class="grid md:grid-cols-2 gap-5 mb-14">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-100">
+      <h3 class="font-bold text-lg mb-2">🛒 Purchase confidence → conversion</h3>
+      <p class="text-neutral-600 text-sm">High-consideration products stall when buyers can't picture the final build. Seeing their exact combination in 3D — and in their own space via AR — removes the hesitation that kills carts.</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-100">
+      <h3 class="font-bold text-lg mb-2">📦 Fewer physical samples & returns</h3>
+      <p class="text-neutral-600 text-sm">Every sample not produced and shipped is direct cost saved — and every accurate expectation set is a return avoided. YKK cut sample production and international shipping dramatically.</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-100">
+      <h3 class="font-bold text-lg mb-2">🧾 Error-free, self-serve ordering</h3>
+      <p class="text-neutral-600 text-sm">The configurator carries the full order spec — every option, every code — so what the customer sees is exactly what operations builds. No transcription errors, no revision loops.</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-100">
+      <h3 class="font-bold text-lg mb-2">📈 Bigger baskets by design</h3>
+      <p class="text-neutral-600 text-sm">A step-by-step builder naturally presents every add-on in context. "Add a side unit, wrap the corner, upgrade the finish" is upsell built into the buying experience, not bolted on.</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-100">
+      <h3 class="font-bold text-lg mb-2">🤝 From order-taker to design partner</h3>
+      <p class="text-neutral-600 text-sm">Sales teams guide customers through possibilities in real time instead of quoting catalogs. YKK found this repositioned them from component supplier to development partner.</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-100">
+      <h3 class="font-bold text-lg mb-2">📊 Demand signal you can't get elsewhere</h3>
+      <p class="text-neutral-600 text-sm">Every configuration session is market research: which combinations customers actually build, where they hesitate, what they abandon. Analytics integration comes standard.</p>
+    </div>
+  </div>
+
+  <!-- Competitive landscape -->
+  <div class="bg-[var(--vn-ink)] text-white rounded-2xl p-8 md:p-10">
+    <h3 class="text-2xl font-black mb-4">The competitive landscape has moved</h3>
+    <p class="text-neutral-300 mb-6 max-w-3xl">Configurators used to be a luxury-brand novelty. Today they're table stakes in every considered-purchase category — and customers arrive expecting the experience they got when they built their last car online.</p>
+    <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+      <div class="bg-white/5 rounded-xl p-4"><p class="font-bold mb-1">Automotive & Powersports</p><p class="text-neutral-400">Every major auto brand; Indian Motorcycle's build-your-bike flow is the reference experience.</p></div>
+      <div class="bg-white/5 rounded-xl p-4"><p class="font-bold mb-1">Furniture & Home</p><p class="text-neutral-400">Sofas, kitchens, closets, fixtures — configure-then-AR-place is now the default path.</p></div>
+      <div class="bg-white/5 rounded-xl p-4"><p class="font-bold mb-1">Apparel & Components</p><p class="text-neutral-400">Custom footwear builders; YKK brought it to B2B trim with VNTANA.</p></div>
+      <div class="bg-white/5 rounded-xl p-4"><p class="font-bold mb-1">Outdoor Living</p><p class="text-neutral-400">Modular grills and outdoor kitchens are exactly this kind of purchase — big ticket, highly configurable, spatial.</p></div>
+    </div>
+    <p class="text-neutral-400 text-sm mt-6">The brands that own the configuration experience own the customer relationship. The ones that don't are selling SKUs into someone else's experience.</p>
+  </div>
+</section>
+
+<!-- ═══════════ 2 · PROOF ═══════════ -->
+<section id="proof" class="section-anchor bg-white border-y border-neutral-200">
+  <div class="max-w-6xl mx-auto px-6 py-20">
+    <div class="flex items-center gap-4 mb-3">
+      <div class="num-badge">2</div>
+      <h2 class="text-3xl md:text-4xl font-black">Configurators We've Built</h2>
+    </div>
+    <p class="text-neutral-500 text-lg max-w-3xl mb-12 ml-0 md:ml-[72px]">VNTANA isn't a 3D agency — it's an enterprise platform (Kohler, Patagonia, Puma, Michael Kors) with configurator delivery on top. Two examples:</p>
+
+    <!-- YKK -->
+    <div class="grid md:grid-cols-5 gap-8 mb-16">
+      <div class="md:col-span-3">
+        <p class="uppercase tracking-[0.25em] text-xs text-[var(--vn-accent)] font-bold mb-2">Live · Global B2B</p>
+        <h3 class="text-2xl font-black mb-4">YKK Trim Creator — the industry's first 3D trim configurator</h3>
+        <p class="text-neutral-600 mb-4">For decades, apparel designers picked zippers from paper catalogs, ordered physical samples from distant factories, and waited weeks per revision. YKK — the world's largest fastener manufacturer — partnered with VNTANA to replace that cycle with real-time 3D.</p>
+        <ul class="space-y-2 text-sm text-neutral-700 mb-5">
+          <li class="flex gap-2"><span class="text-[var(--vn-accent)] font-black">✓</span> Slider, pull, teeth, and tape configured with instant 3D feedback — millions of possible combinations</li>
+          <li class="flex gap-2"><span class="text-[var(--vn-accent)] font-black">✓</span> One-click changes to size, material, function, and color</li>
+          <li class="flex gap-2"><span class="text-[var(--vn-accent)] font-black">✓</span> Every build carries its exact item code — copy-paste into the ordering system, error-free</li>
+          <li class="flex gap-2"><span class="text-[var(--vn-accent)] font-black">✓</span> Consultation-to-confirmation in a single meeting; revisions in seconds instead of weeks</li>
+          <li class="flex gap-2"><span class="text-[var(--vn-accent)] font-black">✓</span> Physical sample production and international shipping costs cut dramatically</li>
+        </ul>
+        <a href="https://www.ykkfastening.com" target="_blank" rel="noopener" class="inline-block text-[var(--vn-blue)] font-semibold text-sm hover:underline">Try the YKK Trim Creator →</a>
+      </div>
+      <div class="md:col-span-2">
+        <div class="bg-neutral-50 border border-neutral-200 rounded-2xl p-7 h-full flex flex-col justify-center">
+          <div class="quote-mark mb-4">“</div>
+          <p class="text-neutral-700 italic mb-5">Digitalization through a tool like the YKK Trim Creator helps us achieve speed, quality, and sustainability. It immediately displays the design in 3D, improves visualization, reduces physical sample requests, and decreases waste.</p>
+          <p class="font-bold text-sm">Takayuki Kato</p>
+          <p class="text-neutral-500 text-sm">VP, Global Marketing Group — YKK</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Michaels -->
+    <div class="grid md:grid-cols-5 gap-8">
+      <div class="md:col-span-3">
+        <p class="uppercase tracking-[0.25em] text-xs text-[var(--vn-blue)] font-bold mb-2">In Development · Retail</p>
+        <h3 class="text-2xl font-black mb-4">Michaels — custom framing configurator & AR</h3>
+        <p class="text-neutral-600 mb-4">Custom framing is a high-value, personally meaningful purchase that customers historically couldn't visualize before committing. VNTANA is building Michaels a full 3D/AR configurator for the custom framing business across 1,200+ North American stores' online experience.</p>
+        <ul class="space-y-2 text-sm text-neutral-700 mb-5">
+          <li class="flex gap-2"><span class="text-[var(--vn-blue)] font-black">✓</span> Real-time parametric sizing — frames rebuild to any custom dimension</li>
+          <li class="flex gap-2"><span class="text-[var(--vn-blue)] font-black">✓</span> Material swapping (paper, canvas, wood), 22 mat colors, single/double mats, glazing options</li>
+          <li class="flex gap-2"><span class="text-[var(--vn-blue)] font-black">✓</span> Customers upload their own artwork and see it framed before ordering</li>
+          <li class="flex gap-2"><span class="text-[var(--vn-blue)] font-black">✓</span> AR room viewer — place the configured frame on your actual wall from mobile</li>
+          <li class="flex gap-2"><span class="text-[var(--vn-blue)] font-black">✓</span> 300+ frame catalog, phased from the top-selling collection that drives 75% of revenue</li>
+        </ul>
+        <p class="text-neutral-500 text-sm">Same platform pattern as YKK: parametric rules engine + real-time material swapping + order-ready output.</p>
+      </div>
+      <div class="md:col-span-2">
+        <div class="bg-neutral-50 border border-neutral-200 rounded-2xl p-7 h-full flex flex-col justify-center gap-5">
+          <div>
+            <p class="text-3xl font-black text-[var(--vn-blue)]">323</p>
+            <p class="text-neutral-500 text-sm">frames modeled parametrically for real-time custom sizing</p>
+          </div>
+          <div>
+            <p class="text-3xl font-black text-[var(--vn-blue)]">22</p>
+            <p class="text-neutral-500 text-sm">mat colors with single & double mat combinations</p>
+          </div>
+          <div>
+            <p class="text-3xl font-black text-[var(--vn-blue)]">AR</p>
+            <p class="text-neutral-500 text-sm">room viewing on the customer's own wall, from any phone</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 3 · DEMO ═══════════ -->
+<section id="demo" class="section-anchor max-w-6xl mx-auto px-6 py-20">
+  <div class="flex items-center gap-4 mb-3">
+    <div class="num-badge">3</div>
+    <h2 class="text-3xl md:text-4xl font-black">Drive One Yourself</h2>
+  </div>
+  <p class="text-neutral-500 text-lg max-w-3xl mb-8 ml-0 md:ml-[72px]">This is a working concept configurator built on real TYTUS 3D assets — pick a grill, add a side unit, and watch the model swap in real time, then take the guided feature tour. It's live below; click <span class="font-semibold text-neutral-700">Start Building</span>.</p>
+
+  <div class="rounded-2xl overflow-hidden shadow-lg border border-neutral-200 bg-white mb-6">
+    <iframe src="tytus-configurator.html" title="TYTUS Modular Grill Configurator" class="w-full" style="height: 82vh; min-height: 640px;" loading="lazy"></iframe>
+  </div>
+  <div class="flex flex-wrap items-center gap-4 mb-14">
+    <a href="tytus-configurator.html" target="_blank" class="bg-[var(--vn-ink)] hover:bg-black text-white font-bold uppercase tracking-widest px-6 py-3 rounded-md text-sm transition">Open Full-Screen ↗</a>
+    <p class="text-neutral-500 text-sm">Tip: 3D models are production-quality assets (~100MB+) — give the viewer a few seconds on first load.</p>
+  </div>
+
+  <!-- CTA -->
+  <div class="bg-[var(--vn-ink)] text-white rounded-2xl p-10 text-center">
+    <h3 class="text-3xl font-black mb-4">What it takes to build yours</h3>
+    <p class="text-neutral-300 max-w-2xl mx-auto mb-6">Configurator projects start around <span class="text-[var(--vn-accent)] font-black">$50K</span> depending on catalog size, asset creation needs, and integration scope — typically live in a matter of months, not years. The platform (asset management, optimization, 3D viewer, AR, analytics) is production-ready today; the work is your assets and your rules.</p>
+    <p class="text-neutral-400 text-sm mb-8">3D asset creation · parametric rules engine · NPM viewer integration (no iframes in production) · AR/QR · analytics · ongoing support</p>
+    <a href="https://www.vntana.com" target="_blank" rel="noopener" class="inline-block bg-[var(--vn-accent)] hover:bg-orange-700 text-white font-bold uppercase tracking-widest px-10 py-4 rounded-md transition">Talk to VNTANA</a>
+  </div>
+</section>
+
+<footer class="text-center text-neutral-400 text-xs pb-10">
+  VNTANA · Concept presentation — figures from published VNTANA case studies · Demo assets courtesy of TYTUS Grills
+</footer>
+
+</body>
+</html>
