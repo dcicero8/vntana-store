@@ -164,19 +164,33 @@ const SIDE_UNITS = {
   </section>
 
   <!-- ══════════════ Configurator (steps 1–4 share this shell) ══════════════ -->
-  <section id="screen-config" class="screen flex-col gap-6">
+  <section id="screen-config" class="screen flex-col gap-5 pb-28">
 
     <!-- Step indicator -->
     <div class="flex items-center gap-3 max-w-xl mx-auto w-full" id="step-indicator"></div>
 
-    <div class="grid md:grid-cols-2 gap-8 items-start">
-      <!-- Viewer -->
-      <div class="bg-white rounded-2xl shadow-sm overflow-hidden aspect-square sticky top-6" id="viewer-shell">
+    <div class="grid md:grid-cols-3 gap-6 items-start">
+      <!-- Viewer — the main focus -->
+      <div class="md:col-span-2 bg-white rounded-2xl shadow-sm overflow-hidden sticky top-6 h-[58vh] md:h-[72vh]" id="viewer-shell">
         <div id="viewer-slot" class="w-full h-full relative"></div>
       </div>
 
-      <!-- Step panel -->
+      <!-- Step panel (options rail) -->
       <div id="step-panel" class="flex flex-col gap-4"></div>
+    </div>
+
+    <!-- Bottom build bar -->
+    <div class="fixed bottom-0 left-0 right-0 bg-[var(--titus-charcoal)] text-white z-40">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 font-bold">Your Build</p>
+          <p id="bar-summary" class="text-sm font-semibold truncate"></p>
+        </div>
+        <div class="flex gap-3 flex-none">
+          <button id="bar-back" class="border border-neutral-500 hover:border-white text-white font-bold uppercase tracking-widest px-6 py-2.5 rounded-md text-sm transition">Back</button>
+          <button id="bar-next" class="bg-[var(--titus-flame)] hover:bg-orange-700 text-white font-bold uppercase tracking-widest px-8 py-2.5 rounded-md text-sm transition">Next</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -277,7 +291,6 @@ const renderViewer = (slotId) => {
     if (!viewerEl) {
       viewerEl = document.createElement("vntana-viewer");
       Object.entries(VIEWER_ATTRS).forEach(([k, v]) => viewerEl.setAttribute(k, v));
-      viewerEl.setAttribute("enable-auto-rotate", "");
     }
     if (viewerEl.getAttribute("src") !== url) viewerEl.setAttribute("src", url);
     slot.innerHTML = "";
@@ -395,11 +408,23 @@ function renderStepIndicator() {
   }).join("");
 }
 
-const navButtons = (backStep, nextStep, nextLabel = "Next") => `
-  <div class="flex gap-3 mt-2">
-    ${backStep !== null ? `<button onclick="goToStep(${backStep})" class="flex-1 border-2 border-neutral-300 hover:border-neutral-500 text-neutral-600 font-bold uppercase tracking-widest py-3 rounded-md transition">Back</button>` : ""}
-    <button onclick="goToStep(${nextStep})" class="flex-[2] bg-[var(--titus-charcoal)] hover:bg-black text-white font-bold uppercase tracking-widest py-3 rounded-md transition">${nextLabel}</button>
-  </div>`;
+const buildSummary = () => {
+  const parts = ["TYTUS 4-Burner"];
+  if (state.sideUnit !== "none") parts.push(SIDE_UNITS[state.sideUnit].label);
+  if (state.corner) parts.push("Corner Kit");
+  if (state.stone) parts.push("Faux Stone");
+  return parts.join("  ·  ");
+};
+
+const updateBar = (backStep, nextStep, nextLabel = "Next") => {
+  document.getElementById("bar-summary").textContent = buildSummary();
+  const back = document.getElementById("bar-back");
+  const next = document.getElementById("bar-next");
+  back.style.visibility = backStep === null ? "hidden" : "visible";
+  back.onclick = () => backStep !== null && goToStep(backStep);
+  next.textContent = nextLabel;
+  next.onclick = () => goToStep(nextStep);
+};
 
 const card = ({ selected, onclick, title, desc, badge }) => `
   <div class="opt-card ${selected ? "selected" : ""} bg-white rounded-xl p-5 relative" onclick="${onclick}">
@@ -421,26 +446,26 @@ function renderStepPanel() {
     el.innerHTML = h("CHOOSE YOUR GRILL", "Every TYTUS kitchen starts with the grill.") +
       card({ selected: true, onclick: "", title: "TYTUS 4-Burner Gas Grill",
              desc: "60,000 BTU across four stainless burners. The foundation of your modular kitchen." }) +
-      navButtons(null, 2);
+      updateBar(null, 2);
   }
   if (currentStep === 2) {
     el.innerHTML = h("ADD A SIDE UNIT", "Expand your kitchen with a specialty cooker — or keep it simple.") +
       Object.entries(SIDE_UNITS).map(([key, u]) =>
         card({ selected: state.sideUnit === key, onclick: `setSideUnit('${key}')`, title: u.label, desc: u.desc })
       ).join("") +
-      navButtons(1, 3);
+      updateBar(1, 3);
   }
   if (currentStep === 3) {
     el.innerHTML = h("CORNER KIT", "Wrap your kitchen into an L shape with the new 2027 corner cart.") +
       card({ selected: !state.corner, onclick: "setCorner(false)", title: "Straight Layout", desc: "Units sit side by side in a single run." }) +
       card({ selected: state.corner, onclick: "setCorner(true)", title: "Add Corner Kit", desc: "A corner cart joins your units into a wrapped, rounded layout.", badge: "New 2027" }) +
-      navButtons(2, 4);
+      updateBar(2, 4);
   }
   if (currentStep === 4) {
     el.innerHTML = h("CHOOSE A FINISH", "Dress the exterior for a built-in look.") +
       card({ selected: !state.stone, onclick: "setStone(false)", title: "Standard Finish", desc: "Powder-coated steel panels in charcoal." }) +
       card({ selected: state.stone, onclick: "setStone(true)", title: "Faux Stone Panels", desc: "The built-in outdoor kitchen look — without masonry.", badge: "New 2027" }) +
-      navButtons(3, 5, "See My Kitchen");
+      updateBar(3, 5, "See My Kitchen");
   }
 }
 
