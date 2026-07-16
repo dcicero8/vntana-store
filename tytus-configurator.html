@@ -139,7 +139,7 @@ const TOUR_STOPS = {
   ar: {
     num: 5,
     title: "See It in Your Space",
-    body: "Scan the QR code with your phone to open this exact build and place it on your patio in AR.",
+    body: "Scan the QR code with your phone and this build drops straight into AR — place it on your patio at full size.",
     qr: true,
   },
 };
@@ -534,13 +534,12 @@ function buildTourStops() {
   return stops;
 }
 
-/* Deep link to this exact build, for the AR QR code */
+/* AR link for the QR code: VNTANA embed with autoAR launches straight
+   into AR on the phone (Quick Look on iOS, Scene Viewer on Android). */
 const buildDeepLink = () => {
-  const p = new URLSearchParams({ step: "5" });
-  if (state.sideUnit !== "none") p.set("side", state.sideUnit);
-  if (state.corner) p.set("corner", "1");
-  if (state.stone)  p.set("stone", "1");
-  return `${location.origin}${location.pathname}?${p}`;
+  const [uuid] = resolveFrom(ASSET_IDS) ?? [];
+  if (!uuid) return location.href;
+  return `https://embed.vntana.com?productUuid=${uuid}&clientSlug=${WORKSPACE}&organizationSlug=${ORG}&autoAR=true`;
 };
 
 function startTour() {
