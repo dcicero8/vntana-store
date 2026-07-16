@@ -245,9 +245,9 @@ const SIDE_UNITS = {
         <p id="tour-body" class="text-neutral-600 text-sm mb-4"></p>
         <img id="tour-qr" class="hidden w-32 h-32 mx-auto mb-4 rounded-lg border border-neutral-200" alt="QR code — open this build on your phone">
 
-        <div class="flex items-center justify-between">
-          <span id="tour-count" class="text-xs uppercase tracking-widest text-neutral-400"></span>
-          <button onclick="tourNext(true)" class="bg-[var(--titus-charcoal)] hover:bg-black text-white text-sm font-bold uppercase tracking-widest px-5 py-2 rounded-md transition">Next</button>
+        <div class="flex items-center justify-between gap-3">
+          <span id="tour-count" class="text-xs uppercase tracking-widest text-neutral-400 flex-none"></span>
+          <div id="tour-actions" class="flex gap-2"></div>
         </div>
         <div class="h-1 bg-neutral-200 rounded mt-3 overflow-hidden">
           <div id="tour-progress" class="tour-progress h-full bg-[var(--titus-flame)] w-0"></div>
@@ -572,14 +572,39 @@ function showTourStop() {
     try { Object.entries(stop.cam).forEach(([k, v]) => { viewerEl[k] = v; }); } catch (_) {}
   }
 
+  // Last stop (AR): park here — no auto-advance, offer replay / new build
+  const isLast = tourIndex === tourStops.length - 1;
+  const actions = document.getElementById("tour-actions");
+  const btn = (label, handler, primary) =>
+    `<button onclick="${handler}" class="${primary ? "bg-[var(--titus-flame)] hover:bg-orange-700" : "bg-[var(--titus-charcoal)] hover:bg-black"} text-white text-sm font-bold uppercase tracking-widest px-4 py-2 rounded-md transition">${label}</button>`;
+  actions.innerHTML = isLast
+    ? btn("Replay Tour", "replayTour()", false) + btn("New Build", "startNewBuild()", true)
+    : btn("Next", "tourNext(true)", true);
+  document.getElementById("tour-progress").parentElement.style.visibility = isLast ? "hidden" : "visible";
+
   // Restart card animation
   const cardEl = document.getElementById("tour-card");
   cardEl.classList.remove("tour-card"); void cardEl.offsetWidth; cardEl.classList.add("tour-card");
 
-  restartTourTimer();
+  if (isLast) clearTimeout(tourTimer);
+  else restartTourTimer();
+}
+
+function replayTour() {
+  tourIndex = 0;
+  showTourStop();
+}
+
+function startNewBuild() {
+  clearTimeout(tourTimer);
+  state.sideUnit = "none";
+  state.corner = false;
+  state.stone = false;
+  goToStep(1);
 }
 
 function restartTourTimer() {
+  if (tourIndex === tourStops.length - 1) return;  // parked on the AR stop
   clearTimeout(tourTimer);
   const bar = document.getElementById("tour-progress");
   bar.style.transitionDuration = "0ms"; bar.style.width = "0%";
