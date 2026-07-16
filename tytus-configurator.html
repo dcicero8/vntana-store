@@ -157,6 +157,7 @@ const SIDE_UNITS = {
 
   <!-- ══════════════ Landing ══════════════ -->
   <section id="screen-landing" class="screen active flex-col items-center justify-center text-center py-24">
+    <img src="tytus-logo.avif" alt="TYTUS" class="h-12 mb-8" onerror="this.style.display='none'">
     <p class="uppercase tracking-[0.3em] text-sm text-[var(--titus-flame)] font-bold mb-4">Modular Outdoor Kitchens</p>
     <h1 class="font-display text-5xl md:text-6xl font-black mb-6">BUILD YOUR<br>TYTUS KITCHEN</h1>
     <p class="max-w-xl text-neutral-500 text-lg mb-10">Start with the grill. Add a smoker or pizza oven. Wrap it with the new 2027 corner kit and stone finish. See your kitchen come together in 3D.</p>
@@ -256,6 +257,12 @@ const state = {
   corner: false,
   stone: false,
 };
+
+/* Deep links: ?step=2&side=pizza&corner=1&stone=1 */
+const params = new URLSearchParams(location.search);
+if (["smoker","pizza","none"].includes(params.get("side"))) state.sideUnit = params.get("side");
+if (params.get("corner") === "1") state.corner = true;
+if (params.get("stone")  === "1") state.stone  = true;
 
 let currentStep = 0;   // 0 = landing, 1–4 = steps, 5 = summary, 6 = tour
 
@@ -424,6 +431,7 @@ const updateBar = (backStep, nextStep, nextLabel = "Next") => {
   back.onclick = () => backStep !== null && goToStep(backStep);
   next.textContent = nextLabel;
   next.onclick = () => goToStep(nextStep);
+  return "";  // concatenated into panel innerHTML — must not print
 };
 
 const card = ({ selected, onclick, title, desc, badge }) => `
@@ -566,6 +574,10 @@ document.getElementById("tour-stage").addEventListener("mouseleave", () => {
   tourPaused = false;
   restartTourTimer();
 });
+
+/* Deep-link entry: jump straight to a step (1–5) */
+const stepParam = parseInt(params.get("step"), 10);
+if (stepParam >= 1 && stepParam <= 5) goToStep(stepParam);
 </script>
 </body>
 </html>
