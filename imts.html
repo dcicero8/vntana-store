@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VNTANA at IMTS 2026 — Sell more with the CAD you already own</title>
+<title>VNTANA at IMTS 2026, Sell more with the CAD you already own</title>
 <style>
   /* ============================================================
      VNTANA · IMTS 2026 booth landing page
-     Rebuilt on-brand: light/website base, VNTANA Blue #4B61F9,
-     VNTANA Mint #7FE2AF, geometric sans, triangular-V motif.
+     Rebuilt on-brand: light/website base, VNTANA Blue #4B61F9, VNTANA Mint #7FE2AF, geometric sans, triangular-V motif.
      Three demo tracks (not five). Copy follows VNTANA DNA:
      pain-first, "3D DAM", Astec lead stat, full publishing
      destination list, CTAs to the demo sign-up page.
@@ -61,8 +60,7 @@
   .hero::after { /* faint V-pattern corner */
     content:""; position:absolute; top:-40px; right:-40px; width:220px; height:220px;
     background:
-      linear-gradient(135deg, transparent 48%, var(--accent) 49%, var(--accent) 51%, transparent 52%),
-      linear-gradient(135deg, transparent 60%, var(--accent) 61%, var(--accent) 62%, transparent 63%);
+      linear-gradient(135deg, transparent 48%, var(--accent) 49%, var(--accent) 51%, transparent 52%), linear-gradient(135deg, transparent 60%, var(--accent) 61%, var(--accent) 62%, transparent 63%);
     opacity:0.10; transform:rotate(8deg); pointer-events:none;
   }
   .plate {
@@ -90,7 +88,7 @@
     max-width:36ch; position:relative; z-index:2; line-height:1.5;
   }
 
-  /* proof stat card (Astec — the DNA default lead stat) */
+  /* proof stat card (Astec, the DNA default lead stat) */
   .proofcard {
     margin-top:26px; position:relative; z-index:2;
     border:1px solid var(--line-2); background:var(--paper);
@@ -238,7 +236,7 @@
   .foot-links a:hover { color:var(--accent); }
   .tagline { margin-top:14px; font-size:13px; color:var(--slate-2); font-style:italic; }
 
-  /* demo switcher (preview/QR setup only — ?nav=1) */
+  /* demo switcher (preview/QR setup only, ?nav=1) */
   .switcher { display:none; position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
     background:var(--paper); border:1px solid var(--line-2); border-radius:100px; padding:6px;
     gap:4px; z-index:50; box-shadow:0 8px 30px rgba(26,26,26,0.16); }
@@ -246,7 +244,7 @@
   .switcher a { font-size:12px; color:var(--slate); text-decoration:none; padding:7px 13px; border-radius:100px; font-weight:700; }
   .switcher a.active { background:var(--accent); color:#fff; }
 
-  /* Mobile tightening — most attendees scan on a phone, so keep the scroll short */
+  /* Mobile tightening, most attendees scan on a phone, so keep the scroll short */
   @media (max-width:719px) {
     .hero { padding:20px 0 30px; }
     .pain { padding:30px 0; }
@@ -370,7 +368,7 @@
       <button class="btn btn-primary full" type="submit">Send me the demo →</button>
     </form>
     <div class="ok-msg" id="ok">
-      <div class="h">✓ Thanks — you're on the list</div>
+      <div class="h">✓ Thanks, you're on the list</div>
       <div class="s">We'll follow up after IMTS to turn one of your own CAD files into a live 3D asset. Come see it running at the booth in the meantime.</div>
     </div>
     <p class="form-note">We'll only reach out about your 3D demo. No spam.</p>
@@ -398,100 +396,28 @@
 <script>
 /* ============================================================
    THREE DEMO TRACKS (Ashley's brief: 3 demos, not 5)
-   Copy follows VNTANA DNA — pain-first, "3D DAM", Astec lead
-   stat, dealer/parts language, publishing-destination list,
-   demo-page CTA. Blue is the master accent; each demo gets a
+   Copy follows VNTANA DNA, pain-first, "3D DAM", Astec lead
+   stat, dealer/parts language, publishing-destination list, demo-page CTA. Blue is the master accent; each demo gets a
    subtle accent shift (blue / mint-deep / blue) but stays on-brand.
    ============================================================ */
 const ACCENTS = {
-  blue: { a:'#4B61F9', deep:'#3547d6', tint:'#eef0ff' },
-  mint: { a:'#2f9e6f', deep:'#207a54', tint:'#e6f7ef' }, // darkened mint for text contrast on light
+  blue: { a:'#4B61F9', deep:'#3547d6', tint:'#eef0ff' }, mint: { a:'#2f9e6f', deep:'#207a54', tint:'#e6f7ef' }, // darkened mint for text contrast on light
   indigo:{ a:'#5a45d6', deep:'#402fa8', tint:'#efecff' }
 };
 
 const DEMOS = {
   "machines": {
-    accent:"blue", tag:"MACHINES & FABRICATION",
-    headline:['Your machine, in a buyer\u2019s hands \u2014 <em>before an engineer preps a thing.</em>'],
-    sub:"Machine tools, fabrication and inspection equipment are too large and complex to evaluate from a photo. The exact 3D model already sits in your CAD files. VNTANA turns it into content that sells.",
-    proof:{ label:"Astec Industries \u00b7 heavy equipment OEM", oldK:"Engineer prep per model", oldV:"2 weeks",
-      newK:"With VNTANA", newV:"15 minutes",
-      cite:"<b>Astec</b> engineers used to spend two weeks prepping a single model. Now it\u2019s automated in 15 minutes \u2014 and sales pulls up any machine from a link." },
-    painMain:'Complex equipment can\u2019t be evaluated from static photos, and your salespeople <b>can\u2019t demo without an engineer on the call.</b> Deals stall on questions the website should answer.',
-    painFix:"VNTANA is an enterprise <strong>3D Product Digital Asset Management</strong> platform. It ingests the native CAD you already own, optimizes it automatically with Intelligent Optimization\u2122 tuned to each product, and publishes one accurate model across a website, a dealer portal, parts catalogue, and a mobile device \u2014 no photo shoots, no 3D specialists, no engineering time.",
-    assetHead:['The full machine, <span class="of">on any device.</span>'],
-    assetLead:"You can\u2019t ship a machining center to every prospect. You can put it in their hands at true scale, let them open it up, and answer the fit questions on the spot.",
-    demo:{ code:"DEMO 1", name:"Machining center / fabrication machine", scale:"Full machine \u00b7 true-to-scale AR",
-      obj:'Complete machine <span>\u2014 enclosure, spindle, work envelope</span>',
-      desc:"Rotate it, place it on the buyer\u2019s shop floor in AR, open the enclosure with an exploded view, and highlight any part by name. The demo that lets a rep sell without an engineer.",
-      src:"221 MB STEP", web:"9.4 MB", load:"< 3 sec" },
-    capsHead:['Not a 3D viewer. <span class="of">A commercial infrastructure layer.</span>'],
-    caps:[
-      ["01","Web + AR viewer","Interactive rotate, zoom and pan, plus true-to-scale AR on iOS and Android \u2014 no app. Loads 5\u201310x faster than alternatives, even on mobile."],
-      ["02","Exploded views","Scene-graph navigation lets buyers highlight, hide and search individual parts, then explode the assembly to see inside."],
-      ["03","Sell without an engineer","Reps hand over a link and buyers self-serve the evaluation \u2014 the Astec pattern, where one digital person supports the whole sales team."],
-      ["04","Every configuration","Publish each revision and upgrade automatically from the source model \u2014 no re-shoots when the design changes."],
-      ["05","CAD to Product Imagery","Generate accurate images and video straight from CAD for every angle and configuration, with no photography."],
-      ["06","Fits your stack","Connects to your PLM, ERP, PIM and eCommerce systems through open APIs. No rip-and-replace; SOC2 Type II certified."]
-    ],
-    leadHead:['Want to see <em>your</em> machine like this?'],
-    leadSub:"Leave your details and we\u2019ll turn one of your own CAD files into a live, interactive 3D asset \u2014 built from the file you already own."
-  },
-
-  "parts": {
-    accent:"mint", tag:"TOOLING, COMPONENTS & AFTERMARKET",
-    headline:['Turn the CAD you already own into a <em>clickable 3D parts catalogue.</em>'],
-    sub:"Cutting tools, workholding, components and consumables live and die on the catalogue. Dealers and technicians can\u2019t identify parts from 2D line drawings \u2014 so the wrong parts get ordered and margin walks out the door.",
-    proof:{ label:"Aftermarket \u00b7 highest-margin revenue line", oldK:"Today\u2019s catalog", oldV:"2D drawings",
-      newK:"With VNTANA", newV:"3D, clickable",
-      cite:"Your parts catalogue is your most-visited digital property and your highest-margin revenue line. VNTANA converts CAD and BOM data into a clickable 3D catalogue \u2014 <b>without your engineers touching a file.</b>" },
-    painMain:'Dealers and technicians can\u2019t identify parts from 2D line drawings and blank thumbnails \u2014 so <b>wrong parts get ordered and the service desk carries the load.</b>',
-    painFix:"VNTANA converts your CAD and BOM data into a <strong>clickable 3D parts catalogue</strong> automatically. A technician spins the assembly on a phone, finds the exact part visually, and orders it right the first time. Proprietary geometry is stripped automatically before anything publishes externally.",
-    assetHead:['One model. <span class="of">Every serviceable part.</span>'],
-    assetLead:"You don\u2019t model each SKU by hand. VNTANA turns an assembly into an interactive catalogue where every part is findable, identifiable, and orderable \u2014 on any device, in the field.",
-    demo:{ code:"DEMO 2", name:"Tooling / component assembly", scale:"Assembly \u00b7 tap-to-identify parts",
-      obj:'Assembly with BOM <span>\u2014 tools, workholding, wear parts</span>',
-      desc:"Explode the assembly, tap any component to identify it, and drill to the exact part number. The same source model feeds your parts catalogue, dealer portal, and eCommerce.",
-      src:"BOM + native CAD", web:"Clickable 3D", load:"< 2 sec" },
-    capsHead:['Not a PDF. <span class="of">A parts catalogue that sells.</span>'],
-    caps:[
-      ["01","Clickable 3D catalogue","Convert CAD and BOM into an interactive catalogue where technicians find the exact part visually \u2014 fewer wrong-part orders."],
-      ["02","Web + AR viewer","Place a component at true scale on any phone. Calls to the service desk drop when buyers can fully inspect before ordering."],
-      ["03","Part hotspots","Animated hotspots pin each part to its number, with text, images, video and links right on the model."],
-      ["04","Full-catalogue coverage","Drive thousands of SKUs from source CAD \u2014 every revision and upgrade, no per-part photography."],
-      ["05","Protect your IP","Proprietary geometry and metadata are stripped automatically before anything reaches a dealer or external destination."],
-      ["06","Feeds your existing tools","Sits upstream of your catalog and eCommerce tools, publishing one source of truth into each through open APIs."]
-    ],
-    leadHead:['Want your parts catalogue <em>clickable</em>?'],
-    leadSub:"Leave your details and we\u2019ll turn one of your own assemblies into an interactive 3D parts demo \u2014 built from the CAD you already own."
-  },
-
-  "automation": {
-    accent:"indigo", tag:"AUTOMATION, ROBOTICS & MATERIAL HANDLING",
-    headline:['Let buyers place your equipment <em>in their own facility \u2014 before they buy.</em>'],
-    sub:"Automation and material-handling systems are sold on fit and integration. The question is always the same: will this work in my space, next to my machines? A photo can\u2019t answer that. A true-to-scale 3D model can.",
-    proof:{ label:"B2B eCommerce & self-serve evaluation", oldK:"B2B buyers who prefer", oldV:"Self-serve",
-      newK:"Sales cycle", newV:">25% shorter",
-      cite:"80% of B2B buyers prefer to self-serve their evaluation, and interactive 3D cuts sales-cycle length by more than 25% (MarketScale). <b>Doosan Bobcat</b> saw higher conversion with buyers evaluating on their own." },
-    painMain:'Automation is bought on <b>fit and integration</b> \u2014 but complex, configurable systems can\u2019t be evaluated from static photos, and every demo needs an engineer on the call.',
-    painFix:"VNTANA turns your automation and material-handling CAD into interactive 3D and AR that a buyer can place in their actual facility \u2014 checking footprint and clearances at true scale. Built automatically from CAD and published to your website, dealer portal, parts catalogue, and a mobile device.",
-    assetHead:['Put it <span class="of">on their floor.</span>'],
-    assetLead:"No renderings, no guesswork. The buyer stands in their plant, places your system at true 1:1 scale in AR, and sees exactly how it fits \u2014 the \u201cimagined fit\u201d risk removed.",
-    demo:{ code:"DEMO 3", name:"Material-handling system", scale:"Full unit \u00b7 true-to-scale AR",
-      obj:'Complete system <span>\u2014 hopper, feed and controls</span>',
-      desc:"Spin it, place it on the buyer\u2019s line in AR to check footprint and clearances, and explode it to show how it integrates. Fit and integration questions answered on the spot.",
-      src:"Native equipment CAD", web:"Interactive 3D + AR", load:"< 2 sec" },
-    capsHead:['Not a brochure. <span class="of">A fit test buyers run themselves.</span>'],
-    caps:[
-      ["01","True-to-scale AR","Buyers place the full cell at 1:1 in their real facility on any phone \u2014 no app \u2014 to confirm reach and clearances on site."],
-      ["02","Interactive web viewer","Interactive rotate, zoom and pan, loading 5\u201310x faster than alternatives so buyers self-serve the evaluation."],
-      ["03","Exploded views","Break the cell down to show end-effectors, guarding and integration points, with parts searchable by name."],
-      ["04","Configure live","Swap configurations and layouts from the source model so buyers see their exact application."],
-      ["05","Simulation-ready","The same governed asset converts to USD with physics for simulation and digital-twin work (CAD \u2192 USD \u2192 Omniverse)."],
-      ["06","No rip-and-replace","Open APIs and webhooks connect the PLM, ERP and eCommerce systems you already run. SOC2 Type II certified."]
-    ],
-    leadHead:['Want buyers to <em>place your equipment</em> in their plant?'],
-    leadSub:"Leave your details and we\u2019ll turn one of your own robot or cell files into a live 3D and AR demo \u2014 built from the CAD you already own."
+    accent:"blue", tag:"MACHINES & FABRICATION", headline:['Your machine, in a buyer\u2019s hands, <em>before an engineer preps a thing.</em>'], sub:"Machine tools, fabrication and inspection equipment are too large and complex to evaluate from a photo. The exact 3D model already sits in your CAD files. VNTANA turns it into content that sells.", proof:{ label:"Astec Industries \u00b7 heavy equipment OEM", oldK:"Engineer prep per model", oldV:"2 weeks", newK:"With VNTANA", newV:"15 minutes", cite:"<b>Astec</b> engineers used to spend two weeks prepping a single model. Now it\u2019s automated in 15 minutes, and sales pulls up any machine from a link." }, painMain:'Complex equipment can\u2019t be evaluated from static photos, and your salespeople <b>can\u2019t demo without an engineer on the call.</b> Deals stall on questions the website should answer.', painFix:"VNTANA is an enterprise <strong>3D Product Digital Asset Management</strong> platform. It ingests the native CAD you already own, optimizes it automatically with Intelligent Optimization\u2122 tuned to each product, and publishes one accurate model across a website, a dealer portal, parts catalogue, and a mobile device, no photo shoots, no 3D specialists, no engineering time.", assetHead:['The full machine, <span class="of">on any device.</span>'], assetLead:"You can\u2019t ship a machining center to every prospect. You can put it in their hands at true scale, let them open it up, and answer the fit questions on the spot.", demo:{ code:"DEMO 1", name:"Machining center / fabrication machine", scale:"Full machine \u00b7 true-to-scale AR", obj:'Complete machine <span>, enclosure, spindle, work envelope</span>', desc:"Rotate it, place it on the buyer\u2019s shop floor in AR, open the enclosure with an exploded view, and highlight any part by name. The demo that lets a rep sell without an engineer.", src:"221 MB STEP", web:"9.4 MB", load:"< 3 sec" }, capsHead:['Not a 3D viewer. <span class="of">A commercial infrastructure layer.</span>'], caps:[
+      ["01","Web + AR viewer","Interactive rotate, zoom and pan, plus true-to-scale AR on iOS and Android, no app. Loads 5\u201310x faster than alternatives, even on mobile."], ["02","Exploded views","Scene-graph navigation lets buyers highlight, hide and search individual parts, then explode the assembly to see inside."], ["03","Sell without an engineer","Reps hand over a link and buyers self-serve the evaluation, the Astec pattern, where one digital person supports the whole sales team."], ["04","Every configuration","Publish each revision and upgrade automatically from the source model, no re-shoots when the design changes."], ["05","CAD to Product Imagery","Generate accurate images and video straight from CAD for every angle and configuration, with no photography."], ["06","Fits your stack","Connects to your PLM, ERP, PIM and eCommerce systems through open APIs. No rip-and-replace; SOC2 Type II certified."]
+    ], leadHead:['Want to see <em>your</em> machine like this?'], leadSub:"Leave your details and we\u2019ll turn one of your own CAD files into a live, interactive 3D asset, built from the file you already own."
+  }, "parts": {
+    accent:"mint", tag:"TOOLING, COMPONENTS & AFTERMARKET", headline:['Turn the CAD you already own into a <em>clickable 3D parts catalogue.</em>'], sub:"Cutting tools, workholding, components and consumables live and die on the catalogue. Dealers and technicians can\u2019t identify parts from 2D line drawings, so the wrong parts get ordered and margin walks out the door.", proof:{ label:"Aftermarket \u00b7 highest-margin revenue line", oldK:"Today\u2019s catalog", oldV:"2D drawings", newK:"With VNTANA", newV:"3D, clickable", cite:"Your parts catalogue is your most-visited digital property and your highest-margin revenue line. VNTANA converts CAD and BOM data into a clickable 3D catalogue, <b>without your engineers touching a file.</b>" }, painMain:'Dealers and technicians can\u2019t identify parts from 2D line drawings and blank thumbnails, so <b>wrong parts get ordered and the service desk carries the load.</b>', painFix:"VNTANA converts your CAD and BOM data into a <strong>clickable 3D parts catalogue</strong> automatically. A technician spins the assembly on a phone, finds the exact part visually, and orders it right the first time. Proprietary geometry is stripped automatically before anything publishes externally.", assetHead:['One model. <span class="of">Every serviceable part.</span>'], assetLead:"You don\u2019t model each SKU by hand. VNTANA turns an assembly into an interactive catalogue where every part is findable, identifiable, and orderable, on any device, in the field.", demo:{ code:"DEMO 2", name:"Tooling / component assembly", scale:"Assembly \u00b7 tap-to-identify parts", obj:'Assembly with BOM <span>, tools, workholding, wear parts</span>', desc:"Explode the assembly, tap any component to identify it, and drill to the exact part number. The same source model feeds your parts catalogue, dealer portal, and eCommerce.", src:"BOM + native CAD", web:"Clickable 3D", load:"< 2 sec" }, capsHead:['Not a PDF. <span class="of">A parts catalogue that sells.</span>'], caps:[
+      ["01","Clickable 3D catalogue","Convert CAD and BOM into an interactive catalogue where technicians find the exact part visually, fewer wrong-part orders."], ["02","Web + AR viewer","Place a component at true scale on any phone. Calls to the service desk drop when buyers can fully inspect before ordering."], ["03","Part hotspots","Animated hotspots pin each part to its number, with text, images, video and links right on the model."], ["04","Full-catalogue coverage","Drive thousands of SKUs from source CAD, every revision and upgrade, no per-part photography."], ["05","Protect your IP","Proprietary geometry and metadata are stripped automatically before anything reaches a dealer or external destination."], ["06","Feeds your existing tools","Sits upstream of your catalog and eCommerce tools, publishing one source of truth into each through open APIs."]
+    ], leadHead:['Want your parts catalogue <em>clickable</em>?'], leadSub:"Leave your details and we\u2019ll turn one of your own assemblies into an interactive 3D parts demo, built from the CAD you already own."
+  }, "automation": {
+    accent:"indigo", tag:"AUTOMATION, ROBOTICS & MATERIAL HANDLING", headline:['Let buyers place your equipment <em>in their own facility, before they buy.</em>'], sub:"Automation and material-handling systems are sold on fit and integration. The question is always the same: will this work in my space, next to my machines? A photo can\u2019t answer that. A true-to-scale 3D model can.", proof:{ label:"B2B eCommerce & self-serve evaluation", oldK:"B2B buyers who prefer", oldV:"Self-serve", newK:"Sales cycle", newV:">25% shorter", cite:"80% of B2B buyers prefer to self-serve their evaluation, and interactive 3D cuts sales-cycle length by more than 25% (MarketScale). <b>Doosan Bobcat</b> saw higher conversion with buyers evaluating on their own." }, painMain:'Automation is bought on <b>fit and integration</b>, but complex, configurable systems can\u2019t be evaluated from static photos, and every demo needs an engineer on the call.', painFix:"VNTANA turns your automation and material-handling CAD into interactive 3D and AR that a buyer can place in their actual facility, checking footprint and clearances at true scale. Built automatically from CAD and published to your website, dealer portal, parts catalogue, and a mobile device.", assetHead:['Put it <span class="of">on their floor.</span>'], assetLead:"No renderings, no guesswork. The buyer stands in their plant, places your system at true 1:1 scale in AR, and sees exactly how it fits, the \u201cimagined fit\u201d risk removed.", demo:{ code:"DEMO 3", name:"Material-handling system", scale:"Full unit \u00b7 true-to-scale AR", obj:'Complete system <span>, hopper, feed and controls</span>', desc:"Spin it, place it on the buyer\u2019s line in AR to check footprint and clearances, and explode it to show how it integrates. Fit and integration questions answered on the spot.", src:"Native equipment CAD", web:"Interactive 3D + AR", load:"< 2 sec" }, capsHead:['Not a brochure. <span class="of">A fit test buyers run themselves.</span>'], caps:[
+      ["01","True-to-scale AR","Buyers place the full cell at 1:1 in their real facility on any phone, no app, to confirm reach and clearances on site."], ["02","Interactive web viewer","Interactive rotate, zoom and pan, loading 5\u201310x faster than alternatives so buyers self-serve the evaluation."], ["03","Exploded views","Break the cell down to show end-effectors, guarding and integration points, with parts searchable by name."], ["04","Configure live","Swap configurations and layouts from the source model so buyers see their exact application."], ["05","Simulation-ready","The same governed asset converts to USD with physics for simulation and digital-twin work (CAD \u2192 USD \u2192 Omniverse)."], ["06","No rip-and-replace","Open APIs and webhooks connect the PLM, ERP and eCommerce systems you already run. SOC2 Type II certified."]
+    ], leadHead:['Want buyers to <em>place your equipment</em> in their plant?'], leadSub:"Leave your details and we\u2019ll turn one of your own robot or cell files into a live 3D and AR demo, built from the CAD you already own."
   }
 };
 
@@ -500,8 +426,8 @@ const DEMOS = {
    machines = John Deere (loaded, name/scene-tree cleanup still pending).
    parts / automation = not sourced yet -> descriptive card shows, no broken iframe. */
 const MODEL_UUIDS = {
-  machines:   "ce517cf7-3724-429e-95f0-796a6ff0b88d",  // John Deere (STL, placeholder hero)
-  parts:      null,                                     // not sourced yet
+  machines:   "ce517cf7-3724-429e-95f0-796a6ff0b88d", // John Deere (STL, placeholder hero)
+  parts:      null, // not sourced yet
   automation: "e1e5adb1-41eb-4eb3-8a32-b56a757e2201"    // BHF-50 hopper feeder (Sandfield)
 };
 const embedUrl = (uuid) =>
@@ -509,9 +435,7 @@ const embedUrl = (uuid) =>
 
 const LOGOS = ["Doosan Bobcat","Astec","Kohler","Michaels","Sony","Dril-Quip"];
 const STATS = [
-  ["73%","of industrial B2B buyers purchase online"],
-  ["75%","of B2B buyers prefer rep-free, self-serve interactions"],
-  [">25%","shorter sales cycle with interactive 3D"]
+  ["73%","of industrial B2B buyers purchase online"], ["75%","of B2B buyers prefer rep-free, self-serve interactions"], [">25%","shorter sales cycle with interactive 3D"]
 ];
 const ORDER = ["machines","parts","automation"];
 const SHORT = { machines:"Machines", parts:"Parts", automation:"Automation" };
@@ -531,7 +455,7 @@ function applyAccent(name) {
 function render(key) {
   const d = DEMOS[key];
   applyAccent(d.accent);
-  document.title = "VNTANA at IMTS 2026 — " + d.tag;
+  document.title = "VNTANA at IMTS 2026, " + d.tag;
   const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
   set('demotag', d.tag);
   set('headline', d.headline[0]);
