@@ -39,7 +39,9 @@ const BOX_FACES = [[0,1,2,3,[0,0,-1]],[5,4,7,6,[0,0,1]],[4,0,3,7,[-1,0,0]],
 
 function addPlaceholder(min, max) {
   const c = min.map((m,i)=>(m+max[i])/2), s = max.map((m,i)=>m-min[i]);
-  const [hx,hy,hz]=[s[0]/2,s[1]/2,s[2]/2], [cx,cy,cz]=c;
+  const K=0.85;  // shrink the box ~15% so its faces don't sit coplanar with
+                 // neighboring surfaces (coplanar faces z-fight / flicker on orbit)
+  const [hx,hy,hz]=[s[0]/2*K,s[1]/2*K,s[2]/2*K], [cx,cy,cz]=c;
   const cor=[[cx-hx,cy-hy,cz-hz],[cx+hx,cy-hy,cz-hz],[cx+hx,cy+hy,cz-hz],[cx-hx,cy+hy,cz-hz],
              [cx-hx,cy-hy,cz+hz],[cx+hx,cy-hy,cz+hz],[cx+hx,cy+hy,cz+hz],[cx-hx,cy+hy,cz+hz]];
   const pos=[],nor=[],idx=[]; let vi=0;
