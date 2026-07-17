@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMTS Business Card — BHF-50 (Automation)</title>
+<style>
+  :root { --blue:#4B61F9; --ink:#1A1A1A; --slate:#5a6472; --paper:#fff; --line:#e5e8ef; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#eef0f4; font-family:"Poppins","Century Gothic","Futura",-apple-system,"Segoe UI",sans-serif;
+    color:var(--ink); padding:40px 20px; }
+  .page { max-width:900px; margin:0 auto; }
+  h1.title { font-size:20px; font-weight:800; letter-spacing:-0.01em; margin-bottom:4px; }
+  .note { font-size:13px; color:var(--slate); margin-bottom:28px; line-height:1.5; }
+  .note b { color:var(--ink); }
+  .cards { display:flex; gap:30px; flex-wrap:wrap; }
+
+  /* Business card: 3.5in x 2in @ 96dpi = 336x192; scaled up x1.6 for on-screen preview */
+  .card {
+    width:537px; height:307px; background:var(--paper); border-radius:12px;
+    box-shadow:0 10px 40px rgba(26,26,26,0.14); overflow:hidden; position:relative;
+    display:flex;
+  }
+  .card-label { position:absolute; top:-22px; left:2px; font-size:11px; font-weight:700;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--slate); }
+
+  /* ---- FRONT: See the Asset ---- */
+  .front { background:linear-gradient(160deg,#f3f5ff 0%, #ffffff 60%); }
+  .front .left { flex:1.15; padding:24px 20px; display:flex; flex-direction:column; justify-content:space-between; }
+  .front .right { width:180px; background:var(--blue); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:10px; padding:18px; }
+  .brand { font-weight:800; letter-spacing:0.16em; font-size:22px; }
+  .eyebrow { font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--blue); font-weight:700; }
+  .machine { font-size:26px; font-weight:800; letter-spacing:-0.02em; line-height:1.05; margin-top:8px; }
+  .machine span { color:var(--slate); font-weight:600; font-size:14px; display:block; letter-spacing:0; margin-top:4px; }
+  .meta { font-size:11px; color:var(--slate); line-height:1.5; }
+  .qr-box { background:#fff; border-radius:10px; padding:9px; width:132px; height:132px; }
+  .qr-box svg { width:100%; height:100%; display:block; }
+  .qr-cap { color:#fff; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-align:center; }
+  .qr-sub { color:rgba(255,255,255,0.85); font-size:9.5px; text-align:center; margin-top:-4px; }
+
+  /* ---- BACK: Learn More ---- */
+  .back { background:var(--ink); color:#fff; flex-direction:column; padding:26px 26px; justify-content:space-between; }
+  .back .brand { font-size:24px; }
+  .back .tagline { font-size:14px; color:#c9cdd6; font-style:italic; margin-top:6px; }
+  .back .cat { font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--blue); font-weight:700; margin-top:14px; }
+  .back-row { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
+  .back .contact { font-size:11px; color:#c9cdd6; line-height:1.6; }
+  .back .contact b { color:#fff; }
+  .back .qr-box { width:118px; height:118px; }
+  .back .qr-cap { color:#fff; }
+
+  .legend { margin-top:34px; font-size:12.5px; color:var(--slate); line-height:1.7; }
+  .legend code { background:#fff; border:1px solid var(--line); border-radius:5px; padding:2px 6px; font-size:11px; }
+  .flag { margin-top:16px; background:#fff7ed; border:1px solid #fed7aa; border-radius:10px; padding:14px 16px; font-size:12.5px; color:#7c4a1e; line-height:1.55; }
+  .flag b { color:#9a3412; }
+  @media print { body { background:#fff; padding:0; } .legend,.flag,.note,h1.title,.card-label { display:none; } .cards { gap:0; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="title">IMTS 2026 — Business Card Mockup (Automation / BHF-50)</h1>
+  <p class="note">Design reference for Scott. Two-sided card: <b>Front</b> = scan to see the machine in 3D/AR · <b>Back</b> = scan to learn more. QR SVGs are in this folder (print-ready, error-correction H).</p>
+
+  <div class="cards">
+    <div class="card front">
+      <span class="card-label">Front · See the Asset</span>
+      <div class="left">
+        <div>
+          <span class="brand">VNTANA</span>
+          <div class="machine">BHF-50<span>Vibrating Hopper Feeder · Sandfield Engineering</span></div>
+        </div>
+        <div class="meta">See it at true scale on your phone.<br>No app. Point your camera and scan.</div>
+      </div>
+      <div class="right">
+        <div class="qr-box" id="qrFront"></div>
+        <div class="qr-cap">See the Asset</div>
+        <div class="qr-sub">Opens in 3D &amp; AR</div>
+      </div>
+    </div>
+
+    <div class="card back">
+      <span class="card-label">Back · Learn More</span>
+      <div>
+        <span class="brand">VNTANA</span>
+        <div class="tagline">Sell more with the CAD you already own.</div>
+        <div class="cat">Automation · Robotics · Material Handling</div>
+      </div>
+      <div class="back-row">
+        <div class="contact">
+          <b>3D Product Digital Asset Management</b><br>
+          IMTS 2026 · McCormick Place<br>
+          vntana.com/schedule-demo
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="qr-box" id="qrBack"></div>
+          <div class="qr-cap">Learn More</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <b>QR targets</b><br>
+    See the Asset → <code>embed.vntana.com/v2?productUuid=e1e5adb1…&clientSlug=itms</code> (stable, domain-independent)<br>
+    Learn More → <code>vntana-store-production.up.railway.app/imts.html?demo=automation</code>
+  </div>
+  <div class="flag">
+    <b>Before printing:</b> the "Learn More" QR is provisional — it points at the current <code>railway.app</code> URL. If you attach a custom domain (e.g. imts.vntana.com), this QR must be regenerated. Lock the domain first. Also: confirm featuring Sandfield's BHF-50 by name is cleared, or relabel generically.
+  </div>
+</div>
+
+<script>
+  // Inline the QR SVGs so the card is self-contained on screen
+  Promise.all([
+    fetch('qr-see-asset.svg').then(r=>r.text()),
+    fetch('qr-learn-more.svg').then(r=>r.text())
+  ]).then(([a,b])=>{
+    document.getElementById('qrFront').innerHTML = a;
+    document.getElementById('qrBack').innerHTML = b;
+  });
+</script>
+</body>
+</html>
