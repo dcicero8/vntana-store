@@ -246,6 +246,21 @@
   .switcher a { font-size:12px; color:var(--slate); text-decoration:none; padding:7px 13px; border-radius:100px; font-weight:700; }
   .switcher a.active { background:var(--accent); color:#fff; }
 
+  /* Mobile tightening — most attendees scan on a phone, so keep the scroll short */
+  @media (max-width:719px) {
+    .hero { padding:20px 0 30px; }
+    .pain { padding:30px 0; }
+    .pain .fix { margin-top:14px; }
+    .asset { padding:32px 0 6px; }
+    .caps { padding:34px 0; margin-top:26px; }
+    .cap-grid { gap:11px; margin-top:18px; }
+    .cap { min-height:0; padding:15px 15px; gap:6px; }
+    .logos-sec { padding:28px 0; }
+    .stat-row { margin-top:20px; }
+    .lead-sec { padding:34px 0 34px; }
+    .proofcard { margin-top:20px; padding:16px 18px; }
+    .cta-row { margin-top:18px; }
+  }
   @media (min-width:720px) {
     .cap-grid { grid-template-columns:repeat(3,1fr); }
     .hero { padding:36px 0 54px; }
