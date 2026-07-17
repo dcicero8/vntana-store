@@ -102,7 +102,7 @@
       left: auto !important;
       top: 50% !important;
       bottom: auto !important;
-      transform: translateY(-50%) !important;
+      transform: translate(var(--cardShift, 0px), -50%) !important;  /* JS clamps into viewport */
       z-index: 9999 !important;
       padding: 20px !important;   /* uniform white space on all four sides */
     }
@@ -207,7 +207,10 @@
     }
 
     const closeAll = () => {
-      viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open", "flip-right"));
+      viewer.querySelectorAll("vntana-hotspot.open").forEach(h => {
+        h.classList.remove("open", "flip-right");
+        h.querySelector(".hotspot-popup")?.style.removeProperty("--cardShift");
+      });
       watchOverlaps();
     };
 
@@ -223,17 +226,32 @@
       if (!open) return;
       const step = () => {
         if (!open.classList.contains("open")) return; // closed since last frame
-        // Flip the card to the roomy side: if the pin sits in the left ~45% of the
-        // viewer, open the card to the RIGHT so it can't run off the left edge.
-        // Hysteresis (dead zone near center) prevents jitter as the camera settles.
+        // Flip the card to the RIGHT when the 540px card can't fit to the LEFT of
+        // the pin (would run off the left edge). Decision is based on actual room,
+        // not a fixed fraction, so it adapts to viewer/monitor width. Hysteresis
+        // (40px dead band) prevents side-to-side jitter as the camera settles.
+        const CARD_W = 560; // 540 card + gap
         const vr = viewer.getBoundingClientRect();
+        const cardEl = open.querySelector(".hotspot-popup");
         const pr = open.querySelector(".hotspot-pin")?.getBoundingClientRect();
         if (pr && vr.width) {
-          const rel = (pr.left + pr.width/2 - vr.left) / vr.width;
-          if (rel < 0.42) open.classList.add("flip-right");
-          else if (rel > 0.48) open.classList.remove("flip-right");
+          const spaceLeft = pr.left - vr.left;
+          if (spaceLeft < CARD_W) open.classList.add("flip-right");
+          else if (spaceLeft > CARD_W + 40) open.classList.remove("flip-right");
         }
-        const card = open.querySelector(".hotspot-popup")?.getBoundingClientRect();
+        // Clamp the card into the viewport: whichever side it opens on, if it
+        // overflows (narrow monitors), nudge it back in-bounds. Adjusts from the
+        // current shift so there's no per-frame flash.
+        if (cardEl) {
+          const cur = parseFloat(cardEl.style.getPropertyValue("--cardShift")) || 0;
+          const c = cardEl.getBoundingClientRect();
+          const M = 10;
+          let desired = cur;
+          if (c.left < vr.left + M)       desired = cur + (vr.left + M - c.left);
+          else if (c.right > vr.right - M) desired = cur + (vr.right - M - c.right);
+          if (Math.abs(desired - cur) > 0.5) cardEl.style.setProperty("--cardShift", desired + "px");
+        }
+        const card = cardEl?.getBoundingClientRect();
         if (card && card.width) {
           viewer.querySelectorAll("vntana-hotspot:not(.open) .hotspot-pin").forEach(pin => {
             const r = pin.getBoundingClientRect();
