@@ -112,6 +112,19 @@
       right: auto !important;
       left: calc(100% + 12px) !important;
     }
+    /* When the card can't fit beside the pin without covering it (narrow screen,
+       near-center pin), drop it BELOW (or ABOVE) the pin, centered on it, so the
+       pin stays visible. Still clamped horizontally via --cardShift. */
+    vntana-hotspot.place-below .hotspot-popup {
+      right: auto !important; left: 50% !important;
+      top: calc(100% + 14px) !important; bottom: auto !important;
+      transform: translate(calc(-50% + var(--cardShift, 0px)), 0) !important;
+    }
+    vntana-hotspot.place-above .hotspot-popup {
+      right: auto !important; left: 50% !important;
+      top: auto !important; bottom: calc(100% + 14px) !important;
+      transform: translate(calc(-50% + var(--cardShift, 0px)), 0) !important;
+    }
     .hotspot-popup-body {
       display: flex;
       gap: 16px;
@@ -208,7 +221,8 @@
 
     const closeAll = () => {
       viewer.querySelectorAll("vntana-hotspot.open").forEach(h => {
-        h.classList.remove("open", "flip-right");
+        h.classList.remove("open", "flip-right", "place-below", "place-above");
+        delete h.dataset.place;
         h.querySelector(".hotspot-popup")?.style.removeProperty("--cardShift");
       });
       watchOverlaps();
@@ -226,18 +240,28 @@
       if (!open) return;
       const step = () => {
         if (!open.classList.contains("open")) return; // closed since last frame
-        // Flip the card to the RIGHT when the 540px card can't fit to the LEFT of
-        // the pin (would run off the left edge). Decision is based on actual room,
-        // not a fixed fraction, so it adapts to viewer/monitor width. Hysteresis
-        // (40px dead band) prevents side-to-side jitter as the camera settles.
+        // Pick where the card goes, based on actual room around the pin:
+        //   left  -> fits to the left of the pin (default)
+        //   right -> left doesn't fit, right does
+        //   below/above -> neither side fits without covering the pin, so place
+        //                  it under (or over) the pin, centered, pin stays visible.
         const CARD_W = 560; // 540 card + gap
         const vr = viewer.getBoundingClientRect();
         const cardEl = open.querySelector(".hotspot-popup");
         const pr = open.querySelector(".hotspot-pin")?.getBoundingClientRect();
-        if (pr && vr.width) {
+        if (pr && vr.width && cardEl) {
           const spaceLeft = pr.left - vr.left;
-          if (spaceLeft < CARD_W) open.classList.add("flip-right");
-          else if (spaceLeft > CARD_W + 40) open.classList.remove("flip-right");
+          const spaceRight = vr.right - pr.right;
+          let place = "left";
+          if (spaceLeft < CARD_W) place = (spaceRight >= CARD_W) ? "right" : "vertical";
+          if (place === "vertical") place = ((vr.bottom - pr.bottom) >= (pr.top - vr.top)) ? "below" : "above";
+          if (open.dataset.place !== place) {
+            open.dataset.place = place;
+            open.classList.toggle("flip-right",  place === "right");
+            open.classList.toggle("place-below", place === "below");
+            open.classList.toggle("place-above", place === "above");
+            cardEl.style.removeProperty("--cardShift"); // reset; clamp recomputes below
+          }
         }
         // Clamp the card into the viewport: whichever side it opens on, if it
         // overflows (narrow monitors), nudge it back in-bounds. Adjusts from the
