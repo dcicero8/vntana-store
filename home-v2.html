@@ -93,7 +93,7 @@
       pointer-events: none;
     }
 
-    /* ── Hotspot popup: opens left of the pin, image + text side by side ── */
+    /* ── Hotspot popup: opens LEFT of the pin by default, image + text side by side ── */
     .hotspot-popup {
       width: 540px !important;
       max-width: 540px !important;
@@ -105,6 +105,12 @@
       transform: translateY(-50%) !important;
       z-index: 9999 !important;
       padding: 20px !important;   /* uniform white space on all four sides */
+    }
+    /* Pins on the left side of the viewer open their card to the RIGHT so the
+       540px card doesn't run off the left edge on smaller monitors (set in JS). */
+    vntana-hotspot.flip-right .hotspot-popup {
+      right: auto !important;
+      left: calc(100% + 12px) !important;
     }
     .hotspot-popup-body {
       display: flex;
@@ -201,7 +207,7 @@
     }
 
     const closeAll = () => {
-      viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open"));
+      viewer.querySelectorAll("vntana-hotspot.open").forEach(h => h.classList.remove("open", "flip-right"));
       watchOverlaps();
     };
 
@@ -217,6 +223,16 @@
       if (!open) return;
       const step = () => {
         if (!open.classList.contains("open")) return; // closed since last frame
+        // Flip the card to the roomy side: if the pin sits in the left ~45% of the
+        // viewer, open the card to the RIGHT so it can't run off the left edge.
+        // Hysteresis (dead zone near center) prevents jitter as the camera settles.
+        const vr = viewer.getBoundingClientRect();
+        const pr = open.querySelector(".hotspot-pin")?.getBoundingClientRect();
+        if (pr && vr.width) {
+          const rel = (pr.left + pr.width/2 - vr.left) / vr.width;
+          if (rel < 0.42) open.classList.add("flip-right");
+          else if (rel > 0.48) open.classList.remove("flip-right");
+        }
         const card = open.querySelector(".hotspot-popup")?.getBoundingClientRect();
         if (card && card.width) {
           viewer.querySelectorAll("vntana-hotspot:not(.open) .hotspot-pin").forEach(pin => {
