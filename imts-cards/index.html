@@ -26,18 +26,19 @@
 
   /* ---- FRONT: See the Asset ---- */
   .front { background:linear-gradient(160deg,#f3f5ff 0%, #ffffff 60%); }
-  .front .left { flex:1.15; padding:24px 20px; display:flex; flex-direction:column; justify-content:space-between; }
-  .front .right { width:180px; background:var(--blue); display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:10px; padding:18px; }
+  .front .left { flex:1.25; padding:22px 20px; display:flex; flex-direction:column; justify-content:space-between; }
+  .front .ftop { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .render { height:150px; width:auto; object-fit:contain; margin-top:-6px; }
+  .front .right { width:190px; background:var(--blue); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:12px; padding:16px; }
   .brand { font-weight:800; letter-spacing:0.16em; font-size:22px; }
-  .eyebrow { font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--blue); font-weight:700; }
-  .machine { font-size:26px; font-weight:800; letter-spacing:-0.02em; line-height:1.05; margin-top:8px; }
-  .machine span { color:var(--slate); font-weight:600; font-size:14px; display:block; letter-spacing:0; margin-top:4px; }
-  .meta { font-size:11px; color:var(--slate); line-height:1.5; }
-  .qr-box { background:#fff; border-radius:10px; padding:9px; width:132px; height:132px; }
+  .machine { font-size:30px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
+  .machine span { color:var(--slate); font-weight:600; font-size:13px; display:block; letter-spacing:0; margin-top:5px; }
+  .cta-big { color:#fff; font-size:19px; font-weight:800; line-height:1.08; letter-spacing:0.01em; text-align:center; text-transform:uppercase; }
+  .qr-box { background:#fff; border-radius:10px; padding:9px; width:124px; height:124px; }
   .qr-box svg { width:100%; height:100%; display:block; }
   .qr-cap { color:#fff; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-align:center; }
-  .qr-sub { color:rgba(255,255,255,0.85); font-size:9.5px; text-align:center; margin-top:-4px; }
+  .qr-sub { color:rgba(255,255,255,0.9); font-size:10px; text-align:center; margin-top:-4px; font-weight:600; }
 
   /* ---- BACK: Learn More ---- */
   .back { background:var(--ink); color:#fff; flex-direction:column; padding:26px 26px; justify-content:space-between; }
@@ -66,16 +67,16 @@
     <div class="card front">
       <span class="card-label">Front · See the Asset</span>
       <div class="left">
-        <div>
+        <div class="ftop">
           <span class="brand">VNTANA</span>
-          <div class="machine">BHF-50<span>Vibrating Hopper Feeder · Sandfield Engineering</span></div>
+          <img class="render" src="bhf50.png" alt="BHF-50 hopper feeder">
         </div>
-        <div class="meta">See it at true scale on your phone.<br>No app. Point your camera and scan.</div>
+        <div class="machine">BHF-50<span>Vibrating Hopper Feeder</span></div>
       </div>
       <div class="right">
+        <div class="cta-big">SCAN<br>TO SEE IT<br>IN 3D &amp; AR</div>
         <div class="qr-box" id="qrFront"></div>
-        <div class="qr-cap">See the Asset</div>
-        <div class="qr-sub">Opens in 3D &amp; AR</div>
+        <div class="qr-sub">Point your camera · no app</div>
       </div>
     </div>
 
