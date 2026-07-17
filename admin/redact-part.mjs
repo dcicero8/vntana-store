@@ -52,15 +52,19 @@ function addPlaceholder(min, max) {
   scene.addChild(doc.createNode('Redacted Placeholder').setMesh(doc.createMesh('Redacted Placeholder').addPrimitive(prim)));
 }
 
-for (const match of MATCHES) {
-  const target = root.listNodes().find(n => (n.getName()||'').includes(match));
-  if (!target) { console.error('NOT FOUND:', match); continue; }
-  const bb = getBounds(target);
-  const desc = []; target.traverse(n => desc.push(n));
-  for (const n of desc.reverse()) n.dispose();
-  addPlaceholder(bb.min, bb.max);   // comment out this line for a clean delete (no box)
-  console.log('redacted:', match);
+// Collect EVERY instance of every match (a part can appear many times), and
+// compute all bounding boxes BEFORE disposing anything (so nested targets are safe).
+const targets = root.listNodes().filter(n => {
+  const nm = n.getName() || '';
+  return MATCHES.some(m => nm.includes(m));
+});
+if (!targets.length) { console.error('NO MATCHES for:', MATCHES); process.exit(1); }
+console.log('matched instances:', targets.length);
+const bboxes = targets.map(n => getBounds(n));
+for (const n of targets) {
+  try { const d=[]; n.traverse(x=>d.push(x)); for (const x of d.reverse()) { try{ x.dispose(); }catch(_){} } } catch(_){}
 }
+for (const bb of bboxes) addPlaceholder(bb.min, bb.max);  // remove this line for a clean delete (no boxes)
 
 await doc.transform(prune());
 // Export RAW (no Draco) — VNTANA re-optimizes raw input; Draco-in fails processing.
