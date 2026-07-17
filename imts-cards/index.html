@@ -32,6 +32,9 @@
   .front .right { width:190px; background:var(--blue); display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:12px; padding:16px; }
   .brand { font-weight:800; letter-spacing:0.16em; font-size:22px; }
+  .logo { display:block; height:20px; width:auto; }
+  .logo-dark { filter:brightness(0); }        /* white logo forced black for the light front */
+  .back .logo-white { height:24px; }           /* white logo as-is on the dark back */
   .machine { font-size:30px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
   .machine span { color:var(--slate); font-weight:600; font-size:13px; display:block; letter-spacing:0; margin-top:5px; }
   .cta-big { color:#fff; font-size:19px; font-weight:800; line-height:1.08; letter-spacing:0.01em; text-align:center; text-transform:uppercase; }
@@ -68,7 +71,7 @@
       <span class="card-label">Front · See the Asset</span>
       <div class="left">
         <div class="ftop">
-          <span class="brand">VNTANA</span>
+          <img class="logo logo-dark" src="vntana-logo-white.png" alt="VNTANA">
           <img class="render" src="bhf50.png" alt="BHF-50 hopper feeder">
         </div>
         <div class="machine">BHF-50<span>Vibrating Hopper Feeder</span></div>
@@ -83,7 +86,7 @@
     <div class="card back">
       <span class="card-label">Back · Learn More</span>
       <div>
-        <span class="brand">VNTANA</span>
+        <img class="logo logo-white" src="vntana-logo-white.png" alt="VNTANA">
         <div class="tagline">Sell more with CAD you already own.</div>
         <div class="cat">Automation · Robotics · Material Handling</div>
       </div>
