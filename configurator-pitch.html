@@ -220,16 +220,16 @@
       <div class="bg-white/5 rounded-xl p-6 space-y-4">
         <label class="block">
           <span class="text-sm font-semibold">Monthly visitors to the product / configurator page</span>
-          <input id="roi-visitors" type="number" min="0" value="6000" class="mt-1 w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]">
+          <input id="roi-visitors" type="number" min="0" value="32000" class="mt-1 w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]">
         </label>
         <label class="block">
           <span class="text-sm font-semibold">Current conversion rate</span>
           <span class="text-xs text-neutral-400 block">Share of visitors who buy today</span>
-          <div class="flex items-center gap-2 mt-1"><input id="roi-cvr" type="number" min="0" step="0.1" value="2.0" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"><span class="text-neutral-400">%</span></div>
+          <div class="flex items-center gap-2 mt-1"><input id="roi-cvr" type="number" min="0" step="0.1" value="1.5" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"><span class="text-neutral-400">%</span></div>
         </label>
         <label class="block">
           <span class="text-sm font-semibold">Average order value</span>
-          <div class="flex items-center gap-2 mt-1"><span class="text-neutral-400">$</span><input id="roi-aov" type="number" min="0" value="900" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"></div>
+          <div class="flex items-center gap-2 mt-1"><span class="text-neutral-400">$</span><input id="roi-aov" type="number" min="0" value="950" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"></div>
         </label>
         <label class="block">
           <span class="text-sm font-semibold">Conversion lift with interactive 3D and AR</span>
@@ -258,7 +258,8 @@
           <div class="bg-white/5 rounded-xl p-4 flex justify-between items-baseline"><span class="text-sm text-neutral-300">Value of returns avoided</span><span id="roi-retval" class="text-xl font-black">$0</span></div>
           <div class="bg-white/5 rounded-xl p-4 flex justify-between items-baseline"><span class="text-sm text-neutral-300">Extra orders per year</span><span id="roi-orders" class="text-xl font-black">0</span></div>
         </div>
-        <p class="text-neutral-400 text-xs mt-4 leading-relaxed">Directional estimate for planning, not a guarantee. Added revenue = visitors x 12 x current conversion x lift x order value. Returns avoided = orders x order value x return rate x reduction. Your numbers, your assumptions.</p>
+        <p class="text-neutral-300 text-sm mt-4">Based on about <span id="roi-implied" class="font-black text-white">$0</span> in current annual revenue from these inputs. Adjust the fields to your actuals.</p>
+        <p class="text-neutral-400 text-xs mt-2 leading-relaxed">Directional estimate for planning, not a guarantee. Added revenue = visitors x 12 x current conversion x lift x order value. Returns avoided = orders x order value x return rate x reduction. Your numbers, your assumptions.</p>
         <a href="https://www.vntana.com/schedule-demo/" target="_blank" rel="noopener" class="mt-4 block text-center bg-white text-[var(--vn-ink)] hover:bg-neutral-200 font-bold uppercase tracking-widest px-8 py-4 rounded-md transition">See your real number with our team</a>
       </div>
     </div>
@@ -282,6 +283,7 @@
       const addedRev = extraOrders * aov;
       const totalOrders = ordersNow + extraOrders;
       const returnsAvoided = totalOrders * aov * ret * retred;
+      $("roi-implied").textContent = money(ordersNow * aov);
       $("roi-rev").textContent = money(addedRev);
       $("roi-retval").textContent = money(returnsAvoided);
       $("roi-orders").textContent = Math.round(extraOrders).toLocaleString("en-US");
