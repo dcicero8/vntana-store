@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Internal Demo Index — VNTANA</title>
+<style>
+  :root { --blue:#4B61F9; --ink:#1A1A1A; --slate:#5a6472; --slate2:#8a93a1; --line:#e6e8ef; --bg:#f5f6fa; --card:#fff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; }
+  header { background:var(--ink); color:#fff; padding:26px 28px; }
+  header .brand { font-weight:800; letter-spacing:0.16em; font-size:18px; }
+  header .sub { color:#9aa3b2; font-size:13px; margin-top:4px; }
+  .warn { background:#fff7ed; border-bottom:1px solid #fed7aa; color:#7c4a1e; font-size:12.5px; padding:10px 28px; }
+  .wrap { max-width:1100px; margin:0 auto; padding:26px 20px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin-bottom:16px; box-shadow:0 1px 2px rgba(16,24,40,.04); }
+  .card h2 { font-size:17px; font-weight:800; }
+  .card .desc { color:var(--slate); font-size:13.5px; margin:6px 0 12px; max-width:74ch; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 20px; align-items:center; font-size:12.5px; }
+  .meta a { color:var(--blue); font-weight:700; text-decoration:none; }
+  .meta a:hover { text-decoration:underline; }
+  .upd { color:var(--slate2); }
+  .pill { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:3px 9px; border-radius:100px; }
+  .pill.live { background:#e6f7ef; color:#1c7a4d; }
+  .pill.draft { background:#eef0ff; color:#3547d6; }
+  .pill.internal { background:#fdecef; color:#b0234a; }
+  table.uuids { width:100%; border-collapse:collapse; margin-top:12px; font-size:12px; }
+  table.uuids th, table.uuids td { text-align:left; padding:6px 10px; border-bottom:1px solid var(--line); }
+  table.uuids th { color:var(--slate2); text-transform:uppercase; letter-spacing:0.05em; font-size:10.5px; }
+  table.uuids code { font-family:"SF Mono",Menlo,monospace; font-size:11px; color:var(--ink); }
+  .sec-label { font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--slate2); font-weight:700; margin:24px 0 10px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">VNTANA · INTERNAL DEMO INDEX</div>
+  <div class="sub">Every demo page we have built, what it is, when it last changed, and the live VNTANA asset UUIDs it points to.</div>
+</header>
+<div class="warn"><b>Unlisted, not access-controlled.</b> This page is not linked from anywhere and carries a noindex tag, but anyone with the URL can open it. Do not share the URL outside VNTANA.</div>
+
+<div class="wrap">
+
+  <div class="sec-label">Customer-facing demos</div>
+
+  <div class="card">
+    <h2>TYTUS Grill Configurator <span class="pill live">Live</span></h2>
+    <p class="desc">Step-by-step modular grill configurator (Indian Motorcycle style). Base grill, side unit, corner kit, finish, then a guided feature tour ending in a scan-to-AR stop. Real TYTUS assets, live model swaps.</p>
+    <div class="meta">
+      <a href="/tytus-configurator.html" target="_blank">/tytus-configurator.html ↗</a>
+      <span class="upd">Updated 2026-07-16</span>
+    </div>
+    <table class="uuids">
+      <tr><th>Slot</th><th>Model</th><th>UUID (org DCicero · ws tytus)</th></tr>
+      <tr><td>base</td><td>4-burner grill</td><td><code>58a6c265-7d08-432a-8676-fc031647f4ad</code></td></tr>
+      <tr><td>base+smoker</td><td>smoker duo</td><td><code>b493f0ca-219e-43b1-bc32-9d0e7bfda4e0</code></td></tr>
+      <tr><td>base+pizza</td><td>pizza duo</td><td><code>5de3fff3-781f-4411-a4b7-3763ba9e0ac2</code></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Configurator Pitch Page (TYTUS) <span class="pill live">Live</span></h2>
+    <p class="desc">Self-guided 1-2-3 pitch: why configurators win, proof (YKK + Michaels), the live TYTUS demo, and a conversion ROI calculator as the closing CTA. DNA-aligned, no pricing, no em dashes.</p>
+    <div class="meta">
+      <a href="/configurator-pitch.html" target="_blank">/configurator-pitch.html ↗</a>
+      <span class="upd">Updated 2026-07-18</span>
+    </div>
+    <table class="uuids"><tr><th>Note</th><th colspan="2">Embeds the TYTUS configurator above (same UUIDs).</th></tr></table>
+  </div>
+
+  <div class="card">
+    <h2>IMTS 2026 Booth Landing <span class="pill live">Live</span></h2>
+    <p class="desc">Booth lead-gen page, three tracks switched by <code>?demo=</code> (machines / parts / automation). QR business cards point each variant. Live viewer per track where a model is set.</p>
+    <div class="meta">
+      <a href="/imts.html?demo=machines" target="_blank">machines ↗</a>
+      <a href="/imts.html?demo=parts" target="_blank">parts ↗</a>
+      <a href="/imts.html?demo=automation" target="_blank">automation ↗</a>
+      <span class="upd">Updated 2026-07-17</span>
+    </div>
+    <table class="uuids">
+      <tr><th>Track</th><th>Model</th><th>UUID (org DCicero · ws itms)</th></tr>
+      <tr><td>machines</td><td>John Deere (STL placeholder)</td><td><code>ce517cf7-3724-429e-95f0-796a6ff0b88d</code></td></tr>
+      <tr><td>parts</td><td>not sourced yet</td><td><code>—</code></td></tr>
+      <tr><td>automation</td><td>BHF-50 hopper feeder</td><td><code>e1e5adb1-41eb-4eb3-8a32-b56a757e2201</code></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>IMTS Business Card Mockup <span class="pill draft">Pre-print</span></h2>
+    <p class="desc">Two-sided card design for Scott: front scans to the BHF-50 in 3D and AR, back links to the IMTS page. Print-ready QR SVGs in the folder. Gated on: lock domain, confirm Sandfield naming.</p>
+    <div class="meta">
+      <a href="/imts-cards/" target="_blank">/imts-cards/ ↗</a>
+      <span class="upd">Updated 2026-07-17</span>
+    </div>
+    <table class="uuids">
+      <tr><th>Side</th><th>Target</th><th>Points to</th></tr>
+      <tr><td>Front (See the Asset)</td><td>BHF-50 auto-AR</td><td><code>e1e5adb1-41eb-4eb3-8a32-b56a757e2201</code></td></tr>
+      <tr><td>Back (Learn More)</td><td>IMTS automation page</td><td><code>/imts.html?demo=automation</code></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Rawlings MACH Gloss Helmet PDP <span class="pill live">Live</span></h2>
+    <p class="desc">Rawlings-branded product page with the VNTANA viewer and hotspot feature pins. Color and size selectors, add-to-cart, trust badges.</p>
+    <div class="meta">
+      <a href="/helmet.html" target="_blank">/helmet.html ↗</a>
+      <span class="upd">Updated 2026-07-02</span>
+    </div>
+    <table class="uuids">
+      <tr><th>Model</th><th>UUID (org DCicero · ws example-files)</th></tr>
+      <tr><td>MACH Gloss helmet</td><td><code>fdf10dcd-a843-4e1b-a02d-8ae208f89b8a</code></td></tr>
+    </table>
+  </div>
+
+  <div class="sec-label">Internal tools (do not share externally)</div>
+
+  <div class="card">
+    <h2>3D DAM ROI Calculator <span class="pill internal">Internal only</span></h2>
+    <p class="desc">Sales-discovery ROI model (labor / asset-search / vendor savings), seeded from the MillerKnoll review. Contains MillerKnoll references and a sample VNTANA price, so it is for internal use in discovery calls only. Never embed on a customer-facing page.</p>
+    <div class="meta">
+      <a href="/hub/roi-internal.html" target="_blank">/hub/roi-internal.html ↗</a>
+      <span class="upd">Internal reference</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

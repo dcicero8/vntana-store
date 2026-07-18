@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VNTANA 3D DAM — ROI Calculator</title>
+<style>
+  :root{
+    --blue:#4B61F9; --black:#1A1A1A; --white:#FFFFFF; --gray:#DBDBDB;
+    --mint:#7FE2AF; --sky:#4FC2F0; --yellow:#F5CA41; --coral:#FF5D35; --orange:#F4854A;
+    --ink:#1A1A1A; --muted:#6b7280; --line:#e6e8ef; --bg:#f5f6fa; --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);
+    -webkit-font-smoothing:antialiased;line-height:1.45;}
+  /* ---- Header ---- */
+  header{background:linear-gradient(209deg,#4B61F9 0%,#3747B6 55%,#041378 100%);color:#fff;
+    padding:34px 40px 30px;}
+  .brand{font-size:13px;letter-spacing:3px;font-family:"Courier New",monospace;opacity:.85;text-transform:uppercase;}
+  header h1{margin:8px 0 4px;font-size:30px;font-weight:800;letter-spacing:-.5px;}
+  header p{margin:0;max-width:760px;opacity:.9;font-size:14.5px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 24px 60px;}
+  .layout{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:start;}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}}
+  /* ---- Cards ---- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+    margin-bottom:18px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
+  .card h2{margin:0 0 2px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:9px;}
+  .card .sub{color:var(--muted);font-size:12.5px;margin:0 0 16px;}
+  .dot{width:10px;height:10px;border-radius:3px;display:inline-block;flex:none;}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:11px 0;}
+  .row label{font-size:13.5px;font-weight:600;flex:1;}
+  .row .hint{display:block;font-size:11.5px;color:var(--muted);font-weight:400;margin-top:1px;}
+  .field{position:relative;display:flex;align-items:center;}
+  .field .pre{position:absolute;left:10px;color:var(--muted);font-size:13px;}
+  input[type=number]{width:132px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;
+    font-size:14px;text-align:right;font-family:inherit;background:#fbfcfe;}
+  input.hascur{padding-left:22px;}
+  input:focus{outline:none;border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(75,97,249,.12);}
+  .toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+  .switch{position:relative;width:38px;height:22px;flex:none;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;inset:0;background:var(--gray);border-radius:22px;cursor:pointer;transition:.2s;}
+  .slider:before{content:"";position:absolute;height:16px;width:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;}
+  .switch input:checked+.slider{background:var(--blue);}
+  .switch input:checked+.slider:before{transform:translateX(16px);}
+  .cardhead{display:flex;justify-content:space-between;align-items:flex-start;}
+  .disabled{opacity:.42;pointer-events:none;}
+  .segwrap{display:flex;background:#eef0f6;border-radius:9px;padding:3px;margin:2px 0 14px;}
+  .segwrap button{flex:1;border:0;background:transparent;padding:8px;border-radius:7px;font-size:12.5px;
+    font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;}
+  .segwrap button.active{background:#fff;color:var(--blue);box-shadow:0 1px 2px rgba(16,24,40,.1);}
+  .lineval{font-size:12px;color:var(--muted);margin-top:6px;text-align:right;}
+  .lineval b{color:var(--ink);font-size:13px;}
+  /* ---- Results ---- */
+  .results{position:sticky;top:18px;}
+  .hero{background:var(--black);color:#fff;border-radius:16px;padding:24px;margin-bottom:16px;}
+  .hero .k{font-family:"Courier New",monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.7;}
+  .hero .big{font-size:44px;font-weight:800;letter-spacing:-1px;margin:2px 0 0;color:var(--mint);}
+  .hero .row2{display:flex;gap:14px;margin-top:18px;}
+  .hero .stat{flex:1;background:rgba(255,255,255,.06);border-radius:11px;padding:13px 14px;}
+  .hero .stat .n{font-size:22px;font-weight:800;}
+  .hero .stat .l{font-size:11px;opacity:.75;margin-top:2px;}
+  .kpi{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .kpi .box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;}
+  .kpi .n{font-size:22px;font-weight:800;}
+  .kpi .l{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .bd h3{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 12px;font-family:"Courier New",monospace;}
+  .bar{margin:10px 0;}
+  .bar .t{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;}
+  .bar .t b{font-weight:700;}
+  .track{height:10px;background:#eef0f6;border-radius:6px;overflow:hidden;}
+  .fill{height:100%;border-radius:6px;transition:width .35s ease;}
+  .note{font-size:11.5px;color:var(--muted);margin-top:16px;line-height:1.5;}
+  .foot{max-width:1180px;margin:0 auto;padding:0 24px 40px;font-size:11px;color:var(--muted);}
+  .foot code{background:#eef0f6;padding:1px 5px;border-radius:4px;}
+  .assumptions summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--blue);}
+  .assumptions{margin-top:6px;}
+  .assumptions ul{font-size:12px;color:var(--muted);padding-left:18px;}
+  .btnbar{display:flex;gap:10px;margin-top:4px;}
+  .btnbar button{flex:1;border:1px solid var(--line);background:#fff;padding:10px;border-radius:9px;
+    font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;color:var(--ink);}
+  .btnbar button:hover{border-color:var(--blue);color:var(--blue);}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">VNTANA · 3D DAM</div>
+  <h1>3D Asset Management ROI Calculator</h1>
+  <p>Quantify the annual value of moving a prospect's 3D asset pipeline onto VNTANA — reclaimed conversion &amp; defeaturing time, faster asset search &amp; retrieval, and eliminated vendor/rework costs. Adjust any input; results update live.</p>
+</header>
+
+<div class="wrap">
+<div class="layout">
+
+  <!-- ================= INPUTS ================= -->
+  <div>
+    <!-- Global -->
+    <div class="card">
+      <h2><span class="dot" style="background:var(--blue)"></span>Prospect basics</h2>
+      <p class="sub">Set the shared assumptions everything else is calculated from.</p>
+      <div class="row">
+        <label>Currency symbol<span class="hint">Display only</span></label>
+        <div class="field"><input type="text" id="cur" value="$" style="width:60px;text-align:center;"></div>
+      </div>
+      <div class="row">
+        <label>People involved in 3D asset work<span class="hint">Designers, CAD, viz, engineering touching conversions</span></label>
+        <div class="field"><input type="number" id="headcount" value="7" min="0"></div>
+      </div>
+      <div class="row">
+        <label>Loaded cost per person / year<span class="hint">Fully-burdened annual cost (salary + benefits + overhead)</span></label>
+        <div class="field"><span class="pre cursym">$</span><input class="hascur" type="number" id="lhc" value="120000" min="0"></div>
+      </div>
+      <div class="row">
+        <label>Productive hours / year<span class="hint">Used to derive an hourly rate — 2,080 = full-time</span></label>
+        <div class="field"><input type="number" id="hrsyear" value="2080" min="1"></div>
+      </div>
+      <div class="lineval">Derived blended hourly rate: <b id="rateOut">$57.69</b></div>
+    </div>
+
+    <!-- Lever 1: Labor -->
+    <div class="card" id="c-labor">
+      <div class="cardhead">
+        <div><h2><span class="dot" style="background:var(--sky)"></span>Labor time savings</h2>
+        <p class="sub">Reclaimed conversion / defeaturing effort.</p></div>
+        <label class="toggle">Include
+          <span class="switch"><input type="checkbox" id="on-labor" checked><span class="slider"></span></span>
+        </label>
+      </div>
+      <div class="body">
+        <div class="segwrap" id="labor-method">
+          <button class="active" data-m="bottom">Bottom-up (per file)</button>
+          <button data-m="top">Top-down (% of headcount)</button>
+        </div>
+
+        <div id="labor-bottom">
+          <div class="row">
+            <label>Files / models converted per year<span class="hint">STP/CAD files needing simplification &amp; conversion</span></label>
+            <div class="field"><input type="number" id="files" value="1800" min="0"></div>
+          </div>
+          <div class="row">
+            <label>Minutes saved per file<span class="hint">MillerKnoll: ~20 min to find + defeature each STP</span></label>
+            <div class="field"><input type="number" id="minfile" value="20" min="0"></div>
+          </div>
+        </div>
+
+        <div id="labor-top" style="display:none">
+          <div class="row">
+            <label>Efficiency gain applied to headcount cost<span class="hint">MillerKnoll used a conservative 30% (from "53% less likely to recreate assets")</span></label>
+            <div class="field"><input type="number" id="effpct" value="30" min="0" max="100"><span class="pre" style="left:auto;right:-16px">%</span></div>
+          </div>
+        </div>
+        <div class="lineval">Annual value: <b id="laborOut">$0</b> · <span id="laborHrs">0</span> hrs</div>
+      </div>
+    </div>
+
+    <!-- Lever 2: Search -->
+    <div class="card" id="c-search">
+      <div class="cardhead">
+        <div><h2><span class="dot" style="background:var(--mint)"></span>Asset search &amp; retrieval</h2>
+        <p class="sub">Less time hunting for the right, current asset across scattered stores.</p></div>
+        <label class="toggle">Include
+          <span class="switch"><input type="checkbox" id="on-search" checked><span class="slider"></span></span>
+        </label>
+      </div>
+      <div class="body">
+        <div class="row">
+          <label>Hours / week per person searching for assets<span class="hint">Time locating models, correct versions, source files</span></label>
+          <div class="field"><input type="number" id="searchhrs" value="1.5" min="0" step="0.5"></div>
+        </div>
+        <div class="row">
+          <label>Reduction with a centralized DAM<span class="hint">MillerKnoll cited up to 40% faster retrieval</span></label>
+          <div class="field"><input type="number" id="searchred" value="40" min="0" max="100"><span class="pre" style="left:auto;right:-16px">%</span></div>
+        </div>
+        <div class="row">
+          <label>Working weeks / year<span class="hint"></span></label>
+          <div class="field"><input type="number" id="weeks" value="48" min="0" max="52"></div>
+        </div>
+        <div class="lineval">Annual value: <b id="searchOut">$0</b> · <span id="searchHrs">0</span> hrs</div>
+      </div>
+    </div>
+
+    <!-- Lever 3: Vendor & rework -->
+    <div class="card" id="c-vendor">
+      <div class="cardhead">
+        <div><h2><span class="dot" style="background:var(--yellow)"></span>Vendor &amp; tool savings</h2>
+        <p class="sub">Retired vendors/tools plus reduced error remediation.</p></div>
+        <label class="toggle">Include
+          <span class="switch"><input type="checkbox" id="on-vendor" checked><span class="slider"></span></span>
+        </label>
+      </div>
+      <div class="body">
+        <div class="row">
+          <label>Annual vendor / tool spend eliminated<span class="hint">e.g. Cylindo, external conversion vendors, redundant licenses</span></label>
+          <div class="field"><span class="pre cursym">$</span><input class="hascur" type="number" id="vendorcost" value="50000" min="0"></div>
+        </div>
+        <div class="row">
+          <label>Rework / error incidents per year<span class="hint">Duplicated-asset errors caught &amp; fixed (CBS: ~1/month)</span></label>
+          <div class="field"><input type="number" id="incidents" value="12" min="0"></div>
+        </div>
+        <div class="row">
+          <label>Hours to remediate per incident<span class="hint">Fixing an error across all affected deliverables/sites</span></label>
+          <div class="field"><input type="number" id="incidenthrs" value="16" min="0"></div>
+        </div>
+        <div class="lineval">Annual value: <b id="vendorOut">$0</b></div>
+      </div>
+    </div>
+
+    <!-- Investment -->
+    <div class="card">
+      <h2><span class="dot" style="background:var(--coral)"></span>VNTANA investment</h2>
+      <p class="sub">Annual subscription + services, used for net ROI &amp; payback.</p>
+      <div class="row">
+        <label>VNTANA annual cost</label>
+        <div class="field"><span class="pre cursym">$</span><input class="hascur" type="number" id="invest" value="75000" min="0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= RESULTS ================= -->
+  <div class="results">
+    <div class="hero">
+      <div class="k">Net annual benefit</div>
+      <div class="big" id="netOut">$0</div>
+      <div class="row2">
+        <div class="stat"><div class="n" id="roiOut">0%</div><div class="l">First-year ROI</div></div>
+        <div class="stat"><div class="n" id="payOut">0 mo</div><div class="l">Payback period</div></div>
+      </div>
+    </div>
+
+    <div class="kpi">
+      <div class="box"><div class="n" id="grossOut">$0</div><div class="l">Gross annual savings</div></div>
+      <div class="box"><div class="n" id="fteOut">0.0</div><div class="l">FTE-equivalent hours reclaimed</div></div>
+    </div>
+
+    <div class="card bd">
+      <h3>Where the value comes from</h3>
+      <div id="bars"></div>
+    </div>
+
+    <div class="card">
+      <div class="btnbar">
+        <button onclick="window.print()">Print / Save PDF</button>
+        <button onclick="resetAll()">Reset defaults</button>
+      </div>
+      <details class="assumptions">
+        <summary>Method &amp; assumptions</summary>
+        <ul>
+          <li>Hourly rate = loaded cost ÷ productive hours/year.</li>
+          <li><b>Labor</b> — Bottom-up: files × minutes ÷ 60 × rate. Top-down: efficiency% × loaded cost × people. Pick one to avoid double-counting.</li>
+          <li><b>Search</b> — people × hrs/week × reduction% × weeks × rate.</li>
+          <li><b>Vendor &amp; rework</b> — eliminated spend + (incidents × hours × rate).</li>
+          <li>Net benefit = gross savings − VNTANA cost. ROI = net ÷ cost. Payback = cost ÷ (gross ÷ 12).</li>
+          <li>Defaults seeded from the MillerKnoll 3D DAM ROI review; override every field per prospect.</li>
+        </ul>
+      </details>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="foot">
+  Directional model for sales discovery — not a financial guarantee. Basis: MillerKnoll 3D visualization / CAD / design ROI inputs. <code>VNTANA-ROI-Calculator.html</code>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const num = id => parseFloat($(id).value) || 0;
+let laborMethod = 'bottom';
+
+function fmt(n){
+  const c = $('cur').value || '';
+  return c + Math.round(n).toLocaleString('en-US');
+}
+
+function calc(){
+  const cur = $('cur').value || '';
+  document.querySelectorAll('.cursym').forEach(e=>e.textContent=cur);
+
+  const head = num('headcount');
+  const lhc  = num('lhc');
+  const hy   = num('hrsyear') || 2080;
+  const rate = lhc / hy;
+  $('rateOut').textContent = fmt(rate);
+
+  // ---- Labor ----
+  let laborVal = 0, laborHrs = 0;
+  const laborOn = $('on-labor').checked;
+  if(laborMethod === 'bottom'){
+    laborHrs = num('files') * num('minfile') / 60;
+    laborVal = laborHrs * rate;
+  } else {
+    laborVal = (num('effpct')/100) * lhc * head;
+    laborHrs = laborVal / (rate || 1);
+  }
+  if(!laborOn){ laborVal = 0; laborHrs = 0; }
+  $('laborOut').textContent = fmt(laborVal);
+  $('laborHrs').textContent = Math.round(laborHrs).toLocaleString();
+
+  // ---- Search ----
+  const searchOn = $('on-search').checked;
+  let searchHrs = head * num('searchhrs') * (num('searchred')/100) * num('weeks');
+  let searchVal = searchHrs * rate;
+  if(!searchOn){ searchVal = 0; searchHrs = 0; }
+  $('searchOut').textContent = fmt(searchVal);
+  $('searchHrs').textContent = Math.round(searchHrs).toLocaleString();
+
+  // ---- Vendor & rework ----
+  const vendorOn = $('on-vendor').checked;
+  let reworkHrs = num('incidents') * num('incidenthrs');
+  let vendorVal = num('vendorcost') + reworkHrs * rate;
+  if(!vendorOn){ vendorVal = 0; reworkHrs = 0; }
+  $('vendorOut').textContent = fmt(vendorVal);
+
+  // ---- Totals ----
+  const gross = laborVal + searchVal + vendorVal;
+  const invest = num('invest');
+  const net = gross - invest;
+  const roi = invest > 0 ? (net / invest) * 100 : 0;
+  const payback = gross > 0 ? invest / (gross/12) : 0;
+  const totalHrs = laborHrs + searchHrs + reworkHrs;
+
+  $('grossOut').textContent = fmt(gross);
+  $('netOut').textContent = fmt(net);
+  $('roiOut').textContent = Math.round(roi).toLocaleString() + '%';
+  $('payOut').textContent = payback > 0 ? (payback < 1 ? '<1 mo' : payback.toFixed(1).replace('.0','') + ' mo') : '—';
+  $('fteOut').textContent = (totalHrs / hy).toFixed(1);
+
+  // ---- Breakdown bars ----
+  const parts = [
+    {l:'Labor time savings', v:laborVal, c:'var(--sky)'},
+    {l:'Asset search & retrieval', v:searchVal, c:'var(--mint)'},
+    {l:'Vendor & rework savings', v:vendorVal, c:'var(--yellow)'},
+  ].filter(p=>p.v>0);
+  const max = Math.max(...parts.map(p=>p.v), 1);
+  $('bars').innerHTML = parts.length ? parts.map(p=>`
+    <div class="bar">
+      <div class="t"><span>${p.l}</span><b>${fmt(p.v)}</b></div>
+      <div class="track"><div class="fill" style="width:${(p.v/max*100)}%;background:${p.c}"></div></div>
+    </div>`).join('') : '<p class="sub">Enable a lever to see the breakdown.</p>';
+
+  // dim disabled cards
+  [['labor','c-labor'],['search','c-search'],['vendor','c-vendor']].forEach(([k,c])=>{
+    $(c).querySelector('.body').classList.toggle('disabled', !$('on-'+k).checked);
+  });
+}
+
+// method toggle
+document.querySelectorAll('#labor-method button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#labor-method button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    laborMethod = b.dataset.m;
+    $('labor-bottom').style.display = laborMethod==='bottom' ? 'block':'none';
+    $('labor-top').style.display    = laborMethod==='top' ? 'block':'none';
+    calc();
+  });
+});
+
+const defaults = {cur:'$',headcount:7,lhc:120000,hrsyear:2080,files:1800,minfile:20,
+  effpct:30,searchhrs:1.5,searchred:40,weeks:48,vendorcost:50000,incidents:12,incidenthrs:16,invest:75000};
+function resetAll(){
+  for(const k in defaults) if($(k)) $(k).value = defaults[k];
+  ['on-labor','on-search','on-vendor'].forEach(k=>$(k).checked=true);
+  document.querySelector('#labor-method button[data-m="bottom"]').click();
+  calc();
+}
+
+document.querySelectorAll('input').forEach(el=>el.addEventListener('input',calc));
+calc();
+</script>
+</body>
+</html>
