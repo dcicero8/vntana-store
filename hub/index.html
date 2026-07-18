@@ -1,128 +1,196 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Internal Demo Index — VNTANA</title>
 <style>
-  :root { --blue:#4B61F9; --ink:#1A1A1A; --slate:#5a6472; --slate2:#8a93a1; --line:#e6e8ef; --bg:#f5f6fa; --card:#fff; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; }
-  header { background:var(--ink); color:#fff; padding:26px 28px; }
-  header .brand { font-weight:800; letter-spacing:0.16em; font-size:18px; }
-  header .sub { color:#9aa3b2; font-size:13px; margin-top:4px; }
-  .warn { background:#fff7ed; border-bottom:1px solid #fed7aa; color:#7c4a1e; font-size:12.5px; padding:10px 28px; }
-  .wrap { max-width:1100px; margin:0 auto; padding:26px 20px 60px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin-bottom:16px; box-shadow:0 1px 2px rgba(16,24,40,.04); }
-  .card h2 { font-size:17px; font-weight:800; }
-  .card .desc { color:var(--slate); font-size:13.5px; margin:6px 0 12px; max-width:74ch; }
-  .meta { display:flex; flex-wrap:wrap; gap:8px 20px; align-items:center; font-size:12.5px; }
-  .meta a { color:var(--blue); font-weight:700; text-decoration:none; }
-  .meta a:hover { text-decoration:underline; }
-  .upd { color:var(--slate2); }
-  .pill { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:3px 9px; border-radius:100px; }
-  .pill.live { background:#e6f7ef; color:#1c7a4d; }
-  .pill.draft { background:#eef0ff; color:#3547d6; }
-  .pill.internal { background:#fdecef; color:#b0234a; }
-  table.uuids { width:100%; border-collapse:collapse; margin-top:12px; font-size:12px; }
-  table.uuids th, table.uuids td { text-align:left; padding:6px 10px; border-bottom:1px solid var(--line); }
-  table.uuids th { color:var(--slate2); text-transform:uppercase; letter-spacing:0.05em; font-size:10.5px; }
-  table.uuids code { font-family:"SF Mono",Menlo,monospace; font-size:11px; color:var(--ink); }
-  .sec-label { font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--slate2); font-weight:700; margin:24px 0 10px; }
-</style>
-</head>
-<body>
-<header>
-  <div class="brand">VNTANA · INTERNAL DEMO INDEX</div>
-  <div class="sub">Every demo page we have built, what it is, when it last changed, and the live VNTANA asset UUIDs it points to.</div>
-</header>
-<div class="warn"><b>Unlisted, not access-controlled.</b> This page is not linked from anywhere and carries a noindex tag, but anyone with the URL can open it. Do not share the URL outside VNTANA.</div>
-
+ :root{--blue:#4B61F9;--ink:#1A1A1A;--slate:#5a6472;--slate2:#8a93a1;--line:#e6e8ef;--bg:#f5f6fa;}
+ *{box-sizing:border-box;margin:0;padding:0;}
+ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);}
+ header{background:var(--ink);color:#fff;padding:24px 28px;}
+ header .brand{font-weight:800;letter-spacing:.16em;font-size:18px;}
+ header .sub{color:#9aa3b2;font-size:13px;margin-top:4px;}
+ .warn{background:#fff7ed;border-bottom:1px solid #fed7aa;color:#7c4a1e;font-size:12.5px;padding:10px 28px;}
+ .wrap{max-width:1300px;margin:0 auto;padding:22px 18px 60px;}
+ .legend{display:flex;gap:18px;font-size:12px;color:var(--slate);margin:6px 0 16px;flex-wrap:wrap;}
+ .key{display:inline-flex;align-items:center;gap:6px;} .sw{width:12px;height:12px;border-radius:3px;display:inline-block;}
+ table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13px;}
+ th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+ th{background:#eef0f6;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate2);position:sticky;top:0;}
+ td a{color:var(--blue);font-weight:700;text-decoration:none;} td a:hover{text-decoration:underline;}
+ .grp{font-size:10.5px;color:var(--slate2);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+ td.d{white-space:nowrap;color:var(--slate);} td.u code{font-family:Menlo,monospace;font-size:10.5px;} .none{color:var(--slate2);font-style:italic;}
+ td.n{color:var(--slate);max-width:230px;}
+ tr.retire{background:#fff5f5;} tr.retire td.n{color:#b0234a;font-weight:600;}
+ tr.ver{background:#fffdf2;}
+ .roi{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;}
+ .roi h3{font-size:14px;} .roi .pill{font-size:10px;font-weight:700;text-transform:uppercase;background:#fdecef;color:#b0234a;padding:2px 8px;border-radius:100px;}
+ .roi a{color:var(--blue);font-weight:700;text-decoration:none;}
+</style></head><body>
+<header><div class="brand">VNTANA · INTERNAL DEMO INDEX</div>
+<div class="sub">Every demo page we have built, what it is, last updated, and the live asset UUIDs it points to. For retire / keep decisions.</div></header>
+<div class="warn"><b>Unlisted, not access-controlled.</b> Not linked anywhere and carries noindex, but anyone with the URL can open it. Do not share outside VNTANA.</div>
 <div class="wrap">
-
-  <div class="sec-label">Customer-facing demos</div>
-
-  <div class="card">
-    <h2>TYTUS Grill Configurator <span class="pill live">Live</span></h2>
-    <p class="desc">Step-by-step modular grill configurator (Indian Motorcycle style). Base grill, side unit, corner kit, finish, then a guided feature tour ending in a scan-to-AR stop. Real TYTUS assets, live model swaps.</p>
-    <div class="meta">
-      <a href="/tytus-configurator.html" target="_blank">/tytus-configurator.html ↗</a>
-      <span class="upd">Updated 2026-07-16</span>
-    </div>
-    <table class="uuids">
-      <tr><th>Slot</th><th>Model</th><th>UUID (org DCicero · ws tytus)</th></tr>
-      <tr><td>base</td><td>4-burner grill</td><td><code>58a6c265-7d08-432a-8676-fc031647f4ad</code></td></tr>
-      <tr><td>base+smoker</td><td>smoker duo</td><td><code>b493f0ca-219e-43b1-bc32-9d0e7bfda4e0</code></td></tr>
-      <tr><td>base+pizza</td><td>pizza duo</td><td><code>5de3fff3-781f-4411-a4b7-3763ba9e0ac2</code></td></tr>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2>Configurator Pitch Page (TYTUS) <span class="pill live">Live</span></h2>
-    <p class="desc">Self-guided 1-2-3 pitch: why configurators win, proof (YKK + Michaels), the live TYTUS demo, and a conversion ROI calculator as the closing CTA. DNA-aligned, no pricing, no em dashes.</p>
-    <div class="meta">
-      <a href="/configurator-pitch.html" target="_blank">/configurator-pitch.html ↗</a>
-      <span class="upd">Updated 2026-07-18</span>
-    </div>
-    <table class="uuids"><tr><th>Note</th><th colspan="2">Embeds the TYTUS configurator above (same UUIDs).</th></tr></table>
-  </div>
-
-  <div class="card">
-    <h2>IMTS 2026 Booth Landing <span class="pill live">Live</span></h2>
-    <p class="desc">Booth lead-gen page, three tracks switched by <code>?demo=</code> (machines / parts / automation). QR business cards point each variant. Live viewer per track where a model is set.</p>
-    <div class="meta">
-      <a href="/imts.html?demo=machines" target="_blank">machines ↗</a>
-      <a href="/imts.html?demo=parts" target="_blank">parts ↗</a>
-      <a href="/imts.html?demo=automation" target="_blank">automation ↗</a>
-      <span class="upd">Updated 2026-07-17</span>
-    </div>
-    <table class="uuids">
-      <tr><th>Track</th><th>Model</th><th>UUID (org DCicero · ws itms)</th></tr>
-      <tr><td>machines</td><td>John Deere (STL placeholder)</td><td><code>ce517cf7-3724-429e-95f0-796a6ff0b88d</code></td></tr>
-      <tr><td>parts</td><td>not sourced yet</td><td><code>—</code></td></tr>
-      <tr><td>automation</td><td>BHF-50 hopper feeder</td><td><code>e1e5adb1-41eb-4eb3-8a32-b56a757e2201</code></td></tr>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2>IMTS Business Card Mockup <span class="pill draft">Pre-print</span></h2>
-    <p class="desc">Two-sided card design for Scott: front scans to the BHF-50 in 3D and AR, back links to the IMTS page. Print-ready QR SVGs in the folder. Gated on: lock domain, confirm Sandfield naming.</p>
-    <div class="meta">
-      <a href="/imts-cards/" target="_blank">/imts-cards/ ↗</a>
-      <span class="upd">Updated 2026-07-17</span>
-    </div>
-    <table class="uuids">
-      <tr><th>Side</th><th>Target</th><th>Points to</th></tr>
-      <tr><td>Front (See the Asset)</td><td>BHF-50 auto-AR</td><td><code>e1e5adb1-41eb-4eb3-8a32-b56a757e2201</code></td></tr>
-      <tr><td>Back (Learn More)</td><td>IMTS automation page</td><td><code>/imts.html?demo=automation</code></td></tr>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2>Rawlings MACH Gloss Helmet PDP <span class="pill live">Live</span></h2>
-    <p class="desc">Rawlings-branded product page with the VNTANA viewer and hotspot feature pins. Color and size selectors, add-to-cart, trust badges.</p>
-    <div class="meta">
-      <a href="/helmet.html" target="_blank">/helmet.html ↗</a>
-      <span class="upd">Updated 2026-07-02</span>
-    </div>
-    <table class="uuids">
-      <tr><th>Model</th><th>UUID (org DCicero · ws example-files)</th></tr>
-      <tr><td>MACH Gloss helmet</td><td><code>fdf10dcd-a843-4e1b-a02d-8ae208f89b8a</code></td></tr>
-    </table>
-  </div>
-
-  <div class="sec-label">Internal tools (do not share externally)</div>
-
-  <div class="card">
-    <h2>3D DAM ROI Calculator <span class="pill internal">Internal only</span></h2>
-    <p class="desc">Sales-discovery ROI model (labor / asset-search / vendor savings), seeded from the MillerKnoll review. Contains MillerKnoll references and a sample VNTANA price, so it is for internal use in discovery calls only. Never embed on a customer-facing page.</p>
-    <div class="meta">
-      <a href="/hub/roi-internal.html" target="_blank">/hub/roi-internal.html ↗</a>
-      <span class="upd">Internal reference</span>
-    </div>
-  </div>
-
-</div>
-</body>
-</html>
+ <div class="legend">
+   <span class="key"><span class="sw" style="background:#fff5f5;border:1px solid #f3c0c8"></span> Retire candidate</span>
+   <span class="key"><span class="sw" style="background:#fffdf2;border:1px solid #ece3b0"></span> Version family — pick canonical</span>
+   <span class="key"><span class="sw" style="background:#fff;border:1px solid var(--line)"></span> Keep</span>
+   <span style="margin-left:auto">30 pages</span>
+ </div>
+ <table><tr><th>Page</th><th>What it is</th><th>Updated</th><th>Live UUIDs</th><th>Note</th></tr>
+ <tr class="keep">
+      <td><a href="/configurator-pitch.html" target="_blank">configurator-pitch.html</a><div class="grp">TYTUS</div></td>
+      <td>Configurator pitch (why/proof/demo) + conversion ROI calculator.</td>
+      <td class="d">2026-07-18</td>
+      <td class="u"><code>(embeds tytus-configurator)</code></td>
+      <td class="n">Keep. Active.</td></tr><tr class="keep">
+      <td><a href="/home-v2.html" target="_blank">home-v2.html</a><div class="grp">Hexion</div></td>
+      <td>Home Product Explorer (v2).</td>
+      <td class="d">2026-07-17</td>
+      <td class="u"><code>39f54c5d-6a80-4337-b974-c5e0d2dcc8da</code><br><code>b86d5716-d564-481b-bea3-5e7aa0446449</code></td>
+      <td class="n">Keep. Newer of the two.</td></tr><tr class="keep">
+      <td><a href="/imts.html" target="_blank">imts.html</a><div class="grp">IMTS 2026</div></td>
+      <td>Booth lead-gen page, 3 tracks via ?demo=.</td>
+      <td class="d">2026-07-17</td>
+      <td class="u"><code>ce517cf7-3724-429e-95f0-796a6ff0b88d</code><br><code>e1e5adb1-41eb-4eb3-8a32-b56a757e2201</code></td>
+      <td class="n">Keep. Active.</td></tr><tr class="keep">
+      <td><a href="/imts-cards/" target="_blank">imts-cards/index.html</a><div class="grp">IMTS 2026</div></td>
+      <td>Business card mockup + print-ready QR SVGs.</td>
+      <td class="d">2026-07-17</td>
+      <td class="u"><code>e1e5adb1-41eb-4eb3-8a32-b56a757e2201</code></td>
+      <td class="n">Keep until printed, then archive.</td></tr><tr class="keep">
+      <td><a href="/tytus-configurator.html" target="_blank">tytus-configurator.html</a><div class="grp">TYTUS</div></td>
+      <td>Modular grill configurator with guided tour + scan-to-AR.</td>
+      <td class="d">2026-07-16</td>
+      <td class="u"><code>58a6c265-7d08-432a-8676-fc031647f4ad</code><br><code>5de3fff3-781f-4411-a4b7-3763ba9e0ac2</code><br><code>b493f0ca-219e-43b1-bc32-9d0e7bfda4e0</code><br><code>c8506ef9-2ca4-49d9-8032-b6d9229a8ffb</code><br><code>db71d2e8-5964-4608-871b-3563686d3152</code><br><code>de911bf5-bf0d-45b5-84bb-d2669c260481</code></td>
+      <td class="n">Keep. Active.</td></tr><tr class="keep">
+      <td><a href="/index.html" target="_blank">index.html</a><div class="grp">Public</div></td>
+      <td>Public 'Use Case Demos' directory that links out to the demos below.</td>
+      <td class="d">2026-07-14</td>
+      <td class="u"><code>ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d</code></td>
+      <td class="n">Keep. This is the public front door.</td></tr><tr class="keep">
+      <td><a href="/roeslein-uvbc-lamp-v2.html" target="_blank">roeslein-uvbc-lamp-v2.html</a><div class="grp">Roeslein</div></td>
+      <td>UV Lamp Assembly (v2, new viewer).</td>
+      <td class="d">2026-07-10</td>
+      <td class="u"><code>71503a0c-1051-4028-b438-d387337c9d2c</code></td>
+      <td class="n">Keep. Newer lamp page.</td></tr><tr class="ver">
+      <td><a href="/roeslein-uvbc-v2.html" target="_blank">roeslein-uvbc-v2.html</a><div class="grp">Roeslein</div></td>
+      <td>UVBC main (v2, new scene-graph viewer).</td>
+      <td class="d">2026-07-10</td>
+      <td class="u"><code>71503a0c-1051-4028-b438-d387337c9d2c</code><br><code>d72e48cd-052b-41b4-ad71-fef3d28f367b</code></td>
+      <td class="n">Version family. Decide canonical vs v1/v3.</td></tr><tr class="keep">
+      <td><a href="/roeslein-uvbc-v3.html" target="_blank">roeslein-uvbc-v3.html</a><div class="grp">Roeslein</div></td>
+      <td>UVBC main (v3, inline lamp focus).</td>
+      <td class="d">2026-07-10</td>
+      <td class="u"><code>71503a0c-1051-4028-b438-d387337c9d2c</code><br><code>d72e48cd-052b-41b4-ad71-fef3d28f367b</code></td>
+      <td class="n">Newest. Likely canonical.</td></tr><tr class="ver">
+      <td><a href="/roeslein-uvbc.html" target="_blank">roeslein-uvbc.html</a><div class="grp">Roeslein</div></td>
+      <td>UVBC main page (v1, old CDN viewer). Derek's live demo.</td>
+      <td class="d">2026-07-08</td>
+      <td class="u"><code>71503a0c-1051-4028-b438-d387337c9d2c</code><br><code>d72e48cd-052b-41b4-ad71-fef3d28f367b</code></td>
+      <td class="n">Keep v1 per note, but v2/v3 exist. Decide canonical.</td></tr><tr class="keep">
+      <td><a href="/tadano-crane-explorer.html" target="_blank">tadano-crane-explorer.html</a><div class="grp">Tadano</div></td>
+      <td>GT-1200XL-2 crane, 5-stop guided tour + exploded view.</td>
+      <td class="d">2026-07-08</td>
+      <td class="u"><code>34d4f492-80b8-4f27-9731-f962ba4a66d8</code></td>
+      <td class="n">Keep.</td></tr><tr class="retire">
+      <td><a href="/roeslein-uvbc-lamp.html" target="_blank">roeslein-uvbc-lamp.html</a><div class="grp">Roeslein</div></td>
+      <td>UV Lamp Assembly (v1).</td>
+      <td class="d">2026-07-07</td>
+      <td class="u"><code>71503a0c-1051-4028-b438-d387337c9d2c</code></td>
+      <td class="n">Superseded by lamp-v2. Retire candidate.</td></tr><tr class="ver">
+      <td><a href="/roeslein-uvbc-parts.html" target="_blank">roeslein-uvbc-parts.html</a><div class="grp">Roeslein</div></td>
+      <td>UVBC replacement parts (v1).</td>
+      <td class="d">2026-07-07</td>
+      <td class="u"><code>71503a0c-1051-4028-b438-d387337c9d2c</code><br><code>d72e48cd-052b-41b4-ad71-fef3d28f367b</code></td>
+      <td class="n">Version family. Decide canonical.</td></tr><tr class="keep">
+      <td><a href="/helmet.html" target="_blank">helmet.html</a><div class="grp">Rawlings</div></td>
+      <td>MACH Gloss helmet PDP with hotspot pins. UUID fdf10dcd (in helmet.js).</td>
+      <td class="d">2026-07-02</td>
+      <td class="u"><code>fdf10dcd-a843-4e1b-a02d-8ae208f89b8a</code></td>
+      <td class="n">Keep.</td></tr><tr class="retire">
+      <td><a href="/home.html" target="_blank">home.html</a><div class="grp">Hexion</div></td>
+      <td>Home Product Explorer (v1).</td>
+      <td class="d">2026-06-19</td>
+      <td class="u"><code>39f54c5d-6a80-4337-b974-c5e0d2dcc8da</code><br><code>b86d5716-d564-481b-bea3-5e7aa0446449</code></td>
+      <td class="n">Superseded by home-v2.html. Retire candidate.</td></tr><tr class="keep">
+      <td><a href="/taco-007e.html" target="_blank">taco-007e.html</a><div class="grp">Taco</div></td>
+      <td>007e ECM circulator PDP.</td>
+      <td class="d">2026-06-17</td>
+      <td class="u"><code>2fcc5745-4314-4f09-83d0-bb683a06749b</code><br><code>55680c3f-7439-4739-9009-407a1cb4063a</code></td>
+      <td class="n">Keep.</td></tr><tr class="keep">
+      <td><a href="/roeslein-adb.html" target="_blank">roeslein-adb.html</a><div class="grp">Roeslein</div></td>
+      <td>Air Doubling Box, 5 hotspots.</td>
+      <td class="d">2026-06-15</td>
+      <td class="u"><code>bcba721f-6b34-442a-bf18-901f9b8f319a</code></td>
+      <td class="n">Keep.</td></tr><tr class="keep">
+      <td><a href="/brand-review.html" target="_blank">brand-review.html</a><div class="grp">Internal tool</div></td>
+      <td>Brand QA review (Gemini render compare).</td>
+      <td class="d">2026-06-09</td>
+      <td class="u"><span class="none">none in page</span></td>
+      <td class="n">Internal tool.</td></tr><tr class="keep">
+      <td><a href="/personalized-demos.html" target="_blank">personalized-demos.html</a><div class="grp">Public</div></td>
+      <td>Customer-facing landing linking personalized demos by industry.</td>
+      <td class="d">2026-06-09</td>
+      <td class="u"><span class="none">none in page</span></td>
+      <td class="n">Overlaps with index.html; decide if both are needed.</td></tr><tr class="keep">
+      <td><a href="/s86-demo.html" target="_blank">s86-demo.html</a><div class="grp">Bobcat</div></td>
+      <td>S86-2 multilingual hotspots (EN/FR/ES/DE).</td>
+      <td class="d">2026-06-09</td>
+      <td class="u"><code>02bdfbd9-fc81-40bb-84c0-bdb27ac6f683</code><br><code>2fba9efa-159a-437e-a5de-95ab86d0f22e</code><br><code>6d4f81d9-47d9-4e38-857a-1e8fee34de7b</code><br><code>6fac5a12-01ee-44df-92ed-9d37e91f4df2</code><br><code>9f6157ae-10a6-4c25-aa25-df2885ebbcae</code><br><code>f047fcd9-eceb-465b-9abd-625efaa99ac2</code></td>
+      <td class="n">Keep.</td></tr><tr class="keep">
+      <td><a href="/selection-test.html" target="_blank">selection-test.html</a><div class="grp">Internal tool</div></td>
+      <td>Selection API explorer (dev/debug).</td>
+      <td class="d">2026-06-09</td>
+      <td class="u"><code>4080e745-de21-49e8-a650-019544dea546</code></td>
+      <td class="n">Internal/dev. Retire if no longer needed.</td></tr><tr class="keep">
+      <td><a href="/sunsource-animated.html" target="_blank">sunsource-animated.html</a><div class="grp">SunSource</div></td>
+      <td>Engine bay animation demo.</td>
+      <td class="d">2026-06-09</td>
+      <td class="u"><span class="none">none in page</span></td>
+      <td class="n">Pairs with sunsource.html.</td></tr><tr class="keep">
+      <td><a href="/sunsource.html" target="_blank">sunsource.html</a><div class="grp">SunSource</div></td>
+      <td>Interactive parts catalog for mobile equipment.</td>
+      <td class="d">2026-06-09</td>
+      <td class="u"><span class="none">none in page</span></td>
+      <td class="n">Pairs with animated version. Decide if both needed.</td></tr><tr class="retire">
+      <td><a href="/hotspot-translations.html" target="_blank">hotspot-translations.html</a><div class="grp">Internal tool</div></td>
+      <td>Hotspot translation test (7 UUIDs).</td>
+      <td class="d">2026-06-04</td>
+      <td class="u"><code>02bdfbd9-fc81-40bb-84c0-bdb27ac6f683</code><br><code>2fba9efa-159a-437e-a5de-95ab86d0f22e</code><br><code>6d4f81d9-47d9-4e38-857a-1e8fee34de7b</code><br><code>6fac5a12-01ee-44df-92ed-9d37e91f4df2</code><br><code>8c3b1e9b-551c-4d0b-ae46-92d0867aba57</code><br><code>9f6157ae-10a6-4c25-aa25-df2885ebbcae</code><br><code>f047fcd9-eceb-465b-9abd-625efaa99ac2</code></td>
+      <td class="n">Internal test. Retire candidate.</td></tr><tr class="keep">
+      <td><a href="/n8n.html" target="_blank">n8n.html</a><div class="grp">Internal</div></td>
+      <td>n8n integration explainer.</td>
+      <td class="d">2026-06-04</td>
+      <td class="u"><span class="none">none in page</span></td>
+      <td class="n">Internal. Keep or fold into hub.</td></tr><tr class="retire">
+      <td><a href="/store.html" target="_blank">store.html</a><div class="grp">Public</div></td>
+      <td>Older 'Integration Demos' landing page.</td>
+      <td class="d">2026-06-04</td>
+      <td class="u"><code>ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d</code></td>
+      <td class="n">Likely superseded by index.html. Retire candidate.</td></tr><tr class="keep">
+      <td><a href="/product.html" target="_blank">product.html</a><div class="grp">Reference</div></td>
+      <td>Generic PDP template / reference implementation.</td>
+      <td class="d">2026-06-02</td>
+      <td class="u"><span class="none">none in page</span></td>
+      <td class="n">Keep as reference.</td></tr><tr class="keep">
+      <td><a href="/parts.html" target="_blank">parts.html</a><div class="grp">Reference</div></td>
+      <td>Interactive parts catalog (Die Head, Figurement).</td>
+      <td class="d">2026-06-01</td>
+      <td class="u"><span class="none">none in page</span></td>
+      <td class="n">Keep as reference.</td></tr><tr class="keep">
+      <td><a href="/embed.html" target="_blank">embed.html</a><div class="grp">Reference</div></td>
+      <td>Simplest possible iframe embed, Live Public asset.</td>
+      <td class="d">2026-05-29</td>
+      <td class="u"><code>ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d</code></td>
+      <td class="n">Keep as reference snippet.</td></tr><tr class="retire">
+      <td><a href="/variants.html" target="_blank">variants.html</a><div class="grp">Apparel</div></td>
+      <td>Full-Zip Jacket colorway/variant switcher (5 UUIDs).</td>
+      <td class="d">2026-05-29</td>
+      <td class="u"><code>080a7f32-c744-4cc9-8fb3-a0fa7755c69d</code><br><code>51e29ee4-6723-4118-88ae-5b44126d1c13</code><br><code>6775746d-950b-426c-b74c-0352e6a9672b</code><br><code>b026d841-8699-4d85-9f62-4f859fe35cb1</code><br><code>ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d</code></td>
+      <td class="n">Older apparel demo. Retire candidate if industrial-only now.</td></tr>
+ </table>
+ <div class="roi"><h3>3D DAM ROI Calculator <span class="pill">Internal only</span></h3>
+  <p style="font-size:12.5px;color:var(--slate);margin:6px 0 8px;max-width:80ch">Sales-discovery ROI model (labor / search / vendor savings), seeded from the MillerKnoll review. Contains MillerKnoll references and a sample VNTANA price, so internal use only. Never embed externally.</p>
+  <a href="/hub/roi-internal.html" target="_blank">/hub/roi-internal.html ↗</a></div>
+ <p style="font-size:11.5px;color:var(--slate2);margin-top:16px">UUIDs are extracted from page HTML; pages that load models via external JS (e.g. helmet.js) or iframes are annotated. This does not yet verify each UUID is still live on the platform. Say the word and I will probe each one and flag dead links.</p>
+</div></body></html>
