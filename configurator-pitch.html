@@ -229,11 +229,6 @@
           <div class="flex items-center gap-2 mt-1"><input id="roi-lift" type="number" min="0" step="1" value="15" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"><span class="text-neutral-400">%</span></div>
         </label>
         <label class="block">
-          <span class="text-sm font-semibold">Average order value</span>
-          <span class="text-xs text-neutral-400 block">Used to show how many extra orders that is</span>
-          <div class="flex items-center gap-2 mt-1"><span class="text-neutral-400">$</span><input id="roi-aov" type="number" min="0" value="950" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"></div>
-        </label>
-        <label class="block">
           <span class="text-sm font-semibold">Current return rate</span>
           <span class="text-xs text-neutral-400 block">Complete 3D detail sets accurate expectations, so fewer orders come back</span>
           <div class="flex items-center gap-2 mt-1"><input id="roi-ret" type="number" min="0" step="0.5" value="8" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"><span class="text-neutral-400">%</span></div>
@@ -253,7 +248,6 @@
         <div class="grid grid-cols-1 gap-3">
           <div class="bg-white/5 rounded-xl p-4 flex justify-between items-baseline"><span class="text-sm text-neutral-300">Added revenue from higher conversion</span><span id="roi-rev" class="text-xl font-black">$0</span></div>
           <div class="bg-white/5 rounded-xl p-4 flex justify-between items-baseline"><span class="text-sm text-neutral-300">Value of returns avoided</span><span id="roi-retval" class="text-xl font-black">$0</span></div>
-          <div class="bg-white/5 rounded-xl p-4 flex justify-between items-baseline"><span class="text-sm text-neutral-300">Extra orders per year</span><span id="roi-orders" class="text-xl font-black">0</span></div>
         </div>
         <p class="text-neutral-400 text-xs mt-4 leading-relaxed">Directional estimate for planning, not a guarantee. Added revenue = current revenue x conversion lift. Returns avoided = revenue after lift x return rate x reduction. Your numbers, your assumptions.</p>
         <div class="mt-5 pt-5 border-t border-white/10">
@@ -270,19 +264,16 @@
   (function(){
     const $ = id => document.getElementById(id);
     const money = n => "$" + Math.round(n).toLocaleString("en-US");
-    const ids = ["roi-revenue","roi-aov","roi-lift","roi-ret","roi-retred"];
+    const ids = ["roi-revenue","roi-lift","roi-ret","roi-retred"];
     function calc(){
       const revenue = +$("roi-revenue").value || 0;
-      const aov = +$("roi-aov").value || 0;
       const lift = (+$("roi-lift").value || 0) / 100;
       const ret = (+$("roi-ret").value || 0) / 100;
       const retred = (+$("roi-retred").value || 0) / 100;
       const addedRev = revenue * lift;
       const returnsAvoided = (revenue + addedRev) * ret * retred;
-      const extraOrders = aov > 0 ? addedRev / aov : 0;
       $("roi-rev").textContent = money(addedRev);
       $("roi-retval").textContent = money(returnsAvoided);
-      $("roi-orders").textContent = Math.round(extraOrders).toLocaleString("en-US");
       $("roi-total").textContent = money(addedRev + returnsAvoided);
     }
     ids.forEach(id => $(id).addEventListener("input", calc));
