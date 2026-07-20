@@ -225,8 +225,8 @@
         </label>
         <label class="block">
           <span class="text-sm font-semibold">Conversion lift with interactive 3D and AR</span>
-          <span class="text-xs text-neutral-400 block">Interactive 3D can raise purchase likelihood well beyond this. Default is deliberately conservative.</span>
-          <div class="flex items-center gap-2 mt-1"><input id="roi-lift" type="number" min="0" step="1" value="15" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"><span class="text-neutral-400">%</span></div>
+          <span class="text-xs text-neutral-400 block">Set to a deliberately conservative 3%. Interactive 3D routinely lifts conversion far more.</span>
+          <div class="flex items-center gap-2 mt-1"><input id="roi-lift" type="number" min="0" step="1" value="3" class="w-full bg-white/10 border border-white/15 rounded-md px-3 py-2 text-white text-right focus:outline-none focus:border-[var(--vn-accent)]"><span class="text-neutral-400">%</span></div>
         </label>
         <label class="block">
           <span class="text-sm font-semibold">Current return rate</span>
@@ -244,6 +244,7 @@
         <div class="bg-[var(--vn-accent)] rounded-xl p-6 mb-4">
           <p class="uppercase tracking-widest text-xs text-white/80 font-bold">Estimated annual upside</p>
           <p id="roi-total" class="text-4xl md:text-5xl font-black mt-1">$0</p>
+          <p class="text-white/80 text-xs font-semibold mt-2">Even a conservative 2 to 3% lift is a six-figure annual gain on this revenue base.</p>
         </div>
         <div class="grid grid-cols-1 gap-3">
           <div class="bg-white/5 rounded-xl p-4 flex justify-between items-baseline"><span class="text-sm text-neutral-300">Added revenue from higher conversion</span><span id="roi-rev" class="text-xl font-black">$0</span></div>
