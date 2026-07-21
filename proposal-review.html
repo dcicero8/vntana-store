@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Proposal Review 3D Walkthrough | VNTANA</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
 <style>
   :root { --blue:#4B61F9; --blue-deep:#3547d6; --ink:#1A1A1A; --slate:#5a6472; --slate2:#8a93a1; --line:#e6e8ef; --bg:#f5f6fa; --paper:#fff; }
   * { box-sizing:border-box; margin:0; padding:0; }
@@ -13,10 +14,9 @@
   header .brand { font-weight:800; letter-spacing:.16em; font-size:17px; }
   header .ctx { color:#9aa3b2; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
   .wrap { max-width:1240px; margin:0 auto; padding:24px 20px 60px; }
-  .intro { margin-bottom:18px; }
   .intro h1 { font-size:clamp(22px,4vw,30px); font-weight:800; letter-spacing:-.02em; }
   .intro p { color:var(--slate); font-size:15px; margin-top:6px; max-width:70ch; }
-  .layout { display:grid; grid-template-columns:1.55fr .95fr; gap:22px; align-items:start; }
+  .layout { display:grid; grid-template-columns:1.55fr .95fr; gap:22px; align-items:start; margin-top:18px; }
   @media (max-width:900px){ .layout{ grid-template-columns:1fr; } }
 
   .media { background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(16,24,40,.06); position:sticky; top:18px; }
@@ -26,23 +26,21 @@
   .seg button.active { background:#fff; color:var(--blue); box-shadow:0 1px 2px rgba(16,24,40,.12); }
   .media-hint { margin-left:auto; font-size:11.5px; color:var(--slate2); }
 
-  .stage { position:relative; aspect-ratio:1200/896; background:#c9ccd2; }
-  .stage img { width:100%; height:100%; display:block; object-fit:cover; }
-  .stage iframe { width:100%; height:100%; border:0; display:block; }
-  #view3d { display:none; }
+  .stage { position:relative; aspect-ratio:1200/896; background:#eceef3; }
+  #viewPhoto img { width:100%; height:100%; display:block; object-fit:cover; }
+  vntana-viewer { width:100%; height:100%; display:block; }
+  #view3d { display:none; width:100%; height:100%; }
   #view3d.show { display:block; }
   #viewPhoto.hide { display:none; }
 
-  /* hotspot pins over the photo */
   .pin { position:absolute; transform:translate(-50%,-50%); z-index:3; cursor:pointer; border:0; background:transparent; }
   .pin .dot { width:34px; height:34px; border-radius:50%; background:var(--blue); color:#fff; font-weight:800; font-size:15px;
-    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 12px rgba(75,97,249,.5), 0 0 0 0 rgba(75,97,249,.5); animation:pulse 1.8s infinite; }
+    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 12px rgba(75,97,249,.5),0 0 0 0 rgba(75,97,249,.5); animation:pulse 1.8s infinite; }
   .pin:hover .dot, .pin.active .dot { background:var(--blue-deep); transform:scale(1.08); }
   @keyframes pulse { 0%{ box-shadow:0 3px 12px rgba(75,97,249,.5),0 0 0 0 rgba(75,97,249,.45);} 70%{ box-shadow:0 3px 12px rgba(75,97,249,.5),0 0 0 16px rgba(75,97,249,0);} 100%{ box-shadow:0 3px 12px rgba(75,97,249,.5),0 0 0 0 rgba(75,97,249,0);} }
   .pin .lbl { position:absolute; left:50%; top:calc(100% + 8px); transform:translateX(-50%); white-space:nowrap; background:var(--ink); color:#fff; font-size:11.5px; font-weight:700; padding:5px 10px; border-radius:7px; opacity:0; transition:opacity .15s; pointer-events:none; }
   .pin:hover .lbl, .pin.active .lbl { opacity:1; }
 
-  /* right column */
   .side h2 { font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--slate2); font-weight:700; margin-bottom:10px; }
   .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:15px 16px; margin-bottom:12px; cursor:pointer; transition:border-color .15s, transform .15s; display:flex; gap:13px; }
   .card:hover { border-color:var(--slate2); transform:translateY(-1px); }
@@ -68,31 +66,29 @@
 <div class="wrap">
   <div class="intro">
     <h1>ME090 · Area 3000 Skid</h1>
-    <p>Start with the rendered layout, then click any assembly to open the live 3D model and walk a customer through the design. Built from the engineering CAD, no re-modeling.</p>
+    <p>Start with the rendered layout, then click any assembly to fly the 3D camera straight to it and walk a customer through the design. Built from the engineering CAD, no re-modeling.</p>
   </div>
 
   <div class="layout">
-    <!-- MEDIA -->
     <div class="media">
       <div class="media-bar">
         <div class="seg">
           <button id="seg-photo" class="active" onclick="showPhoto()">Rendered view</button>
           <button id="seg-3d" onclick="show3D()">3D model</button>
         </div>
-        <span class="media-hint" id="mediaHint">Click a numbered point to open it in 3D</span>
+        <span class="media-hint" id="mediaHint">Click a numbered point to zoom to it in 3D</span>
       </div>
       <div class="stage">
         <div id="viewPhoto">
           <img src="assets/me090-render.png" alt="ME090 Area 3000 skid rendered layout">
-          <button class="pin" style="left:19%;top:64%" data-i="0" onclick="openAssembly(0)"><span class="dot">1</span><span class="lbl">Hopper Feed Assembly</span></button>
+          <button class="pin" style="left:26%;top:71%" data-i="0" onclick="openAssembly(0)"><span class="dot">1</span><span class="lbl">Double Blower Skid</span></button>
           <button class="pin" style="left:52%;top:62%" data-i="1" onclick="openAssembly(1)"><span class="dot">2</span><span class="lbl">Activated Carbon Vessel (V-3126)</span></button>
           <button class="pin" style="left:78%;top:67%" data-i="2" onclick="openAssembly(2)"><span class="dot">3</span><span class="lbl">Connex Container</span></button>
         </div>
-        <iframe id="view3d" title="ME090 3D model" allow="xr-spatial-tracking; fullscreen" loading="lazy"></iframe>
+        <div id="view3d"></div>
       </div>
     </div>
 
-    <!-- SIDE -->
     <div class="side">
       <h2>Assemblies</h2>
       <div id="cards"></div>
@@ -100,23 +96,80 @@
         <b>View in AR</b>
         <p>The same model opens at true 1:1 scale in AR on any phone, no app. Useful for showing footprint and access on site during a proposal review.</p>
       </div>
-      <p class="note">Concept for the proposal review process. Next step is authoring hotspots on each assembly so a click jumps the 3D camera straight to that sub-assembly, and grouping the tree into high-level assemblies for presentation.</p>
+      <p class="note">Cameras are pulled live from the hotspots authored in the platform, so re-saving a hotspot updates the zoom here automatically.</p>
     </div>
   </div>
 </div>
 
 <script>
+  const BASE = "https://api.vntana.com";
+  const ORG = "DCicero", WS = "example-files";
   const UUID = "3743d665-efc1-4bd2-8f09-10cb589876e9";
-  const EMBED = `https://embed.vntana.com/v2?productUuid=${UUID}&clientSlug=example-files&organizationSlug=DCicero`;
+  const GLB = "85858074-a639-4eae-b5bc-3ec5eb55dab2.glb";
 
+  // Static content; camera is matched in from the authored hotspots by keyword.
   const ASSEMBLIES = [
-    { name:"Hopper Feed Assembly", tag:"Feed / dosing", desc:"Elevated hopper bank with feed screws and access stairs. Walk the customer through material feed, dosing, and the base-mounted pump set." },
-    { name:"Activated Carbon Vessel", tag:"V-3126 · process skid", desc:"Process piping skid with the V-3126 activated carbon vessel and heat exchangers. The core treatment step, shown with real routing and instrumentation." },
-    { name:"Connex Container", tag:"Controls / enclosure", desc:"Containerized control and equipment building. Show the enclosure, doors, and internal layout without shipping a unit to the customer." }
+    { name:"Double Blower Skid",        tag:"Blowers / feed end", match:/blower/i,
+      desc:"Double blower skid at the feed end. Walk the customer through the blowers, drive, and base framing." },
+    { name:"Activated Carbon Vessel",   tag:"V-3126 · process skid", match:/carbon|v-?3126/i,
+      desc:"Process piping skid with the V-3126 activated carbon vessel and heat exchangers. The core treatment step, shown with real routing and instrumentation." },
+    { name:"Connex Container",          tag:"Controls / enclosure", match:/connex|contain|enclosure|control/i,
+      desc:"Containerized control and equipment building. Show the enclosure, doors, and internal layout without shipping a unit to the customer." }
   ];
 
-  let loaded3d = false, active = -1;
   const $ = id => document.getElementById(id);
+  let viewer = null, modelReady = false, pendingCam = null;
+
+  const CONFIG = {
+    "environment-src":"https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr",
+    "light-rig-color":"#ffffff",
+    "background":"#ffffff",
+    "light-rig":"directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m"
+  };
+
+  function applyCamera(cam){
+    if(!cam || !viewer) return;
+    try {
+      if(cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
+      if(cam.cameraDistance) viewer.setCameraDistance(cam.cameraDistance);
+      if(cam.cameraTarget)   viewer.setCameraTarget(cam.cameraTarget);
+      if(cam.fieldOfView && viewer.setFieldOfView) viewer.setFieldOfView(cam.fieldOfView);
+    } catch(e){}
+  }
+
+  function ensureViewer(){
+    if(viewer) return;
+    viewer = document.createElement("vntana-viewer");
+    Object.entries(CONFIG).forEach(([k,v])=>viewer.setAttribute(k,v));
+    viewer.addEventListener("load", ()=>{ modelReady = true; if(pendingCam){ applyCamera(pendingCam); pendingCam = null; } }, { once:true });
+    $("view3d").appendChild(viewer);
+    viewer.setAttribute("src", `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB}`);
+  }
+
+  function setActive(i){
+    ASSEMBLIES.forEach((_,j)=>{
+      document.querySelectorAll(`.card[data-i="${j}"]`).forEach(c=>c.classList.toggle("active", j===i));
+      document.querySelectorAll(`.pin[data-i="${j}"]`).forEach(p=>p.classList.toggle("active", j===i));
+    });
+  }
+
+  function show3D(){
+    ensureViewer();
+    $("view3d").classList.add("show"); $("viewPhoto").classList.add("hide");
+    $("seg-3d").classList.add("active"); $("seg-photo").classList.remove("active");
+    $("mediaHint").textContent = "Rotate, zoom, and open any part. Give it a few seconds to load.";
+  }
+  function showPhoto(){
+    $("view3d").classList.remove("show"); $("viewPhoto").classList.remove("hide");
+    $("seg-photo").classList.add("active"); $("seg-3d").classList.remove("active");
+    $("mediaHint").textContent = "Click a numbered point to zoom to it in 3D";
+  }
+  function openAssembly(i){
+    setActive(i);
+    show3D();
+    const cam = ASSEMBLIES[i].cam;
+    if(modelReady) applyCamera(cam); else pendingCam = cam;
+  }
 
   function renderCards(){
     $("cards").innerHTML = ASSEMBLIES.map((a,i)=>`
@@ -126,37 +179,25 @@
           <h3>${a.name}</h3>
           <div class="tag">${a.tag}</div>
           <p>${a.desc}</p>
-          <span class="go">Open in 3D &rarr;</span>
+          <span class="go">Zoom to it in 3D &rarr;</span>
         </div>
       </div>`).join("");
   }
-
-  function setActive(i){
-    active = i;
-    document.querySelectorAll(".card").forEach(c=>c.classList.toggle("active", +c.dataset.i===i));
-    document.querySelectorAll(".pin").forEach(p=>p.classList.toggle("active", +p.dataset.i===i));
-  }
-
-  function ensure3D(){
-    if(!loaded3d){ $("view3d").src = EMBED; loaded3d = true; }
-  }
-  function show3D(){
-    ensure3D();
-    $("view3d").classList.add("show"); $("viewPhoto").classList.add("hide");
-    $("seg-3d").classList.add("active"); $("seg-photo").classList.remove("active");
-    $("mediaHint").textContent = "Rotate, zoom, and open any part. Give it a few seconds to load.";
-  }
-  function showPhoto(){
-    $("view3d").classList.remove("show"); $("viewPhoto").classList.remove("hide");
-    $("seg-photo").classList.add("active"); $("seg-3d").classList.remove("active");
-    $("mediaHint").textContent = "Click a numbered point to open it in 3D";
-  }
-  function openAssembly(i){
-    setActive(i);
-    show3D();
-  }
-
   renderCards();
+
+  // Pull the authored hotspot cameras and match each to an assembly.
+  fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+    method:"POST", headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ productUuid: UUID, page:1, size:50 })
+  }).then(r=>r.json()).then(d=>{
+    const grid = (d.response && d.response.grid) || d.grid || [];
+    grid.forEach(hs=>{
+      const label = (hs.text || hs.description || "").replace(/<[^>]+>/g,"");
+      const cam = hs.config && hs.config.camera ? JSON.parse(hs.config.camera) : null;
+      const a = ASSEMBLIES.find(x=>x.match.test(label));
+      if(a && cam) a.cam = cam;
+    });
+  }).catch(()=>{});
 </script>
 </body>
 </html>
