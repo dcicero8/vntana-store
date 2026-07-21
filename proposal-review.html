@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Proposal Review 3D Walkthrough | VNTANA</title>
+<style>
+  :root { --blue:#4B61F9; --blue-deep:#3547d6; --ink:#1A1A1A; --slate:#5a6472; --slate2:#8a93a1; --line:#e6e8ef; --bg:#f5f6fa; --paper:#fff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; }
+  header { background:var(--ink); color:#fff; padding:18px 26px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  header .brand { font-weight:800; letter-spacing:.16em; font-size:17px; }
+  header .ctx { color:#9aa3b2; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
+  .wrap { max-width:1240px; margin:0 auto; padding:24px 20px 60px; }
+  .intro { margin-bottom:18px; }
+  .intro h1 { font-size:clamp(22px,4vw,30px); font-weight:800; letter-spacing:-.02em; }
+  .intro p { color:var(--slate); font-size:15px; margin-top:6px; max-width:70ch; }
+  .layout { display:grid; grid-template-columns:1.55fr .95fr; gap:22px; align-items:start; }
+  @media (max-width:900px){ .layout{ grid-template-columns:1fr; } }
+
+  .media { background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(16,24,40,.06); position:sticky; top:18px; }
+  .media-bar { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid var(--line); }
+  .seg { display:flex; background:#eef0f6; border-radius:9px; padding:3px; }
+  .seg button { border:0; background:transparent; padding:7px 16px; border-radius:7px; font-size:12.5px; font-weight:700; color:var(--slate); cursor:pointer; font-family:inherit; }
+  .seg button.active { background:#fff; color:var(--blue); box-shadow:0 1px 2px rgba(16,24,40,.12); }
+  .media-hint { margin-left:auto; font-size:11.5px; color:var(--slate2); }
+
+  .stage { position:relative; aspect-ratio:1200/896; background:#c9ccd2; }
+  .stage img { width:100%; height:100%; display:block; object-fit:cover; }
+  .stage iframe { width:100%; height:100%; border:0; display:block; }
+  #view3d { display:none; }
+  #view3d.show { display:block; }
+  #viewPhoto.hide { display:none; }
+
+  /* hotspot pins over the photo */
+  .pin { position:absolute; transform:translate(-50%,-50%); z-index:3; cursor:pointer; border:0; background:transparent; }
+  .pin .dot { width:34px; height:34px; border-radius:50%; background:var(--blue); color:#fff; font-weight:800; font-size:15px;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 12px rgba(75,97,249,.5), 0 0 0 0 rgba(75,97,249,.5); animation:pulse 1.8s infinite; }
+  .pin:hover .dot, .pin.active .dot { background:var(--blue-deep); transform:scale(1.08); }
+  @keyframes pulse { 0%{ box-shadow:0 3px 12px rgba(75,97,249,.5),0 0 0 0 rgba(75,97,249,.45);} 70%{ box-shadow:0 3px 12px rgba(75,97,249,.5),0 0 0 16px rgba(75,97,249,0);} 100%{ box-shadow:0 3px 12px rgba(75,97,249,.5),0 0 0 0 rgba(75,97,249,0);} }
+  .pin .lbl { position:absolute; left:50%; top:calc(100% + 8px); transform:translateX(-50%); white-space:nowrap; background:var(--ink); color:#fff; font-size:11.5px; font-weight:700; padding:5px 10px; border-radius:7px; opacity:0; transition:opacity .15s; pointer-events:none; }
+  .pin:hover .lbl, .pin.active .lbl { opacity:1; }
+
+  /* right column */
+  .side h2 { font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--slate2); font-weight:700; margin-bottom:10px; }
+  .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:15px 16px; margin-bottom:12px; cursor:pointer; transition:border-color .15s, transform .15s; display:flex; gap:13px; }
+  .card:hover { border-color:var(--slate2); transform:translateY(-1px); }
+  .card.active { border-color:var(--blue); box-shadow:0 0 0 3px rgba(75,97,249,.14); }
+  .card .num { width:28px; height:28px; border-radius:50%; background:#eef0ff; color:var(--blue); font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; flex:none; }
+  .card.active .num { background:var(--blue); color:#fff; }
+  .card h3 { font-size:15px; font-weight:800; }
+  .card .tag { font-size:10.5px; color:var(--slate2); text-transform:uppercase; letter-spacing:.05em; font-weight:700; margin-top:1px; }
+  .card p { font-size:13px; color:var(--slate); line-height:1.55; margin-top:6px; }
+  .card .go { font-size:12px; font-weight:700; color:var(--blue); margin-top:8px; display:inline-block; }
+
+  .arbox { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-top:6px; }
+  .arbox b { font-size:13.5px; } .arbox p { font-size:12.5px; color:var(--slate); margin-top:4px; line-height:1.5; }
+  .note { font-size:11.5px; color:var(--slate2); margin-top:14px; line-height:1.5; }
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">VNTANA</span>
+  <span class="ctx">Proposal Review · 3D Walkthrough</span>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <h1>ME090 · Area 3000 Skid</h1>
+    <p>Start with the rendered layout, then click any assembly to open the live 3D model and walk a customer through the design. Built from the engineering CAD, no re-modeling.</p>
+  </div>
+
+  <div class="layout">
+    <!-- MEDIA -->
+    <div class="media">
+      <div class="media-bar">
+        <div class="seg">
+          <button id="seg-photo" class="active" onclick="showPhoto()">Rendered view</button>
+          <button id="seg-3d" onclick="show3D()">3D model</button>
+        </div>
+        <span class="media-hint" id="mediaHint">Click a numbered point to open it in 3D</span>
+      </div>
+      <div class="stage">
+        <div id="viewPhoto">
+          <img src="assets/me090-render.png" alt="ME090 Area 3000 skid rendered layout">
+          <button class="pin" style="left:19%;top:64%" data-i="0" onclick="openAssembly(0)"><span class="dot">1</span><span class="lbl">Hopper Feed Assembly</span></button>
+          <button class="pin" style="left:52%;top:62%" data-i="1" onclick="openAssembly(1)"><span class="dot">2</span><span class="lbl">Activated Carbon Vessel (V-3126)</span></button>
+          <button class="pin" style="left:78%;top:67%" data-i="2" onclick="openAssembly(2)"><span class="dot">3</span><span class="lbl">Connex Container</span></button>
+        </div>
+        <iframe id="view3d" title="ME090 3D model" allow="xr-spatial-tracking; fullscreen" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- SIDE -->
+    <div class="side">
+      <h2>Assemblies</h2>
+      <div id="cards"></div>
+      <div class="arbox">
+        <b>View in AR</b>
+        <p>The same model opens at true 1:1 scale in AR on any phone, no app. Useful for showing footprint and access on site during a proposal review.</p>
+      </div>
+      <p class="note">Concept for the proposal review process. Next step is authoring hotspots on each assembly so a click jumps the 3D camera straight to that sub-assembly, and grouping the tree into high-level assemblies for presentation.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const UUID = "3743d665-efc1-4bd2-8f09-10cb589876e9";
+  const EMBED = `https://embed.vntana.com/v2?productUuid=${UUID}&clientSlug=example-files&organizationSlug=DCicero`;
+
+  const ASSEMBLIES = [
+    { name:"Hopper Feed Assembly", tag:"Feed / dosing", desc:"Elevated hopper bank with feed screws and access stairs. Walk the customer through material feed, dosing, and the base-mounted pump set." },
+    { name:"Activated Carbon Vessel", tag:"V-3126 · process skid", desc:"Process piping skid with the V-3126 activated carbon vessel and heat exchangers. The core treatment step, shown with real routing and instrumentation." },
+    { name:"Connex Container", tag:"Controls / enclosure", desc:"Containerized control and equipment building. Show the enclosure, doors, and internal layout without shipping a unit to the customer." }
+  ];
+
+  let loaded3d = false, active = -1;
+  const $ = id => document.getElementById(id);
+
+  function renderCards(){
+    $("cards").innerHTML = ASSEMBLIES.map((a,i)=>`
+      <div class="card" data-i="${i}" onclick="openAssembly(${i})">
+        <div class="num">${i+1}</div>
+        <div>
+          <h3>${a.name}</h3>
+          <div class="tag">${a.tag}</div>
+          <p>${a.desc}</p>
+          <span class="go">Open in 3D &rarr;</span>
+        </div>
+      </div>`).join("");
+  }
+
+  function setActive(i){
+    active = i;
+    document.querySelectorAll(".card").forEach(c=>c.classList.toggle("active", +c.dataset.i===i));
+    document.querySelectorAll(".pin").forEach(p=>p.classList.toggle("active", +p.dataset.i===i));
+  }
+
+  function ensure3D(){
+    if(!loaded3d){ $("view3d").src = EMBED; loaded3d = true; }
+  }
+  function show3D(){
+    ensure3D();
+    $("view3d").classList.add("show"); $("viewPhoto").classList.add("hide");
+    $("seg-3d").classList.add("active"); $("seg-photo").classList.remove("active");
+    $("mediaHint").textContent = "Rotate, zoom, and open any part. Give it a few seconds to load.";
+  }
+  function showPhoto(){
+    $("view3d").classList.remove("show"); $("viewPhoto").classList.remove("hide");
+    $("seg-photo").classList.add("active"); $("seg-3d").classList.remove("active");
+    $("mediaHint").textContent = "Click a numbered point to open it in 3D";
+  }
+  function openAssembly(i){
+    setActive(i);
+    show3D();
+  }
+
+  renderCards();
+</script>
+</body>
+</html>
