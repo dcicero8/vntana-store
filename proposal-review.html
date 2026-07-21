@@ -85,7 +85,14 @@
           <button class="pin" style="left:52%;top:62%" data-i="1" onclick="openAssembly(1)"><span class="dot">2</span><span class="lbl">Activated Carbon Vessel (V-3126)</span></button>
           <button class="pin" style="left:78%;top:67%" data-i="2" onclick="openAssembly(2)"><span class="dot">3</span><span class="lbl">Connex Container</span></button>
         </div>
-        <div id="view3d"></div>
+        <div id="view3d">
+          <vntana-viewer id="viewer" loading="eager"
+            environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr"
+            light-rig-color="#ffffff" background="#ffffff"
+            light-rig="directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m">
+            <vntana-scene-graph-button active></vntana-scene-graph-button>
+          </vntana-viewer>
+        </div>
       </div>
     </div>
 
@@ -118,17 +125,11 @@
   ];
 
   const $ = id => document.getElementById(id);
-  let viewer = null, modelReady = false, pendingCam = null;
-
-  const CONFIG = {
-    "environment-src":"https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr",
-    "light-rig-color":"#ffffff",
-    "background":"#ffffff",
-    "light-rig":"directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m"
-  };
+  const viewer = $("viewer");           // declared in HTML so its camera controller initializes
+  let srcSet = false, modelReady = false, pendingCam = null;
 
   function applyCamera(cam){
-    if(!cam || !viewer) return;
+    if(!cam) return;
     try {
       if(cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
       if(cam.cameraDistance) viewer.setCameraDistance(cam.cameraDistance);
@@ -137,13 +138,15 @@
     } catch(e){}
   }
 
+  viewer.addEventListener("load", ()=>{
+    modelReady = true;
+    if(pendingCam){ applyCamera(pendingCam); pendingCam = null; }
+  }, { once:true });
+
   function ensureViewer(){
-    if(viewer) return;
-    viewer = document.createElement("vntana-viewer");
-    Object.entries(CONFIG).forEach(([k,v])=>viewer.setAttribute(k,v));
-    viewer.addEventListener("load", ()=>{ modelReady = true; if(pendingCam){ applyCamera(pendingCam); pendingCam = null; } }, { once:true });
-    $("view3d").appendChild(viewer);
-    viewer.setAttribute("src", `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB}`);
+    if(srcSet) return;
+    srcSet = true;
+    viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB}`;
   }
 
   function setActive(i){
