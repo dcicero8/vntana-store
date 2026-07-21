@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Proposal Review 3D Walkthrough | VNTANA</title>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
 <style>
   :root { --blue:#4B61F9; --blue-deep:#3547d6; --ink:#1A1A1A; --slate:#5a6472; --slate2:#8a93a1; --line:#e6e8ef; --bg:#f5f6fa; --paper:#fff; }
   * { box-sizing:border-box; margin:0; padding:0; }
@@ -28,8 +27,7 @@
 
   .stage { position:relative; aspect-ratio:1200/896; background:#eceef3; }
   #viewPhoto img { width:100%; height:100%; display:block; object-fit:cover; }
-  vntana-viewer { width:100%; height:100%; display:block; }
-  #view3d { display:none; width:100%; height:100%; }
+  #view3d { display:none; width:100%; height:100%; border:0; }
   #view3d.show { display:block; }
   #viewPhoto.hide { display:none; }
 
@@ -66,7 +64,7 @@
 <div class="wrap">
   <div class="intro">
     <h1>ME090 · Area 3000 Skid</h1>
-    <p>Start with the rendered layout, then click any assembly to fly the 3D camera straight to it and walk a customer through the design. Built from the engineering CAD, no re-modeling.</p>
+    <p>Start with the rendered layout, then open the live 3D model. Tap the numbered points to zoom to each assembly and walk a customer through the design. Built from the engineering CAD, no re-modeling.</p>
   </div>
 
   <div class="layout">
@@ -85,13 +83,7 @@
           <button class="pin" style="left:52%;top:62%" data-i="1" onclick="openAssembly(1)"><span class="dot">2</span><span class="lbl">Activated Carbon Vessel (V-3126)</span></button>
           <button class="pin" style="left:78%;top:67%" data-i="2" onclick="openAssembly(2)"><span class="dot">3</span><span class="lbl">Connex Container</span></button>
         </div>
-        <div id="view3d">
-          <vntana-viewer id="viewer" loading="eager"
-            environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr"
-            light-rig-color="#ffffff" background="#ffffff"
-            light-rig="directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m">
-          </vntana-viewer>
-        </div>
+        <iframe id="view3d" title="ME090 3D model" allow="xr-spatial-tracking; fullscreen" loading="lazy"></iframe>
       </div>
     </div>
 
@@ -102,51 +94,29 @@
         <b>View in AR</b>
         <p>The same model opens at true 1:1 scale in AR on any phone, no app. Useful for showing footprint and access on site during a proposal review.</p>
       </div>
-      <p class="note">Cameras are pulled live from the hotspots authored in the platform, so re-saving a hotspot updates the zoom here automatically.</p>
+      <p class="note">The 3D model carries the hotspots authored in the platform, each one zooms the camera to its assembly. Next step is a materials cleanup pass so the model reads picture perfect rather than raw CAD.</p>
     </div>
   </div>
 </div>
 
 <script>
-  const BASE = "https://api.vntana.com";
   const ORG = "DCicero", WS = "example-files";
   const UUID = "3743d665-efc1-4bd2-8f09-10cb589876e9";
-  const GLB = "85858074-a639-4eae-b5bc-3ec5eb55dab2.glb";
+  const EMBED = `https://embed.vntana.com/v2?productUuid=${UUID}&clientSlug=${WS}&organizationSlug=${ORG}`;
 
-  // Static content; camera is matched in from the authored hotspots by keyword.
   const ASSEMBLIES = [
-    { name:"Double Blower Skid",        tag:"Blowers / feed end", match:/blower/i,
+    { name:"Double Blower Skid",      tag:"Blowers / feed end · point 1",
       desc:"Double blower skid at the feed end. Walk the customer through the blowers, drive, and base framing." },
-    { name:"Activated Carbon Vessel",   tag:"V-3126 · process skid", match:/carbon|v-?3126/i,
+    { name:"Activated Carbon Vessel", tag:"V-3126 · process skid · point 2",
       desc:"Process piping skid with the V-3126 activated carbon vessel and heat exchangers. The core treatment step, shown with real routing and instrumentation." },
-    { name:"Connex Container",          tag:"Controls / enclosure", match:/connex|contain|enclosure|control/i,
+    { name:"Connex Container",        tag:"Controls / enclosure · point 3",
       desc:"Containerized control and equipment building. Show the enclosure, doors, and internal layout without shipping a unit to the customer." }
   ];
 
   const $ = id => document.getElementById(id);
-  const viewer = $("viewer");           // declared in HTML so its camera controller initializes
-  let srcSet = false, modelReady = false, pendingCam = null;
+  let srcSet = false;
 
-  function applyCamera(cam){
-    if(!cam) return;
-    try {
-      if(cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
-      if(cam.cameraDistance) viewer.setCameraDistance(cam.cameraDistance);
-      if(cam.cameraTarget)   viewer.setCameraTarget(cam.cameraTarget);
-      if(cam.fieldOfView && viewer.setFieldOfView) viewer.setFieldOfView(cam.fieldOfView);
-    } catch(e){}
-  }
-
-  viewer.addEventListener("load", ()=>{
-    modelReady = true;
-    if(pendingCam){ applyCamera(pendingCam); pendingCam = null; }
-  }, { once:true });
-
-  function ensureViewer(){
-    if(srcSet) return;
-    srcSet = true;
-    viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${GLB}`;
-  }
+  function ensure3D(){ if(!srcSet){ $("view3d").src = EMBED; srcSet = true; } }
 
   function setActive(i){
     ASSEMBLIES.forEach((_,j)=>{
@@ -154,24 +124,18 @@
       document.querySelectorAll(`.pin[data-i="${j}"]`).forEach(p=>p.classList.toggle("active", j===i));
     });
   }
-
   function show3D(){
-    ensureViewer();
+    ensure3D();
     $("view3d").classList.add("show"); $("viewPhoto").classList.add("hide");
     $("seg-3d").classList.add("active"); $("seg-photo").classList.remove("active");
-    $("mediaHint").textContent = "Rotate, zoom, and open any part. Give it a few seconds to load.";
+    $("mediaHint").textContent = "Tap the numbered points in the model to zoom to each assembly.";
   }
   function showPhoto(){
     $("view3d").classList.remove("show"); $("viewPhoto").classList.remove("hide");
     $("seg-photo").classList.add("active"); $("seg-3d").classList.remove("active");
-    $("mediaHint").textContent = "Click a numbered point to zoom to it in 3D";
+    $("mediaHint").textContent = "Click a numbered point to open the model in 3D";
   }
-  function openAssembly(i){
-    setActive(i);
-    show3D();
-    const cam = ASSEMBLIES[i].cam;
-    if(modelReady) applyCamera(cam); else pendingCam = cam;
-  }
+  function openAssembly(i){ setActive(i); show3D(); }
 
   function renderCards(){
     $("cards").innerHTML = ASSEMBLIES.map((a,i)=>`
@@ -181,25 +145,11 @@
           <h3>${a.name}</h3>
           <div class="tag">${a.tag}</div>
           <p>${a.desc}</p>
-          <span class="go">Zoom to it in 3D &rarr;</span>
+          <span class="go">Open in 3D &rarr;</span>
         </div>
       </div>`).join("");
   }
   renderCards();
-
-  // Pull the authored hotspot cameras and match each to an assembly.
-  fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
-    method:"POST", headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ productUuid: UUID, page:1, size:50 })
-  }).then(r=>r.json()).then(d=>{
-    const grid = (d.response && d.response.grid) || d.grid || [];
-    grid.forEach(hs=>{
-      const label = (hs.text || hs.description || "").replace(/<[^>]+>/g,"");
-      const cam = hs.config && hs.config.camera ? JSON.parse(hs.config.camera) : null;
-      const a = ASSEMBLIES.find(x=>x.match.test(label));
-      if(a && cam) a.cam = cam;
-    });
-  }).catch(()=>{});
 </script>
 </body>
 </html>
