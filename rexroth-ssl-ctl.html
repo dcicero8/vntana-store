@@ -277,6 +277,15 @@
   const selectComponent = (id) => {
     const uuids = GROUP[id];
     if (!uuids || !uuids.length) return;          // node not present in this version
+    // sync the category tab + chip list to the selected component (e.g. clicking the
+    // pump in 3D should switch from Digital to Drive Solutions)
+    const cat = byId[id].category;
+    if (cat && cat !== activeCat) {
+      activeCat = cat;
+      catsEl.querySelectorAll(".cat").forEach(t => t.classList.toggle("active", t.dataset.cat === cat));
+      renderChips();
+      markMissing();
+    }
     activeId = id;
     applyCam(byId[id].cam || DETAIL_CAM); // per-part camera, first (before effects)
     clearPaint();
