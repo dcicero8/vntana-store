@@ -118,6 +118,7 @@
       id:"controller", match:/BODAS RC Controller|RC18-12/i,
       name:"BODAS Controller", tag:"RC18-12 / RC27-18",
       img:"assets/rexroth/RC40%20Control%20Unit.jpg",
+      cam:{ cameraTarget:"-0.02r 0r 0.1r", cameraDistance:"1.6r", cameraRotation:"-0.2rad 0.7rad 0rad", fieldOfView:"0.5rad" },
       bullets:[
         "Compact, multifunctional control unit",
         "Programmable in C, CODESYS, and Matlab",
@@ -133,6 +134,7 @@
       id:"pedal", match:/Foot Pedal|2THE5R/i,
       name:"Electronic Foot Pedal", tag:"2THE5R / 4THE5NR",
       img:"assets/rexroth/embed.jpg",
+      cam:{ cameraTarget:"-0.12r -0.08r 0.02r", cameraDistance:"1.5r", cameraRotation:"-0.2rad 0.7rad 0rad", fieldOfView:"0.5rad" },
       bullets:[
         "Robust HMI device for precise, hands-free control in mobile applications",
         "Ergonomic design improves operator efficiency and reduces fatigue",
@@ -147,6 +149,7 @@
       id:"joystick", match:/Joystick|4THE5/i,
       name:"Joystick 4THE5 Sense+", tag:"4THE5 Sense+",
       img:"assets/rexroth/Sense4TH.png",
+      cam:{ cameraTarget:"0r 0.1r 0.25r", cameraDistance:"1.5r", cameraRotation:"-0.2rad 0.7rad 0rad", fieldOfView:"0.5rad" },
       bullets:[
         "Ergonomic multi-axis grip for precise proportional control",
         "Programmable buttons and rockers for machine functions",
@@ -237,7 +240,7 @@
     const uuids = GROUP[id];
     if (!uuids || !uuids.length) return;          // node not present in this version
     activeId = id;
-    applyCam(DETAIL_CAM);                 // camera first (before effects)
+    applyCam(byId[id].cam || DETAIL_CAM); // per-part camera, first (before effects)
     clearPaint();
     applyDim();                           // ghost the machine around the part
     for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
