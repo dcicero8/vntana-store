@@ -54,6 +54,7 @@
   .chip .ph{display:block;font-size:.62rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-top:2px}
 
   .detail{border:1px solid var(--line);border-radius:14px;padding:22px;background:#fbfcfe}
+  .detail-img{width:100%;max-height:210px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:16px;display:block}
   .detail h2{font-size:1.2rem;font-weight:900;color:var(--blue-dark);margin:0 0 4px}
   .detail .tag{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:14px}
   .detail ul{margin:0;padding-left:18px}
@@ -116,6 +117,7 @@
     {
       id:"controller", match:/BODAS RC Controller|RC18-12/i,
       name:"BODAS Controller", tag:"RC18-12 / RC27-18",
+      img:"assets/rexroth/RC40%20Control%20Unit.jpg",
       bullets:[
         "Compact, multifunctional control unit",
         "Programmable in C, CODESYS, and Matlab",
@@ -130,6 +132,7 @@
     {
       id:"pedal", match:/Foot Pedal|2THE5R/i,
       name:"Electronic Foot Pedal", tag:"2THE5R / 4THE5NR",
+      img:"assets/rexroth/embed.jpg",
       bullets:[
         "Robust HMI device for precise, hands-free control in mobile applications",
         "Ergonomic design improves operator efficiency and reduces fatigue",
@@ -143,6 +146,7 @@
     {
       id:"joystick", match:/Joystick|4THE5/i,
       name:"Joystick 4THE5 Sense+", tag:"4THE5 Sense+",
+      img:"assets/rexroth/Sense4TH.png",
       bullets:[
         "Ergonomic multi-axis grip for precise proportional control",
         "Programmable buttons and rockers for machine functions",
@@ -253,6 +257,7 @@
   // ── card ──────────────────────────────────────────────────────
   const renderCard = (c) => {
     detail.innerHTML = `
+      ${c.img ? `<img class="detail-img" src="${c.img}" alt="${c.name}">` : ``}
       ${c.placeholder ? `<div class="badge">Placeholder 3D · final CAD in progress</div>` : ``}
       <h2>${c.name}</h2>
       <div class="tag">${c.tag}</div>
