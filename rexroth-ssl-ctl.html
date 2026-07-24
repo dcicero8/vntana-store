@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rexroth SSL/CTL Solutions Explorer</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#00548f; --blue-dark:#003a63; --sky:#3fa9f5; --red:#e2001a;
+    --ink:#1a1f2b; --muted:#5c6473; --line:#e5e8ef; --bg:#f4f6f9; --card:#fff;
+    --font:'Roboto',Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+  header.top{height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    padding:0 22px;gap:14px;position:sticky;top:0;z-index:20}
+  header.top .wm{font-weight:900;letter-spacing:-.01em;font-size:1.05rem;color:var(--blue-dark)}
+  header.top .wm span{color:var(--red)}
+  header.top .sub{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  header.top .back{margin-left:auto;font-size:.8rem;color:var(--muted);text-decoration:none}
+  header.top .back:hover{color:var(--blue)}
+
+  main{display:grid;grid-template-columns:1fr 440px;height:calc(100vh - 56px)}
+  @media(max-width:900px){main{grid-template-columns:1fr;height:auto}}
+
+  /* viewer */
+  .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px}
+  vntana-viewer{width:100%;height:100%;display:block}
+  .stage .hint{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:.78rem;color:#8b93a4;pointer-events:none}
+  .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa2b2;font-size:.9rem}
+
+  /* panel */
+  .panel{background:var(--card);border-left:1px solid var(--line);overflow-y:auto;padding:26px 26px 40px}
+  .eyebrow{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:700}
+  .panel h1{font-size:1.6rem;font-weight:900;margin:6px 0 2px;letter-spacing:-.02em}
+  .machine{font-size:.85rem;color:var(--muted);margin-bottom:20px}
+
+  .cats{display:flex;flex-wrap:wrap;gap:6px 16px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px}
+  .cat{font-size:.82rem;font-weight:500;color:#b3b9c6;cursor:default;display:flex;align-items:center;gap:5px}
+  .cat.active{color:var(--blue);font-weight:700}
+  .cat.active::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+  .chip{border:1px solid var(--line);background:#f7f9fc;border-radius:8px;padding:9px 13px;font-size:.82rem;font-weight:600;
+    color:#40485a;cursor:pointer;transition:.15s;line-height:1.15}
+  .chip:hover{border-color:var(--sky);color:var(--blue)}
+  .chip.active{background:var(--blue);border-color:var(--blue);color:#fff}
+  .chip .ph{display:block;font-size:.62rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-top:2px}
+
+  .detail{border:1px solid var(--line);border-radius:14px;padding:22px;background:#fbfcfe}
+  .detail h2{font-size:1.2rem;font-weight:900;color:var(--blue-dark);margin:0 0 4px}
+  .detail .tag{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:14px}
+  .detail ul{margin:0;padding-left:18px}
+  .detail li{font-size:.9rem;color:#3a4252;margin-bottom:8px;line-height:1.45}
+  .detail .note{margin-top:14px;font-size:.78rem;color:#8b93a4;font-style:italic;border-top:1px dashed var(--line);padding-top:12px}
+  .empty{color:#9aa2b2;font-size:.92rem;line-height:1.5}
+  .badge{display:inline-block;background:#eef4fb;color:var(--blue);border:1px solid #d4e4f5;border-radius:999px;
+    padding:3px 10px;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wm">Bosch <span>Rexroth</span></div>
+  <div class="sub">SSL / CTL Solutions Explorer</div>
+  <a class="back" href="index.html">All demos</a>
+</header>
+
+<main>
+  <div class="stage">
+    <div class="loading" id="loading">Loading interactive 3D…</div>
+    <vntana-viewer id="viewer" picking="true"></vntana-viewer>
+    <div class="hint">The machine is shown ghosted. Click a component in the list or in the model to explore it.</div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">Review our solutions</div>
+    <h1>Skid Steer / Compact Track Loader</h1>
+    <div class="machine">Explore the Bosch Rexroth components built into the machine.</div>
+
+    <div class="cats">
+      <div class="cat">Drive Solutions</div>
+      <div class="cat">Working Hydraulic Solutions</div>
+      <div class="cat active">Digital Integration Solutions</div>
+      <div class="cat">Auxiliary Solutions</div>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="detail" id="detail">
+      <div class="empty">Select a component above, or click it in the 3D model, to see its details.</div>
+    </div>
+  </div>
+</main>
+
+<script type="module" src="vendor/viewer-test/dist/index.js"></script>
+<script type="module">
+  const viewer  = document.getElementById("viewer");
+  const chipsEl = document.getElementById("chips");
+  const detail  = document.getElementById("detail");
+  const loading = document.getElementById("loading");
+
+  const BASE="https://api.vntana.com", UUID="da847f30-4041-465c-8a2e-e394857be871",
+        ORG="DCicero", WS="example-files";
+
+  // Digital Integration components. `match` finds the part's node in the scene
+  // graph by name (tolerant of VNTANA's suffixes). placeholder=true means the
+  // 3D is a stand-in box until the real CAD arrives.
+  const COMPONENTS = [
+    {
+      id:"controller", match:/BODAS RC Controller|RC18-12/i,
+      name:"BODAS Controller", tag:"RC18-12 / RC27-18",
+      bullets:[
+        "Compact, multifunctional control unit",
+        "Programmable in C, CODESYS, and Matlab",
+        "Multifunctional inputs and outputs",
+        "Cost-efficient, with an excellent size-to-I/O ratio",
+        "Ideal for auxiliary functions and a first step into EH systems",
+        "Developed and produced together with Bosch",
+        "For all types of mobile machinery"
+      ],
+      note:"The electronic brain of the machine. It reads operator joystick and pedal input and commands the hydraulics."
+    },
+    {
+      id:"pedal", match:/Foot Pedal|2THE5R/i,
+      name:"Electronic Foot Pedal", tag:"2THE5R / 4THE5NR",
+      bullets:[
+        "Robust HMI device for precise, hands-free control in mobile applications",
+        "Ergonomic design improves operator efficiency and reduces fatigue",
+        "Accurate proportional or switched control via CAN or PWM",
+        "Customizable pedal functions for specific operational requirements",
+        "Supports hybrid hydraulic and electronic integration",
+        "High performance level (2 micro-controllers), ISO 13849, PLd capable"
+      ],
+      placeholder:true
+    },
+    {
+      id:"joystick", match:/Joystick|4THE5/i,
+      name:"Joystick 4THE5 Sense+", tag:"4THE5 Sense+",
+      bullets:[
+        "Ergonomic multi-axis grip for precise proportional control",
+        "Programmable buttons and rockers for machine functions",
+        "CAN bus output integrates directly with the BODAS controller",
+        "Sealed, durable design for harsh mobile environments"
+      ],
+      placeholder:true
+    }
+  ];
+
+  const byId = Object.fromEntries(COMPONENTS.map(c => [c.id, c]));
+
+  // ── build chips ───────────────────────────────────────────────
+  COMPONENTS.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.dataset.id = c.id;
+    b.innerHTML = `${c.name}<span class="ph">${c.tag}${c.placeholder ? " · placeholder 3D" : ""}</span>`;
+    b.addEventListener("click", () => selectComponent(c.id));
+    chipsEl.appendChild(b);
+  });
+
+  // ── scene-graph grouping ──────────────────────────────────────
+  const GROUP = {};          // id → [primitive uuid]
+  const UUID_ID = {};        // primitive uuid → component id
+  const BODY = [];           // everything else (ghosted)
+  let ghosted = false;
+
+  const componentFor = (name) => {
+    const c = COMPONENTS.find(c => c.match.test(name || ""));
+    return c ? c.id : null;
+  };
+  const collectPrims = (node) => {
+    const out = [];
+    (function walk(n){ if (n.type === "primitive") out.push(n.uuid); (n.children||[]).forEach(walk); })(node);
+    return out;
+  };
+
+  let tries = 0;
+  const buildGroups = () => {
+    const root = viewer.sceneGraph;
+    if (!root) { if (tries++ < 60) setTimeout(buildGroups, 120); return; }
+    Object.keys(GROUP).forEach(k => delete GROUP[k]);
+    Object.keys(UUID_ID).forEach(k => delete UUID_ID[k]);
+    BODY.length = 0;
+    (function walk(n){
+      const id = componentFor(n.name);
+      if (id) {
+        const uuids = collectPrims(n);
+        GROUP[id] = (GROUP[id] || []).concat(uuids);
+        uuids.forEach(u => UUID_ID[u] = id);
+        return; // claim whole subtree, stop descending
+      }
+      if (n.type === "primitive") BODY.push(n.uuid);
+      (n.children || []).forEach(walk);
+    })(root);
+
+    const grouped = Object.values(GROUP).reduce((s,a)=>s+a.length,0);
+    if (grouped + BODY.length === 0) { if (tries++ < 60) setTimeout(buildGroups, 120); return; }
+
+    loading.style.display = "none";
+    ghostBody();               // phantom look by default
+    markMissing();             // grey out chips whose node is absent (e.g. pre-v5 controller)
+  };
+
+  // ── effects ───────────────────────────────────────────────────
+  const ghostBody = () => { if (ghosted) return; for (const u of BODY) viewer.setEffect(u, "dim"); ghosted = true; };
+  const clearPaint = () => { viewer.clearEffect("outline"); viewer.clearEffect("highlight"); viewer.clearEffect("glow"); };
+
+  let activeId = null;
+  const selectComponent = (id) => {
+    const uuids = GROUP[id];
+    if (!uuids || !uuids.length) return;          // node not present in this version
+    activeId = id;
+    clearPaint();
+    for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
+    renderCard(byId[id]);
+    [...chipsEl.children].forEach(ch => ch.classList.toggle("active", ch.dataset.id === id));
+  };
+
+  const resetSelection = () => {
+    activeId = null; clearPaint();
+    [...chipsEl.children].forEach(ch => ch.classList.remove("active"));
+    detail.innerHTML = `<div class="empty">Select a component above, or click it in the 3D model, to see its details.</div>`;
+  };
+
+  // ── card ──────────────────────────────────────────────────────
+  const renderCard = (c) => {
+    detail.innerHTML = `
+      ${c.placeholder ? `<div class="badge">Placeholder 3D · final CAD in progress</div>` : ``}
+      <h2>${c.name}</h2>
+      <div class="tag">${c.tag}</div>
+      <ul>${c.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+      ${c.note ? `<div class="note">${c.note}</div>` : ``}`;
+  };
+
+  // grey out any chip whose 3D node is not in this version
+  const markMissing = () => {
+    [...chipsEl.children].forEach(ch => {
+      const present = (GROUP[ch.dataset.id] || []).length > 0;
+      ch.style.opacity = present ? "" : ".45";
+      ch.title = present ? "" : "3D node not in this model version yet";
+    });
+  };
+
+  // ── viewer events ─────────────────────────────────────────────
+  viewer.addEventListener("object-hover", (e) => {
+    if (activeId) return;
+    const hit = e.detail?.intersections?.[0];
+    const id = hit && UUID_ID[hit.uuid];
+    viewer.clearEffect("glow");
+    if (!id) { viewer.style.cursor = ""; return; }
+    viewer.style.cursor = "pointer";
+    for (const u of GROUP[id]) viewer.setEffect(u, "glow");
+  });
+
+  viewer.addEventListener("object-select", (e) => {
+    const hit = e.detail?.intersections?.[0];
+    const id = hit && UUID_ID[hit.uuid];
+    if (!id) { resetSelection(); return; }
+    selectComponent(id);
+  });
+
+  ["scene-loaded","updates-loaded","load"].forEach(ev => viewer.addEventListener(ev, buildGroups));
+
+  // ── load product ──────────────────────────────────────────────
+  (async () => {
+    try {
+      const p = await fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
+      const { asset, viewerSettings } = p.response;
+      const blobId = asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB")?.modelBlobId
+                   || asset.models[0].modelBlobId;
+      if (viewerSettings?.config) {
+        try { const cfg = JSON.parse(viewerSettings.config);
+              viewer.addEventListener("load", () => Object.assign(viewer, cfg), { once:true }); } catch(_){}
+      }
+      viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
+    } catch (err) {
+      loading.textContent = "Could not load the model.";
+      console.error(err);
+    }
+  })();
+</script>
+</body>
+</html>
