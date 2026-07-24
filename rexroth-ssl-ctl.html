@@ -42,12 +42,14 @@
   .machine{font-size:.85rem;color:var(--muted);margin-bottom:20px}
 
   .cats{display:flex;flex-wrap:wrap;gap:6px 16px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px}
-  .cat{font-size:.82rem;font-weight:500;color:#b3b9c6;cursor:default;display:flex;align-items:center;gap:5px}
-  .cat.active{color:var(--blue);font-weight:700}
+  .cat{font-size:.82rem;font-weight:600;color:var(--blue);cursor:pointer;display:flex;align-items:center;gap:5px}
+  .cat:not(.active):not(.disabled):hover{color:var(--blue-dark);text-decoration:underline}
+  .cat.active{font-weight:800}
   .cat.active::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue)}
+  .cat.disabled{color:#c2c7d0;font-weight:500;cursor:default;pointer-events:none}
 
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-  .chip{border:1px solid var(--line);background:#f7f9fc;border-radius:8px;padding:9px 13px;font-size:.82rem;font-weight:600;
+  .chips{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+  .chip{width:100%;text-align:center;border:1px solid var(--line);background:#f7f9fc;border-radius:8px;padding:11px 13px;font-size:.82rem;font-weight:600;
     color:#40485a;cursor:pointer;transition:.15s;line-height:1.15}
   .chip:hover{border-color:var(--sky);color:var(--blue)}
   .chip.active{background:var(--blue);border-color:var(--blue);color:#fff}
@@ -162,7 +164,7 @@
       id:"travel", category:"drive", match:/Travel Drive|A21VG/i,
       name:"Travel Drive Variable Pump A21VG", tag:"A21VG",
       img:"assets/rexroth/A21VG.jpg",
-      cam:{ cameraTarget:"0.04r -0.03r -0.02r", cameraDistance:"2.0r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
+      cam:{ cameraTarget:"0.04r -0.03r -0.02r", cameraDistance:"1.45r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
       bullets:[
         "Variable double pump with two axial-piston rotary groups (swashplate design) for hydrostatic drives in a closed circuit",
         "Flow is proportional to drive speed and displacement",
@@ -210,8 +212,7 @@
 
   // category tabs: only tabs that have components are clickable
   [...catsEl.querySelectorAll(".cat")].forEach(tab => {
-    if (!catHasComponents(tab.dataset.cat)) return;   // greyed until it has parts
-    tab.style.cursor = "pointer";
+    if (!catHasComponents(tab.dataset.cat)) { tab.classList.add("disabled"); return; }   // greyed: no parts
     tab.addEventListener("click", () => {
       if (tab.dataset.cat === activeCat) return;
       activeCat = tab.dataset.cat;
