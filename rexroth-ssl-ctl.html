@@ -86,10 +86,10 @@
     <div class="machine">Explore the Bosch Rexroth components built into the machine.</div>
 
     <div class="cats">
-      <div class="cat">Drive Solutions</div>
-      <div class="cat">Working Hydraulic Solutions</div>
-      <div class="cat active">Digital Integration Solutions</div>
-      <div class="cat">Auxiliary Solutions</div>
+      <div class="cat" data-cat="drive">Drive Solutions</div>
+      <div class="cat" data-cat="working">Working Hydraulic Solutions</div>
+      <div class="cat active" data-cat="digital">Digital Integration Solutions</div>
+      <div class="cat" data-cat="aux">Auxiliary Solutions</div>
     </div>
 
     <div class="chips" id="chips"></div>
@@ -115,7 +115,7 @@
   // 3D is a stand-in box until the real CAD arrives.
   const COMPONENTS = [
     {
-      id:"controller", match:/BODAS RC Controller|RC18-12/i,
+      id:"controller", category:"digital", match:/BODAS RC Controller|RC18-12/i,
       name:"BODAS Controller", tag:"RC18-12 / RC27-18",
       img:"assets/rexroth/RC40%20Control%20Unit.jpg",
       cam:{ cameraTarget:"-0.05r 0r 0.1r", cameraDistance:"1.95r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
@@ -131,7 +131,7 @@
       note:"The electronic brain of the machine. It reads operator joystick and pedal input and commands the hydraulics."
     },
     {
-      id:"pedal", match:/Foot Pedal|2THE5R/i,
+      id:"pedal", category:"digital", match:/Foot Pedal|2THE5R/i,
       name:"Electronic Foot Pedal", tag:"2THE5R / 4THE5NR",
       img:"assets/rexroth/embed.jpg",
       cam:{ cameraTarget:"-0.1r -0.03r 0.03r", cameraDistance:"1.95r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
@@ -146,7 +146,7 @@
       placeholder:true
     },
     {
-      id:"joystick", match:/Joystick|4THE5/i,
+      id:"joystick", category:"digital", match:/Joystick|4THE5/i,
       name:"Joystick 4THE5 Sense+", tag:"4THE5 Sense+",
       img:"assets/rexroth/Sense4TH.png",
       cam:{ cameraTarget:"-0.02r 0.02r 0.2r", cameraDistance:"1.95r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
@@ -157,6 +157,20 @@
         "Sealed, durable design for harsh mobile environments"
       ],
       placeholder:true
+    },
+    {
+      id:"travel", category:"drive", match:/Travel Drive|A21VG/i,
+      name:"Travel Drive Variable Pump A21VG", tag:"A21VG",
+      cam:{ cameraTarget:"0.04r -0.03r -0.02r", cameraDistance:"2.0r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
+      bullets:[
+        "Variable double pump with two axial-piston rotary groups (swashplate design) for hydrostatic drives in a closed circuit",
+        "Flow is proportional to drive speed and displacement",
+        "Flow can be infinitely varied by adjusting the swashplate angle",
+        "Flow direction changes smoothly through the neutral position",
+        "One shared case-drain port for both circuits",
+        "Compact design for tight installation conditions",
+        "Sizes 2x35, 2x45, 35/45; nominal 420 bar, max 450 bar"
+      ]
     }
   ];
 
@@ -177,14 +191,36 @@
   };
   let camInit = false;
 
-  // ── build chips ───────────────────────────────────────────────
-  COMPONENTS.forEach(c => {
-    const b = document.createElement("button");
-    b.className = "chip"; b.dataset.id = c.id;
-    b.innerHTML = `${c.name}<span class="ph">${c.tag}${c.placeholder ? " · placeholder 3D" : ""}</span>`;
-    b.addEventListener("click", () => selectComponent(c.id));
-    chipsEl.appendChild(b);
+  // ── categories + chips ────────────────────────────────────────
+  let activeCat = "digital";
+  const catsEl = document.querySelector(".cats");
+  const catHasComponents = (cat) => COMPONENTS.some(c => c.category === cat);
+
+  const renderChips = () => {
+    chipsEl.innerHTML = "";
+    COMPONENTS.filter(c => c.category === activeCat).forEach(c => {
+      const b = document.createElement("button");
+      b.className = "chip"; b.dataset.id = c.id;
+      b.innerHTML = `${c.name}<span class="ph">${c.tag}${c.placeholder ? " · placeholder 3D" : ""}</span>`;
+      b.addEventListener("click", () => selectComponent(c.id));
+      chipsEl.appendChild(b);
+    });
+  };
+
+  // category tabs: only tabs that have components are clickable
+  [...catsEl.querySelectorAll(".cat")].forEach(tab => {
+    if (!catHasComponents(tab.dataset.cat)) return;   // greyed until it has parts
+    tab.style.cursor = "pointer";
+    tab.addEventListener("click", () => {
+      if (tab.dataset.cat === activeCat) return;
+      activeCat = tab.dataset.cat;
+      catsEl.querySelectorAll(".cat").forEach(t => t.classList.toggle("active", t === tab));
+      resetSelection();
+      renderChips();
+      markMissing();
+    });
   });
+  renderChips();
 
   // ── scene-graph grouping ──────────────────────────────────────
   const GROUP = {};          // id → [primitive uuid]
