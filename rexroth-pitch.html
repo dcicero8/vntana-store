@@ -24,7 +24,7 @@
   p{margin:0 0 1rem}
   a{color:var(--blue);text-decoration:none}
   .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);font-weight:500}
+  .eyebrow{font-family:var(--mono);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:700}
   .eyebrow.on-dark{color:var(--mint)}
   section{scroll-margin-top:84px}
 
@@ -48,7 +48,7 @@
   .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
     padding:6px 14px;border-radius:999px;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:26px}
   .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--mint)}
-  .hero h1{font-size:clamp(2.3rem,5.4vw,4rem);max-width:16ch}
+  .hero h1{font-size:clamp(2.3rem,5.4vw,4rem);max-width:18ch}
   .hero .sub{font-size:clamp(1.05rem,2vw,1.3rem);color:#e6e9ff;max-width:60ch;margin:22px 0 0;font-weight:300}
   .hero .btns{display:flex;gap:14px;flex-wrap:wrap;margin-top:36px}
   .btn{display:inline-block;padding:14px 26px;border-radius:999px;font-weight:700;font-size:.95rem}
@@ -86,6 +86,49 @@
   .card h4{font-size:1.06rem;margin-bottom:8px}
   .card p{font-size:.95rem;color:var(--muted);margin:0}
 
+  /* PLATFORM LEAD-IN */
+  .platform-lead{background:linear-gradient(120deg,#eef1ff,#e9f8f0);border:1px solid #d9dcf5;border-radius:18px;padding:28px 30px;margin:6px 0 26px}
+  .platform-lead h4{font-size:1.2rem;margin:0 0 16px;display:flex;align-items:center;gap:10px}
+  .platform-lead .pts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:760px){.platform-lead .pts{grid-template-columns:1fr}}
+  .platform-lead .pt{font-size:.94rem;color:var(--ink)}
+  .platform-lead .pt b{color:var(--blue)}
+
+  /* PLATFORM SHOWCASE (text + image) */
+  .platform-showcase{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center;margin-top:6px}
+  @media(max-width:760px){.platform-showcase{grid-template-columns:1fr;gap:20px}}
+  .platform-showcase .lead{margin-bottom:0}
+  .shot{text-align:center}
+  .shot img{width:100%;max-width:460px;height:auto;display:block;margin:0 auto 18px}
+  .shot-ph{border:2px dashed #c9cdf0;border-radius:16px;padding:56px 20px;color:var(--muted);font-weight:700;margin-bottom:18px;background:#f7f8ff}
+  .shot-ph span{display:block;font-weight:400;font-size:.82rem;margin-top:8px;color:#9a9ec0}
+
+  /* INLINE DEMO BUTTON */
+  .demobtn{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;font-weight:700;font-size:.95rem;padding:12px 24px;border-radius:999px;transition:.18s;margin-top:2px}
+  .demobtn:hover{background:#3f53de;transform:translateY(-1px);box-shadow:0 12px 26px -14px rgba(75,97,249,.8)}
+
+  /* PART -> MACHINE FLOW */
+  .flowsteps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:12px;margin-top:20px}
+  @media(max-width:760px){.flowsteps{grid-template-columns:1fr}}
+  .fstep{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .fstep .num{font-family:var(--mono);font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--blue)}
+  .fstep h4{font-size:1.02rem;margin:6px 0}
+  .fstep p{font-size:.9rem;color:var(--muted);margin:0}
+  .farrow{display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:1.5rem;font-weight:700}
+  @media(max-width:760px){.farrow{transform:rotate(90deg);padding:2px 0}}
+
+  /* PHASE 2 */
+  .phase2{background:var(--black);color:#fff}
+  .phase2 .wrap{padding:64px 24px}
+  .phase2 .badge2b{display:inline-block;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;background:rgba(127,226,175,.16);border:1px solid rgba(127,226,175,.4);color:var(--mint);padding:6px 14px;border-radius:999px;margin-bottom:14px}
+  .phase2 h2{font-size:clamp(1.7rem,3.4vw,2.5rem)}
+  .phase2 .lead{color:#c9cce4}
+  .p2grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:26px}
+  @media(max-width:680px){.p2grid{grid-template-columns:1fr}}
+  .p2card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:22px}
+  .p2card h4{font-size:1.05rem;margin:0 0 8px;color:#fff}
+  .p2card p{font-size:.92rem;color:#c9cce4;margin:0}
+
   /* CHANNEL CARDS (everywhere) */
   .channels{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:34px}
   @media(max-width:680px){.channels{grid-template-columns:1fr}}
@@ -93,7 +136,7 @@
   .chan::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--blue)}
   .chan h4{font-size:1.12rem;margin-bottom:8px}
   .chan p{font-size:.95rem;color:var(--muted);margin:0}
-  .chan .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:6px}
+  .chan .tag{font-family:var(--mono);font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:6px}
 
   /* INFO PANELS */
   .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
@@ -113,8 +156,59 @@
   @media(max-width:820px){.proof{grid-template-columns:1fr}}
   .pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;display:flex;flex-direction:column}
   .pcard .name{font-family:var(--head);font-weight:900;font-size:1.2rem;margin-bottom:4px}
-  .pcard .tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
+  .pcard .tag{font-family:var(--mono);font-size:.76rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
   .pcard p{font-size:.95rem;color:var(--muted);margin:0}
+
+  /* SCORECARD */
+  .scorefig{margin:26px 0 0}
+  .scorefig img{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px -26px rgba(26,26,26,.4)}
+  .scorefig figcaption{font-size:.95rem;color:var(--muted);margin-top:14px}
+  .scorefig figcaption b{color:var(--ink)}
+  .score-ph{border:2px dashed #c9cdf0;border-radius:16px;padding:70px 20px;text-align:center;color:var(--muted);font-weight:700;background:#f7f8ff}
+  .score-ph span{display:block;font-weight:400;font-size:.82rem;margin-top:8px;color:#9a9ec0}
+  .scorebox{background:#101012;color:#fff;border-radius:20px;padding:36px;margin-top:26px}
+  @media(max-width:560px){.scorebox{padding:24px}}
+  .scorebox .cap{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mint)}
+  .scorebox h3{font-size:1.25rem;margin:6px 0 22px}
+  .barrow{display:grid;grid-template-columns:130px 1fr 46px;align-items:center;gap:14px;margin:12px 0}
+  .barrow .co{font-size:.9rem;color:#d7d9e6}
+  .barrow.you .co{color:var(--mint);font-weight:700}
+  .track{background:rgba(255,255,255,.1);border-radius:999px;height:18px;overflow:hidden}
+  .fill{height:100%;border-radius:999px;background:#5b6cff;display:block}
+  .barrow.you .fill{background:var(--mint)}
+  .score{font-family:var(--head);font-weight:900;font-size:1rem;text-align:right;color:#fff}
+  .barrow.you .score{color:var(--mint)}
+  .scorebox .flag{margin:22px 0 0;padding:16px 18px;background:rgba(255,93,53,.14);border:1px solid rgba(255,93,53,.4);border-radius:12px;font-size:.95rem;color:#ffe4dc}
+  .scorebox .flag b{color:#FF9E86}
+  @media(max-width:560px){.barrow{grid-template-columns:96px 1fr 40px;gap:10px}.barrow .co{font-size:.8rem}}
+  .win{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px}
+  @media(max-width:820px){.win{grid-template-columns:1fr 1fr}}
+  @media(max-width:460px){.win{grid-template-columns:1fr}}
+  .w{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px}
+  .w .lab{font-family:var(--mono);font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .w .sc{font-family:var(--head);font-weight:900;font-size:1.7rem;line-height:1;margin:6px 0}
+  .w.low{border-color:#ffd3c7}
+  .w.low .sc{color:var(--coral)}
+  .w.high{border-color:#bfe6d5}
+  .w.high .sc{color:#12a45f}
+  .w .note{font-size:.85rem;color:var(--muted);margin:0}
+  .w .badge2{font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;display:inline-block;margin-top:8px}
+  .w.low .badge2{background:#ffe9e2;color:#b93a1c}
+  .w.high .badge2{background:#dcf5e9;color:#0d7a45}
+  .priomap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px}
+  @media(max-width:820px){.priomap{grid-template-columns:1fr 1fr}}
+  @media(max-width:460px){.priomap{grid-template-columns:1fr}}
+  .prio{border-left:3px solid var(--blue);padding:4px 0 4px 16px}
+  .prio h5{font-family:var(--head);font-weight:900;font-size:.98rem;margin:0 0 4px}
+  .prio p{font-size:.86rem;color:var(--muted);margin:0}
+
+  /* WHY NOW */
+  .band.why{background:#edf0ff}
+  .ribbon{display:flex;gap:14px;flex-wrap:wrap;margin:28px 0 6px}
+  .ribbon .r{flex:1;min-width:170px;background:#fff;border:1px solid #d9dcf5;border-radius:14px;padding:18px 22px}
+  .ribbon .r .n{font-family:var(--head);font-weight:900;font-size:1.9rem;color:var(--blue);line-height:1}
+  .ribbon .r .l{font-size:.85rem;color:var(--muted);margin-top:6px}
+  .srcline{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;color:#7c80a0;margin-top:20px}
 
   /* INVESTMENT */
   .invest{background:var(--black);color:#fff;border-radius:20px;padding:40px;margin-top:20px;display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:start}
@@ -191,9 +285,9 @@
     <img src="data:image/png;base64,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" alt="VNTANA">
     <ul>
       <li><a href="#why"><b>1</b>Why</a></li>
-      <li><a href="#build"><b>2</b>Build</a></li>
+      <li><a href="#build"><b>2</b>Platform</a></li>
       <li><a href="#proof"><b>3</b>Proof</a></li>
-      <li><a href="#value"><b>4</b>The Numbers</a></li>
+      <li><a href="#value"><b>4</b>Numbers</a></li>
     </ul>
     <a class="cta" href="mailto:ashley@vntana.com">Talk to us</a>
   </div>
@@ -203,8 +297,8 @@
 <header class="hero">
   <div class="wrap">
     <span class="badge"><span class="dot"></span> Prepared for Bosch Rexroth · Mobile Hydraulics</span>
-    <h1>Interactive 3D for Mobile Hydraulics</h1>
-    <p class="sub">Turning your existing CAD into content that sells across your website, sales team, trade shows, and mobile marketing unit.</p>
+    <h1>Turn your existing CAD into content that sells</h1>
+    <p class="sub">Interactive 3D for your website, sales team, trade shows and mobile marketing unit.</p>
     <div class="btns">
       <a class="btn btn-primary" href="#why">Start the walkthrough</a>
       <a class="btn btn-ghost" href="#value">Jump to the numbers →</a>
@@ -223,32 +317,53 @@
       <div class="stat"><div class="n">25%+</div><div class="l">Shorter B2B sales cycles with interactive 3D</div><div class="src">MarketScale</div></div>
       <div class="stat"><div class="n">75%</div><div class="l">Of B2B buyers prefer self-serve, rep-free evaluation</div><div class="src">Zendesk · 2MC Global</div></div>
     </div>
+    <div class="grid">
+      <div class="card"><span class="ic">🧩</span><h4>Tell the system story</h4><p>Show how your motors, gearboxes, pumps, valve blocks, and controllers work together inside a machine, not parts on a shelf. Your components are the hotspots.</p></div>
+      <div class="card"><span class="ic">♻️</span><h4>A platform, not a project</h4><p>Upload any CAD and auto-generate images, video, and interactive 3D yourself, as products change, with no agency and no per-asset one-off spend.</p></div>
+      <div class="card"><span class="ic">📈</span><h4>Tied to leads</h4><p>Attribute engagement to MQL→SQL movement inside HubSpot, the KPI you own, without asking Bosch IT for a single new integration.</p></div>
+    </div>
   </div>
 </section>
 
 <!-- 2 BUILD -->
 <section id="build" class="band alt">
   <div class="wrap">
-    <div class="shead"><span class="snum">2</span><h2>What we'll build</h2></div>
-    <p class="lead">An interactive 3D model of a generic, unbranded compact track loader / skid steer, with your Bosch Rexroth components built in as clickable hotspots. Click one and the actual component, built from your CAD, pops up to spin, zoom, and open into an exploded view or cross-section, with text, catalog images, and video explaining how it performs as part of the system.</p>
-    <p class="lead"><strong>This is one experience you own and reuse everywhere.</strong> VNTANA is a 3D Product Digital Asset Management platform: upload new engineering files and build out fresh interactive walkthroughs for your website, trade shows, and per-demo sales customization.</p>
+    <div class="shead"><span class="snum">2</span><h2>One platform, endless content</h2></div>
+    <div class="platform-lead">
+      <h4>🚀 It's a platform, not a one-off project</h4>
+      <div class="pts">
+        <div class="pt"><b>Upload any CAD, instantly.</b> Every file your team uploads becomes rendered images, turntable videos, and an interactive 3D walkthrough, automatically.</div>
+        <div class="pt"><b>Sales &amp; marketing self-serve.</b> Generate new content as products change: no waiting on engineering, no outside agency, no per-asset spend.</div>
+        <div class="pt"><b>Unlimited, not one deliverable.</b> That's the difference between the platform and a one-off agency build.</div>
+      </div>
+    </div>
+    <div class="platform-showcase">
+      <p class="lead">For Bosch Rexroth, that starts with an interactive 3D model of a generic, unbranded compact track loader / skid steer, with your components built in as clickable hotspots. Click one and the actual component, from your CAD, pops up to spin, zoom, and open into an exploded view or cross-section, with text, catalog images, and video.</p>
+      <div class="shot">
+        <img class="shot-img" src="skid-steer.png" alt="Interactive 3D skid steer with Bosch Rexroth components inside" style="display:block;width:100%;height:auto;margin-bottom:18px">
+        <a class="demobtn" href="rexroth-ssl-ctl.html" target="_blank" rel="noopener">See Demo →</a>
+      </div>
+    </div>
 
+    <h3 style="font-size:1.3rem;margin:32px 0 4px">From part page to full machine</h3>
+    <p style="color:var(--muted);margin-bottom:4px">Link the same models to the Product Information Pages you already have, so a component sells itself in-application, not just in isolation.</p>
+    <div class="flowsteps">
+      <div class="fstep"><div class="num">Step 1 · Part page</div><h4>The component in 3D</h4><p>On its product page: interactive 3D with hotspots and an exploded view explaining what makes it better.</p></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><div class="num">Step 2 · In the machine</div><h4>See how it fits</h4><p>Click into the full skid steer to see how it works with the other components, like the controller that runs the pump.</p></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><div class="num">Step 3 · Buy together</div><h4>Cross-sell the system</h4><p>"Pairs with part B and C, engineered to work together for a more efficient machine." A spec lookup becomes a system sale.</p></div>
+    </div>
+
+    <h3 style="font-size:1.3rem;margin:36px 0 4px">Where it lives</h3>
     <div class="channels">
       <div class="chan"><span class="tag">Your website</span><h4>Self-serve, before a rep is ever involved</h4><p>Embed the interactive skid-steer experience with a single line of code (iFrame or web component). Buyers explore and evaluate on their own: your mobile-hydraulics answer to the hydrogen showcase.</p></div>
       <div class="chan"><span class="tag">Sales &amp; distributors</span><h4>Walk the system live, no engineer on the call</h4><p>Each rep and distribution partner gets a shareable link, and a "Showroom" grouping multiple products. Custom links per rep show you who's using it and how often.</p></div>
-      <div class="chan"><span class="tag">Trade shows · IVT</span><h4>Booth touchscreen, tablet, or the 75″ monitor</h4><p>Runs on whatever's on the stand. If timing allows, we can stand up a lightweight version in time for IVT as a low-risk test.</p></div>
+      <div class="chan"><span class="tag">Trade shows · IVT</span><h4>Booth touchscreen, tablet, or the 75″ monitor</h4><p>Runs on whatever's on the stand, and works offline, so booth Wi-Fi is never a risk. If timing allows, we can stand up a lightweight version for IVT as a low-risk test.</p></div>
       <div class="chan"><span class="tag">Mobile marketing unit</span><h4>Digital storytelling where machines can't fit</h4><p>The roadshow truck can't carry full machines, which is exactly where this shines. In-depth exploded views and guided walkthroughs explain how your components run a machine and what sets them apart.</p></div>
     </div>
 
-    <div class="panels" style="grid-template-columns:1fr">
-      <div class="panel mint">
-        <h4>📊 Measuring impact inside HubSpot, no integration</h4>
-        <ul>
-          <li><b>"Out of the box" QR codes</b> for the booth and mobile unit turn in-person engagement into trackable, scoreable contacts.</li>
-          <li><b>Custom tracking links + pixels</b> per channel and per rep: clicks, sessions, and repeat use, visible in HubSpot.</li>
-          <li><b>Native HubSpot forms</b> gate the experience, so every engagement creates or enriches a known contact and feeds MQL scoring.</li>
-        </ul>
-      </div>
+    <div class="panels">
       <div class="panel">
         <h4>🛡️ How your IP stays protected</h4>
         <ul>
@@ -256,6 +371,14 @@
           <li><b>SOC2 Type II certified</b>: we pass enterprise security review as-is, collapsing procurement's check from months to paperwork.</li>
         </ul>
         <p class="note">We already have an NDA in place with Bosch. We can begin the moment engineering shares a STEP or Creo file.</p>
+      </div>
+      <div class="panel mint">
+        <h4>📊 Measuring impact inside HubSpot, no integration</h4>
+        <ul>
+          <li><b>Native HubSpot forms</b> gate the experience, so every engagement creates or enriches a known contact and feeds MQL scoring.</li>
+          <li><b>Custom tracking links + pixels</b> per channel and per rep: clicks, sessions, and repeat use, visible in HubSpot.</li>
+          <li><b>QR codes</b> for the booth and mobile unit turn in-person engagement into trackable, scoreable contacts.</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -269,8 +392,40 @@
     <div class="proof">
       <div class="pcard"><div class="name">Astec Industries</div><div class="tag">Sales enablement · AI</div><p>Put live 3D in their reps' hands and closed a <strong>$50M deal, plus $100K in add-ons</strong>, without an engineer on the call.</p></div>
       <div class="pcard"><div class="name">Doosan Bobcat</div><div class="tag">B2B eCommerce</div><p>Put interactive 3D on product pages and saw <strong>higher conversion in the first week</strong>: more sales calls and stronger MQL→SQL conversion.</p></div>
-      <div class="pcard"><div class="name">Roeslein &amp; Associates</div><div class="tag">Aftermarket parts</div><p>Turned static 2D into a <strong>clickable 3D parts catalogue</strong> and grew replacement-part sales.</p><a href="https://vntana-store-production.up.railway.app/roeslein-uvbc-v2.html" target="_blank" style="align-self:flex-start;margin-top:18px;display:inline-block;background:var(--blue);color:#fff;padding:13px 26px;border-radius:999px;font-family:var(--mono);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700">Explore the live demo →</a></div>
+      <div class="pcard"><div class="name">Roeslein &amp; Associates</div><div class="tag">Aftermarket parts</div><p>Turned static 2D into a <strong>clickable 3D parts catalogue</strong> and grew replacement-part sales.</p></div>
     </div>
+  </div>
+</section>
+
+<!-- SCORECARD -->
+<section id="scorecard" class="band alt">
+  <div class="wrap">
+    <span class="eyebrow">Digital content scorecard</span>
+    <h2 style="font-size:clamp(1.7rem,3.4vw,2.5rem);margin-top:6px">You own best-in-class content; competitors just activated theirs first</h2>
+    <p class="lead">Our tool scanned 100 of your product pages against direct competitors. Your imagery and CAD are rich: 16 images per page, 0% missing, CAD downloadable. What's missing is <strong>activation</strong>: no embedded interactive 3D viewer, and buying stays quote-gated while Festo already runs configuration straight to an order code.</p>
+
+    <figure class="scorefig">
+      <div class="score-ph">Scorecard chart image goes here<br><span>save it as scorecard-chart.png in this folder (or upload it) and rebuild</span></div>
+      <figcaption>You trail the field at <b>4.3 / 10</b>, behind Festo (6.7), Parker and SMC (6.0). <b>SMC (Japan) at 6.0</b> is the Asian competition your CEO flagged, quantified.</figcaption>
+    </figure>
+
+    <h3 style="font-size:1.3rem;margin:40px 0 4px">Where you can win</h3>
+    <p style="color:var(--muted);margin-bottom:6px">You're already oriented to self-serve, but the scores VNTANA lifts fastest, straight from the CAD you own, are exactly where you trail.</p>
+    <div class="win">
+      <div class="w high"><div class="lab">Self-Serve</div><div class="sc">4/5</div><p class="note">Buyers already want to self-serve, and you're set up for it. Interactive 3D makes that experience land.</p><span class="badge2">Your asset</span></div>
+      <div class="w low"><div class="lab">Interactivity</div><div class="sc">1/5</div><p class="note">No embedded 3D/AR viewer. VNTANA activates this automatically from your CAD.</p><span class="badge2">The unlock</span></div>
+      <div class="w low"><div class="lab">Visual Depth</div><div class="sc">2/5</div><p class="note">Static imagery today. Studio-quality, spinnable 3D raises this without a photo shoot.</p><span class="badge2">The unlock</span></div>
+      <div class="w low"><div class="lab">Online Ordering</div><div class="sc">1/5</div><p class="note">Quote-gated today. The Phase 2 configurator opens a self-serve path to order.</p><span class="badge2">Phase 2</span></div>
+    </div>
+
+    <h3 style="font-size:1.3rem;margin:40px 0 4px">Maps to your CEO's 2026 priorities</h3>
+    <div class="priomap">
+      <div class="prio"><h5>Innovation</h5><p>Interactive 3D/AR today, with a digital-twin path as IoT signals are already live on your site.</p></div>
+      <div class="prio"><h5>Customer proximity</h5><p>Self-serve exploration meets buyers where they research, before they ever call.</p></div>
+      <div class="prio"><h5>Adaptability</h5><p>Software you update yourself as products change: no rebuild, no agency.</p></div>
+      <div class="prio"><h5>Cost awareness</h5><p>Reuses CAD you already own. Closing the gap takes no new engineering.</p></div>
+    </div>
+    <p class="srcline" style="color:#8a8ea8">Scorecard generated by VNTANA, 22 Jul 2026: your row from 100 sampled product pages; competitor scores from public sites.</p>
   </div>
 </section>
 
@@ -287,9 +442,10 @@
       </div>
       <div>
         <ul>
+          <li><b>Unlimited CAD-to-content</b>: upload any CAD and auto-generate images, videos, and interactive 3D, self-serve, with no repeat agency spend</li>
           <li>Generic, unbranded skid-steer / compact track loader 3D model (sourced by VNTANA)</li>
-          <li>Your components (motor, gearbox, pump, valve block, controller) processed from your CAD, internals auto-stripped, hotspots authored to tell the system story</li>
-          <li>Website embed, sales/distributor Showroom links, trade-show deployment, and exploded-view walkthroughs for the mobile unit</li>
+          <li>Your components processed from your CAD, internals auto-stripped, hotspots authored to tell the system story</li>
+          <li>Website + PIM/PDP embeds, sales/distributor Showroom links, offline trade-show deployment, and exploded-view walkthroughs for the mobile unit</li>
           <li>Native HubSpot lead-capture forms, custom tracking links, and QR codes</li>
           <li>Hosting, setup, onboarding, support, with unlimited updates you push yourself</li>
         </ul>
@@ -301,7 +457,7 @@
       <div>
         <h3>How it scales after year one</h3>
         <ul class="scalelist">
-          <li><b>More machines &amp; applications</b>: construction, material handling, on-highway, ag &amp; forestry.</li>
+          <li><b>Configure &amp; buy online</b>: buyers build the components they need on your site, then purchase or send a fully spec'd inquiry straight to sales.</li>
           <li><b>Other Rexroth business units</b>: industrial &amp; mining hydraulics, factory automation, electrification.</li>
           <li><b>Central marketing (Germany) &amp; the dealer portal</b>: one source of truth feeding every channel.</li>
           <li><b>A future physics / digital-twin phase</b>: efficiency, torque, slippage simulation, the use case you described.</li>
@@ -310,12 +466,11 @@
       <div>
         <h3>Getting started</h3>
         <ul class="steps">
-          <li><b>CAD files.</b> Share a STEP or Creo file for the priority components, starting with the easier engineers.</li>
-          <li><b>Generic machine model.</b> We send unbranded skid-steer options to approve, no effort on your side.</li>
-          <li><b>Component &amp; hotspot list.</b> You confirm the products and callouts; we lay out the embed and Showrooms.</li>
-          <li><b>Optional IVT test.</b> If timing allows, a lightweight version for the booth.</li>
+          <li><b>CAD files, in progress.</b> Controller and pump received; large-file upload set up.</li>
+          <li><b>Confirm the machine list &amp; count.</b> Which machines beyond skid steer, and how many. This locks what's in the $50K vs. Phase 2.</li>
+          <li><b>Components &amp; PDP links.</b> Confirm the parts per machine and the product pages to connect.</li>
           <li><b>Approved-vendor path.</b> We work with procurement so invoicing is clean.</li>
-          <li><b>Present to leadership.</b> We help you package it for your boss to green-light.</li>
+          <li><b>Present to leadership.</b> We help you package it for your boss and the project-management/sales stakeholders.</li>
         </ul>
       </div>
     </div>
