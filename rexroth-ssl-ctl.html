@@ -182,6 +182,9 @@
   // Camera presets (bounds-relative r-units). All three parts sit in the cab,
   // so one "detail" zoom frames them; the highlight shows which is selected.
   const OVERVIEW_CAM = { cameraTarget:"0r 0r 0.03r", cameraDistance:"3.6r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" };
+  // The 3/4 "home" view is captured from the platform viewer settings on load
+  // (see loader below); reset returns to exactly that, not the flat OVERVIEW_CAM.
+  let homeCam = null;
   const DETAIL_CAM   = { cameraTarget:"0r 0r 0.15r", cameraDistance:"2.4r", cameraRotation:"-0.2rad 0.7rad 0rad",  fieldOfView:"0.5rad" };
   // Proven Roeslein pattern: set the camera synchronously via individual
   // property assignments, and BEFORE the setEffect calls. Effects applied after
@@ -297,7 +300,7 @@
 
   const resetSelection = () => {
     activeId = null;
-    applyCam(OVERVIEW_CAM);              // back to solid overview
+    applyCam(homeCam || OVERVIEW_CAM);  // back to the 3/4 home view
     clearGhost();
     clearPaint();
     [...chipsEl.children].forEach(ch => ch.classList.remove("active"));
@@ -353,6 +356,10 @@
                    || asset.models[0].modelBlobId;
       if (viewerSettings?.config) {
         try { const cfg = JSON.parse(viewerSettings.config);
+              if (cfg.cameraTarget && cfg.cameraRotation && cfg.cameraDistance && cfg.fieldOfView) {
+                homeCam = { cameraTarget:cfg.cameraTarget, cameraDistance:cfg.cameraDistance,
+                            cameraRotation:cfg.cameraRotation, fieldOfView:cfg.fieldOfView };
+              }
               viewer.addEventListener("load", () => Object.assign(viewer, cfg), { once:true }); } catch(_){}
       }
       viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
