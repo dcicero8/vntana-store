@@ -76,7 +76,7 @@
   <div class="stage">
     <div class="loading" id="loading">Loading interactive 3D…</div>
     <vntana-viewer id="viewer" picking="true"></vntana-viewer>
-    <div class="hint">The machine is shown ghosted. Click a component in the list or in the model to explore it.</div>
+    <div class="hint">Click a component in the list or in the model to explore it.</div>
   </div>
 
   <div class="panel">
@@ -155,6 +155,21 @@
 
   const byId = Object.fromEntries(COMPONENTS.map(c => [c.id, c]));
 
+  // Camera presets (bounds-relative r-units). All three parts sit in the cab,
+  // so one "detail" zoom frames them; the highlight shows which is selected.
+  const OVERVIEW_CAM = { cameraTarget:"0r 0r 0r",    cameraDistance:"4.2r", cameraRotation:"-0.18rad 0.7rad 0rad", fieldOfView:"0.5rad" };
+  const DETAIL_CAM   = { cameraTarget:"0r 0r 0.15r", cameraDistance:"2.4r", cameraRotation:"-0.2rad 0.7rad 0rad",  fieldOfView:"0.5rad" };
+  // Proven Roeslein pattern: set the camera synchronously via individual
+  // property assignments, and BEFORE the setEffect calls. Effects applied after
+  // respect the just-set camera; setting it after the effects gets clobbered.
+  const applyCam = (c) => {
+    viewer.cameraTarget   = c.cameraTarget;
+    viewer.cameraDistance = c.cameraDistance;
+    viewer.cameraRotation = c.cameraRotation;
+    viewer.fieldOfView    = c.fieldOfView;
+  };
+  let camInit = false;
+
   // ── build chips ───────────────────────────────────────────────
   COMPONENTS.forEach(c => {
     const b = document.createElement("button");
@@ -167,8 +182,7 @@
   // ── scene-graph grouping ──────────────────────────────────────
   const GROUP = {};          // id → [primitive uuid]
   const UUID_ID = {};        // primitive uuid → component id
-  const BODY = [];           // everything else (ghosted)
-  let ghosted = false;
+  const BODY = [];           // everything else (dimmed on select)
 
   const componentFor = (name) => {
     const c = COMPONENTS.find(c => c.match.test(name || ""));
@@ -203,12 +217,15 @@
     if (grouped + BODY.length === 0) { if (tries++ < 60) setTimeout(buildGroups, 120); return; }
 
     loading.style.display = "none";
-    ghostBody();               // phantom look by default
-    markMissing();             // grey out chips whose node is absent (e.g. pre-v5 controller)
+    if (!camInit) { applyCam(OVERVIEW_CAM); camInit = true; }  // solid overview on load
+    markMissing();             // grey out chips whose node is absent
   };
 
   // ── effects ───────────────────────────────────────────────────
-  const ghostBody = () => { if (ghosted) return; for (const u of BODY) viewer.setEffect(u, "dim"); ghosted = true; };
+  // Machine loads solid. Selecting a part ghosts the rest, highlights the part,
+  // and zooms in. No persistent dim on load, so the camera zoom sticks.
+  const applyDim   = () => { for (const u of BODY) viewer.setEffect(u, "dim"); };
+  const clearGhost = () => viewer.clearEffect("dim");
   const clearPaint = () => { viewer.clearEffect("outline"); viewer.clearEffect("highlight"); viewer.clearEffect("glow"); };
 
   let activeId = null;
@@ -216,14 +233,19 @@
     const uuids = GROUP[id];
     if (!uuids || !uuids.length) return;          // node not present in this version
     activeId = id;
+    applyCam(DETAIL_CAM);                 // camera first (before effects)
     clearPaint();
+    applyDim();                           // ghost the machine around the part
     for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
     renderCard(byId[id]);
     [...chipsEl.children].forEach(ch => ch.classList.toggle("active", ch.dataset.id === id));
   };
 
   const resetSelection = () => {
-    activeId = null; clearPaint();
+    activeId = null;
+    applyCam(OVERVIEW_CAM);              // back to solid overview
+    clearGhost();
+    clearPaint();
     [...chipsEl.children].forEach(ch => ch.classList.remove("active"));
     detail.innerHTML = `<div class="empty">Select a component above, or click it in the 3D model, to see its details.</div>`;
   };
