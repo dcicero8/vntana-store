@@ -149,7 +149,7 @@
     $("mediaHint").textContent = HINTS[mode];
   }
 
-  function focus(key){
+  function focusPart(key){
     const cam = key==="trunnion" ? trunnionCam : defaultCam;
     document.querySelectorAll(".card").forEach(c=>c.classList.toggle("active", c.dataset.key===key));
     showMode("3d");
@@ -157,7 +157,7 @@
   }
 
   $("cards").innerHTML = ITEMS.map(a=>`
-    <div class="card" data-key="${a.key}" onclick="focus('${a.key}')">
+    <div class="card" data-key="${a.key}" onclick="focusPart('${a.key}')">
       <h3>${a.name}</h3>
       <div class="tag">${a.tag}</div>
       <p>${a.desc}</p>
