@@ -11,8 +11,8 @@
   body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; }
   header { background:var(--ink); color:#fff; padding:16px 26px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .brand { display:flex; align-items:center; gap:12px; }
-  .astec { font-weight:800; letter-spacing:.18em; font-size:20px; }
-  .astec .a-dot { color:var(--blue); }
+  .logochip { background:#fff; border-radius:8px; padding:7px 11px; display:inline-flex; }
+  .logochip img { height:22px; display:block; }
   .byline { color:#9aa3b2; font-size:11px; text-transform:uppercase; letter-spacing:.1em; border-left:1px solid #444a52; padding-left:12px; }
   .headcta { font-size:12px; color:#c9cfd8; text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
 
@@ -31,11 +31,15 @@
   @media (max-width:900px){ .layout{ grid-template-columns:1fr; } }
   .media { background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(16,24,40,.06); position:sticky; top:18px; }
   .media-bar { display:flex; align-items:center; gap:10px; padding:13px 16px; border-bottom:1px solid var(--line); }
-  .media-bar .now { font-weight:800; font-size:15px; }
-  .media-bar .now span { color:var(--slate2); font-weight:600; font-size:12.5px; }
+  .seg { display:flex; background:#eef1f5; border-radius:9px; padding:3px; }
+  .seg button { border:0; background:transparent; padding:7px 14px; border-radius:7px; font-size:12.5px; font-weight:700; color:var(--slate); cursor:pointer; font-family:inherit; }
+  .seg button.active { background:#fff; color:var(--blue); box-shadow:0 1px 2px rgba(16,24,40,.12); }
   .media-hint { margin-left:auto; font-size:11.5px; color:var(--slate2); }
-  .stage { position:relative; aspect-ratio:4/3; background:#eef1f5; }
-  .stage iframe { width:100%; height:100%; border:0; display:block; }
+  .stage { position:relative; aspect-ratio:1296/816; background:#8b8f95; }
+  .layer { position:absolute; inset:0; width:100%; height:100%; border:0; display:none; }
+  .layer.show { display:block; }
+  img.layer { object-fit:cover; }
+  img#imgSketch { object-fit:contain; background:#fff; }
 
   .side h2 { font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--slate2); font-weight:700; margin-bottom:10px; }
   .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:12px; cursor:pointer; transition:border-color .15s, transform .15s; }
@@ -55,7 +59,7 @@
 <body>
 <header>
   <div class="brand">
-    <span class="astec">AS<span class="a-dot">T</span>EC</span>
+    <span class="logochip"><img src="assets/astec/logo-astec.svg" alt="Astec"></span>
     <span class="byline">Interactive 3D by VNTANA</span>
   </div>
   <span class="headcta">Aggregates · Asphalt · Concrete · Road</span>
@@ -76,10 +80,18 @@
   <div class="layout">
     <div class="media">
       <div class="media-bar">
-        <div class="now"><span id="nowLabel">Iron Ore Drum</span></div>
-        <span class="media-hint">Rotate, zoom, and open any part. Give it a few seconds to load.</span>
+        <div class="seg">
+          <button id="seg-render" class="active" onclick="showMode('render')">Rendered</button>
+          <button id="seg-sketch" onclick="showMode('sketch')">Line drawing</button>
+          <button id="seg-3d" onclick="showMode('3d')">3D model</button>
+        </div>
+        <span class="media-hint" id="mediaHint">The same CAD, as a render, a drawing, and live 3D</span>
       </div>
-      <div class="stage"><iframe id="viewer" title="Astec 3D model" allow="xr-spatial-tracking; fullscreen"></iframe></div>
+      <div class="stage">
+        <img id="imgRender" class="layer show" src="assets/astec/drum-render.png" alt="Astec rotary drum render">
+        <img id="imgSketch" class="layer" src="assets/astec/drum-sketch.png" alt="Astec rotary drum line drawing">
+        <iframe id="viewer" class="layer" title="Astec 3D model" allow="xr-spatial-tracking; fullscreen"></iframe>
+      </div>
     </div>
 
     <div class="side">
@@ -106,14 +118,29 @@
   ];
 
   const $ = id => document.getElementById(id);
-  let active = -1;
+  let active = -1, srcUuid = null;
+
+  const HINTS = {
+    render: "The same CAD, as a render, a drawing, and live 3D",
+    sketch: "Straight from the engineering drawing",
+    "3d":   "Rotate, zoom, and open any part. Give it a few seconds to load."
+  };
+
+  function showMode(mode){
+    $("imgRender").classList.toggle("show", mode==="render");
+    $("imgSketch").classList.toggle("show", mode==="sketch");
+    $("viewer").classList.toggle("show", mode==="3d");
+    $("seg-render").classList.toggle("active", mode==="render");
+    $("seg-sketch").classList.toggle("active", mode==="sketch");
+    $("seg-3d").classList.toggle("active", mode==="3d");
+    $("mediaHint").textContent = HINTS[mode];
+  }
 
   function load(i){
-    if(i === active) return;
     active = i;
-    $("viewer").src = embed(ITEMS[i].uuid);
-    $("nowLabel").textContent = ITEMS[i].name;
+    if(srcUuid !== ITEMS[i].uuid){ $("viewer").src = embed(ITEMS[i].uuid); srcUuid = ITEMS[i].uuid; }
     document.querySelectorAll(".card").forEach(c=>c.classList.toggle("active", +c.dataset.i===i));
+    showMode("3d");
   }
 
   $("cards").innerHTML = ITEMS.map((a,i)=>`
@@ -124,7 +151,8 @@
       <span class="go">View in 3D</span>
     </div>`).join("");
 
-  load(0);   // drum first
+  document.querySelector('.card[data-i="0"]').classList.add("active");  // drum is the default subject
+  showMode("render");   // land on the photoreal render
 </script>
 </body>
 </html>
