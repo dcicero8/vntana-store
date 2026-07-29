@@ -4,58 +4,72 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Astec Rotary Drum | Interactive 3D | VNTANA</title>
+<title>Astec Double Barrel Drum | Interactive 3D | VNTANA</title>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
 <style>
-  :root { --blue:#0072CE; --blue-deep:#005299; --ink:#2b2f36; --slate:#5a6472; --slate2:#8a93a1; --line:#e3e7ee; --bg:#f4f6f9; --paper:#fff; }
+  :root { --blue:#0072CE; --blue-deep:#005299; --green:#1c7a4d; --ink:#2b2f36; --slate:#5a6472; --slate2:#8a93a1; --line:#e3e7ee; --bg:#f4f6f9; --paper:#fff; }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; }
-  header { background:var(--ink); color:#fff; padding:16px 26px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  html,body { height:100%; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; display:flex; flex-direction:column; min-height:100vh; }
+  header { background:var(--ink); color:#fff; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; flex:none; }
   .brand { display:flex; align-items:center; gap:12px; }
   .logochip { background:#fff; border-radius:8px; padding:7px 11px; display:inline-flex; }
-  .logochip img { height:22px; display:block; }
+  .logochip img { height:20px; display:block; }
   .byline { color:#9aa3b2; font-size:11px; text-transform:uppercase; letter-spacing:.1em; border-left:1px solid #444a52; padding-left:12px; }
-  .headcta { font-size:12px; color:#c9cfd8; text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
+  .headcta { font-size:11.5px; color:#c9cfd8; text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
 
-  .wrap { max-width:1240px; margin:0 auto; padding:24px 20px 60px; }
-  .eyebrow { font-size:11.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--blue); font-weight:800; }
-  .intro h1 { font-size:clamp(24px,4.4vw,34px); font-weight:800; letter-spacing:-.02em; margin-top:6px; }
-  .intro p { color:var(--slate); font-size:15px; margin-top:8px; max-width:72ch; }
+  /* 3D-first: viewer takes most of the screen */
+  .stage-row { flex:1; display:grid; grid-template-columns:1.7fr 1fr; min-height:0; }
+  @media (max-width:900px){ .stage-row{ grid-template-columns:1fr; } }
 
-  .proof { display:flex; flex-wrap:wrap; gap:14px; margin:18px 0 4px; }
-  .proof .stat { background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--blue); border-radius:10px; padding:12px 16px; }
-  .proof .stat b { font-size:18px; font-weight:800; display:block; }
-  .proof .stat span { font-size:12px; color:var(--slate); }
-
-  .layout { display:grid; grid-template-columns:1.55fr .95fr; gap:22px; align-items:start; margin-top:18px; }
-  @media (max-width:900px){ .layout{ grid-template-columns:1fr; } }
-  .media { background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(16,24,40,.06); position:sticky; top:18px; }
-  .media-bar { display:flex; align-items:center; gap:10px; padding:13px 16px; border-bottom:1px solid var(--line); }
-  .seg { display:flex; background:#eef1f5; border-radius:9px; padding:3px; }
-  .seg button { border:0; background:transparent; padding:7px 14px; border-radius:7px; font-size:12.5px; font-weight:700; color:var(--slate); cursor:pointer; font-family:inherit; }
-  .seg button.active { background:#fff; color:var(--blue); box-shadow:0 1px 2px rgba(16,24,40,.12); }
-  .media-hint { margin-left:auto; font-size:11.5px; color:var(--slate2); }
-
-  /* viewer is always live as the base; render/sketch images overlay on top */
-  .stage { position:relative; aspect-ratio:1296/816; background:#8b8f95; }
+  .viewer-col { position:relative; background:#e9ecf1; min-height:56vh; }
   vntana-viewer { position:absolute; inset:0; width:100%; height:100%; display:block; }
-  .imglayer { position:absolute; inset:0; width:100%; height:100%; z-index:2; display:none; }
+  .imglayer { position:absolute; inset:0; width:100%; height:100%; z-index:4; display:none; }
   .imglayer.show { display:block; }
-  #imgRender { object-fit:cover; }
-  #imgSketch { object-fit:contain; background:#fff; }
+  #imgRender { object-fit:cover; } #imgSketch { object-fit:contain; background:#fff; }
 
-  .side h2 { font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--slate2); font-weight:700; margin-bottom:10px; }
-  .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:12px; cursor:pointer; transition:border-color .15s, transform .15s; }
-  .card:hover { border-color:var(--slate2); transform:translateY(-1px); }
-  .card.active { border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,114,206,.14); }
-  .card h3 { font-size:16px; font-weight:800; }
-  .card .tag { font-size:10.5px; color:var(--slate2); text-transform:uppercase; letter-spacing:.05em; font-weight:700; margin-top:2px; }
-  .card p { font-size:13px; color:var(--slate); line-height:1.55; margin-top:8px; }
-  .card .go { font-size:12px; font-weight:700; color:var(--blue); margin-top:8px; display:inline-block; }
+  .vtoggle { position:absolute; top:14px; left:14px; z-index:6; display:flex; background:rgba(255,255,255,.92); border-radius:9px; padding:3px; box-shadow:0 2px 10px rgba(16,24,40,.14); }
+  .vtoggle button { border:0; background:transparent; padding:6px 12px; border-radius:7px; font-size:12px; font-weight:700; color:var(--slate); cursor:pointer; font-family:inherit; }
+  .vtoggle button.active { background:var(--blue); color:#fff; }
+  .vhint { position:absolute; bottom:14px; left:50%; transform:translateX(-50%); z-index:6; background:rgba(43,47,54,.82); color:#fff; font-size:12px; padding:7px 14px; border-radius:100px; backdrop-filter:blur(4px); }
 
-  .arbox { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-top:6px; }
-  .arbox b { font-size:13.5px; } .arbox p { font-size:12.5px; color:var(--slate); margin-top:4px; line-height:1.5; }
-  .note { font-size:11.5px; color:var(--slate2); margin-top:14px; line-height:1.5; }
+  /* hotspot badge pin */
+  vntana-hotspot { --hotspot-size:40px; cursor:pointer; }
+  .hs-pin { width:40px; height:40px; border-radius:50%; background:var(--blue); border:2px solid rgba(255,255,255,.8); color:#fff; font-size:.6rem; font-weight:800; letter-spacing:.03em; text-transform:uppercase; display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.05; box-shadow:0 3px 12px rgba(0,114,206,.5), 0 0 0 0 rgba(0,114,206,.5); transition:.18s; pointer-events:none; animation:pulse 1.9s infinite; }
+  vntana-hotspot:hover .hs-pin, vntana-hotspot.active .hs-pin { background:var(--blue-deep); transform:scale(1.12); animation:none; }
+  @keyframes pulse { 0%{box-shadow:0 3px 12px rgba(0,114,206,.5),0 0 0 0 rgba(0,114,206,.45);} 70%{box-shadow:0 3px 12px rgba(0,114,206,.5),0 0 0 14px rgba(0,114,206,0);} 100%{box-shadow:0 3px 12px rgba(0,114,206,.5),0 0 0 0 rgba(0,114,206,0);} }
+
+  /* PDP panel */
+  .panel { background:var(--paper); border-left:1px solid var(--line); overflow-y:auto; padding:26px 26px 30px; }
+  .p-eyebrow { font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--blue); font-weight:800; }
+  .panel h1 { font-size:24px; font-weight:800; letter-spacing:-.02em; margin-top:6px; }
+  .panel .lead { color:var(--slate); font-size:14px; margin-top:8px; }
+  .panel .proof { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+  .panel .proof .s { background:var(--bg); border-left:3px solid var(--blue); border-radius:8px; padding:9px 12px; font-size:12px; }
+  .panel .proof .s b { display:block; font-size:14px; }
+  .hint-row { display:flex; align-items:center; gap:8px; margin-top:20px; font-size:13px; color:var(--slate); font-weight:600; }
+  .hint-dot { width:12px; height:12px; border-radius:50%; background:var(--blue); flex:none; box-shadow:0 0 0 4px rgba(0,114,206,.15); }
+  .comp { border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:14px; display:flex; gap:12px; cursor:pointer; transition:.15s; }
+  .comp:hover { border-color:var(--blue); transform:translateY(-1px); }
+  .comp .badge { width:40px; height:40px; border-radius:50%; background:var(--blue); color:#fff; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; flex:none; }
+  .comp h3 { font-size:15px; font-weight:800; } .comp p { font-size:12.5px; color:var(--slate); margin-top:3px; }
+
+  /* PDP detail (shown on select) */
+  .pdp { display:none; }
+  .pdp.show { display:block; }
+  .default.hide { display:none; }
+  .pdp .pn { font-family:Menlo,monospace; font-size:12px; color:var(--slate2); }
+  .pdp h2 { font-size:22px; font-weight:800; margin-top:2px; }
+  .pdp .price { font-size:26px; font-weight:800; margin-top:10px; } .pdp .price span { font-size:13px; color:var(--slate2); font-weight:600; }
+  .pdp .stock { display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:100px; background:#eef0ff; color:var(--blue-deep); margin-top:8px; }
+  .pdp .desc { font-size:13.5px; color:var(--slate); margin-top:14px; line-height:1.6; }
+  .pdp .specs { margin-top:16px; border-top:1px solid var(--line); }
+  .pdp .specs .r { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .pdp .specs .r span:first-child { color:var(--slate2); }
+  .btn { display:block; text-align:center; width:100%; border:0; border-radius:10px; padding:14px; font-weight:800; font-size:14px; cursor:pointer; font-family:inherit; text-decoration:none; margin-top:16px; }
+  .btn-primary { background:var(--blue); color:#fff; } .btn-primary:hover { background:var(--blue-deep); }
+  .btn-ghost { background:#fff; color:var(--ink); border:1.5px solid var(--line); margin-top:10px; }
+  .back { font-size:13px; color:var(--blue); font-weight:700; cursor:pointer; display:inline-block; margin-bottom:14px; }
 </style>
 </head>
 <body>
@@ -67,43 +81,54 @@
   <span class="headcta">Aggregates · Asphalt · Concrete · Road</span>
 </header>
 
-<div class="wrap">
-  <div class="intro">
-    <span class="eyebrow">Rotary Drum · Interactive 3D</span>
-    <h1>The drum, and the trunnions it turns on.</h1>
-    <p>Explore the rotary drum in 3D, then click the trunnion to fly straight to the roller assembly at the base that carries and rotates the drum. Built from Astec's engineering CAD, no photo shoots and no re-modeling.</p>
+<div class="stage-row">
+  <!-- 3D, dominant -->
+  <div class="viewer-col">
+    <div class="vtoggle">
+      <button id="seg-3d" class="active" onclick="setMode('3d')">3D</button>
+      <button id="seg-render" onclick="setMode('render')">Render</button>
+      <button id="seg-sketch" onclick="setMode('sketch')">Drawing</button>
+    </div>
+    <vntana-viewer id="viewer" loading="eager"></vntana-viewer>
+    <img id="imgRender" class="imglayer" src="assets/astec/drum-render.png" alt="Astec rotary drum render">
+    <img id="imgSketch" class="imglayer" src="assets/astec/drum-sketch.png" alt="Astec rotary drum line drawing">
+    <div class="vhint" id="vhint">Click the badge on the drum to explore a part</div>
   </div>
 
-  <div class="proof">
-    <div class="stat"><b>2 weeks to 15 minutes</b><span>Engineer prep per model, automated with VNTANA</span></div>
-    <div class="stat"><b>Any device</b><span>Web and true-to-scale AR, no app</span></div>
-  </div>
-
-  <div class="layout">
-    <div class="media">
-      <div class="media-bar">
-        <div class="seg">
-          <button id="seg-render" class="active" onclick="showMode('render')">Rendered</button>
-          <button id="seg-sketch" onclick="showMode('sketch')">Line drawing</button>
-          <button id="seg-3d" onclick="showMode('3d')">3D model</button>
-        </div>
-        <span class="media-hint" id="mediaHint">The same CAD, as a render, a drawing, and live 3D</span>
+  <!-- PDP panel -->
+  <div class="panel">
+    <!-- default / overview -->
+    <div class="default" id="pDefault">
+      <div class="p-eyebrow">Double Barrel Dryer / Drum Mixer</div>
+      <h1>Explore the drum, click a part to open it.</h1>
+      <p class="lead">The full rotary drum, live from Astec's engineering CAD. Click the badge on the model to fly to the trunnion, the roller assembly the drum turns on, and see its replacement part.</p>
+      <div class="proof">
+        <div class="s"><b>2 weeks to 15 min</b>Engineer prep per model</div>
+        <div class="s"><b>Any device</b>Web and AR, no app</div>
       </div>
-      <div class="stage">
-        <vntana-viewer id="viewer" loading="eager"></vntana-viewer>
-        <img id="imgRender" class="imglayer show" src="assets/astec/drum-render.png" alt="Astec rotary drum render">
-        <img id="imgSketch" class="imglayer" src="assets/astec/drum-sketch.png" alt="Astec rotary drum line drawing">
+      <div class="hint-row"><span class="hint-dot"></span> Components on this drum</div>
+      <div class="comp" id="compTrunnion">
+        <div class="badge">TR</div>
+        <div><h3>Trunnion</h3><p>The roller assembly the drum rides and rotates on. Click to open.</p></div>
       </div>
     </div>
 
-    <div class="side">
-      <h2>Explore</h2>
-      <div id="cards"></div>
-      <div class="arbox">
-        <b>View in AR</b>
-        <p>Open on a phone to place the drum at true 1:1 scale in your own space, no app. Useful for showing footprint, access, and service clearance.</p>
+    <!-- PDP detail (trunnion) -->
+    <div class="pdp" id="pTrunnion">
+      <span class="back" id="backBtn">&larr; Back to full drum</span>
+      <div class="pn">PART DB-TR-0900</div>
+      <h2>Trunnion Roller Assembly</h2>
+      <div class="price">$3,150 <span>/ ea</span></div>
+      <span class="stock">Made to order</span>
+      <p class="desc">The trunnion carries and rotates the drum. Two rollers per support ride on the drum's tyres, with sealed spherical-roller bearings. A primary wear and service point, replace as a matched assembly to keep the drum tracking true.</p>
+      <div class="specs">
+        <div class="r"><span>Position</span><span>Base, per support</span></div>
+        <div class="r"><span>Bearing</span><span>Sealed spherical roller</span></div>
+        <div class="r"><span>Fits</span><span>Double Barrel 6' to 10' drums</span></div>
+        <div class="r"><span>Lead time</span><span>Made to order</span></div>
       </div>
-      <p class="note">The trunnion view uses a hotspot camera authored in the platform, so re-saving it updates the zoom here. More components can be added the same way.</p>
+      <a class="btn btn-primary" href="astec-parts.html">Order replacement part</a>
+      <button class="btn btn-ghost" onclick="alert('Demo: opens AR on a phone to place the trunnion at true scale.')">View in AR</button>
     </div>
   </div>
 </div>
@@ -111,18 +136,11 @@
 <script>
   const BASE = "https://api.vntana.com";
   const ORG = "DCicero", WS = "example-files";
-  const UUID = "fe5025c9-aca2-4f64-8c8b-0a434370d448";   // Iron Ore Drum (trunnion is a hotspot inside it)
-
-  const ITEMS = [
-    { name:"Full Drum Assembly", tag:"Rotary drum · full unit", key:"drum",
-      desc:"The complete rotary drum on its support frame. The starting view. Rotate it and look down the shell." },
-    { name:"Trunnion", tag:"Roller assembly · the drum turns on this", key:"trunnion",
-      desc:"The rollers and bearings the drum rides and rotates on. Click to fly to it inside the assembly, the wear and service point." }
-  ];
+  const UUID = "fe5025c9-aca2-4f64-8c8b-0a434370d448";
 
   const $ = id => document.getElementById(id);
   const viewer = $("viewer");
-  let modelReady = false, pendingCam = null, defaultCam = null, trunnionCam = null;
+  let modelReady = false, pendingCam = null, defaultCam = null, trunnionCam = null, activeHotspot = null;
 
   function snapCamera(cam){
     if(!cam) return;
@@ -134,37 +152,34 @@
       if(cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
     } catch(e){}
   }
+  function apply(cam){ if(modelReady) snapCamera(cam); else pendingCam = cam; }
 
-  const HINTS = {
-    render:"The same CAD, as a render, a drawing, and live 3D",
-    sketch:"Straight from the engineering drawing",
-    "3d":"Rotate, zoom, and open any part. Give it a few seconds to load."
-  };
-  function showMode(mode){
-    $("imgRender").classList.toggle("show", mode==="render");
-    $("imgSketch").classList.toggle("show", mode==="sketch");
-    $("seg-render").classList.toggle("active", mode==="render");
-    $("seg-sketch").classList.toggle("active", mode==="sketch");
-    $("seg-3d").classList.toggle("active", mode==="3d");
-    $("mediaHint").textContent = HINTS[mode];
+  function setMode(m){
+    $("imgRender").classList.toggle("show", m==="render");
+    $("imgSketch").classList.toggle("show", m==="sketch");
+    $("seg-3d").classList.toggle("active", m==="3d");
+    $("seg-render").classList.toggle("active", m==="render");
+    $("seg-sketch").classList.toggle("active", m==="sketch");
+    $("vhint").style.display = m==="3d" ? "block" : "none";
   }
 
-  function focusPart(key){
-    const cam = key==="trunnion" ? trunnionCam : defaultCam;
-    document.querySelectorAll(".card").forEach(c=>c.classList.toggle("active", c.dataset.key===key));
-    showMode("3d");
-    if(modelReady) snapCamera(cam); else pendingCam = cam;
+  function openTrunnion(){
+    setMode("3d");
+    $("pDefault").classList.add("hide");
+    $("pTrunnion").classList.add("show");
+    if(activeHotspot) activeHotspot.classList.add("active");
+    apply(trunnionCam);
+    $("vhint").textContent = "Trunnion, the rollers the drum turns on";
   }
-
-  $("cards").innerHTML = ITEMS.map(a=>`
-    <div class="card" data-key="${a.key}" onclick="focusPart('${a.key}')">
-      <h3>${a.name}</h3>
-      <div class="tag">${a.tag}</div>
-      <p>${a.desc}</p>
-      <span class="go">View in 3D</span>
-    </div>`).join("");
-  document.querySelector('.card[data-key="drum"]').classList.add("active");
-  showMode("render");
+  function resetView(){
+    $("pDefault").classList.remove("hide");
+    $("pTrunnion").classList.remove("show");
+    if(activeHotspot) activeHotspot.classList.remove("active");
+    apply(defaultCam);
+    $("vhint").textContent = "Click the badge on the drum to explore a part";
+  }
+  $("compTrunnion").addEventListener("click", openTrunnion);
+  $("backBtn").addEventListener("click", resetView);
 
   Promise.all([
     fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json()),
@@ -180,12 +195,31 @@
 
     const grid = (hsData.response && hsData.response.grid) || [];
     const tr = grid.find(h => /trunnion/i.test((h.text||h.description||"").replace(/<[^>]+>/g,"")));
-    if(tr && tr.config && tr.config.camera) trunnionCam = JSON.parse(tr.config.camera);
 
     const glb = product.response.asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB");
     const blobId = glb && (glb.modelBlobId || glb.blobId);
 
-    viewer.addEventListener("load", ()=>{ modelReady = true; if(pendingCam){ snapCamera(pendingCam); pendingCam = null; } }, { once:true });
+    viewer.addEventListener("load", ()=>{
+      modelReady = true;
+      if(pendingCam){ snapCamera(pendingCam); pendingCam = null; }
+      // inject the trunnion badge pin on the model
+      if(tr && tr.config){
+        try {
+          const dims = JSON.parse(tr.config.dimensions || "{}");
+          if(tr.config.camera) trunnionCam = JSON.parse(tr.config.camera);
+          if(dims.position){
+            const el = document.createElement("vntana-hotspot");
+            el.setAttribute("position", dims.position);
+            el.setAttribute("normal", dims.normal || "0m 1m 0m");
+            const pin = document.createElement("div"); pin.className="hs-pin"; pin.textContent="TR";
+            el.appendChild(pin);
+            el.addEventListener("click", e => { e.stopPropagation(); activeHotspot = el; openTrunnion(); });
+            viewer.appendChild(el);
+          }
+        } catch(e){}
+      }
+    }, { once:true });
+
     if(blobId) viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
   }).catch(()=>{});
 </script>
