@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Astec Rotary Drum | Interactive 3D | VNTANA</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
 <style>
   :root { --blue:#0072CE; --blue-deep:#005299; --ink:#2b2f36; --slate:#5a6472; --slate2:#8a93a1; --line:#e3e7ee; --bg:#f4f6f9; --paper:#fff; }
   * { box-sizing:border-box; margin:0; padding:0; }
@@ -21,7 +22,6 @@
   .intro h1 { font-size:clamp(24px,4.4vw,34px); font-weight:800; letter-spacing:-.02em; margin-top:6px; }
   .intro p { color:var(--slate); font-size:15px; margin-top:8px; max-width:72ch; }
 
-  /* proof strip */
   .proof { display:flex; flex-wrap:wrap; gap:14px; margin:18px 0 4px; }
   .proof .stat { background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--blue); border-radius:10px; padding:12px 16px; }
   .proof .stat b { font-size:18px; font-weight:800; display:block; }
@@ -35,21 +35,23 @@
   .seg button { border:0; background:transparent; padding:7px 14px; border-radius:7px; font-size:12.5px; font-weight:700; color:var(--slate); cursor:pointer; font-family:inherit; }
   .seg button.active { background:#fff; color:var(--blue); box-shadow:0 1px 2px rgba(16,24,40,.12); }
   .media-hint { margin-left:auto; font-size:11.5px; color:var(--slate2); }
+
+  /* viewer is always live as the base; render/sketch images overlay on top */
   .stage { position:relative; aspect-ratio:1296/816; background:#8b8f95; }
-  .layer { position:absolute; inset:0; width:100%; height:100%; border:0; display:none; }
-  .layer.show { display:block; }
-  img.layer { object-fit:cover; }
-  img#imgSketch { object-fit:contain; background:#fff; }
+  vntana-viewer { position:absolute; inset:0; width:100%; height:100%; display:block; }
+  .imglayer { position:absolute; inset:0; width:100%; height:100%; z-index:2; display:none; }
+  .imglayer.show { display:block; }
+  #imgRender { object-fit:cover; }
+  #imgSketch { object-fit:contain; background:#fff; }
 
   .side h2 { font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--slate2); font-weight:700; margin-bottom:10px; }
   .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:12px; cursor:pointer; transition:border-color .15s, transform .15s; }
   .card:hover { border-color:var(--slate2); transform:translateY(-1px); }
   .card.active { border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,114,206,.14); }
-  .card h3 { font-size:16px; font-weight:800; display:flex; align-items:center; gap:8px; }
+  .card h3 { font-size:16px; font-weight:800; }
   .card .tag { font-size:10.5px; color:var(--slate2); text-transform:uppercase; letter-spacing:.05em; font-weight:700; margin-top:2px; }
   .card p { font-size:13px; color:var(--slate); line-height:1.55; margin-top:8px; }
   .card .go { font-size:12px; font-weight:700; color:var(--blue); margin-top:8px; display:inline-block; }
-  .card.active .go::after { content:" (showing)"; color:var(--slate2); font-weight:600; }
 
   .arbox { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-top:6px; }
   .arbox b { font-size:13.5px; } .arbox p { font-size:12.5px; color:var(--slate); margin-top:4px; line-height:1.5; }
@@ -69,7 +71,7 @@
   <div class="intro">
     <span class="eyebrow">Rotary Drum · Interactive 3D</span>
     <h1>The drum, and the trunnions it turns on.</h1>
-    <p>Explore the rotary drum in 3D, then drop to the trunnion assembly, the roller wheels at the base that carry and rotate the drum. Built straight from Astec's engineering CAD, no photo shoots and no re-modeling.</p>
+    <p>Explore the rotary drum in 3D, then click the trunnion to fly straight to the roller assembly at the base that carries and rotates the drum. Built from Astec's engineering CAD, no photo shoots and no re-modeling.</p>
   </div>
 
   <div class="proof">
@@ -88,9 +90,9 @@
         <span class="media-hint" id="mediaHint">The same CAD, as a render, a drawing, and live 3D</span>
       </div>
       <div class="stage">
-        <img id="imgRender" class="layer show" src="assets/astec/drum-render.png" alt="Astec rotary drum render">
-        <img id="imgSketch" class="layer" src="assets/astec/drum-sketch.png" alt="Astec rotary drum line drawing">
-        <iframe id="viewer" class="layer" title="Astec 3D model" allow="xr-spatial-tracking; fullscreen"></iframe>
+        <vntana-viewer id="viewer" loading="eager"></vntana-viewer>
+        <img id="imgRender" class="imglayer show" src="assets/astec/drum-render.png" alt="Astec rotary drum render">
+        <img id="imgSketch" class="imglayer" src="assets/astec/drum-sketch.png" alt="Astec rotary drum line drawing">
       </div>
     </div>
 
@@ -99,60 +101,93 @@
       <div id="cards"></div>
       <div class="arbox">
         <b>View in AR</b>
-        <p>Open on a phone to place the drum or trunnion at true 1:1 scale in your own space, no app. Useful for showing footprint, access, and service clearance.</p>
+        <p>Open on a phone to place the drum at true 1:1 scale in your own space, no app. Useful for showing footprint, access, and service clearance.</p>
       </div>
-      <p class="note">Each item loads its own model. Next step could be authoring hotspots so a click zooms to a specific feature, and pinning the trunnion inside the full drum assembly.</p>
+      <p class="note">The trunnion view uses a hotspot camera authored in the platform, so re-saving it updates the zoom here. More components can be added the same way.</p>
     </div>
   </div>
 </div>
 
 <script>
+  const BASE = "https://api.vntana.com";
   const ORG = "DCicero", WS = "example-files";
-  const embed = uuid => `https://embed.vntana.com/v2?productUuid=${uuid}&clientSlug=${WS}&organizationSlug=${ORG}`;
+  const UUID = "fe5025c9-aca2-4f64-8c8b-0a434370d448";   // Iron Ore Drum (trunnion is a hotspot inside it)
 
   const ITEMS = [
-    { name:"Iron Ore Drum", tag:"Full rotary drum assembly", uuid:"fe5025c9-aca2-4f64-8c8b-0a434370d448",
-      desc:"The complete rotary drum on its support frame. Rotate it, look down the shell, and see how it sits on the trunnion rollers at each support." },
-    { name:"Trunnion", tag:"Roller assembly · the drum turns on this", uuid:"c1459650-59b4-47de-9cda-d8ab838cfc64",
-      desc:"The trunnion assembly: the large rollers and bearings the drum rides and rotates on. This is the wear and service point, shown in full detail." }
+    { name:"Full Drum Assembly", tag:"Rotary drum · full unit", key:"drum",
+      desc:"The complete rotary drum on its support frame. The starting view. Rotate it and look down the shell." },
+    { name:"Trunnion", tag:"Roller assembly · the drum turns on this", key:"trunnion",
+      desc:"The rollers and bearings the drum rides and rotates on. Click to fly to it inside the assembly, the wear and service point." }
   ];
 
   const $ = id => document.getElementById(id);
-  let active = -1, srcUuid = null;
+  const viewer = $("viewer");
+  let modelReady = false, pendingCam = null, defaultCam = null, trunnionCam = null;
+
+  function snapCamera(cam){
+    if(!cam) return;
+    try {
+      if(cam.cameraRotation)   viewer.setCameraRotation(cam.cameraRotation);
+      if(cam.cameraDistance)   viewer.setCameraDistance(cam.cameraDistance);
+      if(cam.cameraTarget)     viewer.setCameraTarget(cam.cameraTarget);
+      if(cam.fieldOfView)      viewer.setFieldOfView(cam.fieldOfView);
+      if(cam.orthographicSize) viewer.setOrthographicSize(cam.orthographicSize);
+    } catch(e){}
+  }
 
   const HINTS = {
-    render: "The same CAD, as a render, a drawing, and live 3D",
-    sketch: "Straight from the engineering drawing",
-    "3d":   "Rotate, zoom, and open any part. Give it a few seconds to load."
+    render:"The same CAD, as a render, a drawing, and live 3D",
+    sketch:"Straight from the engineering drawing",
+    "3d":"Rotate, zoom, and open any part. Give it a few seconds to load."
   };
-
   function showMode(mode){
     $("imgRender").classList.toggle("show", mode==="render");
     $("imgSketch").classList.toggle("show", mode==="sketch");
-    $("viewer").classList.toggle("show", mode==="3d");
     $("seg-render").classList.toggle("active", mode==="render");
     $("seg-sketch").classList.toggle("active", mode==="sketch");
     $("seg-3d").classList.toggle("active", mode==="3d");
     $("mediaHint").textContent = HINTS[mode];
   }
 
-  function load(i){
-    active = i;
-    if(srcUuid !== ITEMS[i].uuid){ $("viewer").src = embed(ITEMS[i].uuid); srcUuid = ITEMS[i].uuid; }
-    document.querySelectorAll(".card").forEach(c=>c.classList.toggle("active", +c.dataset.i===i));
+  function focus(key){
+    const cam = key==="trunnion" ? trunnionCam : defaultCam;
+    document.querySelectorAll(".card").forEach(c=>c.classList.toggle("active", c.dataset.key===key));
     showMode("3d");
+    if(modelReady) snapCamera(cam); else pendingCam = cam;
   }
 
-  $("cards").innerHTML = ITEMS.map((a,i)=>`
-    <div class="card" data-i="${i}" onclick="load(${i})">
+  $("cards").innerHTML = ITEMS.map(a=>`
+    <div class="card" data-key="${a.key}" onclick="focus('${a.key}')">
       <h3>${a.name}</h3>
       <div class="tag">${a.tag}</div>
       <p>${a.desc}</p>
       <span class="go">View in 3D</span>
     </div>`).join("");
+  document.querySelector('.card[data-key="drum"]').classList.add("active");
+  showMode("render");
 
-  document.querySelector('.card[data-i="0"]').classList.add("active");  // drum is the default subject
-  showMode("render");   // land on the photoreal render
+  Promise.all([
+    fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json()),
+    fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ productUuid: UUID, page:1, size:50 })
+    }).then(r=>r.json())
+  ]).then(([product, hsData])=>{
+    const config = JSON.parse(product.response.viewerSettings.config);
+    Object.assign(viewer, config);
+    defaultCam = { cameraRotation:config.cameraRotation, cameraDistance:config.cameraDistance,
+                   cameraTarget:config.cameraTarget, fieldOfView:config.fieldOfView, orthographicSize:config.orthographicSize };
+
+    const grid = (hsData.response && hsData.response.grid) || [];
+    const tr = grid.find(h => /trunnion/i.test((h.text||h.description||"").replace(/<[^>]+>/g,"")));
+    if(tr && tr.config && tr.config.camera) trunnionCam = JSON.parse(tr.config.camera);
+
+    const glb = product.response.asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB");
+    const blobId = glb && (glb.modelBlobId || glb.blobId);
+
+    viewer.addEventListener("load", ()=>{ modelReady = true; if(pendingCam){ snapCamera(pendingCam); pendingCam = null; } }, { once:true });
+    if(blobId) viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
+  }).catch(()=>{});
 </script>
 </body>
 </html>
