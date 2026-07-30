@@ -70,12 +70,10 @@
   .btn-primary { background:var(--blue); color:#fff; } .btn-primary:hover { background:var(--blue-deep); }
   .btn-ghost { background:#fff; color:var(--ink); border:1.5px solid var(--line); margin-top:10px; }
   .back { font-size:13px; color:var(--blue); font-weight:700; cursor:pointer; display:inline-block; margin-bottom:14px; }
-  .render-wrap { position:relative; cursor:pointer; border-radius:12px; overflow:hidden; border:1px solid var(--line); margin-bottom:14px; }
-  .render-wrap img { width:100%; display:block; background:#8b8f95; }
-  .render-wrap .ov { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(20,22,26,0); transition:background .18s; }
-  .render-wrap:hover .ov { background:rgba(20,22,26,.34); }
-  .render-wrap .ov span { opacity:0; transform:translateY(6px); transition:.18s; background:var(--blue); color:#fff; font-weight:800; font-size:13px; padding:11px 18px; border-radius:100px; box-shadow:0 6px 18px rgba(0,0,0,.25); }
-  .render-wrap:hover .ov span { opacity:1; transform:none; }
+  .render-frame { border-radius:12px; overflow:hidden; border:1px solid var(--line); background:#8b8f95; }
+  .render-frame img { width:100%; display:block; }
+  .explore-btn { width:100%; margin:10px 0 4px; background:#eef4fb; color:var(--blue); border:1px solid #cfe0f2; border-radius:10px; padding:12px; font-weight:800; font-size:13px; cursor:pointer; font-family:inherit; transition:.15s; }
+  .explore-btn:hover { background:var(--blue); color:#fff; border-color:var(--blue); }
   .lb { position:fixed; inset:0; background:rgba(18,20,24,.9); z-index:100; display:none; align-items:center; justify-content:center; padding:30px; }
   .lb.show { display:flex; }
   .lb .box { width:100%; max-width:1040px; height:82vh; background:#fff; border-radius:14px; overflow:hidden; position:relative; box-shadow:0 20px 60px rgba(0,0,0,.4); }
@@ -98,10 +96,10 @@
   <div class="viewer-col">
     <div class="vtoggle">
       <button id="seg-3d" class="active" onclick="setMode('3d')">3D</button>
-      <button id="seg-render" onclick="setMode('render')">Render</button>
-      <button id="seg-sketch" onclick="setMode('sketch')">Drawing</button>
+      <button id="seg-render" onclick="setMode('render')">Render (AI)</button>
+      <button id="seg-sketch" onclick="setMode('sketch')">Drawing (AI)</button>
     </div>
-    <vntana-viewer id="viewer" loading="eager"></vntana-viewer>
+    <vntana-viewer id="viewer" loading="eager" picking="true"></vntana-viewer>
     <img id="imgRender" class="imglayer" src="assets/astec/drum-render.png" alt="Astec rotary drum render">
     <img id="imgSketch" class="imglayer" src="assets/astec/drum-sketch.png" alt="Astec rotary drum line drawing">
     <div class="vhint" id="vhint">Click the badge on the drum to explore a part</div>
@@ -128,10 +126,8 @@
     <!-- PDP detail (trunnion) -->
     <div class="pdp" id="pTrunnion">
       <span class="back" id="backBtn">&larr; Back to full drum</span>
-      <div class="render-wrap" id="openLB">
-        <img src="assets/astec/trunnion-render.png" alt="Trunnion roller assembly">
-        <div class="ov"><span>Explore this part in 3D &rarr;</span></div>
-      </div>
+      <div class="render-frame"><img src="assets/astec/trunnion-render.png" alt="Trunnion roller assembly"></div>
+      <button class="explore-btn" id="openLB">Explore this part in 3D &rarr;</button>
       <div class="pn">PART DB-TR-0900</div>
       <h2>Trunnion Roller Assembly</h2>
       <div class="price">$3,150 <span>/ ea</span></div>
@@ -179,7 +175,7 @@
   function apply(cam){ if(modelReady) snapCamera(cam); else pendingCam = cam; }
 
   // Glow the trunnion, ghost the rest (built from the scene graph)
-  let trunUuids = [], otherUuids = [];
+  let trunUuids = [], otherUuids = [], trunSet = new Set(), hovering = false, trunSelected = false;
   function mapTrunnion(tries){
     const sg = viewer.sceneGraph;
     if(!sg){ if(tries>0) setTimeout(()=>mapTrunnion(tries-1), 400); return; }
@@ -189,7 +185,10 @@
       if(n.type==="primitive" || n.type==="mesh"){ (isTrun?trunUuids:otherUuids).push(n.uuid); }
       (n.children||[]).forEach(c=>walk(c, isTrun));
     })(sg, false);
+    trunSet = new Set(trunUuids);
   }
+  function hoverOn(){ if(trunSelected||hovering) return; hovering=true; try{ trunUuids.forEach(u=>viewer.setEffect(u,"glow")); }catch(e){} viewer.style.cursor="pointer"; }
+  function hoverOff(){ if(!hovering) return; hovering=false; try{ trunUuids.forEach(u=>viewer.removeEffect(u,"glow")); }catch(e){} viewer.style.cursor=""; }
   function applyGhost(){ try{ trunUuids.forEach(u=>viewer.setEffect(u,"glow","outline")); otherUuids.forEach(u=>viewer.setEffect(u,"dim")); }catch(e){} }
   function clearGhost(){ try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(e){} }
 
@@ -207,6 +206,7 @@
     $("pDefault").classList.add("hide");
     $("pTrunnion").classList.add("show");
     if(activeHotspot) activeHotspot.classList.add("active");
+    hovering = false; trunSelected = true;
     applyGhost();
     apply(trunnionCam);
     $("vhint").textContent = "Trunnion, the rollers the drum turns on";
@@ -215,9 +215,10 @@
     $("pDefault").classList.remove("hide");
     $("pTrunnion").classList.remove("show");
     if(activeHotspot) activeHotspot.classList.remove("active");
+    trunSelected = false; hovering = false;
     clearGhost();
     apply(defaultCam);
-    $("vhint").textContent = "Click the badge on the drum to explore a part";
+    $("vhint").textContent = "Click the badge on the drum, or the trunnion itself, to explore a part";
   }
   $("compTrunnion").addEventListener("click", openTrunnion);
   $("backBtn").addEventListener("click", resetView);
@@ -249,6 +250,11 @@
 
     const glb = product.response.asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB");
     const blobId = glb && (glb.modelBlobId || glb.blobId);
+
+    // hover / click the actual trunnion geometry (picking)
+    const hitInTrunnion = e => { const h=(e.detail&&e.detail.intersections||[])[0]; return h && trunSet.has(h.uuid); };
+    viewer.addEventListener("object-hover", e => { hitInTrunnion(e) ? hoverOn() : hoverOff(); });
+    viewer.addEventListener("object-select", e => { if(hitInTrunnion(e)) openTrunnion(); });
 
     viewer.addEventListener("load", ()=>{
       modelReady = true;
