@@ -5,6 +5,53 @@ improvise a different structure. Golden template: `roeslein-uvbc-lamp.html`
 (cleanest working implementation). Reference for bugs/architecture:
 `REVIEW-parts-explorer.md`.
 
+**Claude: read this whole runbook BEFORE writing any code or improvising a layout.**
+The click-to-select glow + ghost effect is the viewer's built-in selection
+(`viewer.selection.highlight` + scene-graph picking), NOT a hand-rolled `setEffect`.
+It only works when the clickable parts are named `Name (SKU)` in the model. No
+naming = no highlight. If the model is not prepped, stop and give Derek the
+prep checklist below instead of building a workaround.
+
+---
+
+## Derek's prep (Figurement + VNTANA) — do this BEFORE Claude builds
+
+The page cannot make a part clickable/glow unless the model is prepped this way.
+Claude: when a model is not ready, hand Derek exactly these steps.
+
+1. **Identify the core parts.** Decide which components a customer should be able
+   to click (e.g. Trunnion, V-Flights, Flop Gate). Everything else stays background.
+2. **Group each part into one node.** In Figurement, the part is usually many
+   scattered CAD meshes. Select them and collapse/parent them under a **single
+   node** so a click selects the whole part, not one bolt. One parent node per
+   clickable component.
+3. **Rename that node `Name (SKU)`.** Exact format, with the SKU in parentheses,
+   e.g. `Trunnion (DB-TR-0900)`. This is what the page matches on. Do this for
+   every clickable part. (Alphanumeric SKUs are fine; tell Claude and it widens
+   the regex.)
+4. **Fix materials if raw.** If the model imported with magenta/unassigned faces
+   (common from NWD/STEP), assign materials in Figurement so it reads clean. Use
+   procedural metals (Polished/Brushed), not texture Patterns — CAD has no UVs.
+5. **Export + upload.** Either Derek exports, or Claude exports the GLB via
+   `POST https://app.figurement.com/api/scenes/{sceneId}/export` `{"format":"glb"}`
+   (Bearer key in memory) and Derek uploads it to VNTANA as a new version.
+   Make sure it is **Live Public**.
+6. **Author a hotspot per clickable part** in the VNTANA platform:
+   - **Frame the camera FIRST**, then place the hotspot — the hotspot saves that
+     camera, and that saved view becomes the click-to-zoom snap.
+   - Set the hotspot **text = the SKU or the exact part name** (matches the node).
+   - Optionally set an exploded view; the saved `explodedStrength` is usable.
+7. **Set the default camera + lighting** in the product's viewer settings (this is
+   the opening view the page auto-applies on load).
+8. **Give Claude:** the **product UUID**, the **org/workspace** (default
+   `DCicero` / `n8n-work`, or whatever it lives in), and the parts list (SKU, name,
+   price, order URL). Then Claude runs Phase 1 to verify before building.
+
+**Quick "is it ready?" check (Claude runs this, reports the gaps to Derek):**
+download the GLB and confirm the clickable parts appear as `... (SKU)` in the node
+names, and that a hotspot exists for each. Missing name = not clickable. Missing
+hotspot = no camera snap. Report both before building.
+
 ---
 
 ## Phase 0 — What to ask Derek for (all of it, up front, in one message)
