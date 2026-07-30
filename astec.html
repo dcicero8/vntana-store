@@ -175,17 +175,17 @@
   function apply(cam){ if(modelReady) snapCamera(cam); else pendingCam = cam; }
 
   // Glow the trunnion, ghost the rest (built from the scene graph)
-  let trunUuids = [], otherUuids = [], trunSet = new Set(), hovering = false, trunSelected = false;
+  let trunUuids = [], otherUuids = [], trunHitSet = new Set(), hovering = false, trunSelected = false, hoveringTrun = false;
   function mapTrunnion(tries){
     const sg = viewer.sceneGraph;
     if(!sg){ if(tries>0) setTimeout(()=>mapTrunnion(tries-1), 400); return; }
-    trunUuids = []; otherUuids = [];
+    trunUuids = []; otherUuids = []; trunHitSet = new Set();
     (function walk(n, inTrun){
       const isTrun = inTrun || /trunnion/i.test(n.name || "");
+      if(isTrun) trunHitSet.add(n.uuid);                       // every uuid under Trunnion, for hit-testing
       if(n.type==="primitive" || n.type==="mesh"){ (isTrun?trunUuids:otherUuids).push(n.uuid); }
       (n.children||[]).forEach(c=>walk(c, isTrun));
     })(sg, false);
-    trunSet = new Set(trunUuids);
   }
   function hoverOn(){ if(trunSelected||hovering) return; hovering=true; try{ trunUuids.forEach(u=>viewer.setEffect(u,"glow")); }catch(e){} viewer.style.cursor="pointer"; }
   function hoverOff(){ if(!hovering) return; hovering=false; try{ trunUuids.forEach(u=>viewer.removeEffect(u,"glow")); }catch(e){} viewer.style.cursor=""; }
@@ -251,10 +251,15 @@
     const glb = product.response.asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB");
     const blobId = glb && (glb.modelBlobId || glb.blobId);
 
-    // hover / click the actual trunnion geometry (picking)
-    const hitInTrunnion = e => { const h=(e.detail&&e.detail.intersections||[])[0]; return h && trunSet.has(h.uuid); };
-    viewer.addEventListener("object-hover", e => { hitInTrunnion(e) ? hoverOn() : hoverOff(); });
-    viewer.addEventListener("object-select", e => { if(hitInTrunnion(e)) openTrunnion(); });
+    // hover / click the actual trunnion geometry (picking property + object-* events)
+    viewer.picking = true;
+    const hitTrun = e => { const hits=(e.detail&&e.detail.intersections)||[]; return hits.length>0 && trunHitSet.has(hits[0].uuid); };
+    viewer.addEventListener("object-hover", e => {
+      hoveringTrun = hitTrun(e);
+      if(hoveringTrun && !trunSelected) hoverOn(); else hoverOff();
+    });
+    viewer.addEventListener("object-select", e => { if(hitTrun(e)) openTrunnion(); });
+    viewer.addEventListener("click", () => { if(hoveringTrun && !trunSelected) openTrunnion(); });
 
     viewer.addEventListener("load", ()=>{
       modelReady = true;
