@@ -155,6 +155,21 @@
   }
   function apply(cam){ if(modelReady) snapCamera(cam); else pendingCam = cam; }
 
+  // Glow the trunnion, ghost the rest (built from the scene graph)
+  let trunUuids = [], otherUuids = [];
+  function mapTrunnion(tries){
+    const sg = viewer.sceneGraph;
+    if(!sg){ if(tries>0) setTimeout(()=>mapTrunnion(tries-1), 400); return; }
+    trunUuids = []; otherUuids = [];
+    (function walk(n, inTrun){
+      const isTrun = inTrun || /trunnion/i.test(n.name || "");
+      if(n.type==="primitive" || n.type==="mesh"){ (isTrun?trunUuids:otherUuids).push(n.uuid); }
+      (n.children||[]).forEach(c=>walk(c, isTrun));
+    })(sg, false);
+  }
+  function applyGhost(){ try{ trunUuids.forEach(u=>viewer.setEffect(u,"glow","outline")); otherUuids.forEach(u=>viewer.setEffect(u,"dim")); }catch(e){} }
+  function clearGhost(){ try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(e){} }
+
   function setMode(m){
     $("imgRender").classList.toggle("show", m==="render");
     $("imgSketch").classList.toggle("show", m==="sketch");
@@ -169,6 +184,7 @@
     $("pDefault").classList.add("hide");
     $("pTrunnion").classList.add("show");
     if(activeHotspot) activeHotspot.classList.add("active");
+    applyGhost();
     apply(trunnionCam);
     $("vhint").textContent = "Trunnion, the rollers the drum turns on";
   }
@@ -176,6 +192,7 @@
     $("pDefault").classList.remove("hide");
     $("pTrunnion").classList.remove("show");
     if(activeHotspot) activeHotspot.classList.remove("active");
+    clearGhost();
     apply(defaultCam);
     $("vhint").textContent = "Click the badge on the drum to explore a part";
   }
@@ -202,6 +219,7 @@
 
     viewer.addEventListener("load", ()=>{
       modelReady = true;
+      mapTrunnion(8);
       if(pendingCam){ snapCamera(pendingCam); pendingCam = null; }
       // inject the trunnion badge pin on the model
       if(tr && tr.config){
