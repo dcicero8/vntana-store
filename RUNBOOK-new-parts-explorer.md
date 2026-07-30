@@ -1,16 +1,35 @@
 # RUNBOOK — "Make a new parts explorer page"
 
-When Derek says "make a parts explorer page for X," follow this exactly. Do not
-improvise a different structure. Golden template: `roeslein-uvbc-lamp.html`
-(cleanest working implementation). Reference for bugs/architecture:
-`REVIEW-parts-explorer.md`.
+When Derek says "make a parts explorer page for X" (or "a new parts page"),
+follow this exactly. Do not improvise a different structure. **Current working
+reference: `astec.html`** (public `@vntana/viewer` 3.0.0, full hover/glow/ghost).
+Older reference: `roeslein-uvbc-lamp.html` (built on an internal viewer build the
+devs gave Derek; the public NPM viewer was updated to 3.0.0 the week of 2026-07-28
+and now supports the same picking/effects). Bugs/architecture: `REVIEW-parts-explorer.md`.
 
 **Claude: read this whole runbook BEFORE writing any code or improvising a layout.**
-The click-to-select glow + ghost effect is the viewer's built-in selection
-(`viewer.selection.highlight` + scene-graph picking), NOT a hand-rolled `setEffect`.
-It only works when the clickable parts are named `Name (SKU)` in the model. No
-naming = no highlight. If the model is not prepped, stop and give Derek the
-prep checklist below instead of building a workaround.
+
+## What "a new parts page" means (Derek's full interaction set — build ALL of it)
+
+When Derek asks for a parts page, he wants every one of these, not a subset:
+
+1. **3D-first layout** — the viewer takes most of the screen; a slim PDP panel on the right.
+2. **Badge pins** on each clickable part (rendered from the platform hotspots).
+3. **Hover feedback** — hovering a pickable part (the geometry itself, not just the pin)
+   makes it **glow**, and the cursor becomes a pointer, so the user knows it is clickable.
+4. **Click to select** — clicking the **part geometry, the badge pin, OR the sidebar card**
+   all do the same thing.
+5. **Glow + ghost on select** — the selected part gets `glow` + `outline`; the rest of the
+   model **dims/ghosts** back so the part pops.
+6. **Camera snap** — the camera flies to the part (from the hotspot's saved camera).
+7. **PDP panel** — the right panel becomes that part's product page: render image, part
+   number, price, stock, specs, and an order/quote action. "Back" clears the ghost and
+   resets the camera.
+8. **Render / drawing toggle** (optional) — if AI render + sketch exist, a toggle to show
+   them alongside the live 3D (label them `Render (AI)` / `Drawing (AI)`).
+
+If the model is not prepped for this (see prep checklist), stop and give Derek the
+checklist instead of building a partial workaround.
 
 ---
 
@@ -113,6 +132,42 @@ the GLB node names (→ he renames in Figurement, you re-export via
 with the Bearer key from memory, he re-uploads), and which parts have no hotspot.
 SKU mismatches between GLB and catalog (like `500-0000395` vs `500-0002622`) go in
 `skuAliases` — do NOT silently drop the part.
+
+## Viewer 3.0.0 mechanics (public `@vntana/viewer`, the confirmed-working way)
+
+Script: `<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js">`
+(jsdelivr already serves 3.0.0). This is what makes the full interaction work:
+
+- **Enable picking as a PROPERTY, not just an attribute:** set `viewer.picking = true` in JS.
+  The `picking="true"` attribute alone did not reliably arm the events.
+- **Events:** `object-hover` and `object-select` fire with `e.detail.intersections` (nearest
+  first; each has a `uuid`). Add a plain `click` listener as a select fallback (track the
+  last hovered part, select it on click) since object-select can be finicky.
+- **Effects:** `viewer.setEffect(uuid, "glow"|"outline"|"highlight"|"dim")`,
+  `viewer.removeEffect(uuid, ...)`, `viewer.clearEffect("glow"|"outline"|"dim")` to reset.
+  Effect look is tunable via properties: `glowColor`, `outlineColor`, `outlineWidth`,
+  `highlightColor`, `dimColor`, `dimOpacity`.
+- **Scene graph → per-part uuid sets.** After `load`, walk `viewer.sceneGraph` (retry a few
+  times; it can populate slightly after the event). For each clickable part node (matched by
+  name, e.g. `/trunnion/i` or the `(SKU)`), collect:
+  - a **hit set** = every uuid in that node's subtree (for matching `intersections[0].uuid`), and
+  - a **primitive list** (`type === "primitive" || "mesh"`) for `setEffect`.
+  Match a hover/click by `hitSet.has(intersections[0].uuid)`. Matching only the primitive
+  uuids fails — the hit uuid is often a higher node.
+- **Glow + ghost on select:** `setEffect(partPrimitives, "glow","outline")` +
+  `setEffect(otherPrimitives, "dim")`. Reset with `clearEffect(...)`.
+- **Camera:** `Object.assign(viewer, JSON.parse(product.response.viewerSettings.config))` on
+  load to establish the default view, then snap with ALL fields including
+  **`orthographicSize`** (many industrial models are orthographic — `cameraDistance` alone
+  does nothing; `orthographicSize` is the zoom lever). Store the hotspot camera and apply the
+  same way.
+- **Keep the viewer always live** (not `display:none` behind an overlay) — a hidden canvas
+  does not initialize; put image overlays on top of it instead.
+
+Gotchas: inline `onclick="focus(...)"` calls the element's built-in `.focus()`, not your
+function — name handlers uniquely (`focusPart`, not `focus`). Strip the Figurement
+**`Shadow Plane`** node from exports (see prep step 5) — it bloats the file (57 MB → 4.5 MB
+once removed) and throws off framing/bounds.
 
 ## Phase 2 — Build
 
