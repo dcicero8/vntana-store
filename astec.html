@@ -32,6 +32,7 @@
   .vtoggle button { border:0; background:transparent; padding:6px 12px; border-radius:7px; font-size:12px; font-weight:700; color:var(--slate); cursor:pointer; font-family:inherit; }
   .vtoggle button.active { background:var(--blue); color:#fff; }
   .vhint { position:absolute; bottom:14px; left:50%; transform:translateX(-50%); z-index:6; background:rgba(43,47,54,.82); color:#fff; font-size:12px; padding:7px 14px; border-radius:100px; backdrop-filter:blur(4px); }
+  .vcontrols { position:absolute; right:14px; bottom:14px; z-index:6; display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
 
   /* hotspot badge pin */
   vntana-hotspot { --hotspot-size:20px; cursor:pointer; }
@@ -100,11 +101,13 @@
       <button id="seg-sketch" onclick="setMode('sketch')">Drawing (AI)</button>
     </div>
     <vntana-viewer id="viewer" loading="eager" picking="true">
-      <vntana-exploded-view></vntana-exploded-view>
-      <vntana-center-button></vntana-center-button>
-      <vntana-fs-button></vntana-fs-button>
-      <vntana-zoom-in-button></vntana-zoom-in-button>
-      <vntana-zoom-out-button></vntana-zoom-out-button>
+      <div class="vcontrols">
+        <vntana-exploded-view></vntana-exploded-view>
+        <vntana-center-button></vntana-center-button>
+        <vntana-fs-button></vntana-fs-button>
+        <vntana-zoom-in-button></vntana-zoom-in-button>
+        <vntana-zoom-out-button></vntana-zoom-out-button>
+      </div>
     </vntana-viewer>
     <img id="imgRender" class="imglayer" src="assets/astec/drum-render.png" alt="Astec rotary drum render">
     <img id="imgSketch" class="imglayer" src="assets/astec/drum-sketch.png" alt="Astec rotary drum line drawing">
