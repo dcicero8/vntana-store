@@ -104,6 +104,13 @@ a{color:var(--blue);text-decoration:none;}
 .art .video-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .art .video-ph .play{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;padding-left:5px;}
 .art .video-ph .vtxt{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.18em;color:#c9cdf0;text-transform:uppercase;}
+/* AR QR inside an .art card */
+.art .ar-ph{position:absolute;inset:0;display:flex;align-items:center;gap:24px;padding:54px 26px 26px;}
+.art .ar-qr{background:#fff;border-radius:14px;padding:12px;width:168px;height:168px;flex:none;box-shadow:0 10px 30px rgba(0,0,0,.28);}
+.art .ar-qr img{width:100%;height:100%;display:block;}
+.art .ar-txt .big{font-family:var(--head);font-weight:700;font-size:22px;line-height:1.16;}
+.art .ar-txt .small{font-size:14px;color:#dfe3ff;margin-top:10px;}
+@media(max-width:520px){ .art .ar-ph{flex-direction:column;align-items:flex-start;gap:16px;} .art .ar-qr{width:140px;height:140px;} }
 
 /* pain */
 .pain{background:var(--black);color:#fff;}
@@ -247,11 +254,12 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
     </div>
     <div class="art blue">
       <div class="tag">Demo · Full unit · True-to-scale AR</div>
-      <div class="cap"><div class="big">Skid steer / compact loader</div><div class="small">Spin it, place it on the buyer's site in AR, check footprint and clearances at 1:1.</div></div>
-      <div class="pipe">
-        <div><div class="k">Native CAD in</div><div class="v">Equipment CAD</div></div>
-        <div><div class="k">Optimized out</div><div class="v">Interactive 3D + AR</div></div>
-        <div><div class="k">On any device</div><div class="v">&lt; 2 sec</div></div>
+      <div class="ar-ph">
+        <div class="ar-qr"><img src="assets/qr-ar-skidsteer.svg" alt="Scan to view the skid steer in AR"></div>
+        <div class="ar-txt">
+          <div class="big">See the skid steer / loader in your space</div>
+          <div class="small">Scan with your phone to place it at true 1:1 scale in AR &mdash; no app needed.</div>
+        </div>
       </div>
     </div>
   </div>
