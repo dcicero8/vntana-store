@@ -41,13 +41,6 @@
   .panel h1{font-size:1.6rem;font-weight:900;margin:6px 0 2px;letter-spacing:-.02em}
   .machine{font-size:.85rem;color:var(--muted);margin-bottom:20px}
 
-  .cats{display:flex;flex-wrap:wrap;gap:6px 16px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px}
-  .cat{font-size:.82rem;font-weight:600;color:var(--blue);cursor:pointer;display:flex;align-items:center;gap:5px}
-  .cat:not(.active):not(.disabled):hover{color:var(--blue-dark);text-decoration:underline}
-  .cat.active{font-weight:800}
-  .cat.active::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue)}
-  .cat.disabled{color:#c2c7d0;font-weight:500;cursor:default;pointer-events:none}
-
   .chips{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
   .chip{width:100%;text-align:center;border:1px solid var(--line);background:#f7f9fc;border-radius:8px;padding:11px 13px;font-size:.82rem;font-weight:600;
     color:#40485a;cursor:pointer;transition:.15s;line-height:1.15}
@@ -89,16 +82,6 @@
     <h1>Product Name</h1>
     <div class="machine">Explore the components built into this product.</div>
 
-    <!-- CATEGORY TABS — rename to your own groupings. data-cat must match the
-         `category` field on each component in CONFIG below. Tabs with no
-         components are greyed out automatically. -->
-    <div class="cats">
-      <div class="cat active" data-cat="g1">Group 1</div>
-      <div class="cat" data-cat="g2">Group 2</div>
-      <div class="cat" data-cat="g3">Group 3</div>
-      <div class="cat" data-cat="g4">Group 4</div>
-    </div>
-
     <div class="chips" id="chips"></div>
 
     <div class="detail" id="detail">
@@ -125,8 +108,7 @@
         ORG="DCicero", WS="example-files";
 
   /* ============================================================
-     COMPONENTS — one entry per clickable part.
-       category    : which tab it lives under (matches data-cat above)
+     COMPONENTS — one entry per clickable part. All parts show in one list.
        match       : RegExp that finds the part's node in the scene graph
                      BY NAME. Name the node in the CAD/VNTANA, then match it.
        name / tag  : shown in the chip and the detail card
@@ -139,7 +121,7 @@
      ============================================================ */
   const COMPONENTS = [
     {
-      id:"part-1", category:"g1", match:/Part 1|SKU-001/i,
+      id:"part-1", match:/Part 1|SKU-001/i,
       name:"Component 1", tag:"SKU-001",
       cam:{ cameraTarget:"0r 0r 0.1r", cameraDistance:"1.95r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
       bullets:[
@@ -151,7 +133,7 @@
       placeholder:true
     },
     {
-      id:"part-2", category:"g1", match:/Part 2|SKU-002/i,
+      id:"part-2", match:/Part 2|SKU-002/i,
       name:"Component 2", tag:"SKU-002",
       cam:{ cameraTarget:"0r 0r 0.1r", cameraDistance:"1.95r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
       bullets:[
@@ -161,7 +143,7 @@
       placeholder:true
     },
     {
-      id:"part-3", category:"g2", match:/Part 3|SKU-003/i,
+      id:"part-3", match:/Part 3|SKU-003/i,
       name:"Component 3", tag:"SKU-003",
       cam:{ cameraTarget:"0r 0r 0.1r", cameraDistance:"1.45r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
       bullets:[
@@ -191,14 +173,10 @@
   };
   let camInit = false;
 
-  // ── categories + chips ────────────────────────────────────────
-  let activeCat = "g1";
-  const catsEl = document.querySelector(".cats");
-  const catHasComponents = (cat) => COMPONENTS.some(c => c.category === cat);
-
+  // ── chips (all parts on one page) ─────────────────────────────
   const renderChips = () => {
     chipsEl.innerHTML = "";
-    COMPONENTS.filter(c => c.category === activeCat).forEach(c => {
+    COMPONENTS.forEach(c => {
       const b = document.createElement("button");
       b.className = "chip"; b.dataset.id = c.id;
       b.innerHTML = `${c.name}<span class="ph">${c.tag}${c.placeholder ? " · placeholder 3D" : ""}</span>`;
@@ -206,19 +184,6 @@
       chipsEl.appendChild(b);
     });
   };
-
-  // category tabs: only tabs that have components are clickable
-  [...catsEl.querySelectorAll(".cat")].forEach(tab => {
-    if (!catHasComponents(tab.dataset.cat)) { tab.classList.add("disabled"); return; }   // greyed: no parts
-    tab.addEventListener("click", () => {
-      if (tab.dataset.cat === activeCat) return;
-      activeCat = tab.dataset.cat;
-      catsEl.querySelectorAll(".cat").forEach(t => t.classList.toggle("active", t === tab));
-      resetSelection();
-      renderChips();
-      markMissing();
-    });
-  });
   renderChips();
 
   // ── scene-graph grouping ──────────────────────────────────────
@@ -274,15 +239,6 @@
   const selectComponent = (id) => {
     const uuids = GROUP[id];
     if (!uuids || !uuids.length) return;          // node not present in this version
-    // sync the category tab + chip list to the selected component (e.g. clicking a
-    // part in 3D should switch to the tab that part belongs to)
-    const cat = byId[id].category;
-    if (cat && cat !== activeCat) {
-      activeCat = cat;
-      catsEl.querySelectorAll(".cat").forEach(t => t.classList.toggle("active", t.dataset.cat === cat));
-      renderChips();
-      markMissing();
-    }
     activeId = id;
     applyCam(byId[id].cam || DETAIL_CAM); // per-part camera, first (before effects)
     clearPaint();
