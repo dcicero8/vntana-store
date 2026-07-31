@@ -100,6 +100,10 @@ a{color:var(--blue);text-decoration:none;}
 .pipe div{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px;text-align:center;}
 .pipe .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--mint);text-transform:uppercase;}
 .pipe .v{font-size:13px;color:#fff;margin-top:4px;}
+/* video placeholder inside an .art card */
+.art .video-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.art .video-ph .play{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;padding-left:5px;}
+.art .video-ph .vtxt{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.18em;color:#c9cdf0;text-transform:uppercase;}
 
 /* pain */
 .pain{background:var(--black);color:#fff;}
@@ -228,11 +232,9 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
     </div>
     <div class="art">
       <div class="tag">Demo · Configure live</div>
-      <div class="cap"><div class="big">Configured 3D into your CPQ</div><div class="small">The buyer's layout flows into the quote flow — accurate for every configuration and revision.</div></div>
-      <div class="pipe">
-        <div><div class="k">Source</div><div class="v">One governed model</div></div>
-        <div><div class="k">Feeds</div><div class="v">CPQ / configurator</div></div>
-        <div><div class="k">Always</div><div class="v">Current &amp; accurate</div></div>
+      <div class="video-ph">
+        <div class="play">&#9654;</div>
+        <div class="vtxt">Video to add</div>
       </div>
     </div>
   </div>
