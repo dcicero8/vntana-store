@@ -298,7 +298,16 @@
   };
 
   // ── hotspots: saved cameras + small initial pins ──────────────
-  const matchHS = (txt) => COMPONENTS.find(c => c.match.test((txt || "").replace(/<[^>]+>/g, "")));
+  // Match a hotspot's text to a component. Tolerant: the strict node regex, OR the
+  // component's display name (so hotspots renamed to "Crankshaft & Pistons" /
+  // "Cylinder Linear Actuator" still match). Only used on hotspot text, never on nodes.
+  const matchHS = (txt) => {
+    const t = (txt || "").replace(/<[^>]+>/g, "").replace(/&amp;/gi, "&").trim().toLowerCase();
+    return COMPONENTS.find(c => {
+      const name = c.name.toLowerCase();
+      return c.match.test(t) || t === name || t.includes(name) || name.includes(t);
+    });
+  };
   const injectHotspots = (grid) => {
     grid.forEach(h => {
       const c = matchHS(h.text || h.description || "");
