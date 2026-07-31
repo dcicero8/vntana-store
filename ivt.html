@@ -115,6 +115,9 @@ a.art:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(18,59,44,.42)
 .art .ar-txt .big{font-family:var(--head);font-weight:700;font-size:22px;line-height:1.16;}
 .art .ar-txt .small{font-size:14px;color:#dfe3ff;margin-top:10px;}
 @media(max-width:520px){ .art .ar-ph{flex-direction:column;align-items:flex-start;gap:16px;} .art .ar-qr{width:140px;height:140px;} }
+/* live VNTANA embed (has its own AR button) */
+.embed-frame{border-radius:16px;overflow:hidden;border:1px solid var(--line);aspect-ratio:1/1;background:#f6f7fb;box-shadow:0 14px 40px rgba(20,20,30,.12);}
+.embed-frame iframe{width:100%;height:100%;border:0;display:block;}
 
 /* pain */
 .pain{background:var(--black);color:#fff;}
@@ -252,15 +255,8 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
       <p>Off-highway equipment is bought on fit and integration, but complex, configurable machines can't be evaluated from static photos. VNTANA turns your machine CAD into interactive 3D and AR the buyer places at true 1:1 scale on their own site — reach, footprint and clearances confirmed in place, the "imagined fit" risk removed.</p>
       <div class="stat"><b>11x</b><span>higher purchase likelihood when buyers can explore a product in 3D</span></div>
     </div>
-    <div class="art blue">
-      <div class="tag">Demo · Full unit · True-to-scale AR</div>
-      <div class="ar-ph">
-        <div class="ar-qr"><img src="assets/qr-ar-skidsteer.svg" alt="Scan to view the skid steer in AR"></div>
-        <div class="ar-txt">
-          <div class="big">See the skid steer / loader in your space</div>
-          <div class="small">Scan with your phone to place it at true 1:1 scale in AR &mdash; no app needed.</div>
-        </div>
-      </div>
+    <div class="embed-frame">
+      <iframe frameBorder="0" src="https://embed.vntana.com/v2?productUuid=c207bfa7-08df-4884-a701-14ba89a2abba&clientSlug=tradeshows&organizationSlug=DCicero" allow="fullscreen; xr-spatial-tracking" loading="lazy" title="See it in AR"></iframe>
     </div>
   </div>
   <div class="detail">
