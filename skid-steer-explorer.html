@@ -30,6 +30,11 @@
   /* viewer */
   .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px}
   vntana-viewer{width:100%;height:100%;display:block}
+  vntana-hotspot{ --hotspot-size:16px; cursor:pointer; }
+  .hs-pin{ width:16px; height:16px; border-radius:50%; background:var(--blue); border:1.5px solid rgba(255,255,255,.9);
+    color:#fff; font-size:.4rem; font-weight:800; letter-spacing:.02em; display:flex; align-items:center; justify-content:center;
+    line-height:1; box-shadow:0 2px 7px rgba(0,84,143,.55); pointer-events:none; transition:.18s; }
+  vntana-hotspot:hover .hs-pin, vntana-hotspot.active .hs-pin{ background:var(--blue-dark); transform:scale(1.18); }
   .stage .hint{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:.78rem;color:#8b93a4;pointer-events:none}
   .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa2b2;font-size:.9rem;text-align:center;padding:0 30px;background:rgba(244,246,249,.6)}
   .loading.hidden{display:none}
@@ -178,7 +183,12 @@
     if (c.cameraDistance !== undefined) viewer.cameraDistance = c.cameraDistance;
     if (c.cameraRotation !== undefined) viewer.cameraRotation = c.cameraRotation;
     if (c.fieldOfView    !== undefined) viewer.fieldOfView    = c.fieldOfView;
+    if (c.orthographicSize !== undefined) viewer.orthographicSize = c.orthographicSize;
   };
+
+  // hotspot pin initials + saved-camera store (populated from VNTANA hotspots)
+  const PINS  = { joystick:"CJ", dash:"DD", crankshaft:"CP", gearmotor:"GM", actuator:"CA" };
+  const HSCAM = {};   // component id -> saved hotspot camera object
 
   // ── chips ─────────────────────────────────────────────────────
   const renderChips = () => {
@@ -253,9 +263,10 @@
     const uuids = GROUP[id];
     if (!uuids || !uuids.length) return;
     activeId = id;
-    // fly to the part: shift look-at to its target, keep the home 3/4 angle, zoom in
     const c = byId[id];
-    applyCam({
+    // fly to the part: prefer the camera saved on the VNTANA hotspot; fall back to
+    // the computed target if a hotspot is missing.
+    applyCam(HSCAM[id] || {
       cameraTarget:   c.target,
       cameraDistance: c.distance || "1.15r",
       cameraRotation: homeCam ? homeCam.cameraRotation : undefined,
@@ -266,6 +277,7 @@
     for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
     renderCard(c);
     [...chipsEl.children].forEach(ch => ch.classList.toggle("active", ch.dataset.id === id));
+    [...viewer.querySelectorAll("vntana-hotspot")].forEach(el => el.classList.toggle("active", el.dataset.id === id));
   };
 
   const resetSelection = () => {
@@ -274,7 +286,32 @@
     clearGhost();
     clearPaint();
     [...chipsEl.children].forEach(ch => ch.classList.remove("active"));
+    [...viewer.querySelectorAll("vntana-hotspot")].forEach(el => el.classList.remove("active"));
     detail.innerHTML = `<div class="empty">Select a component above, or click it on the machine, to see its details.</div>`;
+  };
+
+  // ── hotspots: saved cameras + small initial pins ──────────────
+  const matchHS = (txt) => COMPONENTS.find(c => c.match.test((txt || "").replace(/<[^>]+>/g, "")));
+  const injectHotspots = (grid) => {
+    grid.forEach(h => {
+      const c = matchHS(h.text || h.description || "");
+      if (!c || !h.config) return;
+      try {
+        if (h.config.camera) HSCAM[c.id] = JSON.parse(h.config.camera);
+        const dims = JSON.parse(h.config.dimensions || "{}");
+        if (dims.position) {
+          const el = document.createElement("vntana-hotspot");
+          el.setAttribute("position", dims.position);
+          el.setAttribute("normal", dims.normal || "0m 1m 0m");
+          el.dataset.id = c.id;
+          const pin = document.createElement("div");
+          pin.className = "hs-pin"; pin.textContent = PINS[c.id] || "";
+          el.appendChild(pin);
+          el.addEventListener("click", e => { e.stopPropagation(); selectComponent(c.id); });
+          viewer.appendChild(el);
+        }
+      } catch (_) {}
+    });
   };
 
   // ── card ──────────────────────────────────────────────────────
@@ -343,6 +380,15 @@
               }
               viewer.addEventListener("load", () => Object.assign(viewer, cfg), { once:true }); } catch(_){}
       }
+      // fetch hotspots; inject pins + store saved cameras once the model loads
+      fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`, {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ productUuid: UUID, page:1, size:50 })
+      }).then(r=>r.json()).then(hs => {
+        const grid = (hs.response && hs.response.grid) || [];
+        viewer.addEventListener("load", () => injectHotspots(grid), { once:true });
+      }).catch(()=>{});
+
       viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
     } catch (err) {
       loading.textContent = "Could not load the model.";
