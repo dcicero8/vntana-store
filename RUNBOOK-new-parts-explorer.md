@@ -202,7 +202,16 @@ once removed) and throws off framing/bounds.
    character), push, ask Derek to paste the console line. Fix by data, not guess.
 4. Remove debug logging, push again.
 
+## ALWAYS version exported GLB filenames (v1, v2, v3…)
+Every time Claude re-exports a GLB for Derek to upload, give it a NEW versioned
+name (`SkidSteer_Assembly_v2.glb`, `_v3.glb`, …). Never re-export over the same
+filename. Re-uploading a same-named file to VNTANA does not reliably replace the
+asset (it fails / silently keeps the old geometry), so a same-name re-export
+looks like "my fix didn't work." One bumped filename per iteration = one clean
+new upload. This applies to ANY asset Claude generates for upload, not just GLBs.
+
 ## Failure modes already hit once (don't repeat)
+- Same-name GLB re-upload → VNTANA keeps the old asset; fix looks broken. Version the filename every export (see above).
 - Wrong/old product UUID → everything silently half-works. Check UUIDs first.
 - Hotspots matched by UUID → break when recreated. Match by text.
 - `NODE_MAP` of raw node names → goes stale on every re-export. Use SKU-in-name.
