@@ -96,6 +96,9 @@ a{color:var(--blue);text-decoration:none;}
 .art .cap .small{font-size:13.5px;color:#b9bde0;margin-top:4px;}
 .art.blue{background:var(--grad);}
 .art.mint{background:linear-gradient(160deg,#0f1226,#123b2c);}
+a.art{text-decoration:none;color:#fff;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;}
+a.art:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(18,59,44,.42);}
+.art .art-open{position:absolute;top:15px;right:18px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mint);}
 .pipe{display:flex;gap:10px;padding:0 22px 6px;}
 .pipe div{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px;text-align:center;}
 .pipe .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--mint);text-transform:uppercase;}
@@ -275,15 +278,16 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
       </ul>
       <div class="stat"><b>73%</b><span>of industrial B2B buyers purchase online — meet them there</span></div>
     </div>
-    <div class="art mint">
+    <a class="art mint" href="parts.html" target="_blank" rel="noopener">
       <div class="tag">Demo · Exploded view · Searchable parts</div>
+      <span class="art-open">Open the catalogue &#8599;</span>
       <div class="cap"><div class="big">Clickable 3D parts catalogue</div><div class="small">Explode the assembly, click a component, get the part number and reorder — no rep required.</div></div>
       <div class="pipe">
         <div><div class="k">From</div><div class="v">Static 2D PDF</div></div>
         <div><div class="k">To</div><div class="v">Interactive 3D BOM</div></div>
         <div><div class="k">Result</div><div class="v">Right part, first time</div></div>
       </div>
-    </div>
+    </a>
   </div>
 </div>
 
