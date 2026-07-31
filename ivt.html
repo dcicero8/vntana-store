@@ -146,9 +146,11 @@ a.art:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(18,59,44,.42)
 
 /* form */
 .cta-final{background:var(--grad);color:#fff;}
-.cta-final .wrap{padding:64px 28px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
-.cta-final h2{font-size:32px;margin-bottom:14px;max-width:18ch;}
-.cta-final p{font-size:17px;color:#eef0ff;max-width:46ch;}
+.cta-final .wrap{padding:70px 28px;text-align:center;}
+.cta-final h2{font-size:34px;margin:0 auto 14px;max-width:24ch;}
+.cta-final p{font-size:17px;color:#eef0ff;max-width:60ch;margin:0 auto 28px;}
+.cta-book{background:#fff;color:var(--blue);font-size:18px;padding:17px 40px;box-shadow:0 12px 34px rgba(4,19,120,.35);}
+.cta-book:hover{transform:translateY(-1px);box-shadow:0 16px 40px rgba(4,19,120,.45);}
 .formcard{background:#fff;border-radius:16px;padding:28px;color:var(--ink);box-shadow:0 20px 60px rgba(4,19,120,.35);}
 .formcard label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin:0 0 6px;}
 .formcard .field{margin-bottom:16px;}
@@ -298,31 +300,12 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
   </div>
 </div></section>
 
-<!-- FINAL CTA + FORM -->
+<!-- FINAL CTA -->
 <section class="cta-final"><div class="wrap">
-  <div>
-    <div class="seg">Book your live demo</div>
-    <h2>Want buyers to place your machine on their site?</h2>
-    <p>Leave your details and we'll turn one of your own skid steer, loader or equipment files into a live 3D and AR demo — plus a clickable parts view — built from the CAD you already own.</p>
-  </div>
-  <form class="formcard" onsubmit="event.preventDefault();this.innerHTML='<h3 style=&quot;font-size:20px;margin-bottom:10px&quot;>&#10003; Thanks, you&rsquo;re on the list</h3><p style=&quot;color:#5b5b62;font-size:15px;margin:0&quot;>We&rsquo;ll follow up after iVT Expo to turn one of your own CAD files into a live 3D asset. Come see it running at the booth in the meantime.</p>';">
-    <div class="field"><label>Name</label><input type="text" name="name" required></div>
-    <div class="field"><label>Company</label><input type="text" name="company" required></div>
-    <div class="field"><label>Work email</label><input type="email" name="email" required></div>
-    <div class="field"><label>Your role</label>
-      <select name="role" required>
-        <option value="">Select one&hellip;</option>
-        <option>Aftermarket / Service / Parts</option>
-        <option>Digital Commerce / eCommerce</option>
-        <option>Product Marketing</option>
-        <option>Sales / Product</option>
-        <option>Engineering / 3D Operations</option>
-        <option>Digital Transformation / IT</option>
-      </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Send me the demo &rarr;</button>
-    <p class="reassure">We'll only reach out about your 3D demo. No spam.</p>
-  </form>
+  <div class="seg">Book your live demo</div>
+  <h2>Want buyers to place your machine on their site?</h2>
+  <p>We'll turn one of your own skid steer, loader or equipment files into a live 3D and AR demo, plus a clickable parts view, built from the CAD you already own.</p>
+  <a class="btn cta-book" href="https://www.vntana.com/schedule-demo/" target="_blank" rel="noopener">Book a Demo &rarr;</a>
 </div></section>
 
 <!-- FOOTER -->

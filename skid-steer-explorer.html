@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --blue:#00548f; --blue-dark:#003a63; --sky:#3fa9f5; --accent:#00548f;
+    --blue:#4B61F9; --blue-dark:#3747B6; --sky:#7FE2AF; --accent:#4B61F9;
     --ink:#1a1f2b; --muted:#5c6473; --line:#e5e8ef; --bg:#f4f6f9; --card:#fff;
     --font:'Roboto',Arial,sans-serif;
   }
@@ -20,6 +20,8 @@
 
   header.top{height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
     padding:0 22px;gap:14px;position:sticky;top:0;z-index:20}
+  header.top .vlogo{height:19px;display:block;filter:brightness(0)}
+  header.top .vdiv{width:1px;height:20px;background:var(--line)}
   header.top .wm{font-weight:900;letter-spacing:-.01em;font-size:1.05rem;color:var(--blue-dark)}
   header.top .wm span{color:var(--accent)}
   header.top .sub{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -68,6 +70,8 @@
 <body>
 
 <header class="top">
+  <img class="vlogo" src="ivt-cards/vntana-logo-white.png" alt="VNTANA">
+  <span class="vdiv"></span>
   <div class="wm">Component <span>Explorer</span></div>
   <div class="sub">Skid Steer / Compact Loader</div>
 </header>
