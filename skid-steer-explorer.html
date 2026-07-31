@@ -75,7 +75,11 @@
 <main>
   <div class="stage">
     <div class="loading" id="loading">Loading interactive 3D…</div>
-    <vntana-viewer id="viewer" picking="true"></vntana-viewer>
+    <vntana-viewer id="viewer" picking="true">
+      <vntana-exploded-view></vntana-exploded-view>
+      <vntana-ar-button></vntana-ar-button>
+      <vntana-qr-button></vntana-qr-button>
+    </vntana-viewer>
     <div class="hint">Hover a component to highlight it, then click, on the model or in the list.</div>
   </div>
 
@@ -189,6 +193,9 @@
   // hotspot pin initials + saved-camera store (populated from VNTANA hotspots)
   const PINS  = { joystick:"CJ", dash:"DD", crankshaft:"CP", gearmotor:"GM", actuator:"CA" };
   const HSCAM = {};   // component id -> saved hotspot camera object
+  // hotspot injection must wait for BOTH the model 'load' event and the hotspot
+  // fetch, in either order (avoids a race where the model loads before the fetch).
+  let modelLoaded = false, pendingHotspots = null;
 
   // ── chips ─────────────────────────────────────────────────────
   const renderChips = () => {
@@ -365,6 +372,12 @@
 
   ["scene-loaded","updates-loaded","load"].forEach(ev => viewer.addEventListener(ev, buildGroups));
 
+  // once the model is loaded, inject any hotspots already fetched
+  viewer.addEventListener("load", () => {
+    modelLoaded = true;
+    if (pendingHotspots) { injectHotspots(pendingHotspots); pendingHotspots = null; }
+  });
+
   // ── load product ──────────────────────────────────────────────
   (async () => {
     try {
@@ -386,7 +399,8 @@
         body: JSON.stringify({ productUuid: UUID, page:1, size:50 })
       }).then(r=>r.json()).then(hs => {
         const grid = (hs.response && hs.response.grid) || [];
-        viewer.addEventListener("load", () => injectHotspots(grid), { once:true });
+        if (modelLoaded) injectHotspots(grid);   // model already loaded -> inject now
+        else pendingHotspots = grid;             // otherwise the load handler injects
       }).catch(()=>{});
 
       viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;

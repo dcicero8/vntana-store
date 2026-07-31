@@ -220,3 +220,65 @@ new upload. This applies to ANY asset Claude generates for upload, not just GLBs
   whole script block after editing.
 - Duplicated `detailPane`-style IDs across show-functions — hide ALL other panels
   in every show function.
+
+---
+
+# NEW TRADESHOW PAGE (landing page + business cards)
+
+When Derek says **"we need a new tradeshow page"**, build three things off an
+existing explorer: a booth **landing/info page**, a two-sided **business card**,
+and a **hub index** row. Reference build: iVT Expo 2026 (`ivt.html` + `ivt-cards/`),
+cloned from IMTS (`imts.html` + `imts-cards/`). Apply the **vntana-dna** skill to
+ALL copy (pain-first, "3D Product Digital Asset Management", Astec 2wk→15min lead
+stat, full publishing list "a website, a dealer portal, parts catalogue, and a
+mobile device", demo-page CTA, no MillerKnoll/Patagonia externally, no em dashes).
+
+## Step 0 — gather + ask (before building)
+1. WebFetch the show site for exact **dates, city, venue, audience/tagline**.
+2. Ask Derek (AskUserQuestion): **page angle** (general vs account-specific),
+   **structure** (single-focus vs multi-track `?demo=`), **front-QR target**
+   (explorer page vs auto-AR embed), **QR domain** (railway now vs custom domain).
+
+## Step 1 — landing page (`<show>.html`)
+- `cp imts.html <show>.html`. Then edit: `<title>`, header plate tick
+  (`● <SHOW> 2026`), footer `.foot-meta` (venue · city · dates), ok-msg "after <show>".
+- Replace the `DEMOS` object. Single-focus = ONE entry; keep the render() machinery,
+  set `ORDER=["<key>"]`, `SHORT`, `getDemo()` returns the key. Fill DNA copy:
+  tag, headline (pain-first), sub, proof (Astec default), painMain/painFix, caps[6],
+  lead copy.
+- Point the viewer slot at the explorer: `slot.innerHTML = '<iframe src="<explorer>.html">
+  <a class="viewer-open" ...>Open full screen ↗</a>'`. Add `.viewer-open` CSS.
+- Primary CTA (`#ctaPrimary`) → the explorer page.
+- Remove dead refs (`MODEL_UUIDS`, `embedUrl`) if single-focus. Grep for leftover
+  `IMTS`/old venue strings.
+
+## Step 2 — business card (`<show>-cards/`)
+- `mkdir <show>-cards`; `cp imts-cards/index.html <show>-cards/`; copy
+  `vntana-logo-white.png`.
+- Generate QR SVGs with **segno** (`pip install segno` if missing), error-correction H:
+    import segno
+    segno.make(URL, error='h').save('<show>-cards/qr-see-asset.svg', scale=10, border=2, dark='#1A1A1A', light=None)
+  Front `qr-see-asset.svg` → the explorer page. Back `qr-learn-more.svg` → `<show>.html`.
+  (Card 1/front = "what we built"; Card 2/back = the info page.)
+- Card front render: prefer a studio render Derek drops in `assets/<show>/`. Else
+  render from Blender: hide interior part collections, viewport shading MATERIAL,
+  frame 3/4, `bpy.ops.render.opengl(write_still=True)` to `<show>-cards/<name>.png`.
+- Edit: title, machine name+subtitle, `.render` src, back `.cat` category, back
+  contact venue line, the legend links (both QR targets), and the print `.flag`.
+
+## Step 3 — hub + ship
+- Add one `<tr class="keep">` row per new page to `hub/index.html` (explorer, page,
+  cards; and the switcher variant if built). Page / what-it-is / date / UUIDs / note.
+- Commit + push (origin dual-pushes both remotes). Railway auto-deploys.
+
+## Gotchas hit on the iVT build
+- **Hotspot pins missing on live**: race, the model `load` event fired before the
+  hotspot fetch resolved, so the `{once:true}` load listener registered too late.
+  Fix: a `modelLoaded` flag + `pendingHotspots`; inject when both are ready, either order.
+- Expose `<vntana-exploded-view>`, `<vntana-ar-button>`, `<vntana-qr-button>` as
+  children of `<vntana-viewer>` (Derek always wants exploded + AR exposed).
+- QRs encode `railway.app` URLs — note on the card page that they must be regenerated
+  if a custom domain is locked. Confirm any named brand is cleared, or relabel generic.
+- The base Rexroth skid-steer machine ships with placeholder boxes baked in
+  (Foot Pedal / Joystick / BODAS Controller). Delete them before export. See
+  project_skid_steer_explorer memory.
