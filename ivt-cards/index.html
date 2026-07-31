@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iVT Expo Business Card, Skid Steer</title>
+<style>
+  :root { --blue:#4B61F9; --ink:#1A1A1A; --slate:#5a6472; --paper:#fff; --line:#e5e8ef; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#eef0f4; font-family:"Poppins","Century Gothic","Futura",-apple-system,"Segoe UI",sans-serif;
+    color:var(--ink); padding:40px 20px; }
+  .page { max-width:900px; margin:0 auto; }
+  h1.title { font-size:20px; font-weight:800; letter-spacing:-0.01em; margin-bottom:4px; }
+  .note { font-size:13px; color:var(--slate); margin-bottom:28px; line-height:1.5; }
+  .note b { color:var(--ink); }
+  .cards { display:flex; gap:30px; flex-wrap:wrap; }
+
+  /* Business card: 3.5in x 2in @ 96dpi = 336x192; scaled up x1.6 for on-screen preview */
+  .card {
+    width:537px; height:307px; background:var(--paper); border-radius:12px;
+    box-shadow:0 10px 40px rgba(26,26,26,0.14); overflow:hidden; position:relative;
+    display:flex;
+  }
+  .card-label { position:absolute; top:-22px; left:2px; font-size:11px; font-weight:700;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--slate); }
+
+  /* ---- FRONT: See the Asset ---- */
+  .front { background:linear-gradient(160deg,#f3f5ff 0%, #ffffff 60%); }
+  .front .left { flex:1.25; padding:20px 20px; display:flex; flex-direction:column; justify-content:space-between; }
+  .front .ftop { display:flex; flex-direction:column; gap:10px; }
+  .render { width:100%; height:172px; object-fit:cover; border-radius:10px; display:block; }
+  .front .right { width:190px; background:var(--blue); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:12px; padding:16px; }
+  .brand { font-weight:800; letter-spacing:0.16em; font-size:22px; }
+  /* logo is ~8:1 (300x37); pin width and let height auto so it never stretches */
+  .logo { display:block; width:150px; height:auto; align-self:flex-start; }
+  .logo-dark { filter:brightness(0); }        /* white logo forced black for the light front */
+  .back .logo-white { width:172px; }           /* white logo as-is on the dark back */
+  .machine { font-size:30px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
+  .machine span { color:var(--slate); font-weight:600; font-size:13px; display:block; letter-spacing:0; margin-top:5px; }
+  .cta-big { color:#fff; font-size:19px; font-weight:800; line-height:1.08; letter-spacing:0.01em; text-align:center; text-transform:uppercase; }
+  .qr-box { background:#fff; border-radius:10px; padding:9px; width:124px; height:124px; }
+  .qr-box svg { width:100%; height:100%; display:block; }
+  .qr-cap { color:#fff; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-align:center; }
+  .qr-sub { color:rgba(255,255,255,0.9); font-size:10px; text-align:center; margin-top:-4px; font-weight:600; }
+
+  /* ---- BACK: Learn More ---- */
+  .back { background:var(--ink); color:#fff; flex-direction:column; padding:26px 26px; justify-content:space-between; }
+  .back .brand { font-size:24px; }
+  .back .tagline { font-size:14px; color:#c9cdd6; font-style:italic; margin-top:6px; }
+  .back .cat { font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--blue); font-weight:700; margin-top:14px; }
+  .back-row { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
+  .back .contact { font-size:11px; color:#c9cdd6; line-height:1.6; }
+  .back .contact b { color:#fff; }
+  .back .qr-box { width:118px; height:118px; }
+  .back .qr-cap { color:#fff; }
+
+  .legend { margin-top:34px; font-size:12.5px; color:var(--slate); line-height:1.7; }
+  .legend code { background:#fff; border:1px solid var(--line); border-radius:5px; padding:2px 6px; font-size:11px; }
+  .flag { margin-top:16px; background:#fff7ed; border:1px solid #fed7aa; border-radius:10px; padding:14px 16px; font-size:12.5px; color:#7c4a1e; line-height:1.55; }
+  .flag b { color:#9a3412; }
+  @media print { body { background:#fff; padding:0; } .legend, .flag, .note, h1.title, .card-label { display:none; } .cards { gap:0; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="title">iVT Expo 2026, Business Card Mockup (Skid Steer)</h1>
+  <p class="note">Two-sided card. <b>Front</b> = scan to open the interactive skid-steer explorer (3D + AR) · <b>Back</b> = scan to learn more (the iVT info page). QR SVGs are in this folder (print-ready, error-correction H).</p>
+
+  <div class="cards">
+    <div class="card front">
+      <span class="card-label">Front · See the Asset</span>
+      <div class="left">
+        <div class="ftop">
+          <img class="logo logo-dark" src="vntana-logo-white.png" alt="VNTANA">
+          <img class="render" src="skidsteer.png" alt="Skid steer / compact loader">
+        </div>
+        <div class="machine">Skid Steer<span>Compact Track Loader</span></div>
+      </div>
+      <div class="right">
+        <div class="cta-big">SCAN<br>TO SEE IT<br>IN 3D &amp; AR</div>
+        <div class="qr-box" id="qrFront"></div>
+        <div class="qr-sub">Point your camera · no app</div>
+      </div>
+    </div>
+
+    <div class="card back">
+      <span class="card-label">Back · Learn More</span>
+      <div>
+        <img class="logo logo-white" src="vntana-logo-white.png" alt="VNTANA">
+        <div class="tagline">Sell more with CAD you already own.</div>
+        <div class="cat">Off-Highway · Construction · Material Handling</div>
+      </div>
+      <div class="back-row">
+        <div class="contact">
+          <b>3D Product Digital Asset Management</b><br>
+          iVT Expo 2026 · Donald E. Stephens Convention Center<br>
+          vntana.com/schedule-demo
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="qr-box" id="qrBack"></div>
+          <div class="qr-cap">Learn More</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <b>QR targets, click to review without scanning:</b><br>
+    Front · See the Asset → <a href="https://vntana-store-production.up.railway.app/skid-steer-explorer.html" target="_blank">skid-steer-explorer.html (component explorer, 3D + AR) ↗</a><br>
+    Back · Learn More → <a href="https://vntana-store-production.up.railway.app/ivt.html" target="_blank">ivt.html (iVT info page) ↗</a>
+  </div>
+  <div class="flag">
+    <b>Before printing:</b> both QR codes point at the current <code>railway.app</code> URLs. If you attach a custom domain (e.g. ivt.vntana.com), regenerate both QRs, lock the domain first. The skid steer and its five components are generic (no brand marks), so it's safe to show publicly.
+  </div>
+</div>
+
+<script>
+  // Inline the QR SVGs so the card is self-contained on screen
+  Promise.all([
+    fetch('qr-see-asset.svg').then(r=>r.text()), fetch('qr-learn-more.svg').then(r=>r.text())
+  ]).then(([a,b])=>{
+    document.getElementById('qrFront').innerHTML = a;
+    document.getElementById('qrBack').innerHTML = b;
+  });
+</script>
+</body>
+</html>
