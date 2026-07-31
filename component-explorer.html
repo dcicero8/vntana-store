@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Component Explorer</title>
+<title>Skid Steer — Component Explorer</title>
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,8 +23,6 @@
   header.top .wm{font-weight:900;letter-spacing:-.01em;font-size:1.05rem;color:var(--blue-dark)}
   header.top .wm span{color:var(--accent)}
   header.top .sub{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-  header.top .back{margin-left:auto;font-size:.8rem;color:var(--muted);text-decoration:none}
-  header.top .back:hover{color:var(--blue)}
 
   main{display:grid;grid-template-columns:1fr 440px;height:calc(100vh - 56px)}
   @media(max-width:900px){main{grid-template-columns:1fr;height:auto}}
@@ -33,13 +31,19 @@
   .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px}
   vntana-viewer{width:100%;height:100%;display:block}
   .stage .hint{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:.78rem;color:#8b93a4;pointer-events:none}
-  .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa2b2;font-size:.9rem;text-align:center;padding:0 30px}
+  .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa2b2;font-size:.9rem;text-align:center;padding:0 30px;background:rgba(244,246,249,.6);backdrop-filter:blur(1px)}
+  .loading.hidden{display:none}
 
   /* panel */
   .panel{background:var(--card);border-left:1px solid var(--line);overflow-y:auto;padding:26px 26px 40px}
   .eyebrow{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:700}
   .panel h1{font-size:1.6rem;font-weight:900;margin:6px 0 2px;letter-spacing:-.02em}
   .machine{font-size:.85rem;color:var(--muted);margin-bottom:20px}
+
+  .back{display:none;align-items:center;gap:6px;background:none;border:0;color:var(--blue);font-weight:700;font-size:.82rem;
+    cursor:pointer;padding:0;margin-bottom:14px;font-family:inherit}
+  .back:hover{color:var(--blue-dark);text-decoration:underline}
+  .back.show{display:inline-flex}
 
   .chips{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
   .chip{width:100%;text-align:center;border:1px solid var(--line);background:#f7f9fc;border-radius:8px;padding:11px 13px;font-size:.82rem;font-weight:600;
@@ -49,279 +53,197 @@
   .chip .ph{display:block;font-size:.62rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-top:2px}
 
   .detail{border:1px solid var(--line);border-radius:14px;padding:22px;background:#fbfcfe}
-  .detail-img{width:100%;max-height:210px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:16px;display:block}
   .detail h2{font-size:1.2rem;font-weight:900;color:var(--blue-dark);margin:0 0 4px}
   .detail .tag{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:14px}
   .detail ul{margin:0;padding-left:18px}
   .detail li{font-size:.9rem;color:#3a4252;margin-bottom:8px;line-height:1.45}
   .detail .note{margin-top:14px;font-size:.78rem;color:#8b93a4;font-style:italic;border-top:1px dashed var(--line);padding-top:12px}
   .empty{color:#9aa2b2;font-size:.92rem;line-height:1.5}
-  .badge{display:inline-block;background:#eef4fb;color:var(--blue);border:1px solid #d4e4f5;border-radius:999px;
-    padding:3px 10px;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
 </style>
 </head>
 <body>
 
-<!-- ============================================================
-     HEADER — replace the placeholder brand + product name below.
-     ============================================================ -->
 <header class="top">
-  <div class="wm">Product <span>Explorer</span></div>
-  <div class="sub">Component Explorer</div>
+  <div class="wm">Component <span>Explorer</span></div>
+  <div class="sub">Skid Steer / Compact Loader</div>
 </header>
 
 <main>
   <div class="stage">
     <div class="loading" id="loading">Loading interactive 3D…</div>
     <vntana-viewer id="viewer" picking="true"></vntana-viewer>
-    <div class="hint">Click a component in the list or in the model to explore it.</div>
+    <div class="hint">Select a component from the list to view it in 3D.</div>
   </div>
 
   <div class="panel">
-    <div class="eyebrow">Explore the components</div>
-    <h1>Product Name</h1>
-    <div class="machine">Explore the components built into this product.</div>
+    <button class="back" id="back">&larr; Back to full machine</button>
+    <div class="eyebrow" id="eyebrow">Explore the components</div>
+    <h1 id="title">Skid Steer</h1>
+    <div class="machine" id="subtitle">Select a component below to inspect it in interactive 3D.</div>
 
     <div class="chips" id="chips"></div>
 
     <div class="detail" id="detail">
-      <div class="empty">Select a component above, or click it in the 3D model, to see its details.</div>
+      <div class="empty">Select a component above to see its details and load it in 3D.</div>
     </div>
   </div>
 </main>
 
 <script type="module" src="vendor/viewer-test/dist/index.js"></script>
 <script type="module">
-  const viewer  = document.getElementById("viewer");
-  const chipsEl = document.getElementById("chips");
-  const detail  = document.getElementById("detail");
-  const loading = document.getElementById("loading");
+  const viewer   = document.getElementById("viewer");
+  const chipsEl  = document.getElementById("chips");
+  const detail   = document.getElementById("detail");
+  const loading  = document.getElementById("loading");
+  const backBtn  = document.getElementById("back");
+  const titleEl  = document.getElementById("title");
+  const subEl    = document.getElementById("subtitle");
+  const eyebrowEl= document.getElementById("eyebrow");
+
+  const BASE="https://api.vntana.com", ORG="DCicero", WS="tradeshows";
 
   /* ============================================================
-     CONFIG — fill these in when your new CAD is uploaded to VNTANA
-     as a Live Public asset.
-       UUID = the product UUID from VNTANA
-       ORG / WS = your org slug + workspace (defaults kept below)
+     HERO = the full machine shown on load.
+     PARTS = the standalone component models (product switcher).
+     Each entry is its own VNTANA product; clicking swaps the viewer.
      ============================================================ */
-  const BASE="https://api.vntana.com",
-        UUID="",                       // <-- paste your new product UUID here
-        ORG="DCicero", WS="example-files";
+  const HERO = {
+    uuid:"905b41b6-4660-4564-85ac-2c86fc68183b",
+    name:"Skid Steer", tag:"Full machine",
+    subtitle:"Select a component below to inspect it in interactive 3D."
+  };
 
-  /* ============================================================
-     COMPONENTS — one entry per clickable part. All parts show in one list.
-       match       : RegExp that finds the part's node in the scene graph
-                     BY NAME. Name the node in the CAD/VNTANA, then match it.
-       name / tag  : shown in the chip and the detail card
-       img         : optional PDP image (put files in assets/<yourbrand>/)
-       cam         : per-part camera (bounds-relative r-units) — tune per part
-       bullets     : spec/feature list
-       note        : optional italic caption under the card
-       placeholder : true = badge shows "final CAD in progress"
-     Delete these three samples and add your real parts.
-     ============================================================ */
-  const COMPONENTS = [
+  const PARTS = [
     {
-      id:"part-1", match:/Part 1|SKU-001/i,
-      name:"Component 1", tag:"SKU-001",
-      cam:{ cameraTarget:"0r 0r 0.1r", cameraDistance:"1.95r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
+      id:"joystick", uuid:"b108d9f3-236b-4b55-836c-8c51b4315deb",
+      name:"Control Joystick", tag:"Operator control",
       bullets:[
-        "Feature or spec line one",
-        "Feature or spec line two",
-        "Feature or spec line three"
+        "Multi-axis grip for precise proportional control",
+        "Programmable buttons and rockers for machine functions",
+        "CAN bus output integrates with the machine controller",
+        "Sealed, durable design for harsh mobile environments"
       ],
-      note:"Short description of what this part does.",
-      placeholder:true
+      note:"The operator's primary interface for drive and implement control."
     },
     {
-      id:"part-2", match:/Part 2|SKU-002/i,
-      name:"Component 2", tag:"SKU-002",
-      cam:{ cameraTarget:"0r 0r 0.1r", cameraDistance:"1.95r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
+      id:"crankshaft", uuid:"ca4cc763-b2b3-4312-a7a7-8d88af79a29f",
+      name:"Crankshaft & Pistons", tag:"Powertrain",
       bullets:[
-        "Feature or spec line one",
-        "Feature or spec line two"
+        "Forged crankshaft with balanced counterweights",
+        "Piston and connecting-rod assembly",
+        "Converts combustion force into rotary output",
+        "Core rotating assembly of the engine"
       ],
-      placeholder:true
+      note:"The heart of the powertrain that drives the hydraulics."
     },
     {
-      id:"part-3", match:/Part 3|SKU-003/i,
-      name:"Component 3", tag:"SKU-003",
-      cam:{ cameraTarget:"0r 0r 0.1r", cameraDistance:"1.45r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" },
+      id:"gearmotor", uuid:"dc659986-a854-4e3c-98ff-26db366abe21",
+      name:"Gear Motor", tag:"Drive",
       bullets:[
-        "Feature or spec line one",
-        "Feature or spec line two"
+        "Compact geared reduction for high torque output",
+        "Sealed housing rated for mobile duty",
+        "Direct integration with the hydraulic drive circuit",
+        "Efficient low-speed, high-torque performance"
       ],
-      placeholder:true
+      note:"Delivers the torque that moves and steers the machine."
+    },
+    {
+      id:"actuator", uuid:"bd46dc5c-2138-4abb-bc79-31ec4da6a7d6",
+      name:"Cylinder Linear Actuator", tag:"Hydraulics",
+      bullets:[
+        "Hydraulic cylinder converting fluid pressure to linear force",
+        "Hardened rod with wiper and rod seals",
+        "Drives lift-arm and bucket / attachment motion",
+        "Rated for high-cycle, high-load field service"
+      ],
+      note:"The muscle behind the loader arms and attachments."
+    },
+    {
+      id:"display", uuid:"1c6703f1-bb65-4a6a-b9a7-ee05ac0dbcb0",
+      name:"Dash Display", tag:"Digital integration",
+      bullets:[
+        "Operator instrument cluster and machine status display",
+        "Sunlight-readable panel for outdoor visibility",
+        "Shows diagnostics, gauges, and camera feeds",
+        "Connects to the machine bus for live telemetry"
+      ],
+      note:"The digital dashboard tying the machine's systems together."
     }
   ];
 
-  const byId = Object.fromEntries(COMPONENTS.map(c => [c.id, c]));
+  const byId = Object.fromEntries(PARTS.map(p => [p.id, p]));
+  let activeId = null;   // null = hero
 
-  // Camera presets (bounds-relative r-units).
-  const OVERVIEW_CAM = { cameraTarget:"0r 0r 0.03r", cameraDistance:"3.6r", cameraRotation:"-0.15rad 0rad 0rad", fieldOfView:"0.5rad" };
-  // The 3/4 "home" view is captured from the platform viewer settings on load
-  // (see loader below); reset returns to exactly that, not the flat OVERVIEW_CAM.
-  let homeCam = null;
-  const DETAIL_CAM   = { cameraTarget:"0r 0r 0.15r", cameraDistance:"2.4r", cameraRotation:"-0.2rad 0.7rad 0rad",  fieldOfView:"0.5rad" };
-  // Set the camera synchronously via individual property assignments, and
-  // BEFORE the setEffect calls. Effects applied after respect the just-set
-  // camera; setting it after the effects gets clobbered.
-  const applyCam = (c) => {
-    viewer.cameraTarget   = c.cameraTarget;
-    viewer.cameraDistance = c.cameraDistance;
-    viewer.cameraRotation = c.cameraRotation;
-    viewer.fieldOfView    = c.fieldOfView;
-  };
-  let camInit = false;
-
-  // ── chips (all parts on one page) ─────────────────────────────
-  const renderChips = () => {
-    chipsEl.innerHTML = "";
-    COMPONENTS.forEach(c => {
-      const b = document.createElement("button");
-      b.className = "chip"; b.dataset.id = c.id;
-      b.innerHTML = `${c.name}<span class="ph">${c.tag}${c.placeholder ? " · placeholder 3D" : ""}</span>`;
-      b.addEventListener("click", () => selectComponent(c.id));
-      chipsEl.appendChild(b);
-    });
-  };
-  renderChips();
-
-  // ── scene-graph grouping ──────────────────────────────────────
-  const GROUP = {};          // id → [primitive uuid]
-  const UUID_ID = {};        // primitive uuid → component id
-  const BODY = [];           // everything else (dimmed on select)
-
-  const componentFor = (name) => {
-    const c = COMPONENTS.find(c => c.match.test(name || ""));
-    return c ? c.id : null;
-  };
-  const collectPrims = (node) => {
-    const out = [];
-    (function walk(n){ if (n.type === "primitive") out.push(n.uuid); (n.children||[]).forEach(walk); })(node);
-    return out;
-  };
-
-  let tries = 0;
-  const buildGroups = () => {
-    const root = viewer.sceneGraph;
-    if (!root) { if (tries++ < 60) setTimeout(buildGroups, 120); return; }
-    Object.keys(GROUP).forEach(k => delete GROUP[k]);
-    Object.keys(UUID_ID).forEach(k => delete UUID_ID[k]);
-    BODY.length = 0;
-    (function walk(n){
-      const id = componentFor(n.name);
-      if (id) {
-        const uuids = collectPrims(n);
-        GROUP[id] = (GROUP[id] || []).concat(uuids);
-        uuids.forEach(u => UUID_ID[u] = id);
-        return; // claim whole subtree, stop descending
-      }
-      if (n.type === "primitive") BODY.push(n.uuid);
-      (n.children || []).forEach(walk);
-    })(root);
-
-    const grouped = Object.values(GROUP).reduce((s,a)=>s+a.length,0);
-    if (grouped + BODY.length === 0) { if (tries++ < 60) setTimeout(buildGroups, 120); return; }
-
-    loading.style.display = "none";
-    if (!camInit) { applyCam(OVERVIEW_CAM); camInit = true; }  // solid overview on load
-    markMissing();             // grey out chips whose node is absent
-  };
-
-  // ── effects ───────────────────────────────────────────────────
-  // Machine loads solid. Selecting a part ghosts the rest, highlights the part,
-  // and zooms in. No persistent dim on load, so the camera zoom sticks.
-  const applyDim   = () => { for (const u of BODY) viewer.setEffect(u, "dim"); };
-  const clearGhost = () => viewer.clearEffect("dim");
-  const clearPaint = () => { viewer.clearEffect("outline"); viewer.clearEffect("highlight"); viewer.clearEffect("glow"); };
-
-  let activeId = null;
-  const selectComponent = (id) => {
-    const uuids = GROUP[id];
-    if (!uuids || !uuids.length) return;          // node not present in this version
-    activeId = id;
-    applyCam(byId[id].cam || DETAIL_CAM); // per-part camera, first (before effects)
-    clearPaint();
-    applyDim();                           // ghost the machine around the part
-    for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
-    renderCard(byId[id]);
-    [...chipsEl.children].forEach(ch => ch.classList.toggle("active", ch.dataset.id === id));
-  };
-
-  const resetSelection = () => {
-    activeId = null;
-    applyCam(homeCam || OVERVIEW_CAM);  // back to the 3/4 home view
-    clearGhost();
-    clearPaint();
-    [...chipsEl.children].forEach(ch => ch.classList.remove("active"));
-    detail.innerHTML = `<div class="empty">Select a component above, or click it in the 3D model, to see its details.</div>`;
-  };
-
-  // ── card ──────────────────────────────────────────────────────
-  const renderCard = (c) => {
-    detail.innerHTML = `
-      ${c.img ? `<img class="detail-img" src="${c.img}" alt="${c.name}">` : ``}
-      ${c.placeholder ? `<div class="badge">Placeholder 3D · final CAD in progress</div>` : ``}
-      <h2>${c.name}</h2>
-      <div class="tag">${c.tag}</div>
-      <ul>${c.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
-      ${c.note ? `<div class="note">${c.note}</div>` : ``}`;
-  };
-
-  // grey out any chip whose 3D node is not in this version
-  const markMissing = () => {
-    [...chipsEl.children].forEach(ch => {
-      const present = (GROUP[ch.dataset.id] || []).length > 0;
-      ch.style.opacity = present ? "" : ".45";
-      ch.title = present ? "" : "3D node not in this model version yet";
-    });
-  };
-
-  // ── viewer events ─────────────────────────────────────────────
-  viewer.addEventListener("object-hover", (e) => {
-    if (activeId) return;
-    const hit = e.detail?.intersections?.[0];
-    const id = hit && UUID_ID[hit.uuid];
-    viewer.clearEffect("glow");
-    if (!id) { viewer.style.cursor = ""; return; }
-    viewer.style.cursor = "pointer";
-    for (const u of GROUP[id]) viewer.setEffect(u, "glow");
-  });
-
-  viewer.addEventListener("object-select", (e) => {
-    const hit = e.detail?.intersections?.[0];
-    const id = hit && UUID_ID[hit.uuid];
-    if (!id) { resetSelection(); return; }
-    selectComponent(id);
-  });
-
-  ["scene-loaded","updates-loaded","load"].forEach(ev => viewer.addEventListener(ev, buildGroups));
-
-  // ── load product ──────────────────────────────────────────────
-  (async () => {
-    if (!UUID) {
-      loading.textContent = "Add your VNTANA product UUID in CONFIG to load the model.";
-      return;
-    }
+  // ── model loader (swaps viewer.src to a product) ──────────────
+  const loadModel = async (uuid) => {
+    loading.textContent = "Loading interactive 3D…";
+    loading.classList.remove("hidden");
     try {
-      const p = await fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
+      const p = await fetch(`${BASE}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
       const { asset, viewerSettings } = p.response;
       const blobId = asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB")?.modelBlobId
                    || asset.models[0].modelBlobId;
+      // apply the product's saved framing (camera / lighting) once it loads
       if (viewerSettings?.config) {
         try { const cfg = JSON.parse(viewerSettings.config);
-              if (cfg.cameraTarget && cfg.cameraRotation && cfg.cameraDistance && cfg.fieldOfView) {
-                homeCam = { cameraTarget:cfg.cameraTarget, cameraDistance:cfg.cameraDistance,
-                            cameraRotation:cfg.cameraRotation, fieldOfView:cfg.fieldOfView };
-              }
               viewer.addEventListener("load", () => Object.assign(viewer, cfg), { once:true }); } catch(_){}
       }
-      viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
+      viewer.addEventListener("load", () => loading.classList.add("hidden"), { once:true });
+      viewer.src = `${BASE}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${blobId}`;
     } catch (err) {
       loading.textContent = "Could not load the model.";
       console.error(err);
     }
-  })();
+  };
+
+  // ── chips ─────────────────────────────────────────────────────
+  const renderChips = () => {
+    chipsEl.innerHTML = "";
+    PARTS.forEach(p => {
+      const b = document.createElement("button");
+      b.className = "chip"; b.dataset.id = p.id;
+      b.innerHTML = `${p.name}<span class="ph">${p.tag}</span>`;
+      b.addEventListener("click", () => selectPart(p.id));
+      chipsEl.appendChild(b);
+    });
+  };
+
+  const renderCard = (p) => {
+    detail.innerHTML = `
+      <h2>${p.name}</h2>
+      <div class="tag">${p.tag}</div>
+      <ul>${p.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+      ${p.note ? `<div class="note">${p.note}</div>` : ``}`;
+  };
+
+  const selectPart = (id) => {
+    const p = byId[id]; if (!p) return;
+    activeId = id;
+    loadModel(p.uuid);
+    titleEl.textContent = p.name;
+    subEl.textContent   = p.tag;
+    eyebrowEl.textContent = "Component";
+    renderCard(p);
+    backBtn.classList.add("show");
+    [...chipsEl.children].forEach(ch => ch.classList.toggle("active", ch.dataset.id === id));
+  };
+
+  const resetToHero = () => {
+    activeId = null;
+    loadModel(HERO.uuid);
+    titleEl.textContent = HERO.name;
+    subEl.textContent   = HERO.subtitle;
+    eyebrowEl.textContent = "Explore the components";
+    backBtn.classList.remove("show");
+    [...chipsEl.children].forEach(ch => ch.classList.remove("active"));
+    detail.innerHTML = `<div class="empty">Select a component above to see its details and load it in 3D.</div>`;
+  };
+
+  backBtn.addEventListener("click", resetToHero);
+
+  // ── init ──────────────────────────────────────────────────────
+  renderChips();
+  loadModel(HERO.uuid);
 </script>
 </body>
 </html>
