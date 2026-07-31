@@ -48,6 +48,10 @@
   .chip .ph{display:block;font-size:.62rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-top:2px}
 
   .detail{border:1px solid var(--line);border-radius:14px;padding:22px;background:#fbfcfe}
+  .detail-img{width:100%;height:190px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;display:block}
+  .media-toggle{display:flex;gap:4px;background:#eef1f6;border-radius:8px;padding:3px;margin-bottom:16px;width:max-content}
+  .media-toggle button{border:0;background:transparent;padding:5px 12px;border-radius:6px;font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit}
+  .media-toggle button.active{background:var(--blue);color:#fff}
   .detail h2{font-size:1.2rem;font-weight:900;color:var(--blue-dark);margin:0 0 4px}
   .detail .tag{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:14px}
   .detail ul{margin:0;padding-left:18px}
@@ -104,6 +108,7 @@
     {
       id:"joystick", match:/Control Joystick/i, target:"0.13r -0.03r -0.21r",
       name:"Control Joystick", tag:"Operator control",
+      render:"assets/tradeshows/Image%201-329ece56.png", sketch:"assets/tradeshows/Image-68eb563f.png",
       bullets:[
         "Multi-axis grip for precise proportional control",
         "Programmable buttons and rockers for machine functions",
@@ -115,6 +120,7 @@
     {
       id:"dash", match:/Dash Display/i, target:"0.10r 0.17r -0.18r",
       name:"Dash Display", tag:"Digital integration",
+      render:"assets/tradeshows/Image-10dc1e15.png", sketch:"assets/tradeshows/Image%201-c37e97a1.png",
       bullets:[
         "Operator instrument cluster and machine status display",
         "Sunlight-readable panel for outdoor visibility",
@@ -126,6 +132,7 @@
     {
       id:"crankshaft", match:/Crankshaft Pistons/i, target:"0.63r -0.12r 0r",
       name:"Crankshaft & Pistons", tag:"Powertrain",
+      render:"assets/tradeshows/Image-874caf9b.png", sketch:"assets/tradeshows/Image%201-3844a88c.png",
       bullets:[
         "Forged crankshaft with balanced counterweights",
         "Piston and connecting-rod assembly",
@@ -137,6 +144,7 @@
     {
       id:"gearmotor", match:/Gear Motor/i, target:"0.35r -0.30r -0.22r",
       name:"Gear Motor", tag:"Drive",
+      render:"assets/tradeshows/Image-b7e31bbf.png", sketch:"assets/tradeshows/Image%201-ff8ec81e.png",
       bullets:[
         "Compact geared reduction for high torque output",
         "Sealed housing rated for mobile duty",
@@ -148,6 +156,7 @@
     {
       id:"actuator", match:/Cylinder Actuator/i, target:"0.06r -0.06r -0.24r",
       name:"Cylinder Linear Actuator", tag:"Hydraulics",
+      render:"assets/tradeshows/Image-6b036c10.png", sketch:"assets/tradeshows/Image%201-047d7cf1.png",
       bullets:[
         "Hydraulic cylinder converting fluid pressure to linear force",
         "Hardened rod with wiper and rod seals",
@@ -270,11 +279,25 @@
 
   // ── card ──────────────────────────────────────────────────────
   const renderCard = (c) => {
+    const media = (c.render || c.sketch) ? `
+      <img class="detail-img" id="pdpImg" src="${c.render || c.sketch}" alt="${c.name}">
+      ${(c.render && c.sketch) ? `
+      <div class="media-toggle" id="mediaToggle">
+        <button class="active" data-src="${c.render}">Render (AI)</button>
+        <button data-src="${c.sketch}">Drawing (AI)</button>
+      </div>` : ``}` : ``;
     detail.innerHTML = `
+      ${media}
       <h2>${c.name}</h2>
       <div class="tag">${c.tag}</div>
       <ul>${c.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
       ${c.note ? `<div class="note">${c.note}</div>` : ``}`;
+    const tog = detail.querySelector("#mediaToggle");
+    if (tog) tog.addEventListener("click", (e) => {
+      const btn = e.target.closest("button"); if (!btn) return;
+      detail.querySelector("#pdpImg").src = btn.dataset.src;
+      [...tog.children].forEach(b => b.classList.toggle("active", b === btn));
+    });
   };
 
   const markMissing = () => {
