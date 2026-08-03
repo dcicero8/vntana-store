@@ -31,6 +31,20 @@
   .vtoggle { position:absolute; top:14px; right:14px; z-index:6; display:flex; background:rgba(255,255,255,.92); border-radius:11px; padding:4px; box-shadow:0 2px 10px rgba(16,24,40,.14); }
   .vtoggle button { border:0; background:transparent; padding:9px 18px; border-radius:9px; font-size:18px; font-weight:700; color:var(--slate); cursor:pointer; font-family:inherit; }
   .vtoggle button.active { background:var(--blue); color:#fff; }
+  /* View-in-AR floating button + QR modal (AR only runs on phones) */
+  .ar-fab { position:absolute; bottom:16px; right:16px; z-index:7; background:var(--blue); color:#fff; border:0;
+    border-radius:100px; padding:12px 20px; font-size:15px; font-weight:800; cursor:pointer; font-family:inherit;
+    box-shadow:0 6px 20px rgba(0,114,206,.4); display:inline-flex; align-items:center; gap:8px; }
+  .ar-fab:hover { background:var(--blue-deep, #005a9e); }
+  .ar-modal { position:fixed; inset:0; background:rgba(16,24,40,.55); display:none; align-items:center; justify-content:center; z-index:50; padding:20px; }
+  .ar-modal.show { display:flex; }
+  .ar-card { background:#fff; border-radius:18px; padding:30px 32px 26px; max-width:360px; text-align:center; position:relative; box-shadow:0 24px 70px rgba(16,24,40,.3); }
+  .ar-card h3 { margin:0 0 6px; font-size:20px; font-weight:900; color:var(--ink); }
+  .ar-card p { margin:0 0 18px; font-size:14px; color:var(--slate); line-height:1.5; }
+  .ar-card .qr { width:210px; height:210px; margin:0 auto 18px; }
+  .ar-card .qr img { width:100%; height:100%; display:block; }
+  .ar-card .open { display:inline-block; background:var(--blue); color:#fff; padding:11px 22px; border-radius:100px; font-weight:800; font-size:14px; text-decoration:none; }
+  .ar-card .close { position:absolute; top:12px; right:15px; border:0; background:none; font-size:24px; color:var(--slate); cursor:pointer; line-height:1; }
   .vhint { position:absolute; bottom:14px; left:50%; transform:translateX(-50%); z-index:6; background:rgba(43,47,54,.82); color:#fff; font-size:12px; padding:7px 14px; border-radius:100px; backdrop-filter:blur(4px); }
 
   /* hotspot badge pin */
@@ -101,12 +115,11 @@
     </div>
     <vntana-viewer id="viewer" loading="eager" picking="true">
       <vntana-exploded-view></vntana-exploded-view>
-      <vntana-ar-button></vntana-ar-button>
-      <vntana-qr-button></vntana-qr-button>
     </vntana-viewer>
     <img id="imgRender" class="imglayer" src="assets/astec/drum-render.png" alt="Astec rotary drum render">
     <img id="imgSketch" class="imglayer" src="assets/astec/drum-sketch.png" alt="Astec rotary drum line drawing">
     <div class="vhint" id="vhint">Click the badge on the drum to explore a part</div>
+    <button class="ar-fab" onclick="document.getElementById('arModal').classList.add('show')">&#9670; View in AR</button>
   </div>
 
   <!-- PDP panel -->
@@ -154,6 +167,17 @@
   <div class="box">
     <div class="lb-bar"><span>Trunnion Roller Assembly · 3D</span><button class="x" id="lbClose">&times;</button></div>
     <iframe id="lbFrame" title="Trunnion 3D" allow="xr-spatial-tracking; fullscreen"></iframe>
+  </div>
+</div>
+
+<!-- View in AR: QR (scan on a phone) + direct link -->
+<div class="ar-modal" id="arModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="ar-card">
+    <button class="close" onclick="document.getElementById('arModal').classList.remove('show')">&times;</button>
+    <h3>See the drum in AR</h3>
+    <p>Scan with your phone to place the full drum in your space at true 1:1 scale. AR runs on the phone, no app needed.</p>
+    <div class="qr"><img src="assets/qr-ar-drum.svg" alt="Scan to view the Astec drum in AR"></div>
+    <a class="open" href="ar-drum.html" target="_blank" rel="noopener">Open AR on this device &rarr;</a>
   </div>
 </div>
 
