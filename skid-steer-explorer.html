@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Skid Steer — Interactive Component Explorer</title>
+<title>Skid Steer, Interactive Component Explorer</title>
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -288,7 +288,8 @@
     for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
     renderCard(c);
     [...chipsEl.children].forEach(ch => ch.classList.toggle("active", ch.dataset.id === id));
-    [...viewer.querySelectorAll("vntana-hotspot")].forEach(el => el.classList.toggle("active", el.dataset.id === id));
+    // hide all pins while a part is selected (consistent regardless of the part's zoom)
+    [...viewer.querySelectorAll("vntana-hotspot")].forEach(el => el.style.display = "none");
   };
 
   const resetSelection = () => {
@@ -297,7 +298,7 @@
     clearGhost();
     clearPaint();
     [...chipsEl.children].forEach(ch => ch.classList.remove("active"));
-    [...viewer.querySelectorAll("vntana-hotspot")].forEach(el => el.classList.remove("active"));
+    [...viewer.querySelectorAll("vntana-hotspot")].forEach(el => { el.classList.remove("active"); el.style.display = ""; });
     detail.innerHTML = `<div class="empty">Select a component above, or click it on the machine, to see its details.</div>`;
   };
 
