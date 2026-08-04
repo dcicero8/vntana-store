@@ -194,7 +194,9 @@ if (!attachSelectionListener()) {
 
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
-  if (viewer.scene) viewer.scene.explodedStrength = parseFloat(e.target.value);
+  // Updated @vntana/viewer: explodedStrength is a property on the viewer element,
+  // not viewer.scene (the old path triggered a transient explode that snapped back).
+  viewer.explodedStrength = parseFloat(e.target.value);
 });
 
 // ── Model URL builder ─────────────────────────────────────────
