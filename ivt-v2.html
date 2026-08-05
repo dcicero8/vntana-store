@@ -68,12 +68,13 @@ a{color:var(--blue);text-decoration:none;}
 .section-head p{font-size:18px;color:var(--muted);}
 
 .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:36px;}
-.oc{border:1px solid var(--line);border-radius:16px;padding:32px 30px;background:#fff;transition:box-shadow .2s ease,transform .2s ease;}
+.oc{border:1px solid var(--line);border-radius:16px;padding:32px 30px;background:#fff;transition:box-shadow .2s ease,transform .2s ease;display:flex;flex-direction:column;}
 .oc:hover{box-shadow:0 14px 40px rgba(20,20,30,.08);transform:translateY(-2px);}
 .oc .num{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--blue);}
 .oc h3{font-size:24px;margin:12px 0 12px;}
 .oc p{font-size:16.5px;color:var(--muted);margin:0;}
-.oc .chip{display:inline-block;margin-top:20px;font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.03em;color:var(--black);background:var(--mint);padding:11px 16px;border-radius:9px;line-height:1.2;}
+.oc .chip{align-self:flex-start;margin-top:auto;font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.03em;color:var(--black);background:var(--mint);padding:11px 16px;border-radius:9px;line-height:1.2;}
+.oc p{padding-bottom:20px;}
 
 /* alternating detail sections */
 .detail{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:66px 0;border-top:1px solid var(--line);}
@@ -271,7 +272,7 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
       <div class="stat"><b>73%</b><span>of industrial B2B buyers purchase online, meet them there</span></div>
     </div>
     <a class="art mint parts-shot" href="parts.html" target="_blank" rel="noopener">
-      <img src="assets/parts-catalog.png" alt="Clickable 3D parts catalogue: part render plus searchable SKU table">
+      <img src="assets/parts-explorer.png" alt="Clickable 3D parts catalogue: part render plus searchable SKU table">
       <span class="art-open">Open the catalogue &#8599;</span>
     </a>
   </div>
