@@ -7,6 +7,11 @@ const WORKSPACE = "figurement";
 
 // ── DOM refs ─────────────────────────────────────────────────
 const viewer       = document.querySelector("vntana-viewer");
+// Arm object picking so viewport click-to-select works reliably. It must be set as a
+// property, and re-asserted on load because custom-element upgrade timing can drop the
+// attribute (that's why selection only worked "sometimes").
+viewer.picking = true;
+viewer.addEventListener("load", () => { viewer.picking = true; }, { once: true });
 const assemblyName = document.getElementById("assembly-name");
 const partDefault  = document.getElementById("part-default");
 const partSelected = document.getElementById("part-selected");
