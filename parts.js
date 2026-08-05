@@ -178,27 +178,41 @@ const handlePartName = (name) => {
   }
 };
 
-// viewer.selection.highlight fires "change" for both viewport clicks and
-// scene graph row clicks. key.name is the mesh/node name; value 0 = selected.
-const attachSelectionListener = () => {
-  if (!viewer.selection?.highlight?.addEventListener) return false;
-  viewer.selection.highlight.addEventListener("change", (event) => {
-    event.changes.forEach((value, node) => {
-      if (value !== 0) return; // 0 = selected, 1 = deselected
-      // Walk up the scene graph until we find a matching PARTS_DATA key
-      let n = node;
-      while (n) {
-        const name = normalizePartName(n.name ?? "");
-        if (PARTS_DATA[name]) { handlePartName(name); return; }
-        n = n.parent;
-      }
-    });
-  });
-  return true;
+// Same in-context selection pattern as skid-steer-explorer.html: build a
+// primitive-uuid -> part map once by walking the scene graph, then select from the
+// viewer's object-select event (uuid-based, robust) rather than matching node-name
+// strings on every click. The viewer's built-in picking provides the highlight.
+const UUID_KEY = {};   // primitive uuid -> PARTS_DATA key
+const collectPrims = (node, out = []) => {
+  if (node.type === "primitive") out.push(node.uuid);
+  (node.children || []).forEach(c => collectPrims(c, out));
+  return out;
 };
-if (!attachSelectionListener()) {
-  viewer.addEventListener("load", attachSelectionListener, { once: true });
-}
+let groupTries = 0;
+const buildPartGroups = () => {
+  const root = viewer.sceneGraph;
+  if (!root) { if (groupTries++ < 80) setTimeout(buildPartGroups, 120); return; }
+  for (const k in UUID_KEY) delete UUID_KEY[k];
+  (function walk(n) {
+    const key = normalizePartName(n.name ?? "");
+    if (PARTS_DATA[key]) { collectPrims(n).forEach(u => UUID_KEY[u] = key); return; } // claim subtree
+    (n.children || []).forEach(walk);
+  })(root);
+  if (!Object.keys(UUID_KEY).length && groupTries++ < 80) setTimeout(buildPartGroups, 120);
+};
+
+viewer.addEventListener("object-select", (e) => {
+  const hit = e.detail?.intersections?.[0];
+  const key = hit && UUID_KEY[hit.uuid];
+  if (key) handlePartName(key);   // empty / unmapped click leaves the panel as-is
+});
+viewer.addEventListener("object-hover", (e) => {
+  const hit = e.detail?.intersections?.[0];
+  viewer.style.cursor = (hit && UUID_KEY[hit.uuid]) ? "pointer" : "";
+});
+
+["scene-loaded", "updates-loaded", "load"].forEach(ev => viewer.addEventListener(ev, buildPartGroups));
+buildPartGroups();
 
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
