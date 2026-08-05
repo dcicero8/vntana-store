@@ -125,8 +125,11 @@ document.getElementById("qty-plus").addEventListener("click", () => {
 
 // Normalize a scene-graph label to a PARTS_DATA key:
 // strip count suffix like " (27)" and trim whitespace.
+// Scene-graph node names use spaces ("Fetzer Valve") but PARTS_DATA / RENDERS keys use
+// underscores ("Fetzer_Valve"). Strip any trailing "(N)", trim, then space -> underscore
+// so multi-word parts match (single-word parts were the only ones working before).
 const normalizePartName = (text) =>
-  text?.replace(/\s*\(\d+\)\s*$/, "").trim() ?? "";
+  text?.replace(/\s*\(\d+\)\s*$/, "").trim().replace(/\s+/g, "_") ?? "";
 
 const showPart = (name) => {
   const data = PARTS_DATA[name] ?? {
