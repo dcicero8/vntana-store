@@ -254,7 +254,7 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
     </div>
     <div class="art">
       <div class="tag">Demo · Configure live</div>
-      <video class="art-video" src="assets/making_images.mp4" poster="assets/making_images.jpg" autoplay loop muted playsinline preload="metadata"></video>
+      <video class="art-video" id="quote-video" src="assets/making_images.mp4" poster="assets/making_images.jpg" loop muted playsinline preload="none"></video>
     </div>
   </div>
   <div class="detail">
@@ -310,6 +310,21 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
   </div>
 </div></footer>
 <div class="tagline">Sell more with CAD you already own.</div>
+
+<script>
+  // Play the Speed-the-quote video only when it scrolls into view (prevents load-time scroll jump)
+  (function(){
+    var v = document.getElementById('quote-video');
+    if(!v || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ v.play().catch(function(){}); }
+        else { v.pause(); }
+      });
+    }, {threshold: 0.35});
+    io.observe(v);
+  })();
+</script>
 
 </body>
 </html>
