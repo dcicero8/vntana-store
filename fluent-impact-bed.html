@@ -207,9 +207,10 @@
         {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({productUuid:UUID,page:1,size:50})}).then(r=>r.json());
       (r.response?.grid||[]).forEach(h => {
         let cfg={}; try{ cfg = typeof h.config==="string" ? JSON.parse(h.config) : (h.config||{}); }catch(_){}
+        let cam = cfg.camera; if(typeof cam==="string"){ try{ cam = JSON.parse(cam); }catch(_){ cam = null; } } // camera is a nested JSON string
         const txt = stripHtml(h.text);
         const f = FEATURES.find(f => f.textKey && f.textKey.test(txt));
-        if(f){ if(cfg.camera) f.cam = cfg.camera; if(txt) f.body = txt; }
+        if(f){ if(cam) f.cam = cam; if(txt) f.body = txt; }
       });
       if(activeId && byId[activeId]){ renderCard(byId[activeId]); subEl.textContent = byId[activeId].body; }
     }catch(e){ console.warn("hotspot load failed", e); }

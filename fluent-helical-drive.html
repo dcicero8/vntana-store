@@ -141,26 +141,26 @@
   // ── feature groups: match scene-graph node names -> a feature callout ──
   const FEATURES = [
     { id:"shaft",    name:"Coaxial Output Shaft", tag:"Inline power transfer",
-      match:/output shaft/i,
+      match:/output shaft/i, textKey:/centerline|coaxial/i,
       body:"The output shaft runs on the same centerline as the input for a compact inline package that fits tight conveyor frames. Available shaft-, foot-, or flange-mounted." },
     { id:"gearbox",  name:"Helical Gear Housing", tag:"UNICASE cast iron",
-      match:/gearbox/i,
+      match:/gearbox/i, textKey:/helical teeth|mesh gradually|95/i,
       body:"Angled helical gear teeth mesh gradually for quiet running and 95–98% efficiency. Ratios from 3.5:1 to 200:1+, torque up to 205,000 lb-in." },
     { id:"motor",    name:"Three-Phase Motor",    tag:"0.16–200 HP", explode:1,
-      match:/motor/i,
+      match:/motor/i, textKey:/three-phase|induction|\bhp\b/i,
       body:"230/460V three-phase asynchronous motor. VFD-ready, with washdown, explosion-proof, and motor-brake options for demanding conveyor duty." },
     { id:"terminal", name:"Sealed Terminal Box",  tag:"Wiring & options",
-      match:/controler|control/i,
+      match:/controler|control/i, textKey:/wiring box|sealed wiring/i,
       body:"Sealed terminal box for wiring, with thermostat and encoder options. IP55 standard, up to IP66/IP69K for washdown environments." },
-    { id:"hook",     name:"Lifting Eye",          tag:"Safe handling",
-      match:/hook/i,
-      body:"Cast lifting eye for safe hoisting and installation of the drive assembly on the conveyor frame." },
+    { id:"foot",     name:"Foot / Flange Mount",  tag:"Direct replacement",
+      match:null, textKey:/bolt-down foot|foot\/flange|foot base/i,
+      body:"Bolt-down foot base with foot/flange combinations to match existing conveyor drive mounts for direct replacement." },
   ];
   const byId = Object.fromEntries(FEATURES.map(f => [f.id, f]));
 
   // ── scene-graph grouping (same pattern as skid-steer-explorer) ──
   const GROUP = {}, UUID_ID = {}, BODY = [];
-  const featureFor = (nm) => { const f = FEATURES.find(f => f.match.test(nm || "")); return f ? f.id : null; };
+  const featureFor = (nm) => { const f = FEATURES.find(f => f.match && f.match.test(nm || "")); return f ? f.id : null; };
   const collectPrims = (node, out=[]) => { if(node.type==="primitive") out.push(node.uuid); (node.children||[]).forEach(c=>collectPrims(c,out)); return out; };
   let tries = 0;
   const buildGroups = () => {
@@ -189,6 +189,31 @@
   let activeId = null;
   const renderCard = (f) => { detail.innerHTML = `<div class="tag">${f.tag}</div><h2>${f.name}</h2><p>${f.body}</p>`; };
 
+  // ── camera: fly to the camera saved on each VNTANA hotspot ──
+  const applyCam = (c) => {
+    if(!c) return;
+    if(c.cameraTarget   !== undefined) viewer.cameraTarget   = c.cameraTarget;
+    if(c.cameraDistance !== undefined) viewer.cameraDistance = c.cameraDistance;
+    if(c.cameraRotation !== undefined) viewer.cameraRotation = c.cameraRotation;
+    if(c.fieldOfView    !== undefined) viewer.fieldOfView    = c.fieldOfView;
+  };
+  let homeCam = null;
+  const stripHtml = (s) => (s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();
+  const loadHotspots = async () => {
+    try{
+      const r = await fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`,
+        {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({productUuid:UUID,page:1,size:50})}).then(r=>r.json());
+      (r.response?.grid||[]).forEach(h => {
+        let cfg={}; try{ cfg = typeof h.config==="string" ? JSON.parse(h.config) : (h.config||{}); }catch(_){}
+        let cam = cfg.camera; if(typeof cam==="string"){ try{ cam = JSON.parse(cam); }catch(_){ cam = null; } } // camera is a nested JSON string
+        const txt = stripHtml(h.text);
+        const f = FEATURES.find(f => f.textKey && f.textKey.test(txt));
+        if(f){ if(cam) f.cam = cam; if(txt) f.body = txt; }
+      });
+      if(activeId && byId[activeId]){ renderCard(byId[activeId]); subEl.textContent = byId[activeId].body; }
+    }catch(e){ console.warn("hotspot load failed", e); }
+  };
+
   // smooth explode ramp — drives explodedStrength and keeps the slider in sync
   let explodeRAF = null;
   const animateExplode = (target) => {
@@ -205,11 +230,12 @@
   };
 
   const selectFeature = (id) => {
-    const f = byId[id]; const uuids = GROUP[id];
-    if(!f || !uuids || !uuids.length) return;
+    const f = byId[id]; if(!f) return;
     activeId = id;
-    clearAll(); dimAllExcept(id);
-    for(const u of uuids) viewer.setEffect(u,"outline","highlight");
+    clearAll();
+    const uuids = GROUP[id];
+    if(uuids && uuids.length){ dimAllExcept(id); for(const u of uuids) viewer.setEffect(u,"outline","highlight"); }
+    applyCam(f.cam);
     animateExplode(f.explode ?? 0);
     titleEl.textContent = f.name; subEl.textContent = f.body; eyebrowEl.textContent = "Component";
     renderCard(f); backBtn.classList.add("show");
@@ -217,7 +243,7 @@
   };
 
   const resetView = () => {
-    activeId = null; clearAll(); animateExplode(0);
+    activeId = null; clearAll(); animateExplode(0); applyCam(homeCam);
     titleEl.textContent = "Helical Inline Drive";
     subEl.textContent = "Compact, coaxial gear reducer for belt and roller chain conveyors. Click a component below, or on the model, to inspect it.";
     eyebrowEl.textContent = "Helical Inline Gear Reducer";
@@ -251,6 +277,13 @@
     selectFeature(id);
   });
   ["scene-loaded","updates-loaded","load"].forEach(ev => viewer.addEventListener(ev, buildGroups));
+
+  // capture the default framing as "home", then pull the authored hotspot cameras
+  viewer.addEventListener("load", () => {
+    homeCam = { cameraTarget:viewer.cameraTarget, cameraDistance:viewer.cameraDistance,
+                cameraRotation:viewer.cameraRotation, fieldOfView:viewer.fieldOfView };
+    loadHotspots();
+  }, { once:true });
 
   // ── explode ──
   explodeEl.addEventListener("input", (e) => {
