@@ -156,7 +156,7 @@
       match:/controler|control/i, textKey:/wiring box|sealed wiring/i,
       body:"Sealed terminal box for wiring, with thermostat and encoder options. IP55 standard, up to IP66/IP69K for washdown environments." },
     { id:"foot",     name:"Foot / Flange Mount",  tag:"Direct replacement",
-      match:/gearbox/i, textKey:/bolt-down foot|foot\/flange|foot base/i,
+      match:null, ghost:"gearbox", textKey:/bolt-down foot|foot\/flange|foot base/i,
       body:"Bolt-down foot base with foot/flange combinations to match existing conveyor drive mounts for direct replacement." },
   ];
   const byId = Object.fromEntries(FEATURES.map(f => [f.id, f]));
@@ -236,8 +236,9 @@
     const f = byId[id]; if(!f) return;
     activeId = id;
     clearAll();
-    const uuids = GROUP[id];
-    if(uuids && uuids.length){ dimAllExcept(id); for(const u of uuids) viewer.setEffect(u,"outline","highlight"); }
+    const gid = f.ghost || id;                 // a feature can borrow another group's highlight
+    const uuids = GROUP[gid];
+    if(uuids && uuids.length){ dimAllExcept(gid); for(const u of uuids) viewer.setEffect(u,"outline","highlight"); }
     applyCam(f.cam);
     animateExplode(f.explode ?? 0);
     titleEl.textContent = f.name; subEl.textContent = f.body; eyebrowEl.textContent = "Component";
