@@ -156,7 +156,7 @@
       match:/controler|control/i, textKey:/wiring box|sealed wiring/i,
       body:"Sealed terminal box for wiring, with thermostat and encoder options. IP55 standard, up to IP66/IP69K for washdown environments." },
     { id:"foot",     name:"Foot / Flange Mount",  tag:"Direct replacement",
-      match:null, textKey:/bolt-down foot|foot\/flange|foot base/i,
+      match:/bolt|screw/i, textKey:/bolt-down foot|foot\/flange|foot base/i,
       body:"Bolt-down foot base with foot/flange combinations to match existing conveyor drive mounts for direct replacement." },
   ];
   const byId = Object.fromEntries(FEATURES.map(f => [f.id, f]));
