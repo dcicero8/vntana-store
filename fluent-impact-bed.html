@@ -155,10 +155,10 @@
       match:/wing/i, textKey:/trough shape/i,
       body:"The trough shape cradles the belt and contains material at the transfer point, reducing fugitive dust and spillage." },
     { id:"frame",  name:"Heavy-Duty Bed Frame", tag:"Structure & internals",
-      match:/support hardware|metal new|bearing|seal|shaft/i, textKey:/steel frame/i,
+      match:/metal new|bearing|seal|shaft/i, textKey:/steel frame/i,
       body:"The steel frame and sealed roller internals hold everything rigid under repeated impact." },
     { id:"base",   name:"Bolt-In Mounting Base", tag:"Replace as a module",
-      match:null, textKey:/mounts to fluent|retrofit/i,
+      match:/support hardware/i, textKey:/mounts to fluent|retrofit/i,
       body:"Bolts to Fluent systems or retrofits to third-party conveyors, so a worn bed is swapped as a complete module." },
   ];
   const byId = Object.fromEntries(FEATURES.map(f => [f.id, f]));
