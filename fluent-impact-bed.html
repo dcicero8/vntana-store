@@ -20,7 +20,10 @@
 
   header.top{height:60px;background:#000;border-bottom:1px solid var(--line);display:flex;align-items:center;
     padding:0 24px;gap:16px;position:sticky;top:0;z-index:20}
-  header.top .wm{font-weight:800;letter-spacing:.02em;font-size:1.1rem;text-transform:uppercase}
+  header.top .wm{font-weight:800;letter-spacing:.02em;font-size:1.1rem;text-transform:uppercase;text-decoration:none;color:inherit}
+  header.top .wm:hover{opacity:.85}
+  header.top .crumb a{color:inherit;text-decoration:none}
+  header.top .crumb a:hover{color:var(--orange)}
   header.top .crumb{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
   header.top .crumb b{color:var(--orange)}
   header.top .spacer{flex:1}
@@ -84,8 +87,8 @@
 <body>
 
 <header class="top">
-  <div class="wm">Fluent<span style="color:var(--orange)">.</span> Conveyors</div>
-  <div class="crumb">Replacement Parts <b>&rsaquo;</b> Conveyor Impact Beds</div>
+  <a class="wm" href="fluent-index.html">Fluent<span style="color:var(--orange)">.</span> Conveyors</a>
+  <div class="crumb"><a href="fluent-index.html">Replacement Parts</a> <b>&rsaquo;</b> Conveyor Impact Beds</div>
   <div class="spacer"></div>
   <a class="contact" href="#quote">Contact Us</a>
 </header>
