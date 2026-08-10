@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive 3D Replacement Parts | Fluent Conveyors</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0b0d; --panel:#141418; --line:#2a2a31; --line2:#37373f;
+    --txt:#fff; --muted:#9a9aa2; --orange:#ff9933; --blue:#0e38ec;
+    --font:'Saira','Eurostile','Arial Narrow',Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--font);background:var(--ink);color:var(--txt);-webkit-font-smoothing:antialiased}
+
+  header.top{height:60px;background:#000;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    padding:0 24px;gap:16px;position:sticky;top:0;z-index:20}
+  header.top .wm{font-weight:800;letter-spacing:.02em;font-size:1.1rem;text-transform:uppercase}
+  header.top .wm span{color:var(--orange)}
+  header.top .crumb{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  header.top .spacer{flex:1}
+  header.top .contact{background:#fff;color:#000;font-weight:700;font-size:.72rem;letter-spacing:.12em;
+    text-transform:uppercase;padding:12px 20px;text-decoration:none}
+  header.top .contact:hover{background:var(--orange)}
+
+  .hero{max-width:1120px;margin:0 auto;padding:66px 28px 8px}
+  .eyebrow{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:2.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.01em;line-height:1.04;margin:0 0 16px;max-width:20ch}
+  .hero p{font-size:1.05rem;color:var(--muted);max-width:64ch;line-height:1.6;margin:0}
+
+  .grid{max-width:1120px;margin:0 auto;padding:38px 28px 80px;display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  @media(max-width:820px){ .grid{grid-template-columns:1fr} .hero h1{font-size:2rem} }
+
+  a.card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line2);text-decoration:none;
+    color:var(--txt);transition:.18s;overflow:hidden}
+  a.card:hover{border-color:var(--orange);transform:translateY(-3px)}
+  .card .shot{aspect-ratio:16/10;background:radial-gradient(circle at 50% 42%,#1b1b20,#0b0b0d 80%);position:relative;
+    display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line)}
+  .card .shot img{width:100%;height:100%;object-fit:cover;display:block}
+  .card .shot .ph{color:#4b4b54;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
+  .card .tagchip{position:absolute;top:14px;left:14px;background:var(--orange);color:#0b0b0d;font-size:.6rem;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;padding:5px 9px}
+  .card .body{padding:22px 22px 24px}
+  .card .kicker{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .card h2{font-size:1.35rem;font-weight:800;text-transform:uppercase;margin:8px 0 10px;letter-spacing:.01em}
+  .card p{font-size:.92rem;color:#c6c6cd;line-height:1.55;margin:0 0 18px}
+  .card .go{display:inline-flex;align-items:center;gap:8px;color:var(--orange);font-weight:700;font-size:.78rem;
+    letter-spacing:.12em;text-transform:uppercase}
+
+  .feat{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+  .feat span{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:#c6c6cd;border:1px solid var(--line2);padding:5px 9px}
+
+  footer{border-top:1px solid var(--line);max-width:1120px;margin:0 auto;padding:26px 28px;color:var(--muted);
+    font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wm">Fluent<span>.</span> Conveyors</div>
+  <div class="crumb">Replacement Parts &rsaquo; Interactive 3D</div>
+  <div class="spacer"></div>
+  <a class="contact" href="https://www.fluentconveyors.com/contact" target="_blank" rel="noopener">Contact Us</a>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Powered by VNTANA 3D</div>
+  <h1>See the part before you order it.</h1>
+  <p>Interactive 3D replacement parts you can rotate, explode, and click to inspect, built from the CAD Fluent already owns. Pick a part below to explore it live.</p>
+</section>
+
+<section class="grid">
+
+  <a class="card" href="fluent-impact-bed.html">
+    <div class="shot">
+      <span class="tagchip">Explode + Inspect</span>
+      <img src="assets/parts-explorer.png" alt="Conveyor impact bed interactive 3D" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ph',textContent:'Impact Bed 3D'}))">
+    </div>
+    <div class="body">
+      <div class="kicker">Replacement Parts</div>
+      <h2>Conveyor Impact Beds</h2>
+      <div class="feat"><span>UHMW Bars</span><span>Impact Rollers</span><span>Bearings &amp; Seals</span></div>
+      <p>Spotlight each component, explode the impact bars, and see how the bed absorbs loading-zone impact to protect the belt.</p>
+      <span class="go">Explore in 3D &rarr;</span>
+    </div>
+  </a>
+
+  <a class="card" href="fluent-helical-drive.html">
+    <div class="shot">
+      <span class="tagchip">Explode + Inspect</span>
+      <span class="ph">Helical Drive 3D</span>
+    </div>
+    <div class="body">
+      <div class="kicker">Gearboxes &amp; Reducers</div>
+      <h2>Helical Inline Drives</h2>
+      <div class="feat"><span>Output Shaft</span><span>Gear Housing</span><span>Motor</span></div>
+      <p>Inspect the coaxial drive, explode the motor off the gearbox, and read the specs on each component.</p>
+      <span class="go">Explore in 3D &rarr;</span>
+    </div>
+  </a>
+
+</section>
+
+<footer>Interactive 3D by VNTANA &middot; Demo for Fluent Conveyors</footer>
+
+</body>
+</html>
