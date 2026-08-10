@@ -139,28 +139,30 @@
         UUID="1b881b2a-65b3-46e1-a466-556e1b780258";
 
   // ── feature groups: match scene-graph node names -> a feature callout ──
+  // Features align to the authored VNTANA hotspots; camera + copy are pulled from
+  // those hotspots at runtime (matched by textKey). match = scene parts to ghost/outline.
   const FEATURES = [
-    { id:"bars",     name:"UHMW Impact Bars",  tag:"Belt contact surface", explode:1,
-      match:/impact bar tray/i,
-      body:"Low-friction UHMW bars form the belt contact surface. They absorb impact energy and slide with minimal drag, cutting belt wear and friction heat at the loading zone." },
-    { id:"rollers",  name:"Impact Rollers",    tag:"Shock absorption",
-      match:/impact roller|roller support|roller hardware/i,
-      body:"Cushioned impact rollers sit beneath the highest-impact zone, taking the shock of heavy, abrasive material as it drops so the belt and structure are protected." },
-    { id:"bearings", name:"Bearings & Seals",  tag:"Serviceable internals",
-      match:/bearing|seal/i,
-      body:"Sealed bearings keep the rollers turning freely under continuous load; the seals keep out dust and fines from the material stream." },
-    { id:"shafts",   name:"Roller Shafts",     tag:"Roller core",
-      match:/shaft/i,
-      body:"Precision roller shafts carry the rollers and transfer load into the frame, sized for the impact and weight of the application." },
-    { id:"frame",    name:"Wings & Bed Frame", tag:"Trough structure",
-      match:/wing|support hardware|metal new/i,
-      body:"The troughed wings and steel frame cradle the belt and hold the bars and rollers rigid under repeated impact, containing material and reducing fugitive dust and spillage." },
+    { id:"bars",   name:"UHMW Impact Bars",     tag:"Belt contact surface", explode:1,
+      match:/impact bar tray/i, textKey:/uhmw/i,
+      body:"Low-friction UHMW bars form the belt contact surface, absorbing impact and cutting belt wear at the loading zone." },
+    { id:"center", name:"Center Impact Zone",   tag:"Highest-impact area",
+      match:/impact roller|roller support|roller hardware/i, textKey:/packed tightest|drop point/i,
+      body:"Directly under the material drop, cushioned impact rollers take the heaviest, most abrasive load to protect the belt." },
+    { id:"trough", name:"Troughed Profile",     tag:"Material containment",
+      match:/wing/i, textKey:/trough shape/i,
+      body:"The trough shape cradles the belt and contains material at the transfer point, reducing fugitive dust and spillage." },
+    { id:"frame",  name:"Heavy-Duty Bed Frame", tag:"Structure & internals",
+      match:/support hardware|metal new|bearing|seal|shaft/i, textKey:/steel frame/i,
+      body:"The steel frame and sealed roller internals hold everything rigid under repeated impact." },
+    { id:"base",   name:"Bolt-In Mounting Base", tag:"Replace as a module",
+      match:null, textKey:/mounts to fluent|retrofit/i,
+      body:"Bolts to Fluent systems or retrofits to third-party conveyors, so a worn bed is swapped as a complete module." },
   ];
   const byId = Object.fromEntries(FEATURES.map(f => [f.id, f]));
 
   // ── scene-graph grouping (same pattern as skid-steer-explorer) ──
   const GROUP = {}, UUID_ID = {}, BODY = [];
-  const featureFor = (nm) => { const f = FEATURES.find(f => f.match.test(nm || "")); return f ? f.id : null; };
+  const featureFor = (nm) => { const f = FEATURES.find(f => f.match && f.match.test(nm || "")); return f ? f.id : null; };
   const collectPrims = (node, out=[]) => { if(node.type==="primitive") out.push(node.uuid); (node.children||[]).forEach(c=>collectPrims(c,out)); return out; };
   let tries = 0;
   const buildGroups = () => {
@@ -189,6 +191,30 @@
   let activeId = null;
   const renderCard = (f) => { detail.innerHTML = `<div class="tag">${f.tag}</div><h2>${f.name}</h2><p>${f.body}</p>`; };
 
+  // ── camera: fly to the camera saved on each VNTANA hotspot ──
+  const applyCam = (c) => {
+    if(!c) return;
+    if(c.cameraTarget   !== undefined) viewer.cameraTarget   = c.cameraTarget;
+    if(c.cameraDistance !== undefined) viewer.cameraDistance = c.cameraDistance;
+    if(c.cameraRotation !== undefined) viewer.cameraRotation = c.cameraRotation;
+    if(c.fieldOfView    !== undefined) viewer.fieldOfView    = c.fieldOfView;
+  };
+  let homeCam = null;
+  const stripHtml = (s) => (s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();
+  const loadHotspots = async () => {
+    try{
+      const r = await fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`,
+        {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({productUuid:UUID,page:1,size:50})}).then(r=>r.json());
+      (r.response?.grid||[]).forEach(h => {
+        let cfg={}; try{ cfg = typeof h.config==="string" ? JSON.parse(h.config) : (h.config||{}); }catch(_){}
+        const txt = stripHtml(h.text);
+        const f = FEATURES.find(f => f.textKey && f.textKey.test(txt));
+        if(f){ if(cfg.camera) f.cam = cfg.camera; if(txt) f.body = txt; }
+      });
+      if(activeId && byId[activeId]){ renderCard(byId[activeId]); subEl.textContent = byId[activeId].body; }
+    }catch(e){ console.warn("hotspot load failed", e); }
+  };
+
   // smooth explode ramp — drives explodedStrength and keeps the slider in sync
   let explodeRAF = null;
   const animateExplode = (target) => {
@@ -205,11 +231,12 @@
   };
 
   const selectFeature = (id) => {
-    const f = byId[id]; const uuids = GROUP[id];
-    if(!f || !uuids || !uuids.length) return;
+    const f = byId[id]; if(!f) return;
     activeId = id;
-    clearAll(); dimAllExcept(id);
-    for(const u of uuids) viewer.setEffect(u,"outline","highlight");
+    clearAll();
+    const uuids = GROUP[id];
+    if(uuids && uuids.length){ dimAllExcept(id); for(const u of uuids) viewer.setEffect(u,"outline","highlight"); }
+    applyCam(f.cam);
     animateExplode(f.explode ?? 0);
     titleEl.textContent = f.name; subEl.textContent = f.body; eyebrowEl.textContent = "Component";
     renderCard(f); backBtn.classList.add("show");
@@ -217,7 +244,7 @@
   };
 
   const resetView = () => {
-    activeId = null; clearAll(); animateExplode(0);
+    activeId = null; clearAll(); animateExplode(0); applyCam(homeCam);
     titleEl.textContent = "Conveyor Impact Bed";
     subEl.textContent = "Absorbs material impact at loading and transfer points to protect the belt. Click a component below, or on the model, to inspect it.";
     eyebrowEl.textContent = "Heavy-Duty Impact Bed";
@@ -251,6 +278,13 @@
     selectFeature(id);
   });
   ["scene-loaded","updates-loaded","load"].forEach(ev => viewer.addEventListener(ev, buildGroups));
+
+  // capture the default framing as "home", then pull the authored hotspot cameras
+  viewer.addEventListener("load", () => {
+    homeCam = { cameraTarget:viewer.cameraTarget, cameraDistance:viewer.cameraDistance,
+                cameraRotation:viewer.cameraRotation, fieldOfView:viewer.fieldOfView };
+    loadHotspots();
+  }, { once:true });
 
   // ── explode ──
   explodeEl.addEventListener("input", (e) => {
