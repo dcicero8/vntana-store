@@ -140,7 +140,7 @@
 
   // ── feature groups: match scene-graph node names -> a feature callout ──
   const FEATURES = [
-    { id:"bars",     name:"UHMW Impact Bars",  tag:"Belt contact surface",
+    { id:"bars",     name:"UHMW Impact Bars",  tag:"Belt contact surface", explode:1,
       match:/impact bar tray/i,
       body:"Low-friction UHMW bars form the belt contact surface. They absorb impact energy and slide with minimal drag, cutting belt wear and friction heat at the loading zone." },
     { id:"rollers",  name:"Impact Rollers",    tag:"Shock absorption",
@@ -189,19 +189,35 @@
   let activeId = null;
   const renderCard = (f) => { detail.innerHTML = `<div class="tag">${f.tag}</div><h2>${f.name}</h2><p>${f.body}</p>`; };
 
+  // smooth explode ramp — drives explodedStrength and keeps the slider in sync
+  let explodeRAF = null;
+  const animateExplode = (target) => {
+    if(explodeRAF) cancelAnimationFrame(explodeRAF);
+    const start = (typeof viewer.explodedStrength === "number" ? viewer.explodedStrength : 0) || 0;
+    const t0 = performance.now(), dur = 550;
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / dur);
+      const e = start + (target - start) * (k*k*(3-2*k)); // smoothstep
+      viewer.explodedStrength = e; explodeEl.value = e.toFixed(2);
+      explodeRAF = k < 1 ? requestAnimationFrame(step) : null;
+    };
+    explodeRAF = requestAnimationFrame(step);
+  };
+
   const selectFeature = (id) => {
     const f = byId[id]; const uuids = GROUP[id];
     if(!f || !uuids || !uuids.length) return;
     activeId = id;
     clearAll(); dimAllExcept(id);
     for(const u of uuids) viewer.setEffect(u,"outline","highlight");
+    animateExplode(f.explode ?? 0);
     titleEl.textContent = f.name; subEl.textContent = f.body; eyebrowEl.textContent = "Component";
     renderCard(f); backBtn.classList.add("show");
     [...chipsEl.children].forEach(ch=>ch.classList.toggle("active", ch.dataset.id===id));
   };
 
   const resetView = () => {
-    activeId = null; clearAll();
+    activeId = null; clearAll(); animateExplode(0);
     titleEl.textContent = "Conveyor Impact Bed";
     subEl.textContent = "Absorbs material impact at loading and transfer points to protect the belt. Click a component below, or on the model, to inspect it.";
     eyebrowEl.textContent = "Heavy-Duty Impact Bed";
@@ -237,7 +253,10 @@
   ["scene-loaded","updates-loaded","load"].forEach(ev => viewer.addEventListener(ev, buildGroups));
 
   // ── explode ──
-  explodeEl.addEventListener("input", (e) => { viewer.explodedStrength = parseFloat(e.target.value); });
+  explodeEl.addEventListener("input", (e) => {
+    if(explodeRAF){ cancelAnimationFrame(explodeRAF); explodeRAF = null; }
+    viewer.explodedStrength = parseFloat(e.target.value);
+  });
 
   // ── load the model ──
   (async () => {
