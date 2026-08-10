@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conveyor Impact Beds — Interactive 3D | Fluent Conveyors</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0b0d; --panel:#141418; --line:#2a2a31; --line2:#37373f;
+    --txt:#ffffff; --muted:#9a9aa2; --orange:#ff9933; --orange-d:#f9833e; --blue:#0e38ec;
+    --font:'Saira','Eurostile','Arial Narrow',Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);color:var(--txt);background:var(--ink);-webkit-font-smoothing:antialiased}
+
+  header.top{height:60px;background:#000;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    padding:0 24px;gap:16px;position:sticky;top:0;z-index:20}
+  header.top .wm{font-weight:800;letter-spacing:.02em;font-size:1.1rem;text-transform:uppercase}
+  header.top .crumb{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  header.top .crumb b{color:var(--orange)}
+  header.top .spacer{flex:1}
+  header.top .contact{background:#fff;color:#000;font-weight:700;font-size:.72rem;letter-spacing:.12em;
+    text-transform:uppercase;padding:12px 20px;text-decoration:none;border-radius:0}
+  header.top .contact:hover{background:var(--orange)}
+
+  main{display:grid;grid-template-columns:1fr 420px;height:calc(100vh - 60px)}
+  @media(max-width:900px){main{grid-template-columns:1fr;height:auto}}
+
+  /* viewer stage */
+  .stage{position:relative;background:radial-gradient(circle at 50% 40%,#1b1b20 0%,#0b0b0d 78%);min-height:440px}
+  vntana-viewer{width:100%;height:100%;display:block}
+  .stage .hint{position:absolute;left:0;right:0;bottom:70px;text-align:center;font-size:.74rem;letter-spacing:.08em;
+    text-transform:uppercase;color:#6f6f78;pointer-events:none}
+  .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8a8a92;font-size:.85rem;
+    letter-spacing:.1em;text-transform:uppercase;background:rgba(11,11,13,.6);backdrop-filter:blur(1px)}
+  .loading.hidden{display:none}
+
+  /* explode control */
+  .explode{position:absolute;left:50%;transform:translateX(-50%);bottom:22px;display:flex;align-items:center;gap:12px;
+    background:rgba(0,0,0,.55);border:1px solid var(--line2);padding:10px 16px;border-radius:0}
+  .explode label{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .explode input{width:180px;accent-color:var(--orange)}
+
+  /* panel */
+  .panel{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:26px 24px 40px}
+  .eyebrow{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);font-weight:700}
+  .panel h1{font-size:1.7rem;font-weight:800;margin:8px 0 4px;letter-spacing:.01em;text-transform:uppercase;line-height:1.05}
+  .sub{font-size:.85rem;color:var(--muted);margin-bottom:22px;line-height:1.5}
+
+  .back{display:none;align-items:center;gap:6px;background:none;border:0;color:var(--orange);font-weight:700;font-size:.72rem;
+    letter-spacing:.12em;text-transform:uppercase;cursor:pointer;padding:0;margin-bottom:14px;font-family:inherit}
+  .back.show{display:inline-flex}
+
+  .feat-label{font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .chips{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+  .chip{width:100%;text-align:left;border:1px solid var(--line2);background:#1b1b20;border-radius:0;padding:13px 15px;
+    font-family:inherit;font-size:.86rem;font-weight:600;color:#d8d8de;cursor:pointer;transition:.15s;letter-spacing:.02em;
+    display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .chip:hover{border-color:var(--orange);color:#fff}
+  .chip.active{background:var(--orange);border-color:var(--orange);color:#0b0b0d}
+  .chip .ph{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+
+  .detail{border:1px solid var(--line2);border-radius:0;padding:22px;background:#101014}
+  .detail h2{font-size:1.15rem;font-weight:800;text-transform:uppercase;color:#fff;margin:0 0 6px;letter-spacing:.01em}
+  .detail .tag{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:14px}
+  .detail p{font-size:.92rem;color:#c6c6cd;margin:0;line-height:1.55}
+  .empty{color:#7a7a82;font-size:.9rem;line-height:1.55}
+
+  .buybar{margin-top:22px;border-top:1px solid var(--line);padding-top:20px}
+  .buybar .part{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .buybar .price{font-size:.9rem;color:#c6c6cd;margin:6px 0 16px}
+  .cta{display:block;width:100%;text-align:center;background:#fff;color:#000;font-weight:800;font-size:.82rem;
+    letter-spacing:.14em;text-transform:uppercase;padding:16px;text-decoration:none;border-radius:0;transition:.15s}
+  .cta:hover{background:var(--orange);color:#0b0b0d}
+  .cta.secondary{background:transparent;color:#fff;border:1px solid var(--line2);margin-top:10px}
+  .cta.secondary:hover{border-color:var(--orange);color:var(--orange);background:transparent}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wm">Fluent<span style="color:var(--orange)">.</span> Conveyors</div>
+  <div class="crumb">Replacement Parts <b>&rsaquo;</b> Conveyor Impact Beds</div>
+  <div class="spacer"></div>
+  <a class="contact" href="#quote">Contact Us</a>
+</header>
+
+<main>
+  <div class="stage">
+    <div class="loading" id="loading">Loading interactive 3D…</div>
+    <vntana-viewer id="viewer" picking="true"></vntana-viewer>
+    <div class="hint">Click a component to inspect it &nbsp;·&nbsp; drag to rotate</div>
+    <div class="explode">
+      <label for="explode">Explode</label>
+      <input type="range" id="explode" min="0" max="1" step="0.01" value="0">
+    </div>
+  </div>
+
+  <div class="panel">
+    <button class="back" id="back">&larr; Back to full assembly</button>
+    <div class="eyebrow" id="eyebrow">Heavy-Duty Impact Bed</div>
+    <h1 id="title">Conveyor Impact Bed</h1>
+    <div class="sub" id="subtitle">Absorbs material impact at loading and transfer points to protect the belt. Click a component below, or on the model, to inspect it.</div>
+
+    <div class="feat-label">Components</div>
+    <div class="chips" id="chips"></div>
+
+    <div class="detail" id="detail">
+      <div class="empty">Select a component above to spotlight it and read what it does.</div>
+    </div>
+
+    <div class="buybar" id="quote">
+      <div class="part">Replacement part &middot; sold as a complete assembly</div>
+      <div class="price">Configured to your belt width, drop height and bar spacing.</div>
+      <a class="cta" href="https://www.fluentconveyors.com/contact" target="_blank" rel="noopener">Request a Quote</a>
+      <a class="cta secondary" href="https://www.fluentconveyors.com/contact" target="_blank" rel="noopener">Talk to an Expert</a>
+    </div>
+  </div>
+</main>
+
+<script type="module" src="vendor/viewer-test/dist/index.js"></script>
+<script type="module">
+  const viewer   = document.getElementById("viewer");
+  const chipsEl  = document.getElementById("chips");
+  const detail   = document.getElementById("detail");
+  const loading  = document.getElementById("loading");
+  const backBtn  = document.getElementById("back");
+  const titleEl  = document.getElementById("title");
+  const subEl    = document.getElementById("subtitle");
+  const eyebrowEl= document.getElementById("eyebrow");
+  const explodeEl= document.getElementById("explode");
+
+  const BASE="https://api.vntana.com", ORG="DCicero", WS="poc",
+        UUID="1b881b2a-65b3-46e1-a466-556e1b780258";
+
+  // ── feature groups: match scene-graph node names -> a feature callout ──
+  const FEATURES = [
+    { id:"bars",     name:"UHMW Impact Bars",  tag:"Belt contact surface",
+      match:/impact bar tray/i,
+      body:"Low-friction UHMW bars form the belt contact surface. They absorb impact energy and slide with minimal drag, cutting belt wear and friction heat at the loading zone." },
+    { id:"rollers",  name:"Impact Rollers",    tag:"Shock absorption",
+      match:/impact roller|roller support|roller hardware/i,
+      body:"Cushioned impact rollers sit beneath the highest-impact zone, taking the shock of heavy, abrasive material as it drops so the belt and structure are protected." },
+    { id:"bearings", name:"Bearings & Seals",  tag:"Serviceable internals",
+      match:/bearing|seal/i,
+      body:"Sealed bearings keep the rollers turning freely under continuous load; the seals keep out dust and fines from the material stream." },
+    { id:"shafts",   name:"Roller Shafts",     tag:"Roller core",
+      match:/shaft/i,
+      body:"Precision roller shafts carry the rollers and transfer load into the frame, sized for the impact and weight of the application." },
+    { id:"frame",    name:"Wings & Bed Frame", tag:"Trough structure",
+      match:/wing|support hardware|metal new/i,
+      body:"The troughed wings and steel frame cradle the belt and hold the bars and rollers rigid under repeated impact, containing material and reducing fugitive dust and spillage." },
+  ];
+  const byId = Object.fromEntries(FEATURES.map(f => [f.id, f]));
+
+  // ── scene-graph grouping (same pattern as skid-steer-explorer) ──
+  const GROUP = {}, UUID_ID = {}, BODY = [];
+  const featureFor = (nm) => { const f = FEATURES.find(f => f.match.test(nm || "")); return f ? f.id : null; };
+  const collectPrims = (node, out=[]) => { if(node.type==="primitive") out.push(node.uuid); (node.children||[]).forEach(c=>collectPrims(c,out)); return out; };
+  let tries = 0;
+  const buildGroups = () => {
+    const root = viewer.sceneGraph;
+    if(!root){ if(tries++<80) setTimeout(buildGroups,120); return; }
+    Object.keys(GROUP).forEach(k=>delete GROUP[k]); Object.keys(UUID_ID).forEach(k=>delete UUID_ID[k]); BODY.length=0;
+    (function walk(n){
+      const id = featureFor(n.name);
+      if(id){ const u=collectPrims(n); GROUP[id]=(GROUP[id]||[]).concat(u); u.forEach(x=>UUID_ID[x]=id); return; }
+      if(n.type==="primitive") BODY.push(n.uuid);
+      (n.children||[]).forEach(walk);
+    })(root);
+    const grouped = Object.values(GROUP).reduce((s,a)=>s+a.length,0);
+    if(grouped+BODY.length===0){ if(tries++<80) setTimeout(buildGroups,120); return; }
+    loading.classList.add("hidden");
+    console.log("[impact-bed] groups:", Object.fromEntries(Object.entries(GROUP).map(([k,v])=>[k,v.length])), "body:", BODY.length);
+  };
+
+  // ── effects: ghost everything except the selected feature ──
+  const dimAllExcept = (id) => {
+    for(const u of BODY) viewer.setEffect(u,"dim");
+    for(const [gid,uuids] of Object.entries(GROUP)){ if(gid===id) continue; for(const u of uuids) viewer.setEffect(u,"dim"); }
+  };
+  const clearAll = () => { viewer.clearEffect("dim"); viewer.clearEffect("outline"); viewer.clearEffect("highlight"); viewer.clearEffect("glow"); };
+
+  let activeId = null;
+  const renderCard = (f) => { detail.innerHTML = `<div class="tag">${f.tag}</div><h2>${f.name}</h2><p>${f.body}</p>`; };
+
+  const selectFeature = (id) => {
+    const f = byId[id]; const uuids = GROUP[id];
+    if(!f || !uuids || !uuids.length) return;
+    activeId = id;
+    clearAll(); dimAllExcept(id);
+    for(const u of uuids) viewer.setEffect(u,"outline","highlight");
+    titleEl.textContent = f.name; subEl.textContent = f.body; eyebrowEl.textContent = "Component";
+    renderCard(f); backBtn.classList.add("show");
+    [...chipsEl.children].forEach(ch=>ch.classList.toggle("active", ch.dataset.id===id));
+  };
+
+  const resetView = () => {
+    activeId = null; clearAll();
+    titleEl.textContent = "Conveyor Impact Bed";
+    subEl.textContent = "Absorbs material impact at loading and transfer points to protect the belt. Click a component below, or on the model, to inspect it.";
+    eyebrowEl.textContent = "Heavy-Duty Impact Bed";
+    backBtn.classList.remove("show");
+    [...chipsEl.children].forEach(ch=>ch.classList.remove("active"));
+    detail.innerHTML = `<div class="empty">Select a component above to spotlight it and read what it does.</div>`;
+  };
+  backBtn.addEventListener("click", resetView);
+
+  // ── chips ──
+  FEATURES.forEach(f => {
+    const b = document.createElement("button");
+    b.className="chip"; b.dataset.id=f.id;
+    b.innerHTML = `${f.name}<span class="ph">${f.tag}</span>`;
+    b.addEventListener("click", () => selectFeature(f.id));
+    chipsEl.appendChild(b);
+  });
+
+  // ── viewer events ──
+  viewer.addEventListener("object-hover", (e) => {
+    if(activeId) return;
+    const hit = e.detail?.intersections?.[0]; const id = hit && UUID_ID[hit.uuid];
+    viewer.clearEffect("glow");
+    if(!id){ viewer.style.cursor=""; return; }
+    viewer.style.cursor="pointer";
+    for(const u of GROUP[id]) viewer.setEffect(u,"glow");
+  });
+  viewer.addEventListener("object-select", (e) => {
+    const hit = e.detail?.intersections?.[0]; const id = hit && UUID_ID[hit.uuid];
+    if(!id){ resetView(); return; }
+    selectFeature(id);
+  });
+  ["scene-loaded","updates-loaded","load"].forEach(ev => viewer.addEventListener(ev, buildGroups));
+
+  // ── explode ──
+  explodeEl.addEventListener("input", (e) => { viewer.explodedStrength = parseFloat(e.target.value); });
+
+  // ── load the model ──
+  (async () => {
+    try {
+      const p = await fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
+      const { asset, viewerSettings } = p.response;
+      const blobId = asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB")?.modelBlobId || asset.models[0].modelBlobId;
+      if(viewerSettings?.config){ try{ const cfg=JSON.parse(viewerSettings.config); viewer.addEventListener("load", ()=>Object.assign(viewer,cfg), {once:true}); }catch(_){} }
+      viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
+    } catch(err){ loading.textContent = "Could not load the model."; console.error(err); }
+  })();
+</script>
+</body>
+</html>
