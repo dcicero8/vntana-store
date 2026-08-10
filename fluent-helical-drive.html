@@ -155,9 +155,9 @@
     { id:"terminal", name:"Sealed Terminal Box",  tag:"Wiring & options",
       match:/controler|control/i, textKey:/wiring box|sealed wiring/i,
       body:"Sealed terminal box for wiring, with thermostat and encoder options. IP55 standard, up to IP66/IP69K for washdown environments." },
-    { id:"foot",     name:"Foot / Flange Mount",  tag:"Direct replacement",
-      match:null, ghost:"gearbox", textKey:/bolt-down foot|foot\/flange|foot base/i,
-      body:"Bolt-down foot base with foot/flange combinations to match existing conveyor drive mounts for direct replacement." },
+    { id:"hook",     name:"Lifting Eye",          tag:"Safe handling",
+      match:/hook/i, textKey:/lifting|hoist|hook/i,
+      body:"Cast lifting eye for safe hoisting and installation of the drive assembly on the conveyor frame." },
   ];
   const byId = Object.fromEntries(FEATURES.map(f => [f.id, f]));
 
