@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tradeshow Experiences — VNTANA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#4B61F9; --blue-d:#3747B6; --navy:#041378; --mint:#7FE2AF;
+    --ink:#1A1A1A; --muted:#5b5b62; --line:#e7e7ea; --bg:#f6f7fb; --white:#fff;
+    --grad:linear-gradient(209deg,#4B61F9 0%,#3747B6 55%,#041378 100%);
+    --head:Arial,"Helvetica Neue",Helvetica,sans-serif; --body:"Roboto",Arial,sans-serif;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:var(--body);color:var(--ink);background:var(--white);-webkit-font-smoothing:antialiased;line-height:1.55}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+  h1,h2,h3{font-family:var(--head);font-weight:700;letter-spacing:-.01em;line-height:1.08;margin:0}
+  a{text-decoration:none;color:inherit}
+  .topbar{background:#000;color:#fff}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+  .topbar img{height:19px;display:block}
+  .topbar .crumb{font-family:var(--body);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#cfd2ff}
+  .topbar .crumb a:hover{color:var(--mint)}
+  .hero{background:var(--grad);color:#fff;position:relative;overflow:hidden}
+  .hero .wrap{padding:58px 28px 62px;position:relative;z-index:2}
+  .hero .tri{position:absolute;right:-90px;top:-90px;width:420px;height:420px;background:radial-gradient(circle at 30% 30%,rgba(127,226,175,.35),transparent 60%)}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin-bottom:14px}
+  .hero h1{font-size:40px;margin-bottom:14px}
+  .hero p{font-size:17px;max-width:58ch;color:#eef0ff;margin:0}
+  .band{padding:56px 0}
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  @media(max-width:760px){ .cards{grid-template-columns:1fr} .hero h1{font-size:30px} }
+  .card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;background:#fff;padding:26px 24px;
+    transition:transform .18s ease,box-shadow .18s ease,border-color .18s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(20,20,30,.10);border-color:#cfd6ff}
+  .card .tag{display:inline-block;align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#0b0b0d;background:var(--mint);padding:5px 10px;border-radius:6px;margin-bottom:12px}
+  .card h3{font-size:23px;margin:0 0 4px}
+  .card .when{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+  .card p{font-size:15px;color:var(--muted);margin:0 0 18px}
+  .card .go{margin-top:auto;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+  footer{background:#000;color:#fff}
+  footer .wrap{padding:30px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+  footer img{height:19px} footer a.ext{font-size:14px;color:#cfd2ff} footer a.ext:hover{color:var(--mint)}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <a href="/"><img src="VNTANA-logo-white-300x37.png" alt="VNTANA"></a>
+  <div class="crumb"><a href="/">Demos</a> &rsaquo; Tradeshows</div>
+</div></div>
+
+<section class="hero">
+  <div class="tri"></div>
+  <div class="wrap">
+    <div class="eyebrow">Tradeshow Experiences</div>
+    <h1>Bring the whole floor to the booth.</h1>
+    <p>Interactive 3D and true-scale AR built for the show floor, from the CAD manufacturers already own. Pick a show to explore its experience.</p>
+  </div>
+</section>
+
+<section class="band"><div class="wrap">
+  <div class="cards">
+    <a class="card" href="/custom/imts">
+      <span class="tag">IMTS 2026</span>
+      <h3>International Manufacturing Technology Show</h3>
+      <div class="when">Sept 14&ndash;19, 2026 &middot; McCormick Place, Chicago</div>
+      <p>From a part in your hand to a system that fills a rail yard, shown at true scale in 3D and AR.</p>
+      <span class="go">Open &rarr;</span>
+    </a>
+    <a class="card" href="/custom/ivt">
+      <span class="tag">iVT Expo</span>
+      <h3>Off-Highway Vehicle Technology</h3>
+      <div class="when">Donald E. Stephens Convention Center &middot; Chicago</div>
+      <p>Off-highway machines and components, explorable and configurable from the booth.</p>
+      <span class="go">Open &rarr;</span>
+    </a>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <img src="VNTANA-logo-white-300x37.png" alt="VNTANA">
+  <a class="ext" href="https://www.vntana.com" target="_blank" rel="noopener">vntana.com &#8599;</a>
+</div></footer>
+
+</body>
+</html>
