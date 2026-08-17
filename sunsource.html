@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mobile Equipment Components, Utility Truck</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
   <style>
+    .parts-group-row { cursor: pointer; }
+    .parts-group-row.row-active { background: #eef2ff; box-shadow: inset 3px 0 0 #4B61F9; }
     .sunsource-badge {
       display: inline-block;
       background: #003087; color: #fff;
@@ -82,8 +85,9 @@
         </div>
       </div>
 
-      <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+      <script type="module" src="vendor/viewer-test/dist/index.js"></script>
       <vntana-viewer
+        picking="true"
         shadow-intensity="0.4"
         shadow-radius="3"
         loading="eager"

@@ -193,11 +193,7 @@ document.getElementById("btn-add-all-top").addEventListener("click", addAllToCar
 
 document.getElementById("breadcrumb-home").addEventListener("click", (e) => {
   e.preventDefault();
-  lastPartName = null;
-  partDefault.hidden = false;
-  partDefault.style.display = "";
-  partSelected.hidden = true;
-  document.getElementById("breadcrumb-part").textContent = "";
+  resetSelection();
 });
 
 // ── Build parts table ─────────────────────────────────────────
@@ -249,7 +245,7 @@ PART_GROUPS.forEach((group, gi) => {
       e.stopPropagation();
       addToCart(1);
     });
-    tr.addEventListener("click", () => handlePartName(key));
+    tr.addEventListener("click", () => selectPart(key));
     tbody.appendChild(tr);
   });
 });
@@ -290,17 +286,14 @@ const showPart = (name) => {
   partDefault.hidden        = true;
   partDefault.style.display = "none";
   partSelected.hidden       = false;
+  lastPartName              = name;
 };
 
-// ── Selection detection ───────────────────────────────────────
+// ── Click-to-select + ghost (same pattern as the Skid Steer explorer) ──
+// Walk the scene graph once, build maps from each part's primitive UUIDs to
+// its PARTS_DATA key. On select: ghost everything except the picked part and
+// outline it; on hover: glow the part under the cursor.
 let lastPartName = null;
-
-const handlePartName = (name) => {
-  if (name && name !== lastPartName) {
-    lastPartName = name;
-    showPart(name);
-  }
-};
 
 const normalizePartName = (text) =>
   text?.replace(/\s*\(\d+\)\s*$/, "").trim() ?? "";
@@ -308,39 +301,119 @@ const normalizePartName = (text) =>
 // Aliases for nodes whose root name differs from the PARTS_DATA key
 const PART_NODE_ALIASES = { "BellHousing_<STL_BINARY>": "BellHousing_node" };
 
-
-const resolveHighlight = () => {
-  const sel = viewer.selection?.highlight;
-  if (!sel) return;
-
-  let matched = null;
-  try {
-    for (const entry of sel) {
-      // highlight may be a Map<node,bool> or a Set<node>, handle both
-      const node  = Array.isArray(entry) ? entry[0] : entry;
-      const value = Array.isArray(entry) ? entry[1] : true;
-      if (!value) continue;
-
-      let n = node;
-      while (n) {
-        const name     = normalizePartName(n.name ?? "");
-        const resolved = PART_NODE_ALIASES[name] ?? name;
-        if (PARTS_DATA[resolved]) { matched = resolved; break; }
-        n = n.parent;
-      }
-      if (matched) break;
-    }
-  } catch (_) {}
-
-  if (matched) handlePartName(matched);
-  else lastPartName = null;
+const keyForNode = (name) => {
+  const n = normalizePartName(name || "");
+  const resolved = PART_NODE_ALIASES[n] ?? n;
+  return PARTS_DATA[resolved] ? resolved : null;
 };
 
-viewer.addEventListener("click", () => requestAnimationFrame(resolveHighlight));
+const GROUP    = {};   // partKey  -> [primitive uuid]
+const UUID_KEY = {};   // primitive uuid -> partKey
+const BODY     = [];   // everything else (dimmed on select)
+
+const collectPrims = (node) => {
+  const out = [];
+  (function walk(n){ if (n.type === "primitive") out.push(n.uuid); (n.children||[]).forEach(walk); })(node);
+  return out;
+};
+
+let sgTries = 0;
+const buildGroups = () => {
+  const root = viewer.sceneGraph;
+  if (!root) { if (sgTries++ < 80) setTimeout(buildGroups, 120); return; }
+  for (const k in GROUP)    delete GROUP[k];
+  for (const k in UUID_KEY) delete UUID_KEY[k];
+  BODY.length = 0;
+  (function walk(n){
+    const key = keyForNode(n.name);
+    if (key) {
+      const uuids = collectPrims(n);
+      GROUP[key] = (GROUP[key] || []).concat(uuids);
+      uuids.forEach(u => UUID_KEY[u] = key);
+      return; // claim the whole subtree
+    }
+    if (n.type === "primitive") BODY.push(n.uuid);
+    (n.children || []).forEach(walk);
+  })(root);
+
+  const grouped = Object.values(GROUP).reduce((s,a)=>s+a.length,0);
+  if (grouped + BODY.length === 0) { if (sgTries++ < 80) setTimeout(buildGroups, 120); return; }
+  markTableAvailability();
+  console.log("[utility-truck] groups:",
+    Object.fromEntries(Object.entries(GROUP).map(([k,v])=>[k,v.length])), "body:", BODY.length);
+};
+
+// ── effects ──
+const dimAllExcept = (key) => {
+  for (const u of BODY) viewer.setEffect(u, "dim");
+  for (const [k, uuids] of Object.entries(GROUP)) {
+    if (k === key) continue;
+    for (const u of uuids) viewer.setEffect(u, "dim");
+  }
+};
+const clearGhost = () => viewer.clearEffect("dim");
+const clearPaint = () => { viewer.clearEffect("outline"); viewer.clearEffect("highlight"); viewer.clearEffect("glow"); };
+
+let activeKey = null;
+const selectPart = (key) => {
+  const uuids = GROUP[key];
+  if (!uuids || !uuids.length) { showPart(key); return; } // catalog-only fallback
+  activeKey = key;
+  clearPaint();
+  dimAllExcept(key);
+  for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
+  showPart(key);
+  syncTableActive(key);
+};
+
+const resetSelection = () => {
+  activeKey = null;
+  clearGhost();
+  clearPaint();
+  syncTableActive(null);
+  lastPartName = null;
+  partDefault.hidden = false;
+  partDefault.style.display = "";
+  partSelected.hidden = true;
+  document.getElementById("breadcrumb-part").textContent = "";
+};
+
+const syncTableActive = (key) => {
+  document.querySelectorAll("#parts-table-body tr.parts-group-row").forEach(tr =>
+    tr.classList.toggle("row-active", tr.dataset.partKey === key));
+};
+
+const markTableAvailability = () => {
+  document.querySelectorAll("#parts-table-body tr.parts-group-row").forEach(tr => {
+    const present = (GROUP[tr.dataset.partKey] || []).length > 0;
+    tr.style.opacity = present ? "" : ".5";
+    tr.title = present ? "" : "Not present in this model version";
+  });
+};
+
+// ── viewer events ──
+viewer.addEventListener("object-hover", (e) => {
+  if (activeKey) return;
+  const hit = e.detail?.intersections?.[0];
+  const key = hit && UUID_KEY[hit.uuid];
+  viewer.clearEffect("glow");
+  if (!key) { viewer.style.cursor = ""; return; }
+  viewer.style.cursor = "pointer";
+  for (const u of GROUP[key]) viewer.setEffect(u, "glow");
+});
+
+viewer.addEventListener("object-select", (e) => {
+  const hit = e.detail?.intersections?.[0];
+  const key = hit && UUID_KEY[hit.uuid];
+  if (!key) { resetSelection(); return; }
+  selectPart(key);
+});
+
+["scene-loaded","updates-loaded","load"].forEach(ev => viewer.addEventListener(ev, buildGroups));
 
 // ── Explode slider ────────────────────────────────────────────
 document.getElementById("explode-slider").addEventListener("input", (e) => {
-  if (viewer.scene) viewer.scene.explodedStrength = parseFloat(e.target.value);
+  viewer.explodedStrength = parseFloat(e.target.value);
 });
 
 // ── Loading overlay ───────────────────────────────────────────
