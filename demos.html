@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Use Case Demos — VNTANA</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #f4f4f2; }
+
+    .root-header {
+      background: #fff; border-bottom: 1px solid #e2e2e0;
+      padding: 0 2rem; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .root-header .wordmark {
+      font-size: .82rem; font-weight: 800; letter-spacing: .04em; color: #111;
+      text-decoration: none; text-transform: uppercase;
+    }
+    .root-header a.ext { font-size: .75rem; color: #666; text-decoration: none; }
+    .root-header a.ext:hover { color: #111; }
+
+    .root-hero {
+      padding: 3.5rem 2rem 2.5rem;
+      max-width: 900px; margin: 0 auto;
+    }
+    .root-hero .kicker {
+      font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: #999; margin-bottom: .6rem;
+    }
+    .root-hero h1 {
+      font-size: 2.4rem; font-weight: 800; letter-spacing: -.04em;
+      line-height: 1.1; margin-bottom: .75rem; color: #111;
+    }
+    .root-hero p { font-size: .95rem; color: #555; line-height: 1.65; max-width: 520px; }
+
+    .root-section { max-width: 900px; margin: 0 auto; padding: 0 2rem 3rem; }
+
+    .section-label {
+      font-size: .68rem; font-weight: 800; letter-spacing: .12em;
+      text-transform: uppercase; color: #aaa; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: #e2e2e0; }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .75rem; }
+    .card-grid.wide { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+
+    .dc {
+      background: #fff; border: 1px solid #e2e2e0; border-radius: 10px;
+      padding: 1.25rem 1.25rem 1rem;
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; gap: .35rem;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .dc:hover { border-color: #111; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+    .dc .tag {
+      font-size: .62rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: #aaa; margin-bottom: .1rem;
+    }
+    .dc h3 { font-size: .92rem; font-weight: 700; color: #111; letter-spacing: -.01em; line-height: 1.25; }
+    .dc p  { font-size: .78rem; color: #666; line-height: 1.55; margin: 0; }
+    .dc .go { margin-top: .5rem; font-size: .72rem; font-weight: 700; color: #aaa; }
+    .dc:hover .go { color: #111; }
+
+    .dc.featured { border-color: #111; background: #111; }
+    .dc.featured .tag { color: rgba(255,255,255,.35); }
+    .dc.featured h3  { color: #fff; }
+    .dc.featured p   { color: rgba(255,255,255,.55); }
+    .dc.featured .go { color: rgba(255,255,255,.35); }
+    .dc.featured:hover { border-color: #333; box-shadow: 0 4px 20px rgba(0,0,0,.2); }
+    .dc.featured:hover .go { color: #fff; }
+
+    .dc.tool { background: #fafafa; }
+    .dc.tool .tag { color: #c47900; }
+
+    @media (max-width: 600px) {
+      .card-grid, .card-grid.wide { grid-template-columns: 1fr; }
+      .root-hero h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="root-header">
+    <span class="wordmark">Derek Cicero · VNTANA</span>
+    <a class="ext" href="https://vntana.com" target="_blank">vntana.com ↗</a>
+  </header>
+
+  <div class="root-hero">
+    <p class="kicker">VNTANA · Demos &amp; Examples</p>
+    <h1>Use Case Demos</h1>
+    <p>3D viewer integrations, personalized client demos, internal tools, and n8n automation workflows — all built on VNTANA's platform.</p>
+  </div>
+
+  <section class="root-section">
+    <div class="section-label">Viewer Examples</div>
+    <div class="card-grid">
+      <a href="embed.html" class="dc">
+        <span class="tag">01 · Basic</span>
+        <h3>Basic Embed</h3>
+        <p>Simplest possible integration — one iframe, one line of HTML. Live Public asset, no auth required.</p>
+        <div class="go">Open →</div>
+      </a>
+      <a href="variants.html" class="dc">
+        <span class="tag">02 · Variants</span>
+        <h3>Variant Switcher</h3>
+        <p>Color swatch UI that swaps the 3D model on click using the NPM viewer JS API. Jacket with multiple colorways.</p>
+        <div class="go">Open →</div>
+      </a>
+      <a href="product.html?uuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&org=DCicero&workspace=example-files" class="dc">
+        <span class="tag">03 · Custom Viewer</span>
+        <h3>Custom Viewer Controls</h3>
+        <p>Full product page — camera presets, lighting, hotspot auto-tour, AR/QR, and exploded view. Stroller demo asset.</p>
+        <div class="go">Open →</div>
+      </a>
+      <a href="parts.html" class="dc">
+        <span class="tag">04 · Industry</span>
+        <h3>Interactive Parts Catalog</h3>
+        <p>Click any part on the 3D model to surface SKU, price, and availability. Die head assembly via Figurement.</p>
+        <div class="go">Open →</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="root-section">
+    <div class="section-label">Personalized Demos</div>
+    <div class="card-grid wide">
+      <a href="s86-demo.html" class="dc featured">
+        <span class="tag">Heavy Equipment · Bobcat</span>
+        <h3>S86-2 — Multilingual Hotspots</h3>
+        <p>Live 3D product page with hotspot annotations in EN, FR, ES and DE. Text updates instantly from VNTANA product attributes — no CMS, no re-deploy.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="home.html" class="dc">
+        <span class="tag">Building Materials · Hexion</span>
+        <h3>Hexion — Home Product Explorer</h3>
+        <p>Guided auto-tour of Hexion's building material solutions with camera snap, hotspot cards, and localized product content.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="sunsource.html" class="dc">
+        <span class="tag">Mobile Equipment · SunSource</span>
+        <h3>SunSource — Interactive Parts Catalog</h3>
+        <p>Click any component on the 3D truck to explore SunSource's hydraulic and electronic product lineup with specs, pricing, and quote flow.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="sunsource-animated.html" class="dc">
+        <span class="tag">Mobile Equipment · SunSource</span>
+        <h3>SunSource — Engine Bay Animation</h3>
+        <p>Engine Lift slider scrubs the engine components rising out of the truck bay. Click any part for specs.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="brand-review.html" class="dc">
+        <span class="tag">Brand QA</span>
+        <h3>AI Brand QA — Review Page</h3>
+        <p>Drag to compare a new render against an approved reference. Gemini flags issues — one click to approve or request changes.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="tadano-crane-explorer.html" class="dc featured">
+        <span class="tag">Heavy Lift · Tadano</span>
+        <h3>Tadano GT-1200XL-2 — Crane Explorer</h3>
+        <p>Guided 5-stop tour of a 120-ton hydraulic crane. Camera snap per component, real spec copy, Tadano branding — boom, jib, elevation, counterweight, and outriggers.</p>
+        <div class="go">Open demo →</div>
+      </a>
+<a href="roeslein-adb.html" class="dc">
+        <span class="tag">Industrial Equipment · Roeslein</span>
+        <h3>Roeslein — Air Doubling Box</h3>
+        <p>PDP-style demo with 5 hotspots mapped to product features. Camera snap on click, CTA links to roeslein.com and parts store.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="roeslein-uvbc-v2.html" class="dc">
+        <span class="tag">Industrial Equipment · Roeslein</span>
+        <h3>Roeslein — UVBC UV Curing System</h3>
+        <p>Full-assembly UV bottom coat curing system. Click any component to surface assembly details, BOM part numbers, and specs from the real engineering BOM.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="taco-007e.html" class="dc">
+        <span class="tag">HVAC · Taco Comfort Solutions</span>
+        <h3>Taco — 007e ECM Circulator</h3>
+        <p>PDP-style demo for the 007e high-efficiency circulator. Full specs, features, tabs, and interactive 3D viewer.</p>
+        <div class="go">Open demo →</div>
+      </a>
+      <a href="personalized-demos.html" class="dc">
+        <span class="tag">Hub</span>
+        <h3>Personalized Demos Hub</h3>
+        <p>Customer-facing landing page linking to all personalized demos by industry.</p>
+        <div class="go">Open →</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="root-section">
+    <div class="section-label">Integrations</div>
+    <div class="card-grid">
+      <a href="n8n.html" class="dc">
+        <span class="tag">n8n · Automation</span>
+        <h3>VNTANA + n8n</h3>
+        <p>How we automate attribute updates, hotspot translations, and file management using the VNTANA Platform API — with downloadable workflow templates.</p>
+        <div class="go">View integration →</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="root-section">
+    <div class="section-label">Internal Tools</div>
+    <div class="card-grid">
+      <a href="admin/index.html" class="dc tool">
+        <span class="tag">Admin</span>
+        <h3>Translation Publisher</h3>
+        <p>Upload or attach a spreadsheet to publish hotspot translations to VNTANA product attributes. Trigger n8n sync from attachment.</p>
+        <div class="go">Open tool →</div>
+      </a>
+      <a href="hotspot-translations.html" class="dc tool">
+        <span class="tag">Preview</span>
+        <h3>Bobcat S86 — Translation Test</h3>
+        <p>Preview translated hotspot text for all five machine features before publishing. Switch EN / FR / ES / DE live in the viewer.</p>
+        <div class="go">Open tool →</div>
+      </a>
+      <a href="admin/showroom-gsheet.html" class="dc tool">
+        <span class="tag">Showrooms · Google Sheets</span>
+        <h3>Showroom Google Sheet Builder</h3>
+        <p>Paste a showroom UUID, get a pre-filled Google Sheet back. Add order quantities and edit styling with the native color picker, then submit via one-click n8n.</p>
+        <div class="go">Open tool &rarr;</div>
+      </a>
+      <a href="admin/showroom-bulk.html" class="dc tool">
+        <span class="tag">Showrooms · API</span>
+        <h3>Showroom Bulk Tools</h3>
+        <p>Fill out a spreadsheet template to submit bulk order quantities or update showroom layout and styling across multiple showrooms via n8n.</p>
+        <div class="go">Open tool →</div>
+      </a>
+      <a href="selection-test.html" class="dc tool">
+        <span class="tag">Dev · VNTANA API</span>
+        <h3>Selection API Explorer</h3>
+        <p>Logs every VNTANA selection channel event on click and hover. Used to document the background/highlight channel pattern for future builds.</p>
+        <div class="go">Open tool →</div>
+      </a>
+    </div>
+  </section>
+
+</body>
+</html>
