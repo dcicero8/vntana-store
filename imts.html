@@ -107,6 +107,10 @@ a.art:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(18,59,44,.42)
 .pipe div{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px;text-align:center;}
 .pipe .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--mint);text-transform:uppercase;}
 .pipe .v{font-size:13px;color:#fff;margin-top:4px;}
+/* real video filling an .art card */
+.art .art-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;background:#0f1226;}
+.art .tag{z-index:2;}
+.art .art-vid ~ .cap{position:relative;z-index:1;background:linear-gradient(transparent,rgba(6,8,20,.9));}
 /* video placeholder inside an .art card */
 .art .video-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .art .video-ph .play{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;padding-left:5px;}
@@ -256,11 +260,9 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
       <div class="stat"><b>11x</b><span>higher purchase likelihood when buyers can explore a product in 3D</span></div>
     </div>
     <div class="art">
-      <div class="tag">Demo · Small part</div>
-      <div class="video-ph">
-        <div class="play">&#9654;</div>
-        <div class="vtxt">Small-part demo to add</div>
-      </div>
+      <div class="tag">VNTANA &middot; Scene graph</div>
+      <video class="art-vid" src="assets/tradeshows/Loadout_Scene_Graph.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="cap"><div class="small">All the internal geometry is intact while optimizing.</div></div>
     </div>
   </div>
   <div class="detail rev">
