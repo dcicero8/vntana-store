@@ -118,6 +118,15 @@ a.art:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(18,59,44,.42)
 .art .ar-txt .big{font-family:var(--head);font-weight:700;font-size:22px;line-height:1.16;}
 .art .ar-txt .small{font-size:14px;color:#dfe3ff;margin-top:10px;}
 @media(max-width:520px){ .art .ar-ph{flex-direction:column;align-items:flex-start;gap:16px;} .art .ar-qr{width:140px;height:140px;} }
+/* AI render pair (concept drawing + studio render of the same CAD) */
+.render-pair{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px;}
+.render-pair figure{margin:0;}
+.render-pair img{width:100%;height:auto;display:block;border-radius:16px;border:1px solid var(--line);box-shadow:0 14px 40px rgba(20,20,30,.10);background:#f6f7fb;}
+.render-pair figcaption{margin-top:10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.render-lead{max-width:64ch;margin-top:44px;font-size:17px;color:#33333a;}
+.render-lead b{color:var(--black);font-weight:700;}
+@media(max-width:760px){.render-pair{grid-template-columns:1fr;}}
+
 /* live VNTANA embed (has its own AR button) */
 .embed-frame{border-radius:16px;overflow:hidden;border:1px solid var(--line);aspect-ratio:1/1;background:#f6f7fb;box-shadow:0 14px 40px rgba(20,20,30,.12);}
 .embed-frame iframe{width:100%;height:100%;border:0;display:block;}
@@ -179,7 +188,7 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
 </style>
 </head>
 <body>
-<a href="demos.html" class="uc-back" style="position:fixed;left:16px;bottom:16px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:rgba(17,17,20,.85);color:#fff;font:600 12px/1 Arial,Helvetica,sans-serif;letter-spacing:.04em;padding:10px 14px;border-radius:999px;text-decoration:none;box-shadow:0 3px 14px rgba(0,0,0,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)">&#8592; Use Case Demos</a>
+<a href="index.html" class="uc-back" style="position:fixed;left:16px;bottom:16px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:rgba(17,17,20,.85);color:#fff;font:600 12px/1 Arial,Helvetica,sans-serif;letter-spacing:.04em;padding:10px 14px;border-radius:999px;text-decoration:none;box-shadow:0 3px 14px rgba(0,0,0,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)">&#8592; Use Case Demos</a>
 
 <!-- TOP BAR -->
 <div class="topbar"><div class="wrap">
@@ -279,6 +288,12 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
     <div class="embed-frame">
       <iframe frameBorder="0" src="https://embed.vntana.com/v2?productUuid=50b3b315-519a-4075-9d0e-fd6a02f72001&clientSlug=tradeshows&organizationSlug=DCicero" allow="fullscreen; xr-spatial-tracking" loading="lazy" title="Railcar loadout system, interactive 3D"></iframe>
     </div>
+  </div>
+
+  <p class="render-lead">One CAD file, every asset you need. <b>The same model becomes AI-generated concept art and studio renders for the booth and the brochure, and the live, true-scale 3D above for the buyer to explore.</b></p>
+  <div class="render-pair">
+    <figure><img src="assets/tradeshows/Image%201-324a1487.png" alt="AI concept drawing of the railcar loadout system"><figcaption>AI concept drawing</figcaption></figure>
+    <figure><img src="assets/tradeshows/Image%202-2f24ff5a.png" alt="AI studio render of the railcar loadout system"><figcaption>AI studio render</figcaption></figure>
   </div>
 </div>
 
