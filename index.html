@@ -30,12 +30,21 @@
   .topbar .cta:hover{background:var(--mint)}
 
   .hero{background:var(--grad);color:#fff;position:relative;overflow:hidden}
-  .hero .wrap{padding:74px 28px 80px;position:relative;z-index:2}
+  .hero .wrap{padding:66px 28px 70px;position:relative;z-index:2;
+    display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center}
   .hero .tri{position:absolute;right:-90px;top:-90px;width:440px;height:440px;
     background:radial-gradient(circle at 30% 30%,rgba(127,226,175,.35),transparent 60%);z-index:1}
   .eyebrow{font-family:var(--body);font-size:13.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin-bottom:18px}
-  .hero h1{font-size:52px;max-width:16ch;margin-bottom:18px}
-  .hero p{font-size:18px;max-width:60ch;color:#eef0ff;margin:0}
+  .hero h1{font-size:48px;max-width:16ch;margin-bottom:18px}
+  .hero p{font-size:18px;max-width:52ch;color:#eef0ff;margin:0}
+  .hero-embed{position:relative;z-index:2;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+    border-radius:18px;overflow:hidden;box-shadow:0 24px 60px rgba(4,19,120,.45);backdrop-filter:blur(2px)}
+  .hero-embed iframe{display:block;width:100%;height:430px;border:0;background:#f4f5fb}
+  .hero-embed .cap{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:11px 16px;font-family:var(--body);font-size:12px;letter-spacing:.04em;color:#eef0ff}
+  .hero-embed .cap b{font-weight:700;color:#fff}
+  .hero-embed .cap .drag{color:var(--mint);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:11px}
+  @media(max-width:860px){ .hero .wrap{grid-template-columns:1fr;gap:30px} .hero-embed iframe{height:340px} }
 
   .band{padding:60px 0}
   .band.alt{background:var(--bg)}
@@ -81,9 +90,19 @@
 <section class="hero">
   <div class="tri"></div>
   <div class="wrap">
-    <div class="eyebrow">Interactive 3D Demos</div>
-    <h1>From an embed to a fully custom experience.</h1>
-    <p>See how VNTANA 3D fits every stack, from a single embed link to a bespoke, code-driven viewer built on the same asset. Pick a demo to explore it live.</p>
+    <div class="hero-copy">
+      <div class="eyebrow">Interactive 3D Demos</div>
+      <h1>From an embed to a fully custom experience.</h1>
+      <p>See how VNTANA 3D fits every stack, from a single embed link to a bespoke, code-driven viewer built on the same asset. Pick a demo to explore it live.</p>
+    </div>
+    <div class="hero-embed">
+      <iframe
+        src="https://embed.vntana.com/v2?productUuid=ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d&clientSlug=example-files&organizationSlug=DCicero"
+        title="VNTANA 3D live embed"
+        allow="xr-spatial-tracking"
+        allowfullscreen loading="lazy"></iframe>
+      <div class="cap"><span><b>Live embed</b> &middot; the same asset, everywhere</span><span class="drag">Drag to rotate &rarr;</span></div>
+    </div>
   </div>
 </section>
 
