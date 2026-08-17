@@ -86,10 +86,7 @@ document.getElementById("btn-add-all-top").addEventListener("click", addAllToCar
 
 document.getElementById("breadcrumb-home").addEventListener("click", (e) => {
   e.preventDefault();
-  lastPartName = null;
-  partDefault.hidden = false;
-  partDefault.style.display = "";
-  partSelected.hidden = true;
+  resetSelection();
 });
 
 // ── Build parts catalog table ─────────────────────────────────
@@ -109,8 +106,8 @@ Object.entries(PARTS_DATA).forEach(([key, data]) => {
     e.stopPropagation();
     addToCart(data.qty ?? 1);
   });
-  // Clicking a row highlights the part name (triggers PDP if scene graph is open)
-  tr.addEventListener("click", () => handlePartName(key));
+  // Clicking a row selects the part on the model (ghost + outline) and opens its PDP
+  tr.addEventListener("click", () => selectPart(key));
   tbody.appendChild(tr);
 });
 
@@ -178,11 +175,14 @@ const handlePartName = (name) => {
   }
 };
 
-// Same in-context selection pattern as skid-steer-explorer.html: build a
-// primitive-uuid -> part map once by walking the scene graph, then select from the
-// viewer's object-select event (uuid-based, robust) rather than matching node-name
-// strings on every click. The viewer's built-in picking provides the highlight.
-const UUID_KEY = {};   // primitive uuid -> PARTS_DATA key
+// Same in-context select + ghost pattern as skid-steer-explorer / Utility Truck
+// (vendored viewer-test build): walk the scene graph once into a uuid->part map plus
+// per-part groups, then on object-select ghost everything except the picked part and
+// outline it; on object-hover, glow the part under the cursor.
+const GROUP    = {};   // partKey -> [primitive uuid]
+const UUID_KEY = {};   // primitive uuid -> partKey
+const BODY     = [];   // everything else (dimmed on select)
+
 const collectPrims = (node, out = []) => {
   if (node.type === "primitive") out.push(node.uuid);
   (node.children || []).forEach(c => collectPrims(c, out));
@@ -192,23 +192,75 @@ let groupTries = 0;
 const buildPartGroups = () => {
   const root = viewer.sceneGraph;
   if (!root) { if (groupTries++ < 80) setTimeout(buildPartGroups, 120); return; }
+  for (const k in GROUP) delete GROUP[k];
   for (const k in UUID_KEY) delete UUID_KEY[k];
+  BODY.length = 0;
   (function walk(n) {
     const key = normalizePartName(n.name ?? "");
-    if (PARTS_DATA[key]) { collectPrims(n).forEach(u => UUID_KEY[u] = key); return; } // claim subtree
+    if (PARTS_DATA[key]) {
+      const uuids = collectPrims(n);
+      GROUP[key] = (GROUP[key] || []).concat(uuids);
+      uuids.forEach(u => UUID_KEY[u] = key);
+      return; // claim subtree
+    }
+    if (n.type === "primitive") BODY.push(n.uuid);
     (n.children || []).forEach(walk);
   })(root);
   if (!Object.keys(UUID_KEY).length && groupTries++ < 80) setTimeout(buildPartGroups, 120);
 };
 
+// ── effects ──
+const dimAllExcept = (key) => {
+  for (const u of BODY) viewer.setEffect(u, "dim");
+  for (const [k, uuids] of Object.entries(GROUP)) {
+    if (k === key) continue;
+    for (const u of uuids) viewer.setEffect(u, "dim");
+  }
+};
+const clearGhost = () => viewer.clearEffect("dim");
+const clearPaint = () => { viewer.clearEffect("outline"); viewer.clearEffect("highlight"); viewer.clearEffect("glow"); };
+
+const syncRow = (key) => {
+  document.querySelectorAll("#parts-table-body tr").forEach(tr =>
+    tr.classList.toggle("row-active", tr.dataset.partKey === key));
+};
+
+let activeKey = null;
+const selectPart = (key) => {
+  const uuids = GROUP[key];
+  if (!uuids || !uuids.length) { handlePartName(key); return; } // catalog-only fallback
+  activeKey = key;
+  clearPaint();
+  dimAllExcept(key);
+  for (const u of uuids) viewer.setEffect(u, "outline", "highlight");
+  handlePartName(key);
+  syncRow(key);
+};
+
+const resetSelection = () => {
+  activeKey = null;
+  clearGhost();
+  clearPaint();
+  syncRow(null);
+  lastPartName = null;
+  partDefault.hidden = false;
+  partDefault.style.display = "";
+  partSelected.hidden = true;
+};
+
 viewer.addEventListener("object-select", (e) => {
   const hit = e.detail?.intersections?.[0];
   const key = hit && UUID_KEY[hit.uuid];
-  if (key) handlePartName(key);   // empty / unmapped click leaves the panel as-is
+  if (key) selectPart(key); else resetSelection();
 });
 viewer.addEventListener("object-hover", (e) => {
+  if (activeKey) return;
   const hit = e.detail?.intersections?.[0];
-  viewer.style.cursor = (hit && UUID_KEY[hit.uuid]) ? "pointer" : "";
+  const key = hit && UUID_KEY[hit.uuid];
+  viewer.clearEffect("glow");
+  if (!key) { viewer.style.cursor = ""; return; }
+  viewer.style.cursor = "pointer";
+  for (const u of GROUP[key]) viewer.setEffect(u, "glow");
 });
 
 ["scene-loaded", "updates-loaded", "load"].forEach(ev => viewer.addEventListener(ev, buildPartGroups));

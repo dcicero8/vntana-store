@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Interactive Parts Catalog — VNTANA</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
+  <style>
+    #parts-table-body tr { cursor: pointer; }
+    #parts-table-body tr.row-active { background: #eef2ff; box-shadow: inset 3px 0 0 #4B61F9; }
+  </style>
 </head>
 <body>
 
@@ -34,7 +39,7 @@
       </div>
 
       <!-- Pinned viewer version for booth stability. Bump deliberately, not automatically. -->
-      <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer@3.0.0/dist/bundle.js"></script>
+      <script type="module" src="vendor/viewer-test/dist/index.js"></script>
       <vntana-viewer
         picking="true"
         shadow-intensity="0.3"
@@ -163,7 +168,7 @@
 
   <!-- subtle build tag: which pinned @vntana/viewer this page runs -->
   <div id="viewer-ver" style="position:fixed;bottom:6px;left:8px;font:10px/1 'Roboto Mono',monospace;color:#aeb3bd;opacity:.55;z-index:5;user-select:text;pointer-events:auto;">viewer 3.0.0 · pinned</div>
-  <script>console.info('%c@vntana/viewer','font-weight:700','pinned 3.0.0');</script>
+  <script>console.info('%c@vntana/viewer','font-weight:700','vendored viewer-test build (standardized)');</script>
 
 </body>
 </html>
