@@ -57,7 +57,7 @@ const PARTS_DATA = {
     price: "$4,850.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
-    desc: "Ford 351 Windsor V8 engine, remanufactured to OEM specifications. 5.8L displacement, compatible with a wide range of mobile equipment and utility truck applications. SunSource-certified build with full warranty."
+    desc: "Ford 351 Windsor V8 engine, remanufactured to OEM specifications. 5.8L displacement, compatible with a wide range of mobile equipment and utility truck applications. Utility Truck-certified build with full warranty."
   },
   "Battery_Node_0": {
     sku: "SS-BAT-12V",
@@ -66,7 +66,7 @@ const PARTS_DATA = {
     price: "$189.00",
     avail: "In Stock",
     lead: "Ships in 1–2 days",
-    desc: "Heavy-duty Group 31 12V battery for utility truck and mobile equipment starting and auxiliary power. High cold-cranking amps rated for extreme conditions. SunSource-stocked with same-day availability at select branches."
+    desc: "Heavy-duty Group 31 12V battery for utility truck and mobile equipment starting and auxiliary power. High cold-cranking amps rated for extreme conditions. Utility Truck-stocked with same-day availability at select branches."
   },
   "FuelPump_Node_0": {
     sku: "SS-FP-HDP5",
@@ -75,7 +75,7 @@ const PARTS_DATA = {
     price: "$620.00",
     avail: "In Stock",
     lead: "Ships in 3–5 days",
-    desc: "Bosch HDP5 high-pressure direct fuel injection pump. Delivers precise fuel metering for DFI engine systems. OEM-equivalent replacement backed by SunSource technical support and warranty."
+    desc: "Bosch HDP5 high-pressure direct fuel injection pump. Delivers precise fuel metering for DFI engine systems. OEM-equivalent replacement backed by Utility Truck technical support and warranty."
   },
   "FuelValve_Node_0": {
     sku: "SS-FV-3PORT",
@@ -93,7 +93,7 @@ const PARTS_DATA = {
     price: "$740.00",
     avail: "Built to Order",
     lead: "Est. 2–3 weeks",
-    desc: "Heavy-duty manual transmission bell housing for utility truck drivetrain applications. Precision-machined for OEM fitment. SunSource sources and machines bell housing assemblies to match your transmission and engine combination."
+    desc: "Heavy-duty manual transmission bell housing for utility truck drivetrain applications. Precision-machined for OEM fitment. Utility Truck sources and machines bell housing assemblies to match your transmission and engine combination."
   },
   "Wheel_Front_Left": {
     sku: "SS-PWD-42",
@@ -102,7 +102,7 @@ const PARTS_DATA = {
     price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 3–5 days",
-    desc: "Danfoss Series 40 planetary wheel drive for front axle drive applications. High-torque, compact design with integrated brake. Assembled and tested at SunSource. Available in multiple displacement configurations."
+    desc: "Danfoss Series 40 planetary wheel drive for front axle drive applications. High-torque, compact design with integrated brake. Assembled and tested at Utility Truck. Available in multiple displacement configurations."
   },
   "Wheel_Front_Right": {
     sku: "SS-PWD-42",
@@ -111,7 +111,7 @@ const PARTS_DATA = {
     price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 3–5 days",
-    desc: "Danfoss Series 40 planetary wheel drive for front axle drive applications. High-torque, compact design with integrated brake. Assembled and tested at SunSource. Available in multiple displacement configurations."
+    desc: "Danfoss Series 40 planetary wheel drive for front axle drive applications. High-torque, compact design with integrated brake. Assembled and tested at Utility Truck. Available in multiple displacement configurations."
   },
   "Wheel_Rear_Left": {
     sku: "SS-BAM-51",
@@ -120,7 +120,7 @@ const PARTS_DATA = {
     price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
-    desc: "Danfoss Series 51 bent axis variable motor for rear propel drive. High efficiency across full speed range, suitable for demanding mobile applications. SunSource-authorized build center with global product support."
+    desc: "Danfoss Series 51 bent axis variable motor for rear propel drive. High efficiency across full speed range, suitable for demanding mobile applications. Utility Truck-authorized build center with global product support."
   },
   "Wheel_Rear_Right": {
     sku: "SS-BAM-51",
@@ -129,7 +129,7 @@ const PARTS_DATA = {
     price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 5–7 days",
-    desc: "Danfoss Series 51 bent axis variable motor for rear propel drive. High efficiency across full speed range, suitable for demanding mobile applications. SunSource-authorized build center with global product support."
+    desc: "Danfoss Series 51 bent axis variable motor for rear propel drive. High efficiency across full speed range, suitable for demanding mobile applications. Utility Truck-authorized build center with global product support."
   },
   "Lift_Arm_Upper_Actuator_Base": {
     sku: "SS-WFP-PVG",
@@ -138,7 +138,7 @@ const PARTS_DATA = {
     price: "$200.00",
     avail: "In Stock",
     lead: "Ships in 3–5 days",
-    desc: "Danfoss high-performance PVG proportional valve for work function circuits — lift, tilt, and auxiliary. SunSource is your source for PVG valves, assembled and tested in-house. Hybrid valve assemblies available."
+    desc: "Danfoss high-performance PVG proportional valve for work function circuits, lift, tilt, and auxiliary. Utility Truck is your source for PVG valves, assembled and tested in-house. Hybrid valve assemblies available."
   },
   "Lift_Bucket": {
     sku: "SS-ATT-BKT",
@@ -147,7 +147,7 @@ const PARTS_DATA = {
     price: "$200.00",
     avail: "In Stock",
     lead: "Contact for lead time",
-    desc: "Heavy-duty lift bucket attachment for telehandler and loader applications. Compatible with standard quick-attach systems. SunSource provides full aftermarket support and replacement hydraulic components for attachment circuits."
+    desc: "Heavy-duty lift bucket attachment for telehandler and loader applications. Compatible with standard quick-attach systems. Utility Truck provides full aftermarket support and replacement hydraulic components for attachment circuits."
   },
   "Lift_Arm_Lower_Beam": {
     sku: "SS-CYL-LB",
@@ -156,7 +156,7 @@ const PARTS_DATA = {
     price: "$200.00",
     avail: "Built to Order",
     lead: "Est. 2–3 weeks",
-    desc: "Custom-built hydraulic cylinder for lower lift arm. SunSource designs and assembles custom cylinder solutions to match your machine's exact stroke, bore, and pressure requirements."
+    desc: "Custom-built hydraulic cylinder for lower lift arm. Utility Truck designs and assembles custom cylinder solutions to match your machine's exact stroke, bore, and pressure requirements."
   },
   "Lift_Arm_Upper_Beam": {
     sku: "SS-CYL-UB",
@@ -165,7 +165,7 @@ const PARTS_DATA = {
     price: "$200.00",
     avail: "Built to Order",
     lead: "Est. 2–3 weeks",
-    desc: "Custom-built hydraulic cylinder for upper lift arm. SunSource designs and assembles custom cylinder solutions to match your machine's exact stroke, bore, and pressure requirements."
+    desc: "Custom-built hydraulic cylinder for upper lift arm. Utility Truck designs and assembles custom cylinder solutions to match your machine's exact stroke, bore, and pressure requirements."
   },
 };
 
@@ -262,11 +262,11 @@ const showPart = (name) => {
   const data = PARTS_DATA[name] ?? {
     sku: "SS-???",
     display: name.replace(/_/g, " "),
-    series: "—",
+    series: "-",
     price: "$200.00",
     avail: "Contact us",
-    lead: "—",
-    desc: `Component of the mobile equipment assembly. Contact SunSource for specifications and availability.`,
+    lead: "-",
+    desc: `Component of the mobile equipment assembly. Contact Utility Truck for specifications and availability.`,
   };
 
   partNameEl.textContent   = data.display ?? name.replace(/_/g, " ");
@@ -316,7 +316,7 @@ const resolveHighlight = () => {
   let matched = null;
   try {
     for (const entry of sel) {
-      // highlight may be a Map<node,bool> or a Set<node> — handle both
+      // highlight may be a Map<node,bool> or a Set<node>, handle both
       const node  = Array.isArray(entry) ? entry[0] : entry;
       const value = Array.isArray(entry) ? entry[1] : true;
       if (!value) continue;
@@ -371,8 +371,8 @@ if (product.errors?.length) throw new Error(product.errors[0]);
 const { models } = product.response.asset;
 const viewerConfig = JSON.parse(product.response.viewerSettings.config);
 
-assemblyName.textContent = "BigTruck — Mobile Equipment Components";
-document.title = "SunSource Mobile Equipment — VNTANA";
+assemblyName.textContent = "BigTruck, Mobile Equipment Components";
+document.title = "Utility Truck Mobile Equipment, VNTANA";
 
 Object.assign(viewer, viewerConfig);
 viewer.enableAutoRotate = false;
