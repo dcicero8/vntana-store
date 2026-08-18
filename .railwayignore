@@ -1,0 +1,11 @@
+# The deployed site is a static nginx build, exclude everything not served,
+# so `railway up` doesn't time out snapshotting a huge working tree.
+node_modules
+*.mov
+*.blend
+*.blend1
+*.step
+*.stp
+*.zip
+*.psd
+michaels/test-images

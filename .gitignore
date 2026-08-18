@@ -1,3 +1,6 @@
 
 # Source videos (large); only the transcoded .mp4 is deployed
 *.mov
+
+# Dev deps, never deployed
+node_modules/
