@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VNTANA at IMTS 2026 · Machine Tools & Automation in 3D</title>
+<title>VNTANA at IMTS 2026, Manufacturing Technology in 3D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -51,14 +51,15 @@ a{color:var(--blue);text-decoration:none;}
 .hero .cta{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;}
 .hero .tri{position:absolute;right:-80px;top:-80px;width:420px;height:420px;background:radial-gradient(circle at 30% 30%,rgba(127,226,175,.35),transparent 60%);z-index:1;}
 
-/* main demo, sits inside the blue hero */
-.demo-frame{position:relative;margin:0 0 30px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 26px 70px rgba(4,19,120,.45);aspect-ratio:16/9;background:#0a0f2b;z-index:3;}
+/* main demo, lifted up into the hero */
+.demo-lift .wrap{padding-top:0;padding-bottom:8px;}
+.demo-frame{position:relative;margin-top:-58px;border-radius:16px;overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 26px 70px rgba(4,19,120,.30);aspect-ratio:16/9;background:#f6f7fb;z-index:3;}
 .demo-frame iframe{width:100%;height:100%;border:0;display:block;}
 .demo-open{position:absolute;bottom:14px;right:14px;font-size:13px;padding:10px 16px;}
-.demo-cap{font-family:var(--mono);font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:#cfd6ff;text-align:center;margin:16px 0 0;}
-.lead-below{font-size:18px;color:#eef0ff;max-width:70ch;margin:22px auto 0;text-align:center;}
-@media(max-width:900px){ .demo-frame{aspect-ratio:4/5;} }
+.demo-cap{font-family:var(--mono);font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);text-align:center;margin:16px 0 0;}
+.lead-below{font-size:18px;color:var(--muted);max-width:70ch;margin:22px auto 0;text-align:center;}
+@media(max-width:900px){ .demo-frame{aspect-ratio:4/5;margin-top:-30px;} }
 
 /* outcomes intro band */
 .band{padding:64px 0;}
@@ -68,13 +69,12 @@ a{color:var(--blue);text-decoration:none;}
 .section-head p{font-size:18px;color:var(--muted);}
 
 .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:36px;}
-.oc{border:1px solid var(--line);border-radius:16px;padding:32px 30px;background:#fff;transition:box-shadow .2s ease,transform .2s ease;display:flex;flex-direction:column;}
+.oc{border:1px solid var(--line);border-radius:16px;padding:32px 30px;background:#fff;transition:box-shadow .2s ease,transform .2s ease;}
 .oc:hover{box-shadow:0 14px 40px rgba(20,20,30,.08);transform:translateY(-2px);}
 .oc .num{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--blue);}
 .oc h3{font-size:24px;margin:12px 0 12px;}
 .oc p{font-size:16.5px;color:var(--muted);margin:0;}
-.oc .chip{align-self:flex-start;margin-top:auto;font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.03em;color:var(--black);background:var(--mint);padding:11px 16px;border-radius:9px;line-height:1.2;}
-.oc p{padding-bottom:20px;}
+.oc .chip{display:inline-block;margin-top:20px;font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.03em;color:var(--black);background:var(--mint);padding:11px 16px;border-radius:9px;line-height:1.2;}
 
 /* alternating detail sections */
 .detail{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:66px 0;border-top:1px solid var(--line);}
@@ -91,8 +91,7 @@ a{color:var(--blue);text-decoration:none;}
 
 /* art placeholders */
 .art{border-radius:16px;min-height:300px;position:relative;overflow:hidden;border:1px solid var(--line);background:#0f1226;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;}
-.art .tag{position:absolute;top:16px;left:16px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);z-index:2;}
-.art .art-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;}
+.art .tag{position:absolute;top:16px;left:16px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);}
 .art .cap{padding:20px 22px;}
 .art .cap .big{font-family:var(--head);font-weight:700;font-size:19px;}
 .art .cap .small{font-size:13.5px;color:#b9bde0;margin-top:4px;}
@@ -108,6 +107,10 @@ a.art:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(18,59,44,.42)
 .pipe div{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px;text-align:center;}
 .pipe .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--mint);text-transform:uppercase;}
 .pipe .v{font-size:13px;color:#fff;margin-top:4px;}
+/* real video filling an .art card */
+.art .art-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;background:#0f1226;}
+.art .tag{z-index:2;}
+.art .art-vid ~ .cap{position:relative;z-index:1;background:linear-gradient(transparent,rgba(6,8,20,.9));}
 /* video placeholder inside an .art card */
 .art .video-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .art .video-ph .play{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;padding-left:5px;}
@@ -119,6 +122,15 @@ a.art:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(18,59,44,.42)
 .art .ar-txt .big{font-family:var(--head);font-weight:700;font-size:22px;line-height:1.16;}
 .art .ar-txt .small{font-size:14px;color:#dfe3ff;margin-top:10px;}
 @media(max-width:520px){ .art .ar-ph{flex-direction:column;align-items:flex-start;gap:16px;} .art .ar-qr{width:140px;height:140px;} }
+/* AI render pair (concept drawing + studio render of the same CAD) */
+.render-pair{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px;}
+.render-pair figure{margin:0;}
+.render-pair img{width:100%;height:auto;display:block;border-radius:16px;border:1px solid var(--line);box-shadow:0 14px 40px rgba(20,20,30,.10);background:#f6f7fb;}
+.render-pair figcaption{margin-top:10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.render-lead{max-width:64ch;margin-top:44px;font-size:17px;color:#33333a;}
+.render-lead b{color:var(--black);font-weight:700;}
+@media(max-width:760px){.render-pair{grid-template-columns:1fr;}}
+
 /* live VNTANA embed (has its own AR button) */
 .embed-frame{border-radius:16px;overflow:hidden;border:1px solid var(--line);aspect-ratio:1/1;background:#f6f7fb;box-shadow:0 14px 40px rgba(20,20,30,.12);}
 .embed-frame iframe{width:100%;height:100%;border:0;display:block;}
@@ -180,6 +192,7 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
 </style>
 </head>
 <body>
+<a href="index.html" class="uc-back" style="display:block;background:#0b0b0d;color:#fff;font:600 12px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.06em;padding:11px 16px;text-decoration:none">&#8592; Use Case Demos</a>
 
 <!-- TOP BAR -->
 <div class="topbar"><div class="wrap">
@@ -191,88 +204,95 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
 <section class="hero">
   <div class="tri"></div>
   <div class="wrap">
-    <div class="demo-frame">
-      <iframe src="https://embed.vntana.com/v2?productUuid=5efa74f4-2136-4a23-82de-d0c2fe82c820&clientSlug=tradeshows&organizationSlug=DCicero" title="CNC machine, interactive 3D" allow="xr-spatial-tracking; fullscreen" loading="lazy"></iframe>
-      <a class="demo-open btn btn-primary" href="https://embed.vntana.com/v2?productUuid=5efa74f4-2136-4a23-82de-d0c2fe82c820&clientSlug=tradeshows&organizationSlug=DCicero" target="_blank" rel="noopener">Open full screen &#8599;</a>
-    </div>
-    <div class="seg">Machine Tools, Fabrication &amp; Automation</div>
+    <div class="seg">International Manufacturing Technology Show</div>
     <h1>Sell more with the CAD you already own.</h1>
-    <p class="lead-below" style="text-align:left;margin-left:0;">Your components are spec'd into machines by engineers who need to see exactly how they fit, configure and perform. A datasheet or a photo can't show a hydraulic manifold, driveline or e-axle, but the exact 3D model already sits in engineering. VNTANA turns it into interactive 3D, configurators and parts catalogues that win the design-in and the reorder, automatically.</p>
   </div>
 </section>
+
+<!-- MAIN DEMO (lifted into the hero) -->
+<section class="demo-lift"><div class="wrap">
+  <div class="demo-frame">
+    <iframe src="https://embed.vntana.com/v2?productUuid=95434200-12e8-4984-a6ae-0a5171d901ea&clientSlug=test&organizationSlug=kanawha-scales" title="Railcar loadout system, interactive 3D" allow="xr-spatial-tracking; fullscreen" loading="eager"></iframe>
+    <a class="demo-open btn btn-primary" href="https://embed.vntana.com/v2?productUuid=95434200-12e8-4984-a6ae-0a5171d901ea&clientSlug=test&organizationSlug=kanawha-scales" target="_blank" rel="noopener">Open full screen &#8599;</a>
+  </div>
+  <p class="demo-cap">Live from the booth &middot; a full railcar loadout system at true scale &middot; rotate, explore, view in AR</p>
+  <p class="lead-below">From a precision part in your hand to a system that fills a rail yard, your equipment already exists as CAD. VNTANA turns that CAD into interactive 3D and true-scale AR, so buyers explore your biggest machines right on the show floor, or from their desk, with nothing to crate or ship.</p>
+</div></section>
 
 <!-- THREE OUTCOMES -->
 <section class="band" id="outcomes">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">One source of truth, every channel</div>
-      <h2>The content pipeline that turns your CAD into three kinds of revenue.</h2>
-      <p>Upload native CAD once. VNTANA optimizes and publishes it to your website, dealer portal, parts catalogue, and more, accurate for every configuration, updated automatically when the design changes.</p>
+      <div class="eyebrow">Any size, any complexity</div>
+      <h2>From a part in your hand to a system that fills a rail yard.</h2>
+      <p>Upload native CAD once. VNTANA optimizes and publishes it as interactive 3D and true-scale AR, accurate for every configuration, updated automatically when the design changes.</p>
     </div>
     <div class="cards3">
       <div class="oc">
-        <div class="num">01 · WIN THE DESIGN-IN</div>
-        <h3>Let OEM engineers integrate your component</h3>
-        <p>Interactive 3D lets engineers inspect mounting points, ports and envelope, explode to the internals, and see exactly how your component fits their machine, so you win the spec, not just the RFQ.</p>
-        <span class="chip">Win the spec</span>
+        <div class="num">01 · SMALL PARTS</div>
+        <h3>Precision components, in the round</h3>
+        <p>Even a part that fits in your hand sells better when the buyer can spin it, zoom the tolerances, and read the features in 3D instead of a flat photo.</p>
+        <span class="chip">No sample to ship</span>
       </div>
       <div class="oc">
-        <div class="num">02 · SPEED THE QUOTE</div>
-        <h3>Configure the component, feed your CPQ</h3>
-        <p>Buyers configure valves, manifolds, gearboxes, motors and e-axles in interactive 3D, and the exact build flows into your configurator or CPQ so every quote reflects their application.</p>
-        <span class="chip">Powers your CPQ / configurator</span>
+        <div class="num">02 · COMPLETE MACHINES</div>
+        <h3>Explore the whole machine</h3>
+        <p>Interactive 3D of the full assembly: explode it, click any component, and see exactly how it goes together, built from the CAD you already own.</p>
+        <span class="chip">Click, explode, inspect</span>
       </div>
       <div class="oc">
-        <div class="num">03 · GROW PARTS REVENUE</div>
-        <h3>Turn static catalogs into a 3D parts store</h3>
-        <p>Clickable, explodable 3D of seals, wear parts and service kits, so OEMs and dealers find and reorder the right part themselves, fewer wrong-part orders, more aftermarket revenue.</p>
-        <span class="chip">Highest-margin revenue line</span>
+        <div class="num">03 · FULL SYSTEMS</div>
+        <h3>Bring the equipment you can't ship</h3>
+        <p>A system that fills a rail yard, on the show floor and at the buyer's desk, placed at true 1:1 scale in AR with nothing to crate.</p>
+        <span class="chip">True 1:1 AR</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- DETAIL 1: WIN THE DESIGN-IN -->
+<!-- DETAIL 1: WIN THE SALE -->
 <div class="wrap">
   <div class="detail">
     <div class="txt">
-      <div class="eyebrow">01 · Win the design-in</div>
-      <h2>Win the spec, not just the RFQ.</h2>
-      <p>Off-highway components live or die on integration, an OEM engineer has to know your manifold, driveline or e-axle fits the envelope, lines up with the ports, and mounts cleanly before it ever gets designed in. A datasheet can't show that. VNTANA turns your CAD into interactive 3D the engineer can rotate, explode and drop into their machine, so your component gets spec'd in and stays in.</p>
+      <div class="eyebrow">01 · Small parts</div>
+      <h2>The detail is the sell. Put it in their hands.</h2>
+      <p>A precision part fits in your hand, but a flat photo hides the geometry that wins the spec. VNTANA turns the CAD into interactive 3D the buyer rotates, zooms, and inspects down to the feature, with no sample to ship.</p>
       <div class="stat"><b>11x</b><span>higher purchase likelihood when buyers can explore a product in 3D</span></div>
     </div>
-    <div class="embed-frame">
-      <iframe frameBorder="0" src="https://embed.vntana.com/v2?productUuid=d450c56f-e379-4735-8b00-40065e4dbf10&clientSlug=tradeshows&organizationSlug=DCicero" allow="fullscreen; xr-spatial-tracking" loading="lazy" title="Industrial robot arm, interactive 3D"></iframe>
+    <div class="art">
+      <div class="tag">VNTANA &middot; Scene graph</div>
+      <video class="art-vid" src="assets/tradeshows/Loadout_Scene_Graph.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="cap"><div class="small">All the internal geometry is intact while optimizing.</div></div>
     </div>
   </div>
   <div class="detail rev">
     <div class="txt">
-      <div class="eyebrow">02 · Speed the quote</div>
-      <h2>Show the buyer's exact build, not a stock photo.</h2>
-      <p>Hydraulic manifolds, gearboxes, motors and e-axles are sold as option stacks, displacement, ratio, ports, voltage, mounting. VNTANA isn't a pricing engine, it's the pipeline that produces the optimized, always-accurate 3D that feeds your configurator or CPQ. Buyers configure from the source model and see their exact part, and reps quote without waiting on engineering.</p>
+      <div class="eyebrow">02 · Complete machines</div>
+      <h2>Explore the whole machine, not a hero shot.</h2>
+      <p>A complex machine can't be understood from a photo. VNTANA turns the assembly into interactive 3D the buyer can explode, click into, and see exactly how it fits together, built from the CAD you already own.</p>
       <div class="stat"><b>80%</b><span>of B2B buyers prefer to self-serve their evaluation</span></div>
     </div>
     <div class="art">
-      <div class="tag">Demo · Configure live</div>
-      <video class="art-video" id="quote-video" src="assets/making_images.mp4" poster="assets/making_images.jpg" loop muted playsinline preload="none"></video>
+      <div class="tag">VNTANA &middot; Complete machine</div>
+      <video class="art-vid" src="assets/tradeshows/Loader_Video_2.mp4" autoplay muted loop playsinline preload="metadata"></video>
     </div>
   </div>
   <div class="detail">
     <div class="txt">
-      <div class="eyebrow">03 · Grow parts revenue</div>
-      <h2>Your parts catalogue is your highest-margin digital property.</h2>
-      <p>Seals, wear parts, service kits and rebuild components are where the recurring revenue lives, and predictive maintenance only raises the stakes. Static 2D exploded drawings make customers call a rep or order the wrong part. VNTANA turns the CAD you already own into a clickable, explodable 3D parts catalogue, with parts searchable by name, so OEMs and dealers self-serve the right part the first time.</p>
-      <ul>
-        <li>Exploded views for fast, accurate part identification</li>
-        <li>Fewer wrong-part orders, returns and service-desk calls</li>
-        <li>Published to the dealer portal and parts catalogue from one source</li>
-      </ul>
-      <div class="stat"><b>73%</b><span>of industrial B2B buyers purchase online, meet them there</span></div>
+      <div class="eyebrow">03 · Full systems</div>
+      <h2>You can't bring a railcar loadout to a trade show. So we brought it in 3D.</h2>
+      <p>Your biggest equipment never makes it to the booth, too big to crate, too costly to ship. The system on screen is a batch-weigh railcar loadout that moves thousands of tons an hour, the kind of build a buyer would normally only see on a site visit. VNTANA turns that CAD into interactive 3D and true-scale AR, so they walk the entire system on the show floor, or place it 1:1 at their own site. No crate required.</p>
+      <div class="stat"><b>83%</b><span>of B2B buyers abandon an evaluation without complete product information, now they can walk the entire system at true 1:1 scale in AR</span></div>
     </div>
-    <a class="art mint parts-shot" href="parts.html" target="_blank" rel="noopener">
-      <img src="assets/parts-explorer.png" alt="Clickable 3D parts catalogue: part render plus searchable SKU table">
-      <span class="art-open">Open the catalogue &#8599;</span>
-    </a>
+    <div class="embed-frame">
+      <iframe frameBorder="0" src="https://embed.vntana.com/v2?productUuid=95434200-12e8-4984-a6ae-0a5171d901ea&clientSlug=test&organizationSlug=kanawha-scales" allow="fullscreen; xr-spatial-tracking" loading="lazy" title="Railcar loadout system, interactive 3D"></iframe>
+    </div>
+  </div>
+
+  <p class="render-lead">One CAD file, every asset you need. <b>The same model becomes AI-generated concept art and studio renders for the booth and the brochure, and the live, true-scale 3D above for the buyer to explore.</b></p>
+  <div class="render-pair">
+    <figure><img src="assets/tradeshows/Image%201-324a1487.png" alt="AI concept drawing of the railcar loadout system"><figcaption>AI concept drawing</figcaption></figure>
+    <figure><img src="assets/tradeshows/Image%202-2f24ff5a.png" alt="AI studio render of the railcar loadout system"><figcaption>AI studio render</figcaption></figure>
   </div>
 </div>
 
@@ -282,9 +302,9 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
   <div class="logos">
     <span>Doosan Bobcat</span><span>Astec</span><span>Roeslein &amp; Associates</span><span>Kohler</span>
   </div>
-  <p class="credit">Manufacturers like Doosan Bobcat already put their products in buyers' hands in interactive 3D with VNTANA, built from the CAD they already owned. Give the engineers who spec your components the same experience.</p>
+  <p class="credit">Manufacturers already turn the CAD they own into interactive 3D with VNTANA, from precision components to full systems, no photo shoots or engineering time.</p>
   <div class="stats3">
-    <div class="s"><b>67%</b><span>of B2B buyers weight images above technical specs</span></div>
+    <div class="s"><b>73%</b><span>of industrial B2B buyers purchase online</span></div>
     <div class="s"><b>75%</b><span>of B2B buyers prefer rep-free, self-serve interactions</span></div>
     <div class="s"><b>&gt;25%</b><span>shorter sales cycle with interactive 3D</span></div>
   </div>
@@ -293,15 +313,15 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
 <!-- FINAL CTA -->
 <section class="cta-final"><div class="wrap">
   <div class="seg">Book your live demo</div>
-  <h2>Want to win the design-in in 3D?</h2>
-  <p>We'll turn one of your own component files, a manifold, gearbox or e-axle, into a live 3D and configurator demo, built from the CAD you already own.</p>
-  <a class="btn cta-book" href="https://www.vntana.com/schedule-demo/" target="_blank" rel="noopener">Schedule a demo &rarr;</a>
+  <h2>Want to show the equipment you can't ship?</h2>
+  <p>We'll turn one of your own files, a part, a machine, or a full system, into a live 3D and true-scale AR demo, built from the CAD you already own.</p>
+  <a class="btn cta-book" href="https://www.vntana.com/schedule-demo/" target="_blank" rel="noopener">Book a Demo &rarr;</a>
 </div></section>
 
 <!-- FOOTER -->
 <footer><div class="wrap">
   <img src="data:image/png;base64,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" alt="VNTANA">
-  <div class="fmeta">McCormick Place &middot; Chicago &middot; Sep 14&ndash;19, 2026</div>
+  <div class="fmeta">McCormick Place &middot; Chicago &middot; Sept 14&ndash;19, 2026</div>
   <div class="flinks">
     <a href="https://www.vntana.com/schedule-demo/">Book a demo</a>
     <a href="https://www.vntana.com/industries/manufacturing/">Manufacturing</a>
@@ -310,21 +330,6 @@ footer .flinks a{margin-left:20px;font-size:14px;color:var(--ink);}
   </div>
 </div></footer>
 <div class="tagline">Sell more with CAD you already own.</div>
-
-<script>
-  // Play the Speed-the-quote video only when it scrolls into view (prevents load-time scroll jump)
-  (function(){
-    var v = document.getElementById('quote-video');
-    if(!v || !('IntersectionObserver' in window)) return;
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){ v.play().catch(function(){}); }
-        else { v.pause(); }
-      });
-    }, {threshold: 0.35});
-    io.observe(v);
-  })();
-</script>
 
 </body>
 </html>
