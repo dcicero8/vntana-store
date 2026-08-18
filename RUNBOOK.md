@@ -353,6 +353,11 @@ is the problem.
 
 ## 11. Deploy (Railway static site)
 
+- **ALWAYS update the internal hub when done** (`hub/index.html`, live at `/hub/`). Any time a
+  page is added, repurposed, retired, or its live asset UUIDs change, update its row (or add one),
+  bump the "N pages" count, and note retire/version status. The hub is the single source of truth
+  for what exists and where each page's assets live; it goes stale fast if skipped. Do this as part
+  of finishing every change, before considering the task done.
 - Pure static site. Push to GitHub, Railway auto-deploys.
 - **Dual remote**: `origin` pushes to both `dcicero8/vntana-store` and
   `derekcicero-vntana/store-demos`. `company` is `store-demos` directly.
