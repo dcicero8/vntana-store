@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iVT Expo Business Card, Skid Steer</title>
+<title>iVT Expo Postcard, Skid Steer</title>
 <style>
   :root { --blue:#4B61F9; --ink:#1A1A1A; --slate:#5a6472; --paper:#fff; --line:#e5e8ef; }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -15,9 +15,9 @@
   .note b { color:var(--ink); }
   .cards { display:flex; gap:30px; flex-wrap:wrap; }
 
-  /* Business card: 3.5in x 2in @ 96dpi = 336x192; scaled up x1.6 for on-screen preview */
+  /* Postcard: 6in x 4in @ 96dpi = 576x384 (true-size preview). Print at 6x4. */
   .card {
-    width:537px; height:307px; background:var(--paper); border-radius:12px;
+    width:576px; height:384px; background:var(--paper); border-radius:12px;
     box-shadow:0 10px 40px rgba(26,26,26,0.14); overflow:hidden; position:relative;
     display:flex;
   }
@@ -28,12 +28,12 @@
   .front { background:linear-gradient(160deg,#f3f5ff 0%, #ffffff 60%); }
   .front .left { flex:1.25; padding:20px 20px; display:flex; flex-direction:column; justify-content:space-between; }
   .front .ftop { display:flex; flex-direction:column; gap:10px; }
-  .render { width:100%; height:150px; object-fit:cover; border-radius:10px; display:block; }
+  .render { width:100%; height:214px; object-fit:cover; border-radius:10px; display:block; }
   .fbot { display:flex; flex-direction:column; }
-  .hook { font-size:16px; font-weight:800; letter-spacing:-0.015em; line-height:1.14; color:var(--ink); margin-bottom:7px; }
+  .hook { font-size:19px; font-weight:800; letter-spacing:-0.015em; line-height:1.14; color:var(--ink); margin-bottom:8px; }
   .hook b { color:var(--blue); }
-  .front .right { width:190px; background:var(--blue); display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:12px; padding:16px; }
+  .front .right { width:216px; background:var(--blue); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:14px; padding:18px; }
   .brand { font-weight:800; letter-spacing:0.16em; font-size:22px; }
   /* logo is ~8:1 (300x37); pin width and let height auto so it never stretches */
   .logo { display:block; width:150px; height:auto; align-self:flex-start; }
@@ -41,8 +41,8 @@
   .back .logo-white { width:172px; }           /* white logo as-is on the dark back */
   .machine { font-size:30px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
   .machine span { color:var(--slate); font-weight:600; font-size:13px; display:block; letter-spacing:0; margin-top:5px; }
-  .cta-big { color:#fff; font-size:19px; font-weight:800; line-height:1.08; letter-spacing:0.01em; text-align:center; text-transform:uppercase; }
-  .qr-box { background:#fff; border-radius:10px; padding:9px; width:124px; height:124px; }
+  .cta-big { color:#fff; font-size:23px; font-weight:800; line-height:1.08; letter-spacing:0.01em; text-align:center; text-transform:uppercase; }
+  .qr-box { background:#fff; border-radius:10px; padding:10px; width:150px; height:150px; }
   .qr-box svg { width:100%; height:100%; display:block; }
   .qr-cap { color:#fff; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-align:center; }
   .qr-sub { color:rgba(255,255,255,0.9); font-size:10px; text-align:center; margin-top:-4px; font-weight:600; }
@@ -55,7 +55,7 @@
   .back-row { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
   .back .contact { font-size:11px; color:#c9cdd6; line-height:1.6; }
   .back .contact b { color:#fff; }
-  .back .qr-box { width:118px; height:118px; }
+  .back .qr-box { width:146px; height:146px; }
   .back .qr-cap { color:#fff; }
 
   .legend { margin-top:34px; font-size:12.5px; color:var(--slate); line-height:1.7; }
@@ -67,8 +67,8 @@
 </head>
 <body>
 <div class="page">
-  <h1 class="title">iVT Expo 2026, Business Card Mockup (Skid Steer)</h1>
-  <p class="note">Two-sided card. <b>Front</b> = scan to open the interactive skid-steer explorer (3D + AR) · <b>Back</b> = scan to learn more (the iVT info page). QR SVGs are in this folder (print-ready, error-correction H).</p>
+  <h1 class="title">iVT Expo 2026, Postcard Mockup (Skid Steer)</h1>
+  <p class="note">Two-sided <b>postcard (6&Prime; &times; 4&Prime;)</b>. <b>Front</b> = scan to open the interactive skid-steer explorer (3D + AR) · <b>Back</b> = scan to learn more (the iVT info page). QR SVGs are in this folder (print-ready, error-correction H).</p>
 
   <div class="cards">
     <div class="card front">
