@@ -27,17 +27,62 @@
  .roi a{color:var(--blue);font-weight:700;text-decoration:none;}
 </style></head><body>
 <header><div class="brand">VNTANA · INTERNAL DEMO INDEX</div>
-<div class="sub">Every demo page we have built, what it is, last updated, and the live asset UUIDs it points to. For retire / keep decisions.</div></header>
+<div class="sub">Every demo page we have built, what it is, last updated, and the live asset UUIDs it points to. For retire / keep decisions. Links use root paths; every demo is also served under <code style="color:#9aa3b2">/custom/&lt;name&gt;</code> (e.g. /custom/imts).</div></header>
 <div class="warn"><b>Unlisted, not access-controlled.</b> Not linked anywhere and carries noindex, but anyone with the URL can open it. Do not share outside VNTANA.</div>
 <div class="wrap">
  <div class="legend">
    <span class="key"><span class="sw" style="background:#fff5f5;border:1px solid #f3c0c8"></span> Retire candidate</span>
    <span class="key"><span class="sw" style="background:#fffdf2;border:1px solid #ece3b0"></span> Version family — pick canonical</span>
    <span class="key"><span class="sw" style="background:#fff;border:1px solid var(--line)"></span> Keep</span>
-   <span style="margin-left:auto">32 pages</span>
+   <span style="margin-left:auto">41 pages</span>
  </div>
  <table><tr><th>Page</th><th>What it is</th><th>Updated</th><th>Live UUIDs</th><th>Note</th></tr>
  <tr class="keep">
+      <td><a href="/demos.html" target="_blank">demos.html</a><div class="grp">Public</div></td>
+      <td>The public 'Use Case Demos' directory (full demo list). Copied here from the old index.html when index.html became the branded landing. Served at /custom/demos.</td>
+      <td class="d">2026-08-17</td>
+      <td class="u"><code>ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d</code></td>
+      <td class="n">Keep. Public demo directory (the old index.html role). Breadcrumbs and "See all demos" point here.</td></tr><tr class="keep">
+      <td><a href="/tradeshows.html" target="_blank">tradeshows.html</a><div class="grp">Public</div></td>
+      <td>Tradeshow experiences folder. Cards link the IMTS and iVT booth pages. Served at /custom/tradeshows.</td>
+      <td class="d">2026-08-17</td>
+      <td class="u"><span class="none">none (links imts + ivt)</span></td>
+      <td class="n">Keep. New tradeshow hub, linked from the landing.</td></tr><tr class="keep">
+      <td><a href="/fluent-index.html" target="_blank">fluent-index.html</a><div class="grp">Fluent</div></td>
+      <td>Fluent Conveyors replacement-parts index. Links the two interactive Fluent product explorers (impact bed, helical drive). Client-branded (quiet).</td>
+      <td class="d">2026-08-17</td>
+      <td class="u"><span class="none">none (links the two explorers)</span></td>
+      <td class="n">Keep. Fluent suite entry page.</td></tr><tr class="keep">
+      <td><a href="/fluent-impact-bed.html" target="_blank">fluent-impact-bed.html</a><div class="grp">Fluent</div></td>
+      <td>Fluent conveyor impact bed. Click-to-select + ghost + camera-fly from authored hotspots, auto-explode. Vendored viewer.</td>
+      <td class="d">2026-08-10</td>
+      <td class="u"><code>1b881b2a-65b3-46e1-a466-556e1b780258</code></td>
+      <td class="n">Keep. Fluent (client-branded, keep brand quiet publicly).</td></tr><tr class="keep">
+      <td><a href="/fluent-helical-drive.html" target="_blank">fluent-helical-drive.html</a><div class="grp">Fluent</div></td>
+      <td>Fluent helical inline drive. Same select/ghost/camera-fly pattern; three-phase motor auto-explodes.</td>
+      <td class="d">2026-08-10</td>
+      <td class="u"><code>83ecddb7-a2cf-4181-9717-224b8a03f0a0</code></td>
+      <td class="n">Keep. Fluent (client-branded).</td></tr><tr class="ver">
+      <td><a href="/ivt-v2.html" target="_blank">ivt-v2.html</a><div class="grp">iVT Expo 2026</div></td>
+      <td>iVT booth page v2. Ashley's final copy merged (full blue hero over demo+lead, equal-height cards, Fluent product images, making_images video).</td>
+      <td class="d">2026-08-05</td>
+      <td class="u"><span class="none">— (embeds skid-steer-explorer)</span></td>
+      <td class="n">Version family. Compare vs ivt.html; pick canonical.</td></tr><tr class="keep">
+      <td><a href="/ar-skidsteer.html" target="_blank">ar-skidsteer.html</a><div class="grp">iVT Expo 2026</div></td>
+      <td>Direct skid-steer AR launch page (tap to view the loader in AR, no app).</td>
+      <td class="d">2026-07-31</td>
+      <td class="u"><code>8d8d2175-6c97-4978-b696-4486b1ab535e</code></td>
+      <td class="n">Keep. AR entry for the loader.</td></tr><tr class="keep">
+      <td><a href="/ivt-index.html" target="_blank">ivt-index.html</a><div class="grp">iVT Expo 2026</div></td>
+      <td>Internal iVT asset index (asset list for the show).</td>
+      <td class="d">2026-07-31</td>
+      <td class="u"><span class="none">none in page</span></td>
+      <td class="n">Internal. iVT asset list.</td></tr><tr class="keep">
+      <td><a href="/rexroth-ssl-ctl.html" target="_blank">rexroth-ssl-ctl.html</a><div class="grp">Rexroth</div></td>
+      <td>Bosch Rexroth SSL/CTL solutions explorer (skid-steer / compact-track-loader hydraulic + electronic components, click-to-select + ghost).</td>
+      <td class="d">2026-07-24</td>
+      <td class="u"><code>da847f30-4041-465c-8a2e-e394857be871</code></td>
+      <td class="n">Keep.</td></tr><tr class="keep">
       <td><a href="/skid-steer-explorer.html" target="_blank">skid-steer-explorer.html</a><div class="grp">iVT Expo 2026</div></td>
       <td>In-context component explorer. Hover/click a component on the skid steer: it highlights, the rest ghosts, camera flies to the saved hotspot view, PDP opens with render + drawing toggle. Small initial pins (CJ/DD/CP/GM/CA), exploded view, AR. Cameras driven by VNTANA hotspots.</td>
       <td class="d">2026-07-31</td>
@@ -54,8 +99,8 @@
       <td class="u">— (embeds skid-steer-explorer)</td>
       <td class="n">Keep. Active. Card 2 QR target (info page).</td></tr><tr class="keep">
       <td><a href="/ivt-cards/" target="_blank">ivt-cards/index.html</a><div class="grp">iVT Expo 2026</div></td>
-      <td>Two-sided business card. Front QR → skid-steer-explorer.html (3D+AR), Back QR → ivt.html. QR SVGs error-correction H, generated with segno. Red/orange studio render on front.</td>
-      <td class="d">2026-07-31</td>
+      <td>Two-sided <b>6&times;4 postcard</b> (resized from business card). Front QR -> skid-steer-explorer.html (3D+AR), Back QR -> ivt.html. QR SVGs error-correction H. Red/orange studio render on front.</td>
+      <td class="d">2026-08-17</td>
       <td class="u">— (QRs encode railway.app URLs)</td>
       <td class="n">Keep until printed. Regenerate QRs if a custom domain is locked.</td></tr><tr class="keep">
       <td><a href="/astec.html" target="_blank">astec.html</a><div class="grp">Astec</div></td>
@@ -84,25 +129,25 @@
       <td class="u"><code>8608f3b8-e316-4c3b-b1d0-d37cb3d1642d</code><br><code>b86d5716-d564-481b-bea3-5e7aa0446449</code></td>
       <td class="n">Keep. Newer of the two.</td></tr><tr class="keep">
       <td><a href="/imts.html" target="_blank">imts.html</a><div class="grp">IMTS 2026</div></td>
-      <td>Booth lead-gen page, 3 tracks via ?demo=.</td>
-      <td class="d">2026-07-17</td>
-      <td class="u"><code>ce517cf7-3724-429e-95f0-796a6ff0b88d</code><br><code>e1e5adb1-41eb-4eb3-8a32-b56a757e2201</code></td>
-      <td class="n">Keep. Active.</td></tr><tr class="keep">
+      <td>IMTS booth page. Three-tier demo tour (small parts / complete machine / full systems). Full-systems embeds the hotspot-enabled loadout; scene-graph + loader videos; two AI renders; 83% proof stat.</td>
+      <td class="d">2026-08-18</td>
+      <td class="u"><code>95434200-12e8-4984-a6ae-0a5171d901ea</code> (loadout, kanawha-scales/test, 11 hotspots)</td>
+      <td class="n">Keep. Active. Loadout embed swapped to the hotspot-enabled asset.</td></tr><tr class="keep">
       <td><a href="/imts-cards/" target="_blank">imts-cards/index.html</a><div class="grp">IMTS 2026</div></td>
-      <td>Business card mockup + print-ready QR SVGs.</td>
-      <td class="d">2026-07-17</td>
-      <td class="u"><code>e1e5adb1-41eb-4eb3-8a32-b56a757e2201</code></td>
-      <td class="n">Keep until printed, then archive.</td></tr><tr class="keep">
+      <td>Two-sided <b>6&times;4 postcard</b> (Loader). Front QR -> skid-steer-explorer.html (loader 3D+AR), Back QR -> imts.html. Loader AI studio render on front. QR SVGs error-correction H.</td>
+      <td class="d">2026-08-18</td>
+      <td class="u"><code>8d8d2175-6c97-4978-b696-4486b1ab535e</code> (front QR target)</td>
+      <td class="n">Keep until printed. Regenerate QRs if a custom domain is locked. First IMTS postcard; more per asset to come.</td></tr><tr class="keep">
       <td><a href="/tytus-configurator.html" target="_blank">tytus-configurator.html</a><div class="grp">TYTUS</div></td>
       <td>Modular grill configurator with guided tour + scan-to-AR.</td>
       <td class="d">2026-07-16</td>
       <td class="u"><code>58a6c265-7d08-432a-8676-fc031647f4ad</code><br><code>5de3fff3-781f-4411-a4b7-3763ba9e0ac2</code><br><code>b493f0ca-219e-43b1-bc32-9d0e7bfda4e0</code><br><code>c8506ef9-2ca4-49d9-8032-b6d9229a8ffb</code><br><code>db71d2e8-5964-4608-871b-3563686d3152</code><br><code>de911bf5-bf0d-45b5-84bb-d2669c260481</code></td>
       <td class="n">Keep. Active.</td></tr><tr class="keep">
       <td><a href="/index.html" target="_blank">index.html</a><div class="grp">Public</div></td>
-      <td>Public 'Use Case Demos' directory that links out to the demos below.</td>
-      <td class="d">2026-07-14</td>
+      <td>VNTANA-branded landing ("From an embed to a fully custom experience"), rebuilt this session. Live stroller embed in the hero, product-in-three-steps, custom use cases. All demos also served under /custom/*.</td>
+      <td class="d">2026-08-17</td>
       <td class="u"><code>ca4aebfc-ebc6-4e79-b4e7-8ce4bca4d58d</code></td>
-      <td class="n">Keep. This is the public front door.</td></tr><tr class="keep">
+      <td class="n">Keep. Public front door. The old "Use Case Demos" directory role moved to demos.html.</td></tr><tr class="keep">
       <td><a href="/roeslein-uvbc-lamp-v2.html" target="_blank">roeslein-uvbc-lamp-v2.html</a><div class="grp">Roeslein</div></td>
       <td>UV Lamp Assembly (v2, new viewer).</td>
       <td class="d">2026-07-10</td>
@@ -183,11 +228,11 @@
       <td class="d">2026-06-09</td>
       <td class="u"><span class="none">none in page</span></td>
       <td class="n">Pairs with sunsource.html.</td></tr><tr class="keep">
-      <td><a href="/sunsource.html" target="_blank">sunsource.html</a><div class="grp">SunSource</div></td>
-      <td>Interactive parts catalog for mobile equipment.</td>
-      <td class="d">2026-06-09</td>
-      <td class="u"><span class="none">none in page</span></td>
-      <td class="n">Pairs with animated version. Decide if both needed.</td></tr><tr class="retire">
+      <td><a href="/sunsource.html" target="_blank">sunsource.html</a><div class="grp">Utility Truck</div></td>
+      <td>Utility Truck parts explorer (rebranded from SunSource). Click-to-select + ghost via the vendored viewer, parts table, quote/cart.</td>
+      <td class="d">2026-08-17</td>
+      <td class="u"><code>4080e745-de21-49e8-a650-019544dea546</code> (blender ws)</td>
+      <td class="n">Keep. Rebranded SunSource -> Utility Truck; upgraded to setEffect select/ghost. Served at /custom/sunsource.</td></tr><tr class="retire">
       <td><a href="/hotspot-translations.html" target="_blank">hotspot-translations.html</a><div class="grp">Internal tool</div></td>
       <td>Hotspot translation test (7 UUIDs).</td>
       <td class="d">2026-06-04</td>
