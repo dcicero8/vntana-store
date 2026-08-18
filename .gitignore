@@ -1,0 +1,3 @@
+
+# Source videos (large); only the transcoded .mp4 is deployed
+*.mov
