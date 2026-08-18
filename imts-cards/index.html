@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IMTS Business Card, BHF-50 (Automation)</title>
+<title>IMTS 2026 Postcard, Loader</title>
 <style>
   :root { --blue:#4B61F9; --ink:#1A1A1A; --slate:#5a6472; --paper:#fff; --line:#e5e8ef; }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -15,9 +15,9 @@
   .note b { color:var(--ink); }
   .cards { display:flex; gap:30px; flex-wrap:wrap; }
 
-  /* Business card: 3.5in x 2in @ 96dpi = 336x192; scaled up x1.6 for on-screen preview */
+  /* Postcard: 6in x 4in @ 96dpi = 576x384 (true-size preview). Print at 6x4. */
   .card {
-    width:537px; height:307px; background:var(--paper); border-radius:12px;
+    width:576px; height:384px; background:var(--paper); border-radius:12px;
     box-shadow:0 10px 40px rgba(26,26,26,0.14); overflow:hidden; position:relative;
     display:flex;
   }
@@ -28,9 +28,12 @@
   .front { background:linear-gradient(160deg,#f3f5ff 0%, #ffffff 60%); }
   .front .left { flex:1.25; padding:20px 20px; display:flex; flex-direction:column; justify-content:space-between; }
   .front .ftop { display:flex; flex-direction:column; gap:10px; }
-  .render { width:100%; height:172px; object-fit:cover; border-radius:10px; display:block; }
-  .front .right { width:190px; background:var(--blue); display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:12px; padding:16px; }
+  .render { width:100%; height:214px; object-fit:cover; border-radius:10px; display:block; }
+  .fbot { display:flex; flex-direction:column; }
+  .hook { font-size:19px; font-weight:800; letter-spacing:-0.015em; line-height:1.14; color:var(--ink); margin-bottom:8px; }
+  .hook b { color:var(--blue); }
+  .front .right { width:216px; background:var(--blue); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:14px; padding:18px; }
   .brand { font-weight:800; letter-spacing:0.16em; font-size:22px; }
   /* logo is ~8:1 (300x37); pin width and let height auto so it never stretches */
   .logo { display:block; width:150px; height:auto; align-self:flex-start; }
@@ -38,8 +41,8 @@
   .back .logo-white { width:172px; }           /* white logo as-is on the dark back */
   .machine { font-size:30px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
   .machine span { color:var(--slate); font-weight:600; font-size:13px; display:block; letter-spacing:0; margin-top:5px; }
-  .cta-big { color:#fff; font-size:19px; font-weight:800; line-height:1.08; letter-spacing:0.01em; text-align:center; text-transform:uppercase; }
-  .qr-box { background:#fff; border-radius:10px; padding:9px; width:124px; height:124px; }
+  .cta-big { color:#fff; font-size:23px; font-weight:800; line-height:1.08; letter-spacing:0.01em; text-align:center; text-transform:uppercase; }
+  .qr-box { background:#fff; border-radius:10px; padding:10px; width:150px; height:150px; }
   .qr-box svg { width:100%; height:100%; display:block; }
   .qr-cap { color:#fff; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-align:center; }
   .qr-sub { color:rgba(255,255,255,0.9); font-size:10px; text-align:center; margin-top:-4px; font-weight:600; }
@@ -52,7 +55,7 @@
   .back-row { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
   .back .contact { font-size:11px; color:#c9cdd6; line-height:1.6; }
   .back .contact b { color:#fff; }
-  .back .qr-box { width:118px; height:118px; }
+  .back .qr-box { width:146px; height:146px; }
   .back .qr-cap { color:#fff; }
 
   .legend { margin-top:34px; font-size:12.5px; color:var(--slate); line-height:1.7; }
@@ -64,37 +67,40 @@
 </head>
 <body>
 <div class="page">
-  <h1 class="title">IMTS 2026, Business Card Mockup (Automation / BHF-50)</h1>
-  <p class="note">Design reference for Scott. Two-sided card: <b>Front</b> = scan to see the machine in 3D/AR · <b>Back</b> = scan to learn more. QR SVGs are in this folder (print-ready, error-correction H).</p>
+  <h1 class="title">IMTS 2026, Postcard Mockup (Loader)</h1>
+  <p class="note">Two-sided <b>postcard (6&Prime; &times; 4&Prime;)</b>. <b>Front</b> = scan to open the interactive loader explorer (3D + AR) &middot; <b>Back</b> = scan to learn more (the IMTS info page). QR SVGs are in this folder (print-ready, error-correction H).</p>
 
   <div class="cards">
     <div class="card front">
-      <span class="card-label">Front · See the Asset</span>
+      <span class="card-label">Front &middot; See the Asset</span>
       <div class="left">
         <div class="ftop">
           <img class="logo logo-dark" src="vntana-logo-white.png" alt="VNTANA">
-          <img class="render" src="bhf50.png" alt="BHF-50 hopper feeder">
+          <img class="render" src="skidsteer.png" alt="Wheeled loader">
         </div>
-        <div class="machine">BHF-50<span>Vibrating Hopper Feeder</span></div>
+        <div class="fbot">
+          <div class="hook">Complex machines, <b>simple discovery.</b></div>
+          <div class="machine">Loader<span>Wheeled loader, interactive 3D</span></div>
+        </div>
       </div>
       <div class="right">
-        <div class="cta-big">SCAN<br>TO SEE IT<br>IN 3D &amp; AR</div>
+        <div class="cta-big">SCAN<br>TO EXPLORE</div>
         <div class="qr-box" id="qrFront"></div>
-        <div class="qr-sub">Point your camera · no app</div>
+        <div class="qr-sub">3D &amp; AR &middot; no app needed</div>
       </div>
     </div>
 
     <div class="card back">
-      <span class="card-label">Back · Learn More</span>
+      <span class="card-label">Back &middot; Learn More</span>
       <div>
         <img class="logo logo-white" src="vntana-logo-white.png" alt="VNTANA">
         <div class="tagline">Sell more with CAD you already own.</div>
-        <div class="cat">Automation · Robotics · Material Handling</div>
+        <div class="cat">Manufacturing &middot; Machinery &middot; Material Handling</div>
       </div>
       <div class="back-row">
         <div class="contact">
           <b>3D Product Digital Asset Management</b><br>
-          IMTS 2026 · McCormick Place<br>
+          IMTS 2026 &middot; McCormick Place, Chicago &middot; Sep 14&ndash;19<br>
           vntana.com/schedule-demo
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
@@ -107,11 +113,11 @@
 
   <div class="legend">
     <b>QR targets, click to review without scanning:</b><br>
-    See the Asset (3D + auto-AR) → <a href="https://embed.vntana.com?productUuid=e1e5adb1-41eb-4eb3-8a32-b56a757e2201&clientSlug=itms&organizationSlug=DCicero&autoAR=true" target="_blank">open the BHF-50 in AR ↗</a><br>
-    Learn More (webpage) → <a href="https://vntana-store-production.up.railway.app/imts.html?demo=automation" target="_blank">vntana-store-production.up.railway.app/imts.html?demo=automation ↗</a>
+    Front &middot; See the Asset &rarr; <a href="https://vntana-store-production.up.railway.app/skid-steer-explorer.html" target="_blank">skid-steer-explorer.html (loader explorer, 3D + AR) &#8599;</a><br>
+    Back &middot; Learn More &rarr; <a href="https://vntana-store-production.up.railway.app/imts.html" target="_blank">imts.html (IMTS info page) &#8599;</a>
   </div>
   <div class="flag">
-    <b>Before printing:</b> the "Learn More" QR is provisional, it points at the current <code>railway.app</code> URL. If you attach a custom domain (e.g. imts.vntana.com), this QR must be regenerated. Lock the domain first. Also: confirm featuring Sandfield's BHF-50 by name is cleared, or relabel generically.
+    <b>Before printing:</b> both QR codes point at the current <code>railway.app</code> URLs. If you attach a custom domain (e.g. demo.vntana.com), regenerate both QRs, lock the domain first. Confirm the front asset is the loader you want, and swap <code>skidsteer.png</code> if you have an IMTS-specific loader render.
   </div>
 </div>
 
