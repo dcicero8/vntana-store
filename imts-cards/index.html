@@ -53,16 +53,16 @@
   .qr-sub { color:rgba(255,255,255,0.9); font-size:10px; text-align:center; margin-top:-4px; font-weight:600; }
 
   /* ---- BACK: Robot arm + Learn More ---- */
-  .back { background:var(--ink); color:#fff; flex-direction:column; padding:24px 26px; justify-content:space-between; }
-  .back .btop { display:flex; gap:18px; align-items:flex-start; }
-  .back .brender { width:172px; height:120px; border-radius:9px; flex:none; }
+  .back { background:var(--ink); color:#fff; flex-direction:column; padding:22px 26px; justify-content:space-between; align-items:center; }
+  .back .binfo { width:100%; }
+  .back .brender { width:300px; height:132px; border-radius:9px; flex:none; align-self:center; }
   .back .ph { background:repeating-linear-gradient(45deg,#26272e,#26272e 10px,#2e3038 10px,#2e3038 20px);
     border-color:#3c3f4b; color:#aeb4c6; }
   .back .binfo { flex:1; }
   .back .brand { font-size:24px; }
   .back .tagline { font-size:14px; color:#c9cdd6; font-style:italic; margin-top:6px; }
   .back .cat { font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--blue); font-weight:700; margin-top:12px; }
-  .back-row { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
+  .back-row { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; width:100%; }
   .back .contact { font-size:11px; color:#c9cdd6; line-height:1.6; }
   .back .contact b { color:#fff; }
   .back .qr-box { width:132px; height:132px; }
@@ -105,16 +105,14 @@
 
     <div class="card back">
       <span class="card-label">Back · Robotic Arm</span>
-      <div class="btop">
-        <!-- SCOTT: replace this placeholder div with <img class="brender" src="robot-arm.jpg" alt="Robotic arm"> -->
-        <div class="brender ph">
-          <div><div class="ph-t">Robot arm</div><div class="ph-s">Placeholder · swap in</div></div>
-        </div>
-        <div class="binfo">
-          <img class="logo logo-white" src="vntana-logo-white.png" alt="VNTANA">
-          <div class="tagline">Sell more with the CAD you already own.</div>
-          <div class="cat">Machine Tools · Automation · Robotics</div>
-        </div>
+      <div class="binfo">
+        <img class="logo logo-white" src="vntana-logo-white.png" alt="VNTANA">
+        <div class="tagline">Sell more with the CAD you already own.</div>
+        <div class="cat">Machine Tools · Automation · Robotics</div>
+      </div>
+      <!-- SCOTT: replace this placeholder div with <img class="brender" src="robot-arm.jpg" alt="Robotic arm"> -->
+      <div class="brender ph">
+        <div><div class="ph-t">Robot arm</div><div class="ph-s">Placeholder · swap in</div></div>
       </div>
       <div class="back-row">
         <div class="contact">
