@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IMTS 2026 Postcard, Loadout</title>
+<title>IMTS 2026 Postcard, CNC + Robot Arm</title>
 <style>
   :root { --blue:#4B61F9; --ink:#1A1A1A; --slate:#5a6472; --paper:#fff; --line:#e5e8ef; }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -28,35 +28,44 @@
   .front { background:linear-gradient(160deg,#f3f5ff 0%, #ffffff 60%); }
   .front .left { flex:1.25; padding:20px 20px; display:flex; flex-direction:column; justify-content:space-between; }
   .front .ftop { display:flex; flex-direction:column; gap:10px; }
-  .render { width:100%; height:214px; object-fit:contain; background:#8d8d8d; border-radius:10px; display:block; }
+  .render { width:100%; height:214px; object-fit:cover; border-radius:10px; display:block; }
+  /* Placeholder image slot: Scott drops the real render in and deletes the .ph styling */
+  .ph { display:flex; align-items:center; justify-content:center; text-align:center;
+    background:repeating-linear-gradient(45deg,#eef0f7,#eef0f7 10px,#e6e9f4 10px,#e6e9f4 20px);
+    border:2px dashed #b9c0d6; color:#6b7391; }
+  .ph .ph-t { font-size:15px; font-weight:800; letter-spacing:0.02em; }
+  .ph .ph-s { font-size:10.5px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-top:6px; color:#8b93ad; }
   .fbot { display:flex; flex-direction:column; }
   .hook { font-size:19px; font-weight:800; letter-spacing:-0.015em; line-height:1.14; color:var(--ink); margin-bottom:8px; }
   .hook b { color:var(--blue); }
   .front .right { width:216px; background:var(--blue); display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:14px; padding:18px; }
   .brand { font-weight:800; letter-spacing:0.16em; font-size:22px; }
-  /* logo is ~8:1 (300x37); pin width and let height auto so it never stretches */
   .logo { display:block; width:150px; height:auto; align-self:flex-start; }
   .logo-dark { filter:brightness(0); }        /* white logo forced black for the light front */
   .back .logo-white { width:172px; }           /* white logo as-is on the dark back */
   .machine { font-size:30px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
   .machine span { color:var(--slate); font-weight:600; font-size:13px; display:block; letter-spacing:0; margin-top:5px; }
-  .cardtag { font-size:14px; font-weight:600; color:var(--slate); margin-top:5px; letter-spacing:0; }
   .cta-big { color:#fff; font-size:23px; font-weight:800; line-height:1.08; letter-spacing:0.01em; text-align:center; text-transform:uppercase; }
   .qr-box { background:#fff; border-radius:10px; padding:10px; width:150px; height:150px; }
   .qr-box svg { width:100%; height:100%; display:block; }
   .qr-cap { color:#fff; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-align:center; }
   .qr-sub { color:rgba(255,255,255,0.9); font-size:10px; text-align:center; margin-top:-4px; font-weight:600; }
 
-  /* ---- BACK: Learn More ---- */
-  .back { background:var(--ink); color:#fff; flex-direction:column; padding:26px 26px; justify-content:space-between; }
+  /* ---- BACK: Robot arm + Learn More ---- */
+  .back { background:var(--ink); color:#fff; flex-direction:column; padding:24px 26px; justify-content:space-between; }
+  .back .btop { display:flex; gap:18px; align-items:flex-start; }
+  .back .brender { width:172px; height:120px; border-radius:9px; flex:none; }
+  .back .ph { background:repeating-linear-gradient(45deg,#26272e,#26272e 10px,#2e3038 10px,#2e3038 20px);
+    border-color:#3c3f4b; color:#aeb4c6; }
+  .back .binfo { flex:1; }
   .back .brand { font-size:24px; }
   .back .tagline { font-size:14px; color:#c9cdd6; font-style:italic; margin-top:6px; }
-  .back .cat { font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--blue); font-weight:700; margin-top:14px; }
+  .back .cat { font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--blue); font-weight:700; margin-top:12px; }
   .back-row { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
   .back .contact { font-size:11px; color:#c9cdd6; line-height:1.6; }
   .back .contact b { color:#fff; }
-  .back .qr-box { width:146px; height:146px; }
+  .back .qr-box { width:132px; height:132px; }
   .back .qr-cap { color:#fff; }
 
   .legend { margin-top:34px; font-size:12.5px; color:var(--slate); line-height:1.7; }
@@ -68,45 +77,54 @@
 </head>
 <body>
 <div class="page">
-  <h1 class="title">IMTS 2026, Postcard Mockup (Loadout)</h1>
-  <p class="note">Two-sided <b>postcard (6&Prime; &times; 4&Prime;)</b>. <b>Front</b> = scan to open the interactive loadout viewer (3D + AR, 11 hotspots) &middot; <b>Back</b> = scan to learn more (the IMTS info page). QR SVGs are in this folder (print-ready, error-correction H). <b>Card template:</b> every IMTS card shares this copy ("Your product in every buyer's hand" / "Sell more with the CAD you already own"); only the front photo and the QR change per asset.</p>
+  <h1 class="title">IMTS 2026, Postcard Mockup (CNC + Robot Arm)</h1>
+  <p class="note">Two-sided <b>postcard (6&Prime; &times; 4&Prime;)</b> mirroring the iVT card layout. <b>Front</b> = CNC machine. <b>Back</b> = robotic arm. <b>Both QR codes scan to the same page</b> (imts.html). The two image slots are dashed placeholders, Scott swaps in the final renders.</p>
 
   <div class="cards">
     <div class="card front">
-      <span class="card-label">Front &middot; See the Asset</span>
+      <span class="card-label">Front · CNC Machine</span>
       <div class="left">
         <div class="ftop">
           <img class="logo logo-dark" src="vntana-logo-white.png" alt="VNTANA">
-          <img class="render" src="loadout-ai.png" alt="Railcar loadout system, AI studio render">
+          <!-- SCOTT: replace this placeholder div with <img class="render" src="cnc.jpg" alt="CNC machine"> -->
+          <div class="render ph">
+            <div><div class="ph-t">CNC machine image</div><div class="ph-s">Placeholder · swap in</div></div>
+          </div>
         </div>
         <div class="fbot">
-          <div class="hook">Your product in <b>every buyer's hand.</b></div>
-          <div class="cardtag">Sell more with the CAD you already own.</div>
+          <div class="hook">Your product, <b>in every buyer's hand.</b></div>
+          <div class="machine">CNC Machine<span>Machining center</span></div>
         </div>
       </div>
       <div class="right">
         <div class="cta-big">SCAN<br>TO EXPLORE</div>
         <div class="qr-box" id="qrFront"></div>
-        <div class="qr-sub">3D &amp; AR &middot; no app needed</div>
+        <div class="qr-sub">3D &amp; AR · no app needed</div>
       </div>
     </div>
 
     <div class="card back">
-      <span class="card-label">Back &middot; Learn More</span>
-      <div>
-        <img class="logo logo-white" src="vntana-logo-white.png" alt="VNTANA">
-        <div class="tagline">Sell more with CAD you already own.</div>
-        <div class="cat">Manufacturing &middot; Machinery &middot; Material Handling</div>
+      <span class="card-label">Back · Robotic Arm</span>
+      <div class="btop">
+        <!-- SCOTT: replace this placeholder div with <img class="brender" src="robot-arm.jpg" alt="Robotic arm"> -->
+        <div class="brender ph">
+          <div><div class="ph-t">Robot arm</div><div class="ph-s">Placeholder · swap in</div></div>
+        </div>
+        <div class="binfo">
+          <img class="logo logo-white" src="vntana-logo-white.png" alt="VNTANA">
+          <div class="tagline">Sell more with the CAD you already own.</div>
+          <div class="cat">Machine Tools · Automation · Robotics</div>
+        </div>
       </div>
       <div class="back-row">
         <div class="contact">
           <b>3D Product Digital Asset Management</b><br>
-          IMTS 2026 &middot; McCormick Place, Chicago &middot; Sep 14&ndash;19<br>
+          IMTS 2026 · McCormick Place, Chicago<br>
           vntana.com/schedule-demo
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
           <div class="qr-box" id="qrBack"></div>
-          <div class="qr-cap">Learn More</div>
+          <div class="qr-cap">Scan to explore</div>
         </div>
       </div>
     </div>
@@ -114,21 +132,19 @@
 
   <div class="legend">
     <b>QR targets, click to review without scanning:</b><br>
-    Front &middot; See the Asset &rarr; <a href="https://embed.vntana.com/v2?productUuid=95434200-12e8-4984-a6ae-0a5171d901ea&clientSlug=test&organizationSlug=kanawha-scales" target="_blank">loadout viewer (3D + AR, 11 hotspots) &#8599;</a><br>
-    Back &middot; Learn More &rarr; <a href="https://vntana-store-production.up.railway.app/imts.html" target="_blank">imts.html (IMTS info page) &#8599;</a>
+    Front · CNC Machine → <a href="https://vntana-store-production.up.railway.app/imts.html" target="_blank">imts.html (IMTS Page 1) ↗</a><br>
+    Back · Robotic Arm → <a href="https://vntana-store-production.up.railway.app/imts.html" target="_blank">imts.html (same page) ↗</a>
   </div>
   <div class="flag">
-    <b>Before printing:</b> front QR opens the live loadout viewer on <code>embed.vntana.com</code> (product 95434200); back QR points at the <code>railway.app</code> IMTS page. If you move the IMTS page to a custom domain (e.g. demo.vntana.com), regenerate the back QR. Front render is the loadout AI studio image (<code>loadout-ai.png</code>).
+    <b>Before printing:</b> both QR codes point at the current <code>railway.app</code> URL. If you attach a custom domain (e.g. imts.vntana.com), regenerate <code>qr-imts.svg</code>, lock the domain first. Image slots are placeholders, drop <code>cnc.jpg</code> (front) and <code>robot-arm.jpg</code> (back) into this folder and swap the two commented lines.
   </div>
 </div>
 
 <script>
-  // Inline the QR SVGs so the card is self-contained on screen
-  Promise.all([
-    fetch('qr-see-asset.svg').then(r=>r.text()), fetch('qr-learn-more.svg').then(r=>r.text())
-  ]).then(([a,b])=>{
-    document.getElementById('qrFront').innerHTML = a;
-    document.getElementById('qrBack').innerHTML = b;
+  // Both QRs point at the same page (imts.html), so inline the one SVG into both slots
+  fetch('qr-imts.svg').then(r=>r.text()).then(svg=>{
+    document.getElementById('qrFront').innerHTML = svg;
+    document.getElementById('qrBack').innerHTML = svg;
   });
 </script>
 </body>
