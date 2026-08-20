@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bobcat S86 · Faster 3D Load Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#4B61F9; --blue-d:#3747B6; --navy:#041378; --mint:#7FE2AF;
+    --ink:#1A1A1A; --muted:#5b5b62; --line:#e7e7ea; --bg:#f6f7fb; --white:#fff;
+    --grad:linear-gradient(209deg,#4B61F9 0%,#3747B6 55%,#041378 100%);
+    --head:Arial,"Helvetica Neue",Helvetica,sans-serif; --body:"Roboto",Arial,sans-serif;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:var(--body);color:var(--ink);background:var(--white);-webkit-font-smoothing:antialiased;line-height:1.55}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+  h1,h2,h3{font-family:var(--head);font-weight:700;letter-spacing:-.01em;line-height:1.1;margin:0}
+  a{text-decoration:none;color:inherit}
+  .topbar{background:#000;color:#fff}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+  .topbar img{height:19px;display:block}
+  .topbar .crumb{font-family:var(--body);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#cfd2ff}
+  .hero{background:var(--grad);color:#fff;position:relative;overflow:hidden}
+  .hero .wrap{padding:54px 28px 58px;position:relative;z-index:2}
+  .hero .tri{position:absolute;right:-90px;top:-90px;width:420px;height:420px;background:radial-gradient(circle at 30% 30%,rgba(127,226,175,.35),transparent 60%)}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin-bottom:14px}
+  .hero h1{font-size:40px;margin-bottom:14px;max-width:20ch}
+  .hero p{font-size:17px;max-width:62ch;color:#eef0ff;margin:0}
+  @media(max-width:760px){ .hero h1{font-size:30px} }
+
+  .band{padding:50px 0}
+  .band.alt{background:var(--bg)}
+  .lead{max-width:70ch}
+  .lead .k{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+  .lead h2{font-size:27px;margin-bottom:10px}
+  .lead p{font-size:16px;color:var(--muted);margin:0 0 6px}
+
+  /* demo option layout */
+  .opt{display:grid;grid-template-columns:.85fr 1.15fr;gap:38px;align-items:center}
+  .opt.rev .txt{order:2}
+  @media(max-width:860px){ .opt,.opt.rev{grid-template-columns:1fr} .opt.rev .txt{order:0} }
+  .badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0b0b0d;background:var(--mint);padding:5px 10px;border-radius:6px;margin-bottom:12px}
+  .opt h3{font-size:23px;margin-bottom:10px}
+  .opt .txt p{font-size:15.5px;color:var(--muted);margin:0 0 12px}
+  .pts{list-style:none;margin:6px 0 0;padding:0}
+  .pts li{position:relative;padding-left:22px;margin-bottom:8px;font-size:14.5px;color:#33333a}
+  .pts li:before{content:"";position:absolute;left:0;top:7px;width:9px;height:9px;border-radius:2px;background:var(--mint)}
+
+  /* the reusable 3D "stage": poster + play, swaps to iframe on demand */
+  .stage{position:relative;width:100%;aspect-ratio:16/10;border-radius:16px;overflow:hidden;background:#0f1330;
+    border:1px solid var(--line);box-shadow:0 16px 40px rgba(20,20,30,.10)}
+  .stage .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .stage .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,19,120,.05),rgba(4,19,120,.35))}
+  .stage .cta{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;border:0;background:transparent;width:100%;color:#fff;font-family:var(--body)}
+  .stage .play{width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(0,0,0,.28);transition:transform .16s ease}
+  .stage .cta:hover .play{transform:scale(1.06)}
+  .stage .play svg{margin-left:4px}
+  .stage .label{font-size:14px;font-weight:700;letter-spacing:.04em;background:rgba(4,19,120,.55);padding:8px 16px;border-radius:999px;backdrop-filter:blur(4px)}
+  .stage .sub{font-size:12px;color:#dfe3ff;opacity:.9}
+  .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  /* branded loading overlay */
+  .ld{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    background:var(--grad);color:#fff;transition:opacity .4s ease;z-index:3}
+  .ld .spin{width:44px;height:44px;border-radius:50%;border:4px solid rgba(255,255,255,.25);border-top-color:var(--mint);animation:sp 1s linear infinite}
+  .ld p{font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin:0;color:#eef0ff}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* modal */
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:24px;
+    background:rgba(4,10,40,.72);backdrop-filter:blur(3px)}
+  .modal.open{display:flex}
+  .modal .box{position:relative;width:min(1000px,100%);aspect-ratio:16/10;max-height:86vh;background:#0f1330;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .modal .box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .modal .x{position:absolute;top:12px;right:12px;z-index:4;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;
+    background:rgba(255,255,255,.92);font-size:20px;line-height:1;color:#111;display:flex;align-items:center;justify-content:center}
+
+  .note{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 24px}
+  .note .badge{background:#e7ebff;color:var(--blue-d)}
+  .note h3{font-size:21px;margin-bottom:8px}
+  .note p{font-size:15.5px;color:var(--muted);margin:0 0 10px}
+
+  .cmp{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+  @media(max-width:760px){ .cmp{grid-template-columns:1fr} }
+  .cmp .c{border:1px solid var(--line);border-radius:14px;padding:18px 18px}
+  .cmp .c b{display:block;font-family:var(--head);font-size:16px;margin-bottom:6px}
+  .cmp .c span{font-size:14px;color:var(--muted)}
+
+  footer{background:#000;color:#fff;margin-top:8px}
+  footer .wrap{padding:26px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+  footer img{height:19px} footer a.ext{font-size:14px;color:#cfd2ff}
+  .flag{max-width:1120px;margin:18px auto 0;padding:14px 28px;font-size:12.5px;color:#7c4a1e;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px}
+  .flag b{color:#9a3412}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <a href="/"><img src="VNTANA-logo-white-300x37.png" alt="VNTANA"></a>
+  <div class="crumb">Bobcat &middot; S86 Load Options</div>
+</div></div>
+
+<section class="hero">
+  <div class="tri"></div>
+  <div class="wrap">
+    <div class="eyebrow">3D load strategy</div>
+    <h1>Keep the page fast, load the S86 only when the visitor asks.</h1>
+    <p>The loader is a large model, so loading it on every page view slows the experience. These are three ways to defer that cost so the product page stays instant, and the visitor decides when to bring the 3D in. Nothing on this page loads a 3D model until you click.</p>
+  </div>
+</section>
+
+<!-- OPTION 1: CLICK TO LOAD IN PLACE -->
+<section class="band"><div class="wrap">
+  <div class="opt">
+    <div class="txt">
+      <span class="badge">Option 1</span>
+      <h3>Click to load, in place</h3>
+      <div class="txt"><p>The page ships a lightweight preview image. The 3D viewer loads right where the image was, only after the visitor clicks. A branded loading screen fills the gap while the model streams in.</p></div>
+      <ul class="pts">
+        <li>Zero 3D weight on initial page load</li>
+        <li>Stays inline, no layout shift or new window</li>
+        <li>Branded loading screen while the model streams</li>
+      </ul>
+    </div>
+    <div class="stage" data-stage>
+      <img class="poster" src="assets/bobcat-s86-poster.jpg" alt="Bobcat S86 skid-steer loader">
+      <div class="veil"></div>
+      <button class="cta" data-load-inline>
+        <span class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#3747B6"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="label">View in 3D</span>
+        <span class="sub">loads on click, not on page load</span>
+      </button>
+    </div>
+  </div>
+</div></section>
+
+<!-- OPTION 2: PREVIEW + POP-OUT MODAL -->
+<section class="band alt"><div class="wrap">
+  <div class="opt rev">
+    <div class="txt">
+      <span class="badge">Option 2</span>
+      <h3>Preview, then pop out</h3>
+      <div class="txt"><p>The product page shows only the static preview. A button opens the 3D in a focused pop-out over the page, and the model loads at that moment. Closing it returns to the page and unloads the viewer.</p></div>
+      <ul class="pts">
+        <li>Product page stays completely static and fast</li>
+        <li>3D gets a large, focused stage when it is opened</li>
+        <li>Closing unloads the viewer, nothing lingers</li>
+      </ul>
+    </div>
+    <div class="stage">
+      <img class="poster" src="assets/bobcat-s86-poster.jpg" alt="Bobcat S86 skid-steer loader">
+      <div class="veil"></div>
+      <button class="cta" data-open-modal>
+        <span class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#3747B6"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="label">View in 3D</span>
+        <span class="sub">opens in a pop-out, loads on open</span>
+      </button>
+    </div>
+  </div>
+</div></section>
+
+<!-- OPTION 3: LIGHTER MODEL (LOD) -->
+<section class="band"><div class="wrap">
+  <div class="lead" style="margin-bottom:20px">
+    <div class="k">Option 3</div>
+    <h2>Serve a lighter model.</h2>
+    <p>The two options above defer <em>when</em> the model loads. This one reduces <em>how heavy</em> it is, so even the loaded experience is faster. No rebuild of the CAD required, the same source asset is run through a lighter optimization profile, or split so the page loads a lean base and pulls detail only when needed.</p>
+  </div>
+  <div class="cmp">
+    <div class="c"><b>Lighter optimization profile</b><span>Re-optimize the existing loader to a smaller target (fewer internals, tighter mesh and texture budget) for the web view.</span></div>
+    <div class="c"><b>Lean base + detail on demand</b><span>Load a lightweight base model first; pull heavier sub-assemblies (internals, attachments) into a separate asset only when a visitor drills in.</span></div>
+    <div class="c"><b>Two versions, one embed</b><span>Serve a low-res version by default and swap to the full-res build for the users who want it, using variants.</span></div>
+  </div>
+</div></section>
+
+<!-- BASE VS CUSTOM -->
+<section class="band alt"><div class="wrap">
+  <div class="lead">
+    <div class="k">Good to know</div>
+    <h2>Options 1 and 2 need no custom viewer.</h2>
+    <p>Click-to-load and the pop-out are built around the standard embed, they are just page-side patterns for when the embed is inserted, so they work with what Bobcat has today. The branded loading screen and lighter LOD builds are the optimization side. The custom (NPM) viewer is only needed for the deeper interactions (custom hotspot styling, guided camera tours, attribute-driven translations).</p>
+  </div>
+</div></section>
+
+<div class="flag">
+  <b>Internal note, before sending to Bobcat:</b> this demo currently loads a stand-in skid-steer asset (<code>8d8d2175</code>, DCicero / tradeshows) and a placeholder poster. Swap <code>ASSET_UUID</code> + <code>CLIENT_SLUG</code> + <code>ORG_SLUG</code> in the script and <code>assets/bobcat-s86-poster.jpg</code> for the real Bobcat S86 asset and render.
+</div>
+
+<footer><div class="wrap">
+  <img src="VNTANA-logo-white-300x37.png" alt="VNTANA">
+  <a class="ext" href="https://www.vntana.com" target="_blank" rel="noopener">vntana.com &#8599;</a>
+</div></footer>
+
+<!-- pop-out modal -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="box" id="modalBox">
+    <button class="x" id="modalClose" aria-label="Close">&times;</button>
+  </div>
+</div>
+
+<script>
+  // ---- swap these for the real Bobcat S86 asset ----
+  var ASSET_UUID  = '8d8d2175-6c97-4978-b696-4486b1ab535e';
+  var CLIENT_SLUG = 'tradeshows';
+  var ORG_SLUG    = 'DCicero';
+  // --------------------------------------------------
+  var EMBED = 'https://embed.vntana.com/v2?productUuid=' + ASSET_UUID +
+              '&clientSlug=' + CLIENT_SLUG + '&organizationSlug=' + ORG_SLUG;
+
+  // Inject the viewer into a container with a branded loading screen, only on demand.
+  function mountViewer(container){
+    var ld = document.createElement('div');
+    ld.className = 'ld';
+    ld.innerHTML = '<div class="spin"></div><p>Loading the S86 in 3D</p>';
+    var f = document.createElement('iframe');
+    f.setAttribute('title','Bobcat S86, interactive 3D');
+    f.setAttribute('allow','xr-spatial-tracking; fullscreen');
+    f.setAttribute('loading','eager');
+    f.src = EMBED;
+    f.addEventListener('load', function(){
+      ld.style.opacity = '0';
+      setTimeout(function(){ if(ld.parentNode) ld.parentNode.removeChild(ld); }, 420);
+    });
+    container.appendChild(f);
+    container.appendChild(ld);
+  }
+
+  // Option 1: replace the poster/button with the viewer, in place.
+  document.querySelectorAll('[data-load-inline]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var stage = btn.closest('[data-stage]') || btn.closest('.stage');
+      stage.querySelectorAll('.poster,.veil,.cta').forEach(function(el){ el.remove(); });
+      mountViewer(stage);
+    });
+  });
+
+  // Option 2: open the modal and load the viewer there; close unloads it.
+  var modal = document.getElementById('modal');
+  var box = document.getElementById('modalBox');
+  var closeBtn = document.getElementById('modalClose');
+  function openModal(){
+    modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    mountViewer(box);
+  }
+  function closeModal(){
+    modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    box.querySelectorAll('iframe,.ld').forEach(function(el){ el.remove(); }); // unload
+  }
+  document.querySelectorAll('[data-open-modal]').forEach(function(b){ b.addEventListener('click', openModal); });
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+</script>
+</body>
+</html>
