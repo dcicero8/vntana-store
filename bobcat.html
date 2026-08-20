@@ -102,7 +102,7 @@
     <div class="page-inner">
       <p class="hero-eyebrow">Pro &nbsp;·&nbsp; Skid-Steer Loader</p>
       <h1>S86-2</h1>
-      <p class="subtitle">Faster 3D loading, three ways to keep the product page instant and load the model only when the visitor asks.</p>
+      <p class="subtitle">Two levers to make the 3D fast: ship a lighter model, and load it only when the visitor asks.</p>
       <div class="specs-row">
         <div><div class="spec-value">115 hp</div><div class="spec-label">Horsepower</div></div>
         <div><div class="spec-value">3,500 lbs</div><div class="spec-label">Rated Capacity</div></div>
@@ -117,15 +117,40 @@
     <div class="intro">
       <div class="k">The problem</div>
       <h2>The loader is a heavy model</h2>
-      <p>Loading it on every page view slows the experience. Below are three ways to defer that cost so the product page stays fast, and the visitor decides when to bring the 3D in. The two interactive options work with the standard VNTANA embed, no custom viewer required.</p>
+      <p>At roughly 12 MB it loads on every page view, which slows the experience. Two fixes: make the model itself lighter, and only load it when the visitor asks. The lighter model is ours to deliver; the deferred load is a page-side pattern that works with the standard embed.</p>
     </div>
   </div></section>
 
-  <!-- OPTION 1: CLICK TO LOAD IN PLACE -->
+  <!-- OPTION 1: SERVE A LIGHTER MODEL -->
   <section class="band alt"><div class="page-inner">
     <div class="opt">
       <div class="txt">
         <span class="badge">Option 1</span>
+        <h3>Serve a lighter model</h3>
+        <p>The fastest win, and it's on us. Same machine, re-optimized so even the loaded experience is quick, no CAD rebuild. We run the original source through a leaner pipeline instead of reprocessing an already-optimized file.</p>
+        <ul class="pts">
+          <li>Reconvert from the raw source, not an already-optimized export</li>
+          <li>Right-size textures (2K to 1K) and cap the polygon budget for web</li>
+          <li>Optional: lean base model, pull heavy internals in only on demand</li>
+        </ul>
+      </div>
+      <div class="stage" style="background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:#fff;text-align:center;padding:1.5rem;">
+        <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;">Same S86, re-optimized</div>
+        <div style="display:flex;align-items:baseline;gap:1rem;">
+          <span style="font-size:2.4rem;font-weight:900;color:#8a8a8a;text-decoration:line-through;">12 MB</span>
+          <span style="font-size:1.3rem;color:var(--orange);font-weight:800;">&rarr;</span>
+          <span style="font-size:3.4rem;font-weight:900;color:#fff;line-height:1;">~5 MB</span>
+        </div>
+        <div style="font-size:.72rem;color:#aaa;">less than half the weight, web-tuned textures + polygon budget</div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- OPTION 2: CLICK TO LOAD IN PLACE -->
+  <section class="band"><div class="page-inner">
+    <div class="opt rev">
+      <div class="txt">
+        <span class="badge">Option 2</span>
         <h3>Click to load, in place</h3>
         <p>The page ships a lightweight preview image. The 3D viewer loads right where the image was, only after the visitor clicks, behind a branded loading screen while the model streams in.</p>
         <ul class="pts">
@@ -146,11 +171,11 @@
     </div>
   </div></section>
 
-  <!-- OPTION 2: PREVIEW + POP-OUT MODAL -->
-  <section class="band"><div class="page-inner">
-    <div class="opt rev">
+  <!-- OPTION 3: PREVIEW + POP-OUT MODAL -->
+  <section class="band alt"><div class="page-inner">
+    <div class="opt">
       <div class="txt">
-        <span class="badge">Option 2</span>
+        <span class="badge">Option 3</span>
         <h3>Preview, then pop out</h3>
         <p>The product page shows only the static preview. A button opens the 3D in a focused pop-out over the page, and the model loads at that moment. Closing it returns to the page and unloads the viewer.</p>
         <ul class="pts">
@@ -171,20 +196,6 @@
     </div>
   </div></section>
 
-  <!-- OPTION 3: LIGHTER MODEL (LOD) -->
-  <section class="band alt"><div class="page-inner">
-    <div class="intro" style="margin-bottom:1.4rem">
-      <div class="k">Option 3</div>
-      <h2>Serve a lighter model</h2>
-      <p>Options 1 and 2 defer <em>when</em> the model loads. This one reduces <em>how heavy</em> it is, so even the loaded experience is faster. No CAD rebuild required, the same source asset is run through a different optimization.</p>
-    </div>
-    <div class="steps">
-      <div class="step-card"><h4>Lighter optimization</h4><p>Re-run the existing loader through a leaner optimization target (fewer internals, tighter mesh and texture budget) for the web view.</p></div>
-      <div class="step-card"><h4>Lean base + detail on demand</h4><p>Load a lightweight base model first, then pull heavier sub-assemblies or attachments into a separate asset only when a visitor drills in.</p></div>
-      <div class="step-card"><h4>Two versions, one embed</h4><p>Serve a low-res version by default and swap to the full-res build for users who want it, using variants.</p></div>
-    </div>
-  </div></section>
-
   <!-- WHO DOES WHAT -->
   <section class="band"><div class="page-inner">
     <div class="intro">
@@ -194,11 +205,11 @@
     <div class="steps" style="margin-top:1.2rem;grid-template-columns:repeat(2,1fr);">
       <div class="step-card">
         <h4>On Bobcat's side</h4>
-        <p><b>Defer the load.</b> Options 1 and 2 (click-to-load and the pop-out) are page-side patterns around the standard embed, no VNTANA feature needed. It's a change to how the product page inserts the viewer, we don't build it for you, we're showing the pattern so your web team can drop it in.</p>
+        <p><b>Defer the load.</b> Options 2 and 3 (click-to-load and the pop-out) are page-side patterns around the standard embed, no VNTANA feature needed. It's a change to how the product page inserts the viewer, we don't build it for you, we're showing the pattern so your web team can drop it in.</p>
       </div>
       <div class="step-card">
         <h4>On VNTANA's side</h4>
-        <p><b>A lighter model and the polish.</b> We re-optimize the model itself (Option 3), and the branded preview/loading screen and custom hotspot colors come through the viewer. Those are ours to deliver.</p>
+        <p><b>A lighter model and the polish.</b> We re-optimize the model itself (Option 1), and the branded preview/loading screen and custom hotspot colors come through the viewer. Those are ours to deliver.</p>
       </div>
     </div>
   </div></section>
