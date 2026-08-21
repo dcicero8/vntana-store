@@ -84,6 +84,23 @@
     .hp.gray { background:#8a8a8a; box-shadow:0 2px 8px rgba(0,0,0,.25); }
     .hp-cap { text-align:center; font-size:.76rem; color:#888; margin-top:.8rem; }
 
+    /* side-by-side comparison */
+    .compare { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+    @media (max-width:720px){ .compare { grid-template-columns:1fr; } }
+    .cmp { margin:0; }
+    .cmp figcaption { font-size:.85rem; margin-bottom:.5rem; color:#333; }
+    .cmp figcaption b { font-weight:800; }
+    .cmp-stage { aspect-ratio:16/10; }
+    .cta-both { background:var(--orange); color:#fff; border:0; cursor:pointer; font-size:.8rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; padding:.75rem 1.7rem; }
+    .cta-both:hover { background:var(--orange-d); }
+
+    /* how-to box */
+    .how { margin-top:1.4rem; background:#fff; border:1px solid #e0e0e0; border-left:3px solid var(--orange); padding:1rem 1.2rem; }
+    .how-k { font-size:.6rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--orange); margin-bottom:.4rem; }
+    .how p { font-size:.84rem; color:#555; line-height:1.55; margin:0; }
+    .how b { color:#111; } .how code { background:#f2f2f2; padding:1px 5px; font-family:'SF Mono',monospace; font-size:.82em; }
+    .how pre { background:#0d0d0d; color:#cdd6f4; padding:.9rem 1rem; overflow-x:auto; font-family:'SF Mono','Fira Code',monospace; font-size:.72rem; line-height:1.7; margin:.6rem 0 0; }
+
     footer { background:#000; color:#444; padding:1.25rem 2rem; display:flex; align-items:center; justify-content:space-between; font-size:.68rem; }
     footer img { height:24px; opacity:.5; }
 
@@ -123,26 +140,33 @@
 
   <!-- OPTION 1: SERVE A LIGHTER MODEL -->
   <section class="band alt"><div class="page-inner">
-    <div class="opt">
-      <div class="txt">
-        <span class="badge">Option 1</span>
-        <h3>Serve a lighter model</h3>
-        <p>The fastest win, and it's on us. Same machine, re-optimized so even the loaded experience is quick, no CAD rebuild. We run the original source through a leaner pipeline instead of reprocessing an already-optimized file.</p>
-        <ul class="pts">
-          <li>Reconvert from the raw source, not an already-optimized export</li>
-          <li>Right-size textures (2K to 1K) and cap the polygon budget for web</li>
-          <li>Optional: lean base model, pull heavy internals in only on demand</li>
-        </ul>
-      </div>
-      <div class="stage" style="background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:#fff;text-align:center;padding:1.5rem;">
-        <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;">Same S86, re-optimized</div>
-        <div style="display:flex;align-items:baseline;gap:1rem;">
-          <span style="font-size:2.4rem;font-weight:900;color:#8a8a8a;text-decoration:line-through;">12 MB</span>
-          <span style="font-size:1.3rem;color:var(--orange);font-weight:800;">&rarr;</span>
-          <span style="font-size:3.4rem;font-weight:900;color:#fff;line-height:1;">~5 MB</span>
+    <div class="intro" style="margin-bottom:1.3rem">
+      <span class="badge">Option 1</span>
+      <h2>Serve a lighter model</h2>
+      <p>The fastest win, and it's on us. Same machine, re-optimized so even the loaded experience is quick, no CAD rebuild. Load both side by side, the lighter build shows up noticeably faster and looks the same.</p>
+    </div>
+    <div class="compare">
+      <figure class="cmp">
+        <figcaption><b>Original</b> &middot; 12 MB</figcaption>
+        <div class="stage cmp-stage" data-embed="https://embed.vntana.com/v2?productUuid=1acf78cf-1626-47f8-ab56-58a322e49403&clientSlug=final-products&organizationSlug=bobcat">
+          <img class="poster" src="assets/bobcat-s86-poster.jpg" alt="S86 original, 12 MB">
+          <div class="veil"></div>
         </div>
-        <div style="font-size:.72rem;color:#aaa;">less than half the weight, web-tuned textures + polygon budget</div>
-      </div>
+      </figure>
+      <figure class="cmp">
+        <figcaption><b>Optimized</b> &middot; ~6 MB</figcaption>
+        <div class="stage cmp-stage" data-embed="https://embed.vntana.com/v2?productUuid=ff38841a-0683-497c-8163-21fdba6c2309&clientSlug=bobcat&organizationSlug=DCicero">
+          <img class="poster" src="assets/bobcat-s86-poster.jpg" alt="S86 optimized, ~6 MB">
+          <div class="veil"></div>
+        </div>
+      </figure>
+    </div>
+    <div style="text-align:center;margin-top:1.1rem;">
+      <button class="cta-both" data-load-both>Load both to compare &rarr;</button>
+    </div>
+    <div class="how">
+      <div class="how-k">How do you do it</div>
+      <p>Nothing on Bobcat's end. We reconvert from the raw source through the Industrial pipeline with <b>Max Resolution 1K</b> and a <b>capped polygon budget</b> for web, then republish. Same embed URL, lighter file, no page change on your side.</p>
     </div>
   </div></section>
 
@@ -169,6 +193,16 @@
         </button>
       </div>
     </div>
+    <div class="how">
+      <div class="how-k">How do you do it</div>
+      <p>Page-side, about 15 lines. Ship the preview image, then swap in the viewer on click:</p>
+      <pre>&lt;div id="s86"&gt;&lt;img src="s86.jpg"&gt;&lt;button id="go"&gt;View in 3D&lt;/button&gt;&lt;/div&gt;
+
+document.getElementById('go').onclick = () =&gt; {
+  document.getElementById('s86').innerHTML =
+    '&lt;iframe src="EMBED_URL" allow="xr-spatial-tracking; fullscreen"&gt;&lt;/iframe&gt;';
+};</pre>
+    </div>
   </div></section>
 
   <!-- OPTION 3: PREVIEW + POP-OUT MODAL -->
@@ -193,6 +227,12 @@
           <span class="sub">opens in a pop-out, loads on open</span>
         </button>
       </div>
+    </div>
+    <div class="how">
+      <div class="how-k">How do you do it</div>
+      <p>Same idea, but the button opens a modal and injects the viewer there, then clears it on close so nothing lingers:</p>
+      <pre>openBtn.onclick  = () =&gt; modal.innerHTML = '&lt;iframe src="EMBED_URL" ...&gt;&lt;/iframe&gt;';
+closeBtn.onclick = () =&gt; modal.innerHTML = '';   // unloads the viewer</pre>
     </div>
   </div></section>
 
@@ -256,7 +296,7 @@
     var EMBED = 'https://embed.vntana.com/v2?productUuid=' + ASSET_UUID +
                 '&clientSlug=' + CLIENT_SLUG + '&organizationSlug=' + ORG_SLUG;
 
-    function mountViewer(container){
+    function mountViewer(container, url){
       var ld = document.createElement('div');
       ld.className = 'ld';
       ld.innerHTML = '<div class="spin"></div><p>Loading the S86 in 3D</p>';
@@ -264,7 +304,7 @@
       f.setAttribute('title','Bobcat S86-2, interactive 3D');
       f.setAttribute('allow','xr-spatial-tracking; fullscreen');
       f.setAttribute('loading','eager');
-      f.src = EMBED;
+      f.src = url || EMBED;
       f.addEventListener('load', function(){
         ld.style.opacity = '0';
         setTimeout(function(){ if(ld.parentNode) ld.parentNode.removeChild(ld); }, 420);
@@ -272,6 +312,17 @@
       container.appendChild(f);
       container.appendChild(ld);
     }
+
+    // Option 1: load both comparison viewers at once, so the lighter one wins the race
+    document.querySelectorAll('[data-load-both]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        btn.style.display = 'none';
+        document.querySelectorAll('.cmp-stage[data-embed]').forEach(function(st){
+          st.querySelectorAll('.poster,.veil').forEach(function(el){ el.remove(); });
+          mountViewer(st, st.getAttribute('data-embed'));
+        });
+      });
+    });
 
     // Option 1: replace poster/button with the viewer, in place
     document.querySelectorAll('[data-load-inline]').forEach(function(btn){
