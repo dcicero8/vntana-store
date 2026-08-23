@@ -41,8 +41,16 @@
     @media (max-width:860px){ .pdp { grid-template-columns:1fr; } }
 
     .viewer-card { border:1px solid var(--line); border-radius:6px; overflow:hidden; background:#fff; }
+    /* 3D / Render / Sketch toggle */
+    .hero-modes { display:flex; gap:.3rem; padding:.6rem .7rem; border-bottom:1px solid var(--line); background:#fafbfc; }
+    .hero-modes button { flex:1; font-family:inherit; font-size:.74rem; font-weight:700; letter-spacing:.02em; color:#6b7280; background:#fff; border:1px solid var(--line); border-radius:5px; padding:.5rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:.35rem; }
+    .hero-modes button:hover { border-color:#b9bdc4; color:var(--ink); }
+    .hero-modes button.on { background:var(--red); border-color:var(--red); color:#fff; }
+    .hero-modes button svg { flex:none; }
     .viewer-stage { position:relative; width:100%; aspect-ratio:1/1; background:#f7f8fa; }
     .viewer-stage iframe { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+    .hero-img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#f7f8fa; z-index:4; display:block; }
+    .hero-img[hidden] { display:none; }
     .ld { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.9rem; background:#f7f8fa; transition:opacity .4s ease; z-index:3; }
     .ld .spin { width:40px; height:40px; border-radius:50%; border:4px solid #e2e4e8; border-top-color:var(--red); animation:sp 1s linear infinite; }
     .ld p { font-size:.62rem; letter-spacing:.13em; text-transform:uppercase; font-weight:700; color:#9aa0a8; }
@@ -52,6 +60,7 @@
     .viewer-foot .hint svg { flex:none; }
     .live-dot { display:inline-flex; align-items:center; gap:.4rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:.6rem; color:#3a7d44; }
     .live-dot::before { content:''; width:7px; height:7px; border-radius:50%; background:#3fae4f; box-shadow:0 0 7px rgba(63,174,79,.7); }
+    .mode-tag { font-size:.6rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#9aa0a8; }
 
     /* Product info */
     .eyebrow { font-size:.66rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--red); margin-bottom:.55rem; }
@@ -196,15 +205,27 @@
       <!-- LEFT: live 3D viewer -->
       <div>
         <div class="viewer-card">
-          <div class="viewer-stage" id="mainStage" data-embed="https://embed.vntana.com/v2?productUuid=9d15ac7a-08f6-41ed-b1cc-70ae83ea88a1&clientSlug=caplugs&organizationSlug=DCicero">
+          <div class="hero-modes" id="heroModes">
+            <button data-mode="3d" class="on">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>3D
+            </button>
+            <button data-mode="render">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 16-5-5L5 20"/></svg>Render
+            </button>
+            <button data-mode="sketch">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18M2 2l7.586 7.586M11 13a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"/></svg>Sketch
+            </button>
+          </div>
+          <div class="viewer-stage" id="mainStage">
+            <img class="hero-img" id="heroImg" hidden alt="">
             <div class="ld"><div class="spin"></div><p>Loading 3D model</p></div>
           </div>
           <div class="viewer-foot">
             <span class="hint">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg>
-              Drag to rotate &middot; scroll to zoom &middot; tap the cube for AR
+              <span id="viewerHint">Drag to rotate &middot; scroll to zoom &middot; tap the cube for AR</span>
             </span>
-            <span class="live-dot">Live 3D</span>
+            <span class="live-dot" id="modeBadge">Live 3D</span>
           </div>
         </div>
       </div>
@@ -331,6 +352,7 @@
     var SERIES = {
       rpo: {
         code:'RPO', cat:'Threaded Plugs', uuid:'9d15ac7a-08f6-41ed-b1cc-70ae83ea88a1',
+        render:'assets/caplugs/render-rpo.jpg', sketch:'assets/caplugs/sketch-rpo.jpg',
         title:'Threaded Plugs for SAE Straight Thread Ports',
         desc:'A molded O-ring seal gives these plugs dual sealing on SAE straight-thread ports, while the flange lip blocks contaminants. The slotted 12-point head installs and removes with a socket, wrench or by hand.',
         mat:'HDPE', temp:'0&ndash;215&deg;F', color:'<span class="sw"></span>Red',
@@ -350,6 +372,7 @@
       },
       t: {
         code:'T', cat:'Tapered Caps &amp; Plugs', uuid:'22373e61-f269-433c-9689-87b729e63358',
+        render:'assets/caplugs/render-t.jpg', sketch:'assets/caplugs/sketch-t.jpg',
         title:'Tapered Caps &amp; Plugs',
         desc:'A single tapered part works as a cap over a shaft or a plug inside a bore, wedging in for a snug fit and pulling out clean. LDPE for general use, FlexTemp for high-heat processes.',
         mat:'LDPE / FlexTemp', temp:'-94&ndash;300&deg;F', color:'<span class="sw"></span>Red',
@@ -368,6 +391,7 @@
       },
       tlf: {
         code:'TLF', cat:'Flange Protectors', uuid:'5a9265cb-1de8-47ba-9a05-7847fa41d9c3',
+        render:'assets/caplugs/render-tlf.jpg', sketch:'assets/caplugs/sketch-tlf.jpg',
         title:'Toggle Lock Flange Protectors',
         desc:'Four hinged plugs press into the bolt holes one at a time, so a single protector snaps onto an ANSI flange far faster than a bolt-through cover. Reinforced walls resist warping and keep the face clean.',
         mat:'LDPE', temp:'-94&ndash;175&deg;F', color:'<span class="sw" style="background:#111"></span>Black &middot; Blue &middot; Red',
@@ -443,9 +467,37 @@
         return b;
       });
       selectSize(s, masterIdx);
-      // viewer
+      // viewer (live 3D stays mounted underneath the image layer)
       mountViewer(mainStage, EMBED + s.uuid);
+      applyMode(heroMode);
     }
+
+    // ── 3D / Render / Sketch hero toggle ─────────────────────────────────────
+    var heroMode = '3d';
+    var heroImg = document.getElementById('heroImg');
+    var modeBadge = document.getElementById('modeBadge');
+    var viewerHint = document.getElementById('viewerHint');
+    function applyMode(mode){
+      heroMode = mode;
+      var s = SERIES[current];
+      document.querySelectorAll('#heroModes button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-mode') === mode); });
+      if (mode === '3d'){
+        heroImg.hidden = true;
+        modeBadge.className = 'live-dot'; modeBadge.textContent = 'Live 3D';
+        viewerHint.innerHTML = 'Drag to rotate &middot; scroll to zoom &middot; tap the cube for AR';
+      } else if (mode === 'render'){
+        heroImg.src = s.render; heroImg.hidden = false;
+        modeBadge.className = 'mode-tag'; modeBadge.textContent = 'Photoreal render';
+        viewerHint.textContent = 'Auto-generated from the CAD, then made photoreal with your AI or a VNTANA material library';
+      } else {
+        heroImg.src = s.sketch; heroImg.hidden = false;
+        modeBadge.className = 'mode-tag'; modeBadge.textContent = 'Line render';
+        viewerHint.textContent = 'Line render straight from the CAD geometry, the raw starting point';
+      }
+    }
+    document.querySelectorAll('#heroModes button').forEach(function(b){
+      b.addEventListener('click', function(){ applyMode(b.getAttribute('data-mode')); });
+    });
 
     document.querySelectorAll('.tab').forEach(function(t){
       t.addEventListener('click', function(){ render(t.getAttribute('data-series')); });
