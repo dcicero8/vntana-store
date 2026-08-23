@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Caplugs RPO Threaded Plugs — Interactive 3D · VNTANA Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --red:#ed1b2f; --red-d:#c0121f; --blue:#005496; --ink:#1a1d21; --line:#e4e6ea; --muted:#6b7280; }
+    body { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; background:#fff; color:var(--ink); font-size:14px; -webkit-font-smoothing:antialiased; }
+    .wrap { max-width:1180px; margin:0 auto; padding:0 2rem; }
+    img { max-width:100%; }
+    a { color:inherit; }
+
+    /* Header */
+    .site-header { background:#fff; border-bottom:1px solid var(--line); height:64px; display:flex; align-items:center; position:sticky; top:0; z-index:100; }
+    .site-header .wrap { display:flex; align-items:center; justify-content:space-between; width:100%; }
+    .site-header .logo { height:34px; }
+    .site-header .nav { display:flex; gap:1.6rem; font-size:.8rem; font-weight:600; color:#333; }
+    .site-header .nav a { text-decoration:none; }
+    .site-header .nav a:hover { color:var(--red); }
+    .powered { font-size:.58rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase; color:#9aa0a8; }
+
+    /* Breadcrumb */
+    .crumb { border-bottom:1px solid var(--line); background:#fafbfc; font-size:.72rem; color:var(--muted); }
+    .crumb .wrap { padding-top:.7rem; padding-bottom:.7rem; }
+    .crumb b { color:var(--ink); font-weight:600; }
+
+    /* PDP */
+    .pdp { display:grid; grid-template-columns:1.05fr .95fr; gap:2.6rem; padding:2.4rem 0 1rem; }
+    @media (max-width:860px){ .pdp { grid-template-columns:1fr; } }
+
+    .viewer-card { border:1px solid var(--line); border-radius:6px; overflow:hidden; background:#fff; }
+    .viewer-stage { position:relative; width:100%; aspect-ratio:1/1; background:#f7f8fa; }
+    .viewer-stage iframe { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+    .ld { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.9rem; background:#f7f8fa; transition:opacity .4s ease; z-index:3; }
+    .ld .spin { width:40px; height:40px; border-radius:50%; border:4px solid #e2e4e8; border-top-color:var(--red); animation:sp 1s linear infinite; }
+    .ld p { font-size:.62rem; letter-spacing:.13em; text-transform:uppercase; font-weight:700; color:#9aa0a8; }
+    @keyframes sp { to { transform:rotate(360deg); } }
+    .viewer-foot { display:flex; align-items:center; justify-content:space-between; padding:.7rem 1rem; border-top:1px solid var(--line); font-size:.72rem; color:var(--muted); }
+    .viewer-foot .hint { display:flex; align-items:center; gap:.45rem; }
+    .viewer-foot .hint svg { flex:none; }
+    .live-dot { display:inline-flex; align-items:center; gap:.4rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:.6rem; color:#3a7d44; }
+    .live-dot::before { content:''; width:7px; height:7px; border-radius:50%; background:#3fae4f; box-shadow:0 0 7px rgba(63,174,79,.7); }
+
+    /* Product info */
+    .eyebrow { font-size:.66rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--red); margin-bottom:.55rem; }
+    .pdp h1 { font-size:1.9rem; font-weight:800; letter-spacing:-.02em; line-height:1.12; }
+    .desc { color:#4b5158; font-size:.92rem; line-height:1.6; margin-top:.7rem; }
+    .meta-row { display:flex; gap:1.4rem; flex-wrap:wrap; margin-top:1.1rem; padding:1rem 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .meta-row .m .lab { font-size:.6rem; text-transform:uppercase; letter-spacing:.09em; color:#9aa0a8; font-weight:700; }
+    .meta-row .m .val { font-size:.9rem; font-weight:600; margin-top:.15rem; }
+    .colorchip { display:inline-flex; align-items:center; gap:.4rem; }
+    .colorchip .sw { width:14px; height:14px; border-radius:3px; background:var(--red); border:1px solid rgba(0,0,0,.12); }
+
+    .feat { list-style:none; margin-top:1.1rem; display:grid; gap:.5rem; }
+    .feat li { display:flex; gap:.55rem; font-size:.86rem; color:#3b4148; }
+    .feat li::before { content:''; flex:none; width:16px; height:16px; margin-top:.05rem; border-radius:50%; background:var(--red); -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/13px no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/13px no-repeat; }
+
+    /* size selector */
+    .picker { margin-top:1.4rem; }
+    .picker .hd { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:.6rem; }
+    .picker .hd h3 { font-size:.82rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+    .picker .hd .cnt { font-size:.7rem; color:var(--muted); }
+    .sizes { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .sz { border:1px solid var(--line); background:#fff; border-radius:5px; padding:.5rem .7rem; cursor:pointer; text-align:center; min-width:66px; font-family:inherit; transition:border-color .12s, background .12s; }
+    .sz:hover { border-color:#b9bdc4; }
+    .sz.on { border-color:var(--red); background:#fff5f6; box-shadow:0 0 0 1px var(--red) inset; }
+    .sz .p { font-size:.78rem; font-weight:800; }
+    .sz .s { font-size:.6rem; color:var(--muted); margin-top:.1rem; }
+    .sz-readout { margin-top:.8rem; background:#fafbfc; border:1px solid var(--line); border-radius:6px; padding:.9rem 1rem; }
+    .sz-readout .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem .8rem; }
+    .sz-readout .grid .lab { font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; color:#9aa0a8; font-weight:700; }
+    .sz-readout .grid .v { font-size:.9rem; font-weight:700; margin-top:.1rem; }
+    .sz-note { font-size:.7rem; color:var(--muted); margin-top:.65rem; line-height:1.5; }
+    .sz-note b { color:#3b4148; }
+
+    .buys { display:flex; gap:.7rem; margin-top:1.4rem; flex-wrap:wrap; }
+    .btn { font-family:inherit; font-size:.82rem; font-weight:700; letter-spacing:.02em; padding:.8rem 1.35rem; border-radius:5px; cursor:pointer; border:1px solid transparent; text-decoration:none; display:inline-flex; align-items:center; gap:.45rem; }
+    .btn.primary { background:var(--red); color:#fff; }
+    .btn.primary:hover { background:var(--red-d); }
+    .btn.ghost { background:#fff; color:var(--ink); border-color:#cdd1d7; }
+    .btn.ghost:hover { border-color:var(--ink); }
+    .btn.blue { background:var(--blue); color:#fff; }
+    .btn.blue:hover { filter:brightness(1.08); }
+
+    /* Bands */
+    .band { padding:3rem 0; border-top:1px solid var(--line); }
+    .band.alt { background:#fafbfc; }
+    .band-head { max-width:62ch; margin-bottom:1.6rem; }
+    .band-head .k { font-size:.66rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; color:var(--red); margin-bottom:.5rem; }
+    .band-head h2 { font-size:1.55rem; font-weight:800; letter-spacing:-.02em; }
+    .band-head p { color:#4b5158; font-size:.92rem; line-height:1.62; margin-top:.55rem; }
+
+    /* CAD download panel */
+    .cad { display:grid; grid-template-columns:1.15fr .85fr; gap:2rem; align-items:start; }
+    @media (max-width:820px){ .cad { grid-template-columns:1fr; } }
+    .cad-card { border:1px solid var(--line); border-radius:8px; background:#fff; padding:1.5rem; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+    .cad-card .row { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.85rem 0; border-bottom:1px solid var(--line); }
+    .cad-card .row:last-child { border-bottom:0; }
+    .cad-card .fmt { font-weight:700; font-size:.9rem; }
+    .cad-card .fmt span { display:block; font-weight:400; font-size:.72rem; color:var(--muted); margin-top:.1rem; }
+    .dl { font-size:.72rem; font-weight:700; color:var(--blue); border:1px solid #cdd7e2; background:#fff; border-radius:5px; padding:.45rem .8rem; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:.4rem; white-space:nowrap; }
+    .dl:hover { background:#f0f6fb; }
+    .dl svg { flex:none; }
+    .chips { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:1.1rem; }
+    .chip { font-size:.68rem; font-weight:600; color:#4b5158; background:#fff; border:1px solid var(--line); border-radius:99px; padding:.32rem .7rem; }
+    .chip.more { border-style:dashed; color:var(--muted); }
+    .cad-side .box { background:#fff; border:1px solid var(--line); border-left:3px solid var(--red); border-radius:0 6px 6px 0; padding:1rem 1.2rem; margin-bottom:1rem; }
+    .cad-side .box h4 { font-size:.82rem; font-weight:800; margin-bottom:.3rem; }
+    .cad-side .box p { font-size:.82rem; color:#4b5158; line-height:1.55; }
+    .cad-side .box p b { color:var(--ink); }
+
+    /* gate modal */
+    .gate-back { position:fixed; inset:0; background:rgba(20,22,26,.55); display:none; align-items:center; justify-content:center; z-index:200; padding:20px; }
+    .gate-back.open { display:flex; }
+    .gate { width:min(420px,100%); background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 24px 70px rgba(0,0,0,.3); }
+    .gate .top { background:var(--red); color:#fff; padding:1.1rem 1.4rem; }
+    .gate .top h3 { font-size:1.05rem; font-weight:800; }
+    .gate .top p { font-size:.78rem; opacity:.9; margin-top:.2rem; }
+    .gate .body { padding:1.3rem 1.4rem; }
+    .gate label { display:block; font-size:.66rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#9aa0a8; margin:.7rem 0 .25rem; }
+    .gate input, .gate select { width:100%; border:1px solid #cdd1d7; border-radius:5px; padding:.6rem .7rem; font-family:inherit; font-size:.85rem; }
+    .gate .fine { font-size:.68rem; color:var(--muted); margin-top:.9rem; line-height:1.5; }
+    .gate .x { float:right; background:transparent; border:0; color:#fff; font-size:20px; cursor:pointer; line-height:1; }
+
+    /* renders gallery */
+    .rgal { display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; }
+    @media (max-width:720px){ .rgal { grid-template-columns:1fr; } }
+    .rcard { border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#fff; }
+    .rcard .im { aspect-ratio:16/10; background:#f7f8fa; display:block; width:100%; object-fit:cover; }
+    .rcard .cap { padding:.8rem 1rem; }
+    .rcard .cap .t { font-size:.85rem; font-weight:700; }
+    .rcard .cap .d { font-size:.72rem; color:var(--muted); margin-top:.15rem; }
+    .rcard .cap .tag { display:inline-block; font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--red); background:#fff5f6; border:1px solid #f6cdd2; border-radius:99px; padding:.18rem .55rem; margin-top:.55rem; }
+    .rgal-note { font-size:.76rem; color:var(--muted); margin-top:1rem; }
+
+    /* explore other series */
+    .series { display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; }
+    @media (max-width:720px){ .series { grid-template-columns:1fr; } }
+    .scard { border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#fff; display:flex; flex-direction:column; }
+    .scard .st { position:relative; aspect-ratio:16/9; background:#f7f8fa; }
+    .scard .st img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .scard .st iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+    .scard .st .play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:.5rem; border:0; background:transparent; cursor:pointer; font-family:inherit; }
+    .scard .st .play .ic { width:52px; height:52px; border-radius:50%; background:var(--red); display:flex; align-items:center; justify-content:center; box-shadow:0 5px 18px rgba(237,27,47,.42); }
+    .scard .sb { padding:1rem 1.15rem 1.2rem; }
+    .scard .sb .ser { font-size:.62rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--red); }
+    .scard .sb h4 { font-size:.98rem; font-weight:800; margin-top:.25rem; }
+    .scard .sb p { font-size:.8rem; color:#4b5158; line-height:1.55; margin-top:.35rem; }
+
+    footer { background:var(--ink); color:#9aa0a8; padding:1.6rem 0; margin-top:1rem; }
+    footer .wrap { display:flex; align-items:center; justify-content:space-between; font-size:.72rem; flex-wrap:wrap; gap:.6rem; }
+    footer b { color:#fff; }
+
+    .flag { background:#fff7ed; border:1px solid #fed7aa; color:#7c4a1e; font-size:.72rem; line-height:1.6; }
+    .flag .wrap { padding:.9rem 2rem; }
+    .flag b { color:#9a3412; } .flag code { background:#fff; border:1px solid #fed7aa; padding:1px 5px; border-radius:3px; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="wrap">
+      <img class="logo" src="assets/caplugs/caplugs-logo.svg" alt="Caplugs">
+      <nav class="nav">
+        <a href="#">Products</a><a href="#">Industries</a><a href="#">Resources</a><a href="#">Support</a>
+      </nav>
+      <span class="powered">Interactive 3D &middot; VNTANA</span>
+    </div>
+  </header>
+
+  <div class="crumb"><div class="wrap">Home &nbsp;/&nbsp; Threaded Plugs &nbsp;/&nbsp; <b>RPO Series</b></div></div>
+
+  <!-- PDP -->
+  <div class="wrap">
+    <div class="pdp">
+
+      <!-- LEFT: live 3D viewer -->
+      <div>
+        <div class="viewer-card">
+          <div class="viewer-stage" id="mainStage" data-embed="https://embed.vntana.com/v2?productUuid=9d15ac7a-08f6-41ed-b1cc-70ae83ea88a1&clientSlug=caplugs&organizationSlug=DCicero">
+            <div class="ld"><div class="spin"></div><p>Loading 3D model</p></div>
+          </div>
+          <div class="viewer-foot">
+            <span class="hint">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg>
+              Drag to rotate &middot; scroll to zoom &middot; tap the cube for AR
+            </span>
+            <span class="live-dot">Live 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: product info -->
+      <div>
+        <p class="eyebrow">RPO Series</p>
+        <h1>Threaded Plugs for SAE Straight Thread Ports</h1>
+        <p class="desc">A molded O-ring seal gives these plugs dual sealing on SAE straight-thread ports, while the flange lip blocks contaminants. The slotted 12-point head installs and removes with a socket, wrench or by hand.</p>
+
+        <div class="meta-row">
+          <div class="m"><div class="lab">Material</div><div class="val">HDPE</div></div>
+          <div class="m"><div class="lab">Temperature</div><div class="val">0&ndash;215&deg;F</div></div>
+          <div class="m"><div class="lab">Standard Color</div><div class="val colorchip"><span class="sw"></span>Red</div></div>
+        </div>
+
+        <ul class="feat">
+          <li>Molded O-ring prevents fluid leakage on straight-thread ports</li>
+          <li>Flange lip seats flush and blocks dirt and debris</li>
+          <li>Slotted 12-point head for socket, wrench, or hand tightening</li>
+        </ul>
+
+        <!-- SIZE SELECTOR (extrapolate concept) -->
+        <div class="picker">
+          <div class="hd"><h3>Select your size</h3><span class="cnt" id="szCnt">9 sizes in this series</span></div>
+          <div class="sizes" id="sizes"></div>
+          <div class="sz-readout">
+            <div class="grid">
+              <div><div class="lab">Part Number</div><div class="v" id="rPart">&mdash;</div></div>
+              <div><div class="lab">SAE Port</div><div class="v" id="rPort">&mdash;</div></div>
+              <div><div class="lab">Thread Size</div><div class="v" id="rThread">&mdash;</div></div>
+            </div>
+            <p class="sz-note" id="szNote"></p>
+          </div>
+        </div>
+
+        <div class="buys">
+          <a class="btn primary" href="#">See Purchasing Options</a>
+          <button class="btn blue" id="dlBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+            Download CAD
+          </button>
+          <a class="btn ghost" href="#">Get a Quote</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELF-SERVE CAD DOWNLOADS -->
+  <section class="band alt"><div class="wrap">
+    <div class="band-head">
+      <div class="k">Self-service CAD, gated for leads</div>
+      <h2>Let engineers pull the file themselves</h2>
+      <p>Today a chunk of your part questions become a manual back-and-forth with engineering. From one uploaded CAD, VNTANA spins out downloadable files in every major format, offered right on the page and gated behind a short form, so each download becomes a captured lead that can flow straight into HubSpot.</p>
+    </div>
+    <div class="cad">
+      <div class="cad-card">
+        <div class="row"><div class="fmt">STEP (.step / .stp)<span>Neutral solid model, most CAD tools</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">SolidWorks (.sldprt)<span>Native part file</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">IGES (.igs)<span>Neutral surface/solid interchange</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">STL / OBJ<span>Mesh for print and visualization</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="chips">
+          <span class="chip">Parasolid</span><span class="chip">3MF</span><span class="chip">glTF / GLB</span><span class="chip">USDZ</span><span class="chip">FBX</span><span class="chip more">40+ formats supported</span>
+        </div>
+      </div>
+      <div class="cad-side">
+        <div class="box">
+          <h4>One upload, every format</h4>
+          <p>Your engineering team uploads native CAD once. VNTANA auto-generates the download formats, so you never regenerate files by hand.</p>
+        </div>
+        <div class="box">
+          <h4>Gated = lead source</h4>
+          <p>Each download sits behind a short form. Name, company and email land in <b>HubSpot</b> with the exact part they wanted, turning a support cost into a qualified lead.</p>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- RENDERS AT SCALE -->
+  <section class="band"><div class="wrap">
+    <div class="band-head">
+      <div class="k">Renders at scale</div>
+      <h2>Every part shown accurately, without a photo shoot</h2>
+      <p>Photographing every series and every size across your catalog is not realistic. VNTANA renders product images straight from the CAD, so each part shows accurately from a single source model, in a consistent studio look you control.</p>
+    </div>
+    <div class="rgal">
+      <div class="rcard"><img class="im" src="assets/caplugs/render-rpo.jpg" alt="RPO threaded plug render"><div class="cap"><div class="t">RPO Threaded Plug</div><div class="d">Rendered from the SolidWorks part</div><span class="tag">Auto-generated</span></div></div>
+      <div class="rcard"><img class="im" src="assets/caplugs/render-t.jpg" alt="T tapered cap and plug render"><div class="cap"><div class="t">T Tapered Cap / Plug</div><div class="d">Rendered from the SolidWorks part</div><span class="tag">Auto-generated</span></div></div>
+      <div class="rcard"><img class="im" src="assets/caplugs/render-tlf.jpg" alt="TLF flange protector render"><div class="cap"><div class="t">TLF Flange Protector</div><div class="d">Rendered from the SolidWorks part</div><span class="tag">Auto-generated</span></div></div>
+    </div>
+    <p class="rgal-note">Same source asset also produces turntable GIFs and short product video, ready for PDPs, email and marketplace listings.</p>
+  </div></section>
+
+  <!-- EXPLORE OTHER SERIES -->
+  <section class="band alt"><div class="wrap">
+    <div class="band-head">
+      <div class="k">More sample series</div>
+      <h2>Explore the other CAD you sent</h2>
+      <p>The same interactive viewer, size selector and CAD download work for every series. Load either of these live.</p>
+    </div>
+    <div class="series">
+      <div class="scard">
+        <div class="st" data-embed="https://embed.vntana.com/v2?productUuid=22373e61-f269-433c-9689-87b729e63358&clientSlug=caplugs&organizationSlug=DCicero">
+          <img src="assets/caplugs/render-t.jpg" alt="T tapered caps and plugs">
+          <button class="play"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></button>
+        </div>
+        <div class="sb"><div class="ser">T Series</div><h4>Tapered Caps &amp; Plugs</h4><p>Dual-purpose taper caps or plugs across a wide size range. LDPE and FlexTemp, from -94&deg;F to 300&deg;F.</p></div>
+      </div>
+      <div class="scard">
+        <div class="st" data-embed="https://embed.vntana.com/v2?productUuid=5a9265cb-1de8-47ba-9a05-7847fa41d9c3&clientSlug=caplugs&organizationSlug=DCicero">
+          <img src="assets/caplugs/render-tlf.jpg" alt="TLF toggle lock flange protectors">
+          <button class="play"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></button>
+        </div>
+        <div class="sb"><div class="ser">TLF Series</div><h4>Toggle Lock Flange Protectors</h4><p>Patented four-hinged plugs press into bolt holes one at a time for fast install. ANSI B16.5, full pressure-class range.</p></div>
+      </div>
+    </div>
+  </div></section>
+
+  <div class="flag"><div class="wrap">
+    <b>Internal note, remove before sending:</b> live Caplugs demo assets in <code>DCicero / caplugs</code>. RPO <code>9d15ac7a</code>, T <code>22373e61</code>, TLF <code>5a9265cb</code>. Size table shows real SAE port designations; numeric dimensions are illustrative of the master-CAD extrapolation concept, swap in real PDP dimension data when available. CAD download + lead gate are demo mockups (no real files served).
+  </div></div>
+
+  <footer><div class="wrap">
+    <span>&copy; Caplugs &middot; 2150 Elmwood Ave, Buffalo, NY 14207</span>
+    <span>Interactive 3D <b>powered by VNTANA</b></span>
+  </div></footer>
+
+  <!-- CAD download gate -->
+  <div class="gate-back" id="gate">
+    <div class="gate">
+      <div class="top">
+        <button class="x" id="gateX" aria-label="Close">&times;</button>
+        <h3>Download CAD file</h3>
+        <p>Tell us where to send it and pick your format.</p>
+      </div>
+      <div class="body">
+        <label>Work Email</label><input type="email" placeholder="you@company.com">
+        <label>Company</label><input type="text" placeholder="Company name">
+        <label>Format</label>
+        <select><option>STEP (.step)</option><option>SolidWorks (.sldprt)</option><option>IGES (.igs)</option><option>STL</option><option>Parasolid</option></select>
+        <p class="fine">Demo only, no file is sent. In production this posts the lead to HubSpot and returns the download link.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── RPO size table: real SAE straight-thread port designations ───────────
+    var RPO = [
+      { p:'RPO-102', sae:'-2',  thr:'5/16-24' },
+      { p:'RPO-103', sae:'-3',  thr:'3/8-24' },
+      { p:'RPO-104', sae:'-4',  thr:'7/16-20' },
+      { p:'RPO-105', sae:'-5',  thr:'1/2-20' },
+      { p:'RPO-106', sae:'-6',  thr:'9/16-18', master:true },
+      { p:'RPO-108', sae:'-8',  thr:'3/4-16' },
+      { p:'RPO-110', sae:'-10', thr:'7/8-14' },
+      { p:'RPO-112', sae:'-12', thr:'1-1/16-12' },
+      { p:'RPO-116', sae:'-16', thr:'1-5/16-12' }
+    ];
+    var sizesEl = document.getElementById('sizes');
+    var rPart = document.getElementById('rPart'), rPort = document.getElementById('rPort'),
+        rThread = document.getElementById('rThread'), szNote = document.getElementById('szNote');
+    document.getElementById('szCnt').textContent = RPO.length + ' sizes in this series';
+
+    function selectSize(i){
+      RPO.forEach(function(s, j){ btns[j].classList.toggle('on', i === j); });
+      var s = RPO[i];
+      rPart.textContent = s.p; rPort.textContent = 'SAE ' + s.sae; rThread.textContent = s.thr;
+      if (s.master) {
+        szNote.innerHTML = '<b>' + s.p + '</b> is the master CAD you uploaded. Every other size in the series is generated from it, scaled to its SAE port dimensions, no new file to model.';
+      } else {
+        szNote.innerHTML = 'This size is <b>extrapolated from the RPO-106 master CAD</b>, scaled to the SAE ' + s.sae + ' port. Preview shows the master model; production auto-scales to the selected size using your PDP dimension data.';
+      }
+    }
+    var btns = RPO.map(function(s, i){
+      var b = document.createElement('button');
+      b.className = 'sz' + (s.master ? '' : '');
+      b.innerHTML = '<div class="p">' + s.p.replace('RPO-','') + '</div><div class="s">SAE ' + s.sae + '</div>';
+      b.addEventListener('click', function(){ selectSize(i); });
+      sizesEl.appendChild(b);
+      return b;
+    });
+    selectSize(4); // default to the master RPO-106
+
+    // ── viewer mount helper ──────────────────────────────────────────────────
+    function mountViewer(stage){
+      var url = stage.getAttribute('data-embed');
+      var f = document.createElement('iframe');
+      f.setAttribute('title','Caplugs part, interactive 3D');
+      f.setAttribute('allow','xr-spatial-tracking; fullscreen');
+      f.setAttribute('loading','eager');
+      f.src = url;
+      var ld = stage.querySelector('.ld');
+      f.addEventListener('load', function(){ if(ld){ ld.style.opacity='0'; setTimeout(function(){ if(ld.parentNode) ld.parentNode.removeChild(ld); }, 420); } });
+      stage.appendChild(f);
+    }
+    // main PDP viewer auto-loads (tiny part model)
+    mountViewer(document.getElementById('mainStage'));
+
+    // other-series cards load on click
+    document.querySelectorAll('.scard .play').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var st = btn.closest('.st');
+        st.querySelectorAll('img,.play').forEach(function(el){ el.remove(); });
+        var f = document.createElement('iframe');
+        f.setAttribute('title','Caplugs part, interactive 3D');
+        f.setAttribute('allow','xr-spatial-tracking; fullscreen');
+        f.src = st.getAttribute('data-embed');
+        st.appendChild(f);
+      });
+    });
+
+    // ── CAD download gate ────────────────────────────────────────────────────
+    var gate = document.getElementById('gate');
+    function openGate(){ gate.classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeGate(){ gate.classList.remove('open'); document.body.style.overflow=''; }
+    document.getElementById('dlBtn').addEventListener('click', openGate);
+    document.querySelectorAll('.download-cad').forEach(function(b){ b.addEventListener('click', openGate); });
+    document.getElementById('gateX').addEventListener('click', closeGate);
+    gate.addEventListener('click', function(e){ if(e.target === gate) closeGate(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeGate(); });
+  </script>
+</body>
+</html>
