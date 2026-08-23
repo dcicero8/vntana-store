@@ -341,6 +341,12 @@ is the problem.
 
 ## 10. Assets, renders, turntables
 
+- **ALWAYS ask Derek to make the renders.** Do NOT capture stills yourself from the embed's
+  WebGL canvas (`canvas.toDataURL` + relay through the browser JS tool). It is unreliable: the
+  base64 truncates/corrupts on the way back and you burn turns re-trying. Derek can export a
+  clean render from VNTANA (or paste one) in seconds. Ask for the specific shots you need, then
+  drop them into `assets/<page>/` and wire them up. This applies to product-page stills, poster
+  frames, and the "renders at scale" galleries alike.
 - **Turntable GIFs and still renders** come from VNTANA (named after the product blobId, e.g.
   `render-0-{blobId}.png`, `turntable-gif-{blobId}.gif`). Store under `renders/<Product>/`.
 - Product pages can offer a **3D / Turntable** toggle plus a **thumbnail strip** of stills.
