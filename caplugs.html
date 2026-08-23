@@ -26,6 +26,16 @@
     .crumb .wrap { padding-top:.7rem; padding-bottom:.7rem; }
     .crumb b { color:var(--ink); font-weight:600; }
 
+    /* series tab nav */
+    .tabs { background:#fff; border-bottom:1px solid var(--line); position:sticky; top:64px; z-index:99; }
+    .tabs .wrap { display:flex; gap:.4rem; overflow-x:auto; }
+    .tab { flex:none; border:0; background:transparent; font-family:inherit; cursor:pointer; padding:1rem .2rem; margin-right:1.6rem; font-size:.86rem; font-weight:700; color:#6b7280; border-bottom:3px solid transparent; display:flex; align-items:baseline; gap:.5rem; white-space:nowrap; }
+    .tab:hover { color:var(--ink); }
+    .tab.on { color:var(--red); border-bottom-color:var(--red); }
+    .tab .code { font-size:.62rem; font-weight:800; letter-spacing:.08em; color:#fff; background:#c2c7ce; border-radius:3px; padding:.12rem .35rem; }
+    .tab.on .code { background:var(--red); }
+    @media (max-width:560px){ .tab { margin-right:1rem; font-size:.78rem; } }
+
     /* PDP */
     .pdp { display:grid; grid-template-columns:1.05fr .95fr; gap:2.6rem; padding:2.4rem 0 1rem; }
     @media (max-width:860px){ .pdp { grid-template-columns:1fr; } }
@@ -170,7 +180,14 @@
     </div>
   </header>
 
-  <div class="crumb"><div class="wrap">Home &nbsp;/&nbsp; Threaded Plugs &nbsp;/&nbsp; <b>RPO Series</b></div></div>
+  <!-- series switcher (top-level nav across the three types) -->
+  <div class="tabs"><div class="wrap" id="tabs">
+    <button class="tab" data-series="rpo"><span class="code">RPO</span> Threaded Plugs</button>
+    <button class="tab" data-series="t"><span class="code">T</span> Tapered Caps &amp; Plugs</button>
+    <button class="tab" data-series="tlf"><span class="code">TLF</span> Flange Protectors</button>
+  </div></div>
+
+  <div class="crumb"><div class="wrap">Home &nbsp;/&nbsp; <span id="crumbCat">Threaded Plugs</span> &nbsp;/&nbsp; <b id="crumbSeries">RPO Series</b></div></div>
 
   <!-- PDP -->
   <div class="wrap">
@@ -194,17 +211,17 @@
 
       <!-- RIGHT: product info -->
       <div>
-        <p class="eyebrow">RPO Series</p>
-        <h1>Threaded Plugs for SAE Straight Thread Ports</h1>
-        <p class="desc">A molded O-ring seal gives these plugs dual sealing on SAE straight-thread ports, while the flange lip blocks contaminants. The slotted 12-point head installs and removes with a socket, wrench or by hand.</p>
+        <p class="eyebrow" id="pEyebrow">RPO Series</p>
+        <h1 id="pTitle">Threaded Plugs for SAE Straight Thread Ports</h1>
+        <p class="desc" id="pDesc">A molded O-ring seal gives these plugs dual sealing on SAE straight-thread ports, while the flange lip blocks contaminants. The slotted 12-point head installs and removes with a socket, wrench or by hand.</p>
 
         <div class="meta-row">
-          <div class="m"><div class="lab">Material</div><div class="val">HDPE</div></div>
-          <div class="m"><div class="lab">Temperature</div><div class="val">0&ndash;215&deg;F</div></div>
-          <div class="m"><div class="lab">Standard Color</div><div class="val colorchip"><span class="sw"></span>Red</div></div>
+          <div class="m"><div class="lab">Material</div><div class="val" id="pMat">HDPE</div></div>
+          <div class="m"><div class="lab">Temperature</div><div class="val" id="pTemp">0&ndash;215&deg;F</div></div>
+          <div class="m"><div class="lab">Standard Color</div><div class="val colorchip" id="pColor"><span class="sw"></span>Red</div></div>
         </div>
 
-        <ul class="feat">
+        <ul class="feat" id="pFeat">
           <li>Molded O-ring prevents fluid leakage on straight-thread ports</li>
           <li>Flange lip seats flush and blocks dirt and debris</li>
           <li>Slotted 12-point head for socket, wrench, or hand tightening</li>
@@ -216,9 +233,9 @@
           <div class="sizes" id="sizes"></div>
           <div class="sz-readout">
             <div class="grid">
-              <div><div class="lab">Part Number</div><div class="v" id="rPart">&mdash;</div></div>
-              <div><div class="lab">SAE Port</div><div class="v" id="rPort">&mdash;</div></div>
-              <div><div class="lab">Thread Size</div><div class="v" id="rThread">&mdash;</div></div>
+              <div><div class="lab" id="rLab0">Part Number</div><div class="v" id="rVal0">-</div></div>
+              <div><div class="lab" id="rLab1">SAE Port</div><div class="v" id="rVal1">-</div></div>
+              <div><div class="lab" id="rLab2">Thread Size</div><div class="v" id="rVal2">-</div></div>
             </div>
             <p class="sz-note" id="szNote"></p>
           </div>
@@ -281,33 +298,8 @@
     <p class="rgal-note">Same source asset also produces turntable GIFs and short product video, ready for PDPs, email and marketplace listings.</p>
   </div></section>
 
-  <!-- EXPLORE OTHER SERIES -->
-  <section class="band alt"><div class="wrap">
-    <div class="band-head">
-      <div class="k">More sample series</div>
-      <h2>Explore the other CAD you sent</h2>
-      <p>The same interactive viewer, size selector and CAD download work for every series. Load either of these live.</p>
-    </div>
-    <div class="series">
-      <div class="scard">
-        <div class="st" data-embed="https://embed.vntana.com/v2?productUuid=22373e61-f269-433c-9689-87b729e63358&clientSlug=caplugs&organizationSlug=DCicero">
-          <img src="assets/caplugs/render-t.jpg" alt="T tapered caps and plugs">
-          <button class="play"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></button>
-        </div>
-        <div class="sb"><div class="ser">T Series</div><h4>Tapered Caps &amp; Plugs</h4><p>Dual-purpose taper caps or plugs across a wide size range. LDPE and FlexTemp, from -94&deg;F to 300&deg;F.</p></div>
-      </div>
-      <div class="scard">
-        <div class="st" data-embed="https://embed.vntana.com/v2?productUuid=5a9265cb-1de8-47ba-9a05-7847fa41d9c3&clientSlug=caplugs&organizationSlug=DCicero">
-          <img src="assets/caplugs/render-tlf.jpg" alt="TLF toggle lock flange protectors">
-          <button class="play"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></button>
-        </div>
-        <div class="sb"><div class="ser">TLF Series</div><h4>Toggle Lock Flange Protectors</h4><p>Patented four-hinged plugs press into bolt holes one at a time for fast install. ANSI B16.5, full pressure-class range.</p></div>
-      </div>
-    </div>
-  </div></section>
-
   <div class="flag"><div class="wrap">
-    <b>Internal note, remove before sending:</b> live Caplugs demo assets in <code>DCicero / caplugs</code>. RPO <code>9d15ac7a</code>, T <code>22373e61</code>, TLF <code>5a9265cb</code>. Size table shows real SAE port designations; numeric dimensions are illustrative of the master-CAD extrapolation concept, swap in real PDP dimension data when available. CAD download + lead gate are demo mockups (no real files served).
+    <b>Internal note, remove before sending:</b> live Caplugs demo assets in <code>DCicero / caplugs</code>. RPO <code>9d15ac7a</code>, T <code>22373e61</code>, TLF <code>5a9265cb</code>. Top tabs switch the whole PDP between the three series (grouped this way for the demo, not how a real store would nest them). Size tables use real designations where known (SAE ports, ANSI classes); other dimensions are illustrative of the master-CAD extrapolation concept, swap in real PDP data when available. CAD download + lead gate are demo mockups (no real files served).
   </div></div>
 
   <footer><div class="wrap">
@@ -334,70 +326,131 @@
   </div>
 
   <script>
-    // ── RPO size table: real SAE straight-thread port designations ───────────
-    var RPO = [
-      { p:'RPO-102', sae:'-2',  thr:'5/16-24' },
-      { p:'RPO-103', sae:'-3',  thr:'3/8-24' },
-      { p:'RPO-104', sae:'-4',  thr:'7/16-20' },
-      { p:'RPO-105', sae:'-5',  thr:'1/2-20' },
-      { p:'RPO-106', sae:'-6',  thr:'9/16-18', master:true },
-      { p:'RPO-108', sae:'-8',  thr:'3/4-16' },
-      { p:'RPO-110', sae:'-10', thr:'7/8-14' },
-      { p:'RPO-112', sae:'-12', thr:'1-1/16-12' },
-      { p:'RPO-116', sae:'-16', thr:'1-5/16-12' }
-    ];
-    var sizesEl = document.getElementById('sizes');
-    var rPart = document.getElementById('rPart'), rPort = document.getElementById('rPort'),
-        rThread = document.getElementById('rThread'), szNote = document.getElementById('szNote');
-    document.getElementById('szCnt').textContent = RPO.length + ' sizes in this series';
+    // ── the three series (top tabs switch the whole PDP) ─────────────────────
+    var EMBED = 'https://embed.vntana.com/v2?clientSlug=caplugs&organizationSlug=DCicero&productUuid=';
+    var SERIES = {
+      rpo: {
+        code:'RPO', cat:'Threaded Plugs', uuid:'9d15ac7a-08f6-41ed-b1cc-70ae83ea88a1',
+        title:'Threaded Plugs for SAE Straight Thread Ports',
+        desc:'A molded O-ring seal gives these plugs dual sealing on SAE straight-thread ports, while the flange lip blocks contaminants. The slotted 12-point head installs and removes with a socket, wrench or by hand.',
+        mat:'HDPE', temp:'0&ndash;215&deg;F', color:'<span class="sw"></span>Red',
+        feat:['Molded O-ring prevents fluid leakage on straight-thread ports','Flange lip seats flush and blocks dirt and debris','Slotted 12-point head for socket, wrench, or hand tightening'],
+        cols:['Part Number','SAE Port','Thread Size'], dimWord:'SAE port dimensions',
+        sizes:[
+          {btn:'102', sub:'SAE -2',  v:['RPO-102','SAE -2','5/16-24']},
+          {btn:'103', sub:'SAE -3',  v:['RPO-103','SAE -3','3/8-24']},
+          {btn:'104', sub:'SAE -4',  v:['RPO-104','SAE -4','7/16-20']},
+          {btn:'105', sub:'SAE -5',  v:['RPO-105','SAE -5','1/2-20']},
+          {btn:'106', sub:'SAE -6',  v:['RPO-106','SAE -6','9/16-18'], master:true},
+          {btn:'108', sub:'SAE -8',  v:['RPO-108','SAE -8','3/4-16']},
+          {btn:'110', sub:'SAE -10', v:['RPO-110','SAE -10','7/8-14']},
+          {btn:'112', sub:'SAE -12', v:['RPO-112','SAE -12','1-1/16-12']},
+          {btn:'116', sub:'SAE -16', v:['RPO-116','SAE -16','1-5/16-12']}
+        ]
+      },
+      t: {
+        code:'T', cat:'Tapered Caps &amp; Plugs', uuid:'22373e61-f269-433c-9689-87b729e63358',
+        title:'Tapered Caps &amp; Plugs',
+        desc:'A single tapered part works as a cap over a shaft or a plug inside a bore, wedging in for a snug fit and pulling out clean. LDPE for general use, FlexTemp for high-heat processes.',
+        mat:'LDPE / FlexTemp', temp:'-94&ndash;300&deg;F', color:'<span class="sw"></span>Red',
+        feat:['Tapered wall wedges into a hole or over a shaft','One part does two jobs, cap or plug','LDPE or FlexTemp cover a wide temperature range'],
+        cols:['Part Number','Nominal Size','Function'], dimWord:'nominal dimensions',
+        sizes:[
+          {btn:'T-4',  sub:'1/4"',   v:['T-4','1/4 in','Cap or Plug']},
+          {btn:'T-6',  sub:'3/8"',   v:['T-6','3/8 in','Cap or Plug']},
+          {btn:'T-8',  sub:'1/2"',   v:['T-8','1/2 in','Cap or Plug']},
+          {btn:'T10',  sub:'5/8"',   v:['T10','5/8 in','Cap or Plug'], master:true},
+          {btn:'T-12', sub:'3/4"',   v:['T-12','3/4 in','Cap or Plug']},
+          {btn:'T-16', sub:'1"',     v:['T-16','1 in','Cap or Plug']},
+          {btn:'T-20', sub:'1-1/4"', v:['T-20','1-1/4 in','Cap or Plug']},
+          {btn:'T-24', sub:'1-1/2"', v:['T-24','1-1/2 in','Cap or Plug']}
+        ]
+      },
+      tlf: {
+        code:'TLF', cat:'Flange Protectors', uuid:'5a9265cb-1de8-47ba-9a05-7847fa41d9c3',
+        title:'Toggle Lock Flange Protectors',
+        desc:'Four hinged plugs press into the bolt holes one at a time, so a single protector snaps onto an ANSI flange far faster than a bolt-through cover. Reinforced walls resist warping and keep the face clean.',
+        mat:'LDPE', temp:'-94&ndash;175&deg;F', color:'<span class="sw" style="background:#111"></span>Black &middot; Blue &middot; Red',
+        feat:['Four hinged plugs press into bolt holes one at a time','Installs faster than a traditional bolt-through cover','Reinforced walls resist warping; ANSI B16.5 fit'],
+        cols:['Part Number','Flange Size','Pressure Class'], dimWord:'flange dimensions',
+        sizes:[
+          {btn:'1"',        sub:'150#', v:['TLF-1','1 in','Class 150 (Blue/Red)']},
+          {btn:'2"',        sub:'150#', v:['TLF-2','2 in','Class 150 (Blue/Red)']},
+          {btn:'3"',        sub:'150#', v:['TLF-3','3 in','Class 150 (Blue/Red)']},
+          {btn:'4"',        sub:'300#', v:['TLF-4','4 in','Class 300 (Black)']},
+          {btn:'900-3000',  sub:'6"',   v:['TLF-900-3000','6 in','Class 900 (Black)'], master:true}
+        ]
+      }
+    };
 
-    function selectSize(i){
-      RPO.forEach(function(s, j){ btns[j].classList.toggle('on', i === j); });
-      var s = RPO[i];
-      rPart.textContent = s.p; rPort.textContent = 'SAE ' + s.sae; rThread.textContent = s.thr;
-      if (s.master) {
-        szNote.innerHTML = '<b>' + s.p + '</b> is the master CAD you uploaded. Every other size in the series is generated from it, scaled to its SAE port dimensions, no new file to model.';
+    var sizesEl = document.getElementById('sizes');
+    var szNote = document.getElementById('szNote');
+    var mainStage = document.getElementById('mainStage');
+    var current = null, btns = [];
+
+    function selectSize(s, i){
+      btns.forEach(function(b, j){ b.classList.toggle('on', i === j); });
+      var row = s.sizes[i];
+      for (var c = 0; c < 3; c++){ document.getElementById('rVal' + c).textContent = row.v[c]; }
+      if (row.master){
+        szNote.innerHTML = '<b>' + row.v[0] + '</b> is the master CAD you uploaded. Every other size in the series is generated from it, scaled to its ' + s.dimWord + ', no new file to model.';
       } else {
-        szNote.innerHTML = 'This size is <b>extrapolated from the RPO-106 master CAD</b>, scaled to the SAE ' + s.sae + ' port. Preview shows the master model; production auto-scales to the selected size using your PDP dimension data.';
+        szNote.innerHTML = 'This size is <b>extrapolated from the ' + s.masterPart + ' master CAD</b>, scaled to its ' + s.dimWord + '. Preview shows the master model; production auto-scales to the selected size using your PDP dimension data.';
       }
     }
-    var btns = RPO.map(function(s, i){
-      var b = document.createElement('button');
-      b.className = 'sz' + (s.master ? '' : '');
-      b.innerHTML = '<div class="p">' + s.p.replace('RPO-','') + '</div><div class="s">SAE ' + s.sae + '</div>';
-      b.addEventListener('click', function(){ selectSize(i); });
-      sizesEl.appendChild(b);
-      return b;
-    });
-    selectSize(4); // default to the master RPO-106
 
-    // ── viewer mount helper ──────────────────────────────────────────────────
-    function mountViewer(stage){
-      var url = stage.getAttribute('data-embed');
+    function mountViewer(stage, url){
+      stage.querySelectorAll('iframe,.ld').forEach(function(el){ el.remove(); });
+      var ld = document.createElement('div');
+      ld.className = 'ld'; ld.innerHTML = '<div class="spin"></div><p>Loading 3D model</p>';
       var f = document.createElement('iframe');
       f.setAttribute('title','Caplugs part, interactive 3D');
       f.setAttribute('allow','xr-spatial-tracking; fullscreen');
       f.setAttribute('loading','eager');
       f.src = url;
-      var ld = stage.querySelector('.ld');
-      f.addEventListener('load', function(){ if(ld){ ld.style.opacity='0'; setTimeout(function(){ if(ld.parentNode) ld.parentNode.removeChild(ld); }, 420); } });
-      stage.appendChild(f);
+      f.addEventListener('load', function(){ ld.style.opacity='0'; setTimeout(function(){ if(ld.parentNode) ld.parentNode.removeChild(ld); }, 420); });
+      stage.appendChild(f); stage.appendChild(ld);
     }
-    // main PDP viewer auto-loads (tiny part model)
-    mountViewer(document.getElementById('mainStage'));
 
-    // other-series cards load on click
-    document.querySelectorAll('.scard .play').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var st = btn.closest('.st');
-        st.querySelectorAll('img,.play').forEach(function(el){ el.remove(); });
-        var f = document.createElement('iframe');
-        f.setAttribute('title','Caplugs part, interactive 3D');
-        f.setAttribute('allow','xr-spatial-tracking; fullscreen');
-        f.src = st.getAttribute('data-embed');
-        st.appendChild(f);
+    function render(key){
+      var s = SERIES[key];
+      if (current === key) return;
+      current = key;
+      // tabs
+      document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on', t.getAttribute('data-series') === key); });
+      // header text
+      document.getElementById('crumbCat').innerHTML = s.cat;
+      document.getElementById('crumbSeries').textContent = s.code + ' Series';
+      document.getElementById('pEyebrow').textContent = s.code + ' Series';
+      document.getElementById('pTitle').innerHTML = s.title;
+      document.getElementById('pDesc').textContent = s.desc;
+      document.getElementById('pMat').textContent = s.mat;
+      document.getElementById('pTemp').innerHTML = s.temp;
+      document.getElementById('pColor').innerHTML = s.color;
+      document.getElementById('pFeat').innerHTML = s.feat.map(function(f){ return '<li>' + f + '</li>'; }).join('');
+      // size selector
+      for (var c = 0; c < 3; c++){ document.getElementById('rLab' + c).innerHTML = s.cols[c]; }
+      document.getElementById('szCnt').textContent = s.sizes.length + ' sizes in this series';
+      var masterIdx = 0;
+      s.sizes.forEach(function(row, i){ if (row.master){ masterIdx = i; s.masterPart = row.v[0]; } });
+      sizesEl.innerHTML = '';
+      btns = s.sizes.map(function(row, i){
+        var b = document.createElement('button');
+        b.className = 'sz';
+        b.innerHTML = '<div class="p">' + row.btn + '</div><div class="s">' + row.sub + '</div>';
+        b.addEventListener('click', function(){ selectSize(s, i); });
+        sizesEl.appendChild(b);
+        return b;
       });
+      selectSize(s, masterIdx);
+      // viewer
+      mountViewer(mainStage, EMBED + s.uuid);
+    }
+
+    document.querySelectorAll('.tab').forEach(function(t){
+      t.addEventListener('click', function(){ render(t.getAttribute('data-series')); });
     });
+    render('rpo'); // default series
 
     // ── CAD download gate ────────────────────────────────────────────────────
     var gate = document.getElementById('gate');
