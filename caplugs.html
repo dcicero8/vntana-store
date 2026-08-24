@@ -387,8 +387,8 @@
         code:'T', cat:'Tapered Caps &amp; Plugs', uuid:'22373e61-f269-433c-9689-87b729e63358',
         render:'assets/caplugs/render-t.jpg', sketch:'assets/caplugs/sketch-t.jpg', spin:'assets/caplugs/turntable-t.gif',
         materials:[
-          {label:'LDPE', fs:'Plastic', uuid:'22373e61-f269-433c-9689-87b729e63358'},
-          {label:'EPDM', fs:'Rubber',  uuid:'5cf95d0a-2115-4f2b-afe8-d2132b31ca88'}
+          {label:'LDPE', fs:'Plastic', uuid:'22373e61-f269-433c-9689-87b729e63358', render:'assets/caplugs/render-t.jpg'},
+          {label:'EPDM', fs:'Rubber',  uuid:'5cf95d0a-2115-4f2b-afe8-d2132b31ca88', render:'assets/caplugs/render-t-rubber.jpg'}
         ],
         title:'Tapered Caps &amp; Plugs',
         desc:'A single tapered part works as a cap over a shaft or a plug inside a bore, wedging in for a snug fit and pulling out clean. LDPE for general use, FlexTemp for high-heat processes.',
@@ -429,7 +429,16 @@
     var mainStage = document.getElementById('mainStage');
     var finishRow = document.getElementById('finishRow');
     var finsEl = document.getElementById('fins');
-    var current = null, btns = [], activeUuid = null;
+    var current = null, btns = [], activeMatIdx = 0;
+
+    function curMat(){ var s = SERIES[current]; return s.materials ? s.materials[activeMatIdx] : null; }
+    function curUuid(){ var m = curMat(); return m ? m.uuid : SERIES[current].uuid; }
+    function curRender(){ var m = curMat(); return (m && m.render) ? m.render : SERIES[current].render; }
+    function ensureViewer(uuid){
+      var f = mainStage.querySelector('iframe');
+      if (!f || f.src !== EMBED + uuid) mountViewer(mainStage, EMBED + uuid);
+    }
+    function highlightFin(){ finsEl.querySelectorAll('.fin').forEach(function(b, j){ b.classList.toggle('on', j === activeMatIdx); }); }
 
     function buildFinish(s){
       if (!s.materials){ finishRow.hidden = true; finsEl.innerHTML = ''; return; }
@@ -439,15 +448,15 @@
         var b = document.createElement('button');
         b.className = 'fin' + (i === 0 ? ' on' : '');
         b.innerHTML = m.label + '<span class="fs">' + m.fs + '</span>';
-        b.addEventListener('click', function(){ setFinish(s, i); });
+        b.addEventListener('click', function(){ setFinish(i); });
         finsEl.appendChild(b);
       });
     }
-    function setFinish(s, i){
-      activeUuid = s.materials[i].uuid;
-      finsEl.querySelectorAll('.fin').forEach(function(b, j){ b.classList.toggle('on', j === i); });
-      applyMode('3d');                              // finishes are shown live
-      mountViewer(mainStage, EMBED + activeUuid);
+    function setFinish(i){
+      activeMatIdx = i;
+      highlightFin();
+      // finishes exist for 3D + Render; from sketch/360 (plastic-only) jump to 3D to show it
+      applyMode((heroMode === 'sketch' || heroMode === 'spin') ? '3d' : heroMode);
     }
 
     function selectSize(s, i){
@@ -506,10 +515,10 @@
       });
       selectSize(s, masterIdx);
       // finish / material switch (T only)
+      activeMatIdx = 0;
       buildFinish(s);
       // viewer (live 3D stays mounted underneath the image layer)
-      activeUuid = s.uuid;
-      mountViewer(mainStage, EMBED + activeUuid);
+      mountViewer(mainStage, EMBED + s.uuid);
       applyMode(heroMode);
     }
 
@@ -521,19 +530,17 @@
     function applyMode(mode){
       heroMode = mode;
       var s = SERIES[current];
-      // stills depict the default (plastic) finish; leaving 3D with a rubber finish active resets it
-      if (mode !== '3d' && s.materials && activeUuid !== s.uuid){
-        activeUuid = s.uuid;
-        finsEl.querySelectorAll('.fin').forEach(function(b, j){ b.classList.toggle('on', j === 0); });
-        mountViewer(mainStage, EMBED + s.uuid);
+      // sketch (geometry only) and 360 (plastic turntable only) exist for the default finish -> reset
+      if ((mode === 'sketch' || mode === 'spin') && s.materials && activeMatIdx !== 0){
+        activeMatIdx = 0; highlightFin();
       }
       document.querySelectorAll('#heroModes button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-mode') === mode); });
       if (mode === '3d'){
-        heroImg.hidden = true;
+        heroImg.hidden = true; ensureViewer(curUuid());
         modeBadge.className = 'live-dot'; modeBadge.textContent = 'Live 3D';
         viewerHint.innerHTML = 'Drag to rotate &middot; scroll to zoom &middot; tap the cube for AR';
       } else if (mode === 'render'){
-        heroImg.src = s.render; heroImg.hidden = false;
+        heroImg.src = curRender(); heroImg.hidden = false;
         modeBadge.className = 'mode-tag'; modeBadge.textContent = 'Photoreal render';
         viewerHint.textContent = 'Auto-generated from the CAD, then made photoreal with your AI or a VNTANA material library';
       } else if (mode === 'sketch'){
