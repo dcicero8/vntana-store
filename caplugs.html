@@ -71,6 +71,15 @@
     .meta-row .m .val { font-size:.9rem; font-weight:600; margin-top:.15rem; }
     .colorchip { display:inline-flex; align-items:center; gap:.4rem; }
     .colorchip .sw { width:14px; height:14px; border-radius:3px; background:var(--red); border:1px solid rgba(0,0,0,.12); }
+    /* finish / material switch (T series) */
+    .finish-row { margin-top:1.1rem; }
+    .finish-row .flab { font-size:.6rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:#9aa0a8; margin-bottom:.45rem; }
+    .finish-row .fins { display:flex; gap:.45rem; flex-wrap:wrap; }
+    .fin { font-family:inherit; text-align:left; font-size:.78rem; font-weight:700; color:#374151; background:#fff; border:1px solid var(--line); border-radius:6px; padding:.5rem .8rem; cursor:pointer; display:flex; flex-direction:column; line-height:1.25; }
+    .fin .fs { font-size:.6rem; font-weight:600; color:#9aa0a8; margin-top:.1rem; }
+    .fin:hover { border-color:#b9bdc4; }
+    .fin.on { background:var(--red); border-color:var(--red); color:#fff; }
+    .fin.on .fs { color:rgba(255,255,255,.85); }
 
     .feat { list-style:none; margin-top:1.1rem; display:grid; gap:.5rem; }
     .feat li { display:flex; gap:.55rem; font-size:.86rem; color:#3b4148; }
@@ -245,6 +254,11 @@
           <div class="m"><div class="lab">Standard Color</div><div class="val colorchip" id="pColor"><span class="sw"></span>Red</div></div>
         </div>
 
+        <div class="finish-row" id="finishRow" hidden>
+          <div class="flab">Finish &middot; see it live in 3D</div>
+          <div class="fins" id="fins"></div>
+        </div>
+
         <ul class="feat" id="pFeat">
           <li>Molded O-ring prevents fluid leakage on straight-thread ports</li>
           <li>Flange lip seats flush and blocks dirt and debris</li>
@@ -372,6 +386,10 @@
       t: {
         code:'T', cat:'Tapered Caps &amp; Plugs', uuid:'22373e61-f269-433c-9689-87b729e63358',
         render:'assets/caplugs/render-t.jpg', sketch:'assets/caplugs/sketch-t.jpg', spin:'assets/caplugs/turntable-t.gif',
+        materials:[
+          {label:'LDPE', fs:'Plastic', uuid:'22373e61-f269-433c-9689-87b729e63358'},
+          {label:'EPDM', fs:'Rubber',  uuid:'5cf95d0a-2115-4f2b-afe8-d2132b31ca88'}
+        ],
         title:'Tapered Caps &amp; Plugs',
         desc:'A single tapered part works as a cap over a shaft or a plug inside a bore, wedging in for a snug fit and pulling out clean. LDPE for general use, FlexTemp for high-heat processes.',
         mat:'LDPE / FlexTemp', temp:'-94&ndash;300&deg;F', color:'<span class="sw"></span>Red',
@@ -409,7 +427,28 @@
     var sizesEl = document.getElementById('sizes');
     var szNote = document.getElementById('szNote');
     var mainStage = document.getElementById('mainStage');
-    var current = null, btns = [];
+    var finishRow = document.getElementById('finishRow');
+    var finsEl = document.getElementById('fins');
+    var current = null, btns = [], activeUuid = null;
+
+    function buildFinish(s){
+      if (!s.materials){ finishRow.hidden = true; finsEl.innerHTML = ''; return; }
+      finishRow.hidden = false;
+      finsEl.innerHTML = '';
+      s.materials.forEach(function(m, i){
+        var b = document.createElement('button');
+        b.className = 'fin' + (i === 0 ? ' on' : '');
+        b.innerHTML = m.label + '<span class="fs">' + m.fs + '</span>';
+        b.addEventListener('click', function(){ setFinish(s, i); });
+        finsEl.appendChild(b);
+      });
+    }
+    function setFinish(s, i){
+      activeUuid = s.materials[i].uuid;
+      finsEl.querySelectorAll('.fin').forEach(function(b, j){ b.classList.toggle('on', j === i); });
+      applyMode('3d');                              // finishes are shown live
+      mountViewer(mainStage, EMBED + activeUuid);
+    }
 
     function selectSize(s, i){
       btns.forEach(function(b, j){ b.classList.toggle('on', i === j); });
@@ -466,8 +505,11 @@
         return b;
       });
       selectSize(s, masterIdx);
+      // finish / material switch (T only)
+      buildFinish(s);
       // viewer (live 3D stays mounted underneath the image layer)
-      mountViewer(mainStage, EMBED + s.uuid);
+      activeUuid = s.uuid;
+      mountViewer(mainStage, EMBED + activeUuid);
       applyMode(heroMode);
     }
 
@@ -479,6 +521,12 @@
     function applyMode(mode){
       heroMode = mode;
       var s = SERIES[current];
+      // stills depict the default (plastic) finish; leaving 3D with a rubber finish active resets it
+      if (mode !== '3d' && s.materials && activeUuid !== s.uuid){
+        activeUuid = s.uuid;
+        finsEl.querySelectorAll('.fin').forEach(function(b, j){ b.classList.toggle('on', j === 0); });
+        mountViewer(mainStage, EMBED + s.uuid);
+      }
       document.querySelectorAll('#heroModes button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-mode') === mode); });
       if (mode === '3d'){
         heroImg.hidden = true;
