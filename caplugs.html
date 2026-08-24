@@ -296,22 +296,19 @@
     <div class="band-head">
       <div class="k">Self-service CAD, gated for leads</div>
       <h2>Let engineers pull the file themselves</h2>
-      <p>Today a chunk of your part questions become a manual back-and-forth with engineering. From one uploaded CAD, VNTANA spins out downloadable files in every major format, offered right on the page and gated behind a short form, so each download becomes a captured lead that can flow straight into HubSpot.</p>
+      <p>Today a chunk of your part questions become a manual back-and-forth with engineering. From one uploaded CAD, VNTANA preserves the native source and generates ready-to-use GLB, USDZ and FBX, offered right on the page and gated behind a short form, so each download becomes a captured lead that can flow straight into HubSpot.</p>
     </div>
     <div class="cad">
       <div class="cad-card">
-        <div class="row"><div class="fmt">STEP (.step / .stp)<span>Neutral solid model, most CAD tools</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="row"><div class="fmt">SolidWorks (.sldprt)<span>Native part file</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="row"><div class="fmt">IGES (.igs)<span>Neutral surface/solid interchange</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="row"><div class="fmt">STL / OBJ<span>Mesh for print and visualization</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="chips">
-          <span class="chip">Parasolid</span><span class="chip">3MF</span><span class="chip">glTF / GLB</span><span class="chip">USDZ</span><span class="chip">FBX</span><span class="chip more">40+ formats supported</span>
-        </div>
+        <div class="row"><div class="fmt">Native source (.sldprt)<span>The original CAD you uploaded, preserved</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">GLB (.glb)<span>Web and real-time 3D, compressed</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">USDZ (.usdz)<span>Apple AR Quick Look</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">FBX (.fbx)<span>DCC tools and game engines</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
       </div>
       <div class="cad-side">
         <div class="box">
-          <h4>One upload, every format</h4>
-          <p>Your engineering team uploads native CAD once. VNTANA auto-generates the download formats, so you never regenerate files by hand.</p>
+          <h4>One upload, ready-to-use files</h4>
+          <p>Your engineering team uploads native CAD once. VNTANA preserves the source and auto-generates GLB, USDZ and FBX, so you never regenerate files by hand.</p>
         </div>
         <div class="box">
           <h4>Gated = lead source</h4>
@@ -353,7 +350,7 @@
         <label>Work Email</label><input type="email" placeholder="you@company.com">
         <label>Company</label><input type="text" placeholder="Company name">
         <label>Format</label>
-        <select><option>STEP (.step)</option><option>SolidWorks (.sldprt)</option><option>IGES (.igs)</option><option>STL</option><option>Parasolid</option></select>
+        <select><option>Native source (.sldprt)</option><option>GLB (.glb)</option><option>USDZ (.usdz)</option><option>FBX (.fbx)</option></select>
         <p class="fine">Demo only, no file is sent. In production this posts the lead to HubSpot and returns the download link.</p>
       </div>
     </div>
