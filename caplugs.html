@@ -296,11 +296,13 @@
     <div class="band-head">
       <div class="k">Self-service CAD, gated for leads</div>
       <h2>Let engineers pull the file themselves</h2>
-      <p>Today a chunk of your part questions become a manual back-and-forth with engineering. From one uploaded CAD, VNTANA preserves the native source and generates ready-to-use GLB, USDZ and FBX, offered right on the page and gated behind a short form, so each download becomes a captured lead that can flow straight into HubSpot.</p>
+      <p>Today a chunk of your part questions become a manual back-and-forth with engineering. From one uploaded CAD, VNTANA preserves the native source and generates the formats your customers actually ask for, neutral CAD like STEP and IGES plus web and AR, offered right on the page and gated behind a short form, so each download becomes a captured lead that can flow straight into HubSpot.</p>
     </div>
     <div class="cad">
       <div class="cad-card">
         <div class="row"><div class="fmt">Native source (.sldprt)<span>The original CAD you uploaded, preserved</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">STEP (.step / .stp)<span>Neutral CAD solid, most widely adopted</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">IGES (.igs)<span>Neutral CAD surface / solid interchange</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
         <div class="row"><div class="fmt">GLB (.glb)<span>Web and real-time 3D, compressed</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
         <div class="row"><div class="fmt">USDZ (.usdz)<span>Apple AR Quick Look</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
         <div class="row"><div class="fmt">FBX (.fbx)<span>DCC tools and game engines</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
@@ -308,7 +310,7 @@
       <div class="cad-side">
         <div class="box">
           <h4>One upload, ready-to-use files</h4>
-          <p>Your engineering team uploads native CAD once. VNTANA preserves the source and auto-generates GLB, USDZ and FBX, so you never regenerate files by hand.</p>
+          <p>Your engineering team uploads native CAD once. VNTANA preserves the source and generates STEP, IGES, GLB, USDZ and FBX (and more on request), so customers self-serve any format without regenerating files by hand.</p>
         </div>
         <div class="box">
           <h4>Gated = lead source</h4>
@@ -350,7 +352,7 @@
         <label>Work Email</label><input type="email" placeholder="you@company.com">
         <label>Company</label><input type="text" placeholder="Company name">
         <label>Format</label>
-        <select><option>Native source (.sldprt)</option><option>GLB (.glb)</option><option>USDZ (.usdz)</option><option>FBX (.fbx)</option></select>
+        <select><option>Native source (.sldprt)</option><option>STEP (.step)</option><option>IGES (.igs)</option><option>GLB (.glb)</option><option>USDZ (.usdz)</option><option>FBX (.fbx)</option></select>
         <p class="fine">Demo only, no file is sent. In production this posts the lead to HubSpot and returns the download link.</p>
       </div>
     </div>
