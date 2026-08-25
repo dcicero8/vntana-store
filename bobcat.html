@@ -133,8 +133,8 @@
   <section class="band"><div class="page-inner">
     <div class="intro">
       <div class="k">The problem</div>
-      <h2>The loader is a heavy model</h2>
-      <p>At roughly 12 MB it loads on every page view, which slows the experience. Two fixes: make the model itself lighter, and only load it when the visitor asks. The lighter model is ours to deliver; the deferred load is a page-side pattern that works with the standard embed.</p>
+      <h2>The current loader could be more optimized</h2>
+      <p>The S86 model is on the heavy side, roughly 12 MB, and it loads on every page view, which slows the experience. Two levers fix it: ship a lighter model, and only load it when the visitor asks. The lighter model is ours to deliver; the deferred load is a page-side pattern that works with the standard embed.</p>
     </div>
   </div></section>
 
@@ -155,7 +155,7 @@
       </figure>
       <figure class="cmp">
         <figcaption><b>Optimized</b> &middot; 6.6 MB &middot; <span style="color:var(--orange);">50% smaller</span></figcaption>
-        <div class="stage cmp-stage" data-embed="https://embed.vntana.com/v2?productUuid=ff38841a-0683-497c-8163-21fdba6c2309&clientSlug=bobcat&organizationSlug=DCicero">
+        <div class="stage cmp-stage" data-embed="https://embed.vntana.com/v2?productUuid=cf99d95f-8681-42e2-993e-b2359cab4e3f&clientSlug=test&organizationSlug=bobcat">
           <img class="poster" src="assets/bobcat-s86-poster.jpg" alt="S86 optimized, ~6 MB">
           <div class="veil"></div>
         </div>
@@ -293,16 +293,22 @@ closeBtn.onclick = () =&gt; modal.innerHTML = '';   // unloads the viewer</pre>
       });
       container.appendChild(f);
       container.appendChild(ld);
+      return f;
     }
 
-    // Option 1: load both comparison viewers at once, so the lighter one wins the race
+    // Option 1: load the original first, then the optimized once it's in,
+    // so you watch the heavy one grind and the lighter one pop in after
     document.querySelectorAll('[data-load-both]').forEach(function(btn){
       btn.addEventListener('click', function(){
         btn.style.display = 'none';
-        document.querySelectorAll('.cmp-stage[data-embed]').forEach(function(st){
+        var stages = Array.prototype.slice.call(document.querySelectorAll('.cmp-stage[data-embed]'));
+        (function loadStage(i){
+          if (i >= stages.length) return;
+          var st = stages[i];
           st.querySelectorAll('.poster,.veil').forEach(function(el){ el.remove(); });
-          mountViewer(st, st.getAttribute('data-embed'));
-        });
+          var f = mountViewer(st, st.getAttribute('data-embed'));
+          f.addEventListener('load', function(){ loadStage(i + 1); });
+        })(0);
       });
     });
 
