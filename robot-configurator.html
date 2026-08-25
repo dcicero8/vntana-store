@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot — End-of-Arm Tooling Configurator</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#00548f; --blue-dark:#003a63; --sky:#3fa9f5; --accent:#00548f;
+    --ink:#1a1f2b; --muted:#5c6473; --line:#e5e8ef; --bg:#f4f6f9; --card:#fff;
+    --font:'Roboto',Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+  header.top{height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    padding:0 22px;gap:14px;position:sticky;top:0;z-index:20}
+  header.top .wm{font-weight:900;letter-spacing:-.01em;font-size:1.05rem;color:var(--blue-dark)}
+  header.top .wm span{color:var(--accent)}
+  header.top .sub{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+  main{display:grid;grid-template-columns:1fr 440px;height:calc(100vh - 56px)}
+  @media(max-width:900px){main{grid-template-columns:1fr;height:auto}}
+
+  .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px}
+  vntana-viewer{width:100%;height:100%;display:block}
+  .stage .hint{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:.78rem;color:#8b93a4;pointer-events:none}
+  .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa2b2;font-size:.9rem;text-align:center;padding:0 30px;background:rgba(244,246,249,.6);backdrop-filter:blur(1px)}
+  .loading.hidden{display:none}
+
+  .panel{background:var(--card);border-left:1px solid var(--line);overflow-y:auto;padding:26px 26px 40px}
+  .eyebrow{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:700}
+  .panel h1{font-size:1.6rem;font-weight:900;margin:6px 0 2px;letter-spacing:-.02em}
+  .machine{font-size:.85rem;color:var(--muted);margin-bottom:20px}
+
+  .chips{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+  .chip{width:100%;text-align:center;border:1px solid var(--line);background:#f7f9fc;border-radius:8px;padding:11px 13px;font-size:.82rem;font-weight:600;
+    color:#40485a;cursor:pointer;transition:.15s;line-height:1.15;font-family:inherit}
+  .chip:hover{border-color:var(--sky);color:var(--blue)}
+  .chip.active{background:var(--blue);border-color:var(--blue);color:#fff}
+  .chip .ph{display:block;font-size:.62rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-top:2px}
+
+  .detail{border:1px solid var(--line);border-radius:14px;padding:22px;background:#fbfcfe}
+  .detail h2{font-size:1.2rem;font-weight:900;color:var(--blue-dark);margin:0 0 4px}
+  .detail .tag{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:14px}
+  .detail ul{margin:0;padding-left:18px}
+  .detail li{font-size:.9rem;color:#3a4252;margin-bottom:8px;line-height:1.45}
+  .detail .note{margin-top:14px;font-size:.78rem;color:#8b93a4;font-style:italic;border-top:1px dashed var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wm">Tooling <span>Configurator</span></div>
+  <div class="sub">Industrial Robot · End-of-Arm Tooling</div>
+</header>
+
+<main>
+  <div class="stage">
+    <div class="loading" id="loading">Loading interactive 3D…</div>
+    <vntana-viewer id="viewer"></vntana-viewer>
+    <div class="hint">Pick a tool on the right. The robot keeps your view while the tooling swaps.</div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">Configure the arm</div>
+    <h1 id="title">Industrial Robot</h1>
+    <div class="machine" id="subtitle">Choose the end-of-arm tooling. Each option is a complete, AR-ready configuration.</div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="detail" id="detail"></div>
+  </div>
+</main>
+
+<script type="module" src="vendor/viewer-test/dist/index.js"></script>
+<script type="module">
+  const viewer   = document.getElementById("viewer");
+  const chipsEl  = document.getElementById("chips");
+  const detail   = document.getElementById("detail");
+  const loading  = document.getElementById("loading");
+  const titleEl  = document.getElementById("title");
+  const subEl    = document.getElementById("subtitle");
+
+  const BASE="https://api.vntana.com", ORG="DCicero", WS="configurators";
+
+  /* Each configuration is its own VNTANA product: the same robot with a
+     different tool mounted on the wrist flange. Selecting one swaps
+     viewer.src while preserving the current camera. */
+  const CONFIGS = [
+    {
+      id:"bare", uuid:"59f8d231-7980-447a-a1b2-f00adff8a8d9",
+      name:"Bare Arm", tag:"Tool mount only",
+      bullets:[
+        "Six-axis industrial arm with the tool flange exposed",
+        "ISO mounting pattern ready for any end effector",
+        "The starting point for every tooling configuration"
+      ],
+      note:"Select a tool below to see it mounted on the wrist."
+    },
+    {
+      id:"gripper", uuid:"c710334e-21e3-46ad-a3ea-6c58d2e8ebcc",
+      name:"Gripper Fingers", tag:"Part No. 9495N17",
+      bullets:[
+        "Ready-to-use fingers for a robot-ready electric gripper",
+        "Parallel-jaw grip for machine tending and part transfer",
+        "Hardened contact faces for repeatable positioning"
+      ],
+      note:"Pick-and-place and machine-tending configuration."
+    },
+    {
+      id:"vacarm", uuid:"d8d2e21b-7e0d-47a6-a927-26d1c9369120",
+      name:"Vacuum Arm", tag:"Part No. 3136N511",
+      bullets:[
+        "Any-which-way articulating mount with a single vacuum cup",
+        "Ball joints position the cup at any angle to the part",
+        "Light-duty handling for panels, cartons, and sheet goods"
+      ],
+      note:"Single-point vacuum lifting configuration."
+    },
+    {
+      id:"vackit", uuid:"2f609f43-38ef-4493-bb88-5238ce4a4863",
+      name:"Vacuum Kit", tag:"Part No. 3136N512",
+      bullets:[
+        "Multi-arm vacuum kit on a rigid tool plate",
+        "Four independently positionable suction cups",
+        "Distributes the load for large or flexible parts"
+      ],
+      note:"Multi-point vacuum lifting configuration."
+    }
+  ];
+
+  const byId = Object.fromEntries(CONFIGS.map(c => [c.id, c]));
+  let activeId = null;
+  let firstLoad = true;
+
+  // camera getters are METHODS on the v3 build; setters are properties
+  const captureCamera = () => {
+    try {
+      return {
+        cameraTarget:   viewer.getCameraTarget(),
+        cameraRotation: viewer.getCameraRotation(),
+        cameraDistance: viewer.getCameraDistance(),
+        fieldOfView:    viewer.getFieldOfView()
+      };
+    } catch(_) { return null; }
+  };
+
+  const loadConfig = async (uuid) => {
+    const cam = firstLoad ? null : captureCamera();
+    loading.textContent = "Loading configuration…";
+    loading.classList.remove("hidden");
+    try {
+      const p = await fetch(`${BASE}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
+      const { asset, viewerSettings } = p.response;
+      const blobId = asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB")?.modelBlobId
+                   || asset.models[0].modelBlobId;
+      viewer.addEventListener("load", () => {
+        // re-apply the user's view so the swap feels like a tool change, not a reload
+        if (cam && cam.cameraTarget) { try { Object.assign(viewer, cam); } catch(_){} }
+        else if (viewerSettings?.config) {
+          try { Object.assign(viewer, JSON.parse(viewerSettings.config)); } catch(_){}
+        }
+        loading.classList.add("hidden");
+      }, { once:true });
+      viewer.src = `${BASE}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${blobId}`;
+      firstLoad = false;
+    } catch (err) {
+      loading.textContent = "Could not load the model. (Is the product Live Public?)";
+      console.error(err);
+    }
+  };
+
+  const renderCard = (c) => {
+    detail.innerHTML = `
+      <h2>${c.name}</h2>
+      <div class="tag">${c.tag}</div>
+      <ul>${c.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+      ${c.note ? `<div class="note">${c.note}</div>` : ``}`;
+  };
+
+  const select = (id) => {
+    const c = byId[id]; if (!c || id === activeId) return;
+    activeId = id;
+    loadConfig(c.uuid);
+    titleEl.textContent = `Industrial Robot — ${c.name}`;
+    subEl.textContent = c.tag;
+    renderCard(c);
+    [...chipsEl.children].forEach(ch => ch.classList.toggle("active", ch.dataset.id === id));
+  };
+
+  CONFIGS.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.dataset.id = c.id;
+    b.innerHTML = `${c.name}<span class="ph">${c.tag}</span>`;
+    b.addEventListener("click", () => select(c.id));
+    chipsEl.appendChild(b);
+  });
+
+  select("bare");
+</script>
+</body>
+</html>
