@@ -24,8 +24,17 @@
   header.top .wm span{color:var(--accent)}
   header.top .sub{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 
-  main{display:grid;grid-template-columns:1fr 440px;height:calc(100vh - 56px)}
+  main{display:grid;grid-template-columns:1fr 440px;height:calc(100vh - 56px - 46px)}
   @media(max-width:900px){main{grid-template-columns:1fr;height:auto}}
+
+  footer.foot{height:46px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;
+    justify-content:space-between;padding:0 22px;gap:14px}
+  footer.foot a.back{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-weight:700;
+    font-size:.8rem;text-decoration:none}
+  footer.foot a.back:hover{text-decoration:underline}
+  footer.foot .pb{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  footer.foot .pb b{color:var(--blue-dark);font-weight:800}
+  @media(max-width:900px){footer.foot{height:auto;padding:12px 22px}}
 
   .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px}
   vntana-viewer{width:100%;height:100%;display:block}
@@ -82,6 +91,14 @@
     </div>
   </div>
 </main>
+
+<footer class="foot">
+  <a class="back" href="/custom/imts">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+    Back to IMTS 2026
+  </a>
+  <span class="pb">Powered by <b>VNTANA</b> 3D</span>
+</footer>
 
 <script type="module" src="vendor/viewer-test/dist/index.js"></script>
 <script type="module">
