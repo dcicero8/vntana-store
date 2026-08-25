@@ -386,8 +386,8 @@
         code:'T', cat:'Tapered Caps &amp; Plugs', uuid:'22373e61-f269-433c-9689-87b729e63358',
         render:'assets/caplugs/render-t.jpg', sketch:'assets/caplugs/sketch-t.jpg', spin:'assets/caplugs/turntable-t.gif',
         materials:[
-          {label:'LDPE', fs:'Plastic', uuid:'22373e61-f269-433c-9689-87b729e63358', render:'assets/caplugs/render-t.jpg'},
-          {label:'EPDM', fs:'Rubber',  uuid:'5cf95d0a-2115-4f2b-afe8-d2132b31ca88', render:'assets/caplugs/render-t-rubber.jpg'}
+          {label:'LDPE', fs:'Plastic', uuid:'22373e61-f269-433c-9689-87b729e63358', render:'assets/caplugs/render-t.jpg', spin:'assets/caplugs/turntable-t.gif'},
+          {label:'EPDM', fs:'Rubber',  uuid:'5cf95d0a-2115-4f2b-afe8-d2132b31ca88', render:'assets/caplugs/render-t-rubber.jpg', spin:'assets/caplugs/turntable-t-rubber.gif'}
         ],
         title:'Tapered Caps &amp; Plugs',
         desc:'A single tapered part works as a cap over a shaft or a plug inside a bore, wedging in for a snug fit and pulling out clean. LDPE for general use, FlexTemp for high-heat processes.',
@@ -433,6 +433,7 @@
     function curMat(){ var s = SERIES[current]; return s.materials ? s.materials[activeMatIdx] : null; }
     function curUuid(){ var m = curMat(); return m ? m.uuid : SERIES[current].uuid; }
     function curRender(){ var m = curMat(); return (m && m.render) ? m.render : SERIES[current].render; }
+    function curSpin(){ var m = curMat(); return (m && m.spin) ? m.spin : SERIES[current].spin; }
     function ensureViewer(uuid){
       var f = mainStage.querySelector('iframe');
       if (!f || f.src !== EMBED + uuid) mountViewer(mainStage, EMBED + uuid);
@@ -454,8 +455,8 @@
     function setFinish(i){
       activeMatIdx = i;
       highlightFin();
-      // finishes exist for 3D + Render; from sketch/360 (plastic-only) jump to 3D to show it
-      applyMode((heroMode === 'sketch' || heroMode === 'spin') ? '3d' : heroMode);
+      // 3D / Render / 360 are all finish-aware; Sketch is geometry-only, so show the finish live in 3D
+      applyMode(heroMode === 'sketch' ? '3d' : heroMode);
     }
 
     function selectSize(s, i){
@@ -529,10 +530,6 @@
     function applyMode(mode){
       heroMode = mode;
       var s = SERIES[current];
-      // sketch (geometry only) and 360 (plastic turntable only) exist for the default finish -> reset
-      if ((mode === 'sketch' || mode === 'spin') && s.materials && activeMatIdx !== 0){
-        activeMatIdx = 0; highlightFin();
-      }
       document.querySelectorAll('#heroModes button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-mode') === mode); });
       if (mode === '3d'){
         heroImg.hidden = true; ensureViewer(curUuid());
@@ -547,7 +544,7 @@
         modeBadge.className = 'mode-tag'; modeBadge.textContent = 'Line render';
         viewerHint.textContent = 'Line render straight from the CAD geometry, the raw starting point';
       } else {
-        heroImg.src = s.spin; heroImg.hidden = false;
+        heroImg.src = curSpin(); heroImg.hidden = false;
         modeBadge.className = 'mode-tag'; modeBadge.textContent = 'Turntable';
         viewerHint.textContent = 'Auto-generated turntable, one of the ready-to-use outputs from the same CAD';
       }
