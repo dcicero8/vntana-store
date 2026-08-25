@@ -37,9 +37,19 @@
   footer.foot .pb b{color:var(--blue-dark);font-weight:800}
   @media(max-width:900px){footer.foot{height:auto;padding:12px 22px}}
 
-  /* embed mode (iframed on another page): drop own chrome, fill the frame */
+  /* embed mode (iframed on another page): drop own chrome, compact to fit the frame */
   html.embed header.top, html.embed footer.foot{display:none}
-  html.embed main{height:100vh}
+  html.embed main{height:100vh;grid-template-columns:1fr;grid-template-rows:1fr auto}
+  html.embed .stage{min-height:0}
+  html.embed .stage .hint{display:none}
+  html.embed .panel{border-left:0;border-top:1px solid var(--line);padding:14px 18px 56px}
+  html.embed .eyebrow{font-size:.62rem}
+  html.embed .panel h1{font-size:1.2rem;margin:3px 0 1px}
+  html.embed .machine{font-size:.78rem;margin-bottom:12px}
+  html.embed .chips{margin-bottom:0}
+  html.embed .chip{padding:9px 12px}
+  html.embed .detail{display:none}
+  html.embed .panel > div:last-child{display:none}
 
   .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px}
   vntana-viewer{width:100%;height:100%;display:block}
