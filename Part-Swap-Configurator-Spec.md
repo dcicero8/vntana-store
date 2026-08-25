@@ -86,6 +86,9 @@ Changing the slider fetches only the small slider GLB and swaps that node — th
 - Keep the mount frame **byte-identical** across all tools.
 - Apply all transforms; real-world meters; versioned filenames; follow the asset-prep spec (mesh-per-part, no animations, embedded textures).
 
+### PART A — DELIVERED 2026-08-25 (see `assets/robot/PART-A-DELIVERED.md` + `manifest.json`)
+All five part products are Live Public in `DCicero/configurators`: base `be3b39eb` (robot_base_v2.glb) · nozzle `7dd157c3` · gripper `873cd7c4` · vacarm `0ea102da` · vackit `b07a5039`. Convention: origin = flange bolt-face center, **+Z away from the flange**, **+Y up**; all node transforms identity. **Two contract amendments from platform testing:** (1) the platform drops empty nodes, so the base also carries a **`ToolMountMarker`** micro-mesh whose world-space bbox center IS the mount point — use `ToolMount` when present (repo files), else the marker; (2) the platform injects one recenter translation per mesh node (vertices byte-identical) — zero all node TRS on platform-served TOOL scenes before parenting; leave the base untouched. Repo copies in `assets/robot/` have neither issue.
+
 ### Optional (finishes)
 If tool/base finishes are wanted later, two options: (a) separate PBR map sets per finish (YKK's approach), or (b) a **single GLB with glTF material variants** (`KHR_materials_variants`) switched by name — the viewer supports `Model.setVariant()`. (b) is simpler for a fixed set of finishes.
 
