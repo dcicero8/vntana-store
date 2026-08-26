@@ -27,28 +27,23 @@
 <script type="module" src="vendor/viewer-v3/dist/index.js"></script>
 <script type="module">
   import { $configuratorMode, $loadScene, $preload } from './vendor/viewer-v3/dist/core.js';
-  import * as THREE from './vendor/viewer-v3/dist/chunks/three.module-B3nFRnSb.js';
   const viewer = document.getElementById('viewer');
 
-  // configurator mode doesn't auto-apply the environment (renders black), so light the
-  // scene ourselves and reduce metalness so the base-color map shows. (This is exactly
-  // the "environment/lighting in configurator mode" gap for the viewer team.)
-  let litOnce = false;
-  const addLighting = (sc) => {
-    if (litOnce) return; litOnce = true;
-    try {
-      const hemi = new THREE.HemisphereLight(0xffffff, 0x9aa4b2, 2.4);
-      const d1 = new THREE.DirectionalLight(0xffffff, 2.6); d1.position.set(3, 5, 4);
-      const d2 = new THREE.DirectionalLight(0xffffff, 1.1); d2.position.set(-4, 2, -3);
-      (sc.lights || sc).add(hemi, d1, d2);
-    } catch(e){ console.warn('lighting', e); }
-  };
-  const softenMaterials = (root) => {
+  // Configurator mode doesn't auto-apply the viewer's environment, so metallic materials
+  // render black (nothing to reflect). Bulletproof workaround with zero dependencies:
+  // make each material self-lit — show its own base-color texture as emissive and drop
+  // metalness — so it's visible with no lights/env. (Flat-looking on purpose; the real fix
+  // is the viewer applying its environment in configurator mode. Env/lighting gap.)
+  const makeVisible = (root) => {
     root.traverse(o => { if (o.isMesh && o.material) {
       (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
-        if ('metalness' in m) m.metalness = Math.min(m.metalness ?? 1, 0.15);
-        if ('roughness' in m) m.roughness = Math.max(m.roughness ?? 1, 0.6);
-        m.needsUpdate = true;
+        try {
+          if (m.map && 'emissiveMap' in m) { m.emissiveMap = m.map; if (m.emissive) m.emissive.setHex(0xffffff); }
+          else if (m.emissive && m.color) { m.emissive.copy(m.color); }
+          if ('emissiveIntensity' in m) m.emissiveIntensity = 1;
+          if ('metalness' in m) m.metalness = 0;
+          m.needsUpdate = true;
+        } catch(_){}
       });
     }});
   };
@@ -97,8 +92,7 @@
     if (sc.model && sc.model !== armModel) { try { sc.content.remove(sc.model.scene); } catch(_){} }
     sc.model = armModel;
     if (armModel.scene.parent !== sc.content) sc.content.add(armModel.scene);
-    addLighting(sc);
-    softenMaterials(armModel.scene);
+    makeVisible(armModel.scene);   // arm + mounted tool are both under armModel.scene
     sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
     sc.queueContentBoundsUpdate && sc.queueContentBoundsUpdate();
     sc.queueUpdate && sc.queueUpdate();
