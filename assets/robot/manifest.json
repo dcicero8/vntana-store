@@ -1,19 +1,39 @@
 {
   "comment": "Part-Swap Configurator, Part A deliverable. Workspace: DCicero/configurators. Mount convention: origin = center of the flange bolt face; +Z = away from the flange (direction the tool extends); +Y = up. Tools are authored with ALL node transforms identity; the mount frame lives in vertex data.",
   "base": {
-    "file": "robot_base_v2.glb",
+    "file": "robot_base_v3.glb",
     "productUuid": "be3b39eb-3107-4085-9eeb-00e8eae6c91a",
     "mountNode": "ToolMount",
     "mountMarkerMesh": "ToolMountMarker",
-    "mountPointGltf": [-0.050912, 1.340525, 0.798527],
-    "note": "Repo-served file contains the ToolMount empty (identity rotation at the flange). The PLATFORM-served conversion DROPS empties: derive the mount point from the world-space bounding-box center of the ToolMountMarker mesh instead (a 0.6mm triangle whose bbox center IS the mount point; it inherits the same uniform recenter shift as the arm, so a world-space Box3 lookup is always correct)."
+    "mountPointGltf": [
+      -0.0509,
+      1.3405,
+      0.7358
+    ],
+    "note": "v3 (2026-08-26): torch-adapter hardware removed; tools now mount directly on the arm's own bolt-circle tool flange. Mount point moved accordingly (read it dynamically from ToolMount / ToolMountMarker, never hardcode). Repo-served file contains the ToolMount empty (identity rotation at the flange). The PLATFORM-served conversion DROPS empties: derive the mount point from the world-space bounding-box center of the ToolMountMarker mesh instead (a 0.6mm triangle whose bbox center IS the mount point; it inherits the same uniform recenter shift as the arm, so a world-space Box3 lookup is always correct)."
   },
   "tools": {
     "bare": null,
-    "nozzle":  { "file": "tool_nozzle_v1.glb",  "productUuid": "7dd157c3-d228-495f-8846-aaa3f2704926", "mesh": "Tool_Nozzle" },
-    "gripper": { "file": "tool_gripper_v1.glb", "productUuid": "873cd7c4-952a-43c8-ad3d-e06b7ac63fab", "mesh": "Tool_Gripper_9495N17" },
-    "vacarm":  { "file": "tool_vacarm_v1.glb",  "productUuid": "0ea102da-ed75-4910-8317-cb7863d8a0c2", "mesh": "Tool_VacuumArm_3136N511" },
-    "vackit":  { "file": "tool_vackit_v1.glb",  "productUuid": "b07a5039-28df-40bf-be3d-1b84fc6f1625", "mesh": "Tool_VacuumKit_3136N512" }
+    "nozzle": {
+      "file": "tool_nozzle_v1.glb",
+      "productUuid": "7dd157c3-d228-495f-8846-aaa3f2704926",
+      "mesh": "Tool_Nozzle"
+    },
+    "gripper": {
+      "file": "tool_gripper_v1.glb",
+      "productUuid": "873cd7c4-952a-43c8-ad3d-e06b7ac63fab",
+      "mesh": "Tool_Gripper_9495N17"
+    },
+    "vacarm": {
+      "file": "tool_vacarm_v1.glb",
+      "productUuid": "0ea102da-ed75-4910-8317-cb7863d8a0c2",
+      "mesh": "Tool_VacuumArm_3136N511"
+    },
+    "vackit": {
+      "file": "tool_vackit_v1.glb",
+      "productUuid": "b07a5039-28df-40bf-be3d-1b84fc6f1625",
+      "mesh": "Tool_VacuumKit_3136N512"
+    }
   },
   "platformGotcha": "The platform pipeline (Convert Only) injects ONE recenter translation on each mesh node and drops mesh-less (empty) nodes. Vertex data is preserved byte-identical. Therefore: (1) for platform-served TOOL scenes, zero every node's position/rotation/scale to identity before parenting (tools are authored all-identity, so any nonzero TRS is optimizer-injected); (2) for the platform-served BASE, do NOT strip (the shift is uniform and harmless) and locate the mount via the ToolMountMarker world bbox center.",
   "legacyCombinedProducts": {
