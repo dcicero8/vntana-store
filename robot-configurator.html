@@ -201,15 +201,40 @@
     } catch(_) { return null; }
   };
 
+  /* Preload cache: uuid -> { objectUrl, viewerSettings }. Each config's GLB is
+     fetched once in the background and served to the viewer as a blob: URL, so
+     switching tools never waits on the network after warmup. */
+  const CACHE = new Map();
+
+  const resolveProduct = async (uuid) => {
+    const p = await fetch(`${BASE}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
+    const { asset, viewerSettings } = p.response;
+    const blobId = asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB")?.modelBlobId
+                 || asset.models[0].modelBlobId;
+    return { url: `${BASE}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${blobId}`, viewerSettings };
+  };
+
+  const preload = async (uuid) => {
+    if (CACHE.has(uuid)) return CACHE.get(uuid);
+    const job = (async () => {
+      const { url, viewerSettings } = await resolveProduct(uuid);
+      const blob = await fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); });
+      return { objectUrl: URL.createObjectURL(blob), viewerSettings };
+    })();
+    CACHE.set(uuid, job);
+    job.catch(() => CACHE.delete(uuid));   // failed preloads retry on demand
+    return job;
+  };
+
+  const warmAll = () => CONFIGS.reduce(
+    (chain, c) => chain.then(() => preload(c.uuid).catch(()=>{})), Promise.resolve());
+
   const loadConfig = async (uuid) => {
     const cam = firstLoad ? null : captureCamera();
     loading.textContent = "Loading configuration…";
     loading.classList.remove("hidden");
     try {
-      const p = await fetch(`${BASE}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
-      const { asset, viewerSettings } = p.response;
-      const blobId = asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB")?.modelBlobId
-                   || asset.models[0].modelBlobId;
+      const { objectUrl, viewerSettings } = await preload(uuid);
       viewer.addEventListener("load", () => {
         // re-apply the user's view so the swap feels like a tool change, not a reload
         if (cam && cam.cameraTarget) { try { Object.assign(viewer, cam); } catch(_){} }
@@ -218,8 +243,8 @@
         }
         loading.classList.add("hidden");
       }, { once:true });
-      viewer.src = `${BASE}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${blobId}`;
-      firstLoad = false;
+      viewer.src = objectUrl;
+      if (firstLoad) { firstLoad = false; setTimeout(warmAll, 800); }  // warm the rest once the first view is on screen
     } catch (err) {
       loading.textContent = "Could not load the model. (Is the product Live Public?)";
       console.error(err);
@@ -254,5 +279,8 @@
 
   select("bare");
 </script>
+<!-- Start of HubSpot Embed Code (top-level only; this page is also embedded in an iframe) -->
+<script>if(window.self===window.top){var hs=document.createElement("script");hs.type="text/javascript";hs.id="hs-script-loader";hs.async=true;hs.defer=true;hs.src="//js.hs-scripts.com/5892493.js";document.body.appendChild(hs);}</script>
+<!-- End of HubSpot Embed Code -->
 </body>
 </html>
