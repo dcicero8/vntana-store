@@ -33,6 +33,7 @@
 
 <details id="howto" open>
   <summary>How this configurator is wired &mdash; for viewer-team review</summary>
+  <p style="margin:0 0 6px"><b>Full write-up (Google Doc):</b> <a href="https://docs.google.com/document/d/14t1J8iukK4zZjQzV-cpt6zR-l3cfHHqlhY5C4FbPRNA/edit" target="_blank" rel="noopener">VNTANA Configurator &mdash; Implementation Notes</a> &nbsp;&middot;&nbsp; <a href="https://docs.google.com/document/d/1hSTirlzJpKbCUP4qeoXplcGXnaHaIs7wl5u_RQkNZEo/edit" target="_blank" rel="noopener">Scalable 3D Configurators &mdash; Viewer API Asks</a></p>
 
   <h4>1 &middot; Config passed to $loadScene</h4>
   <p>A map of arbitrary keys &rarr; GLB URLs (plus an optional <code>texture</code> map, unused here). The keys reappear in the <code>assemble</code> callback.</p>
@@ -79,8 +80,8 @@ await viewer[$loadScene](
   return true;
 };</pre>
 
-  <h4>3 &middot; Camera (save / restore on swap)</h4>
-  <p>First load auto-frames. On a swap we capture <code>getCameraTarget()/Rotation()/Distance()</code> before <code>$loadScene</code> and re-apply them via the matching <code>set*</code> methods every frame for ~12 frames, so <code>content-change</code>'s async auto-frame never paints and there is no flicker.</p>
+  <h4>3 &middot; Camera (seamless swap)</h4>
+  <p>Only the <b>first</b> load dispatches <code>content-change</code> (which lights, bounds, and frames). A <b>swap</b> integrates just the new tool (<code>trackNode</code> + <code>queueMeshGeometryUpdate</code>/<code>queueUpdate</code>) and does <b>not</b> dispatch <code>content-change</code> — so the viewer never re-frames and the camera stays exactly where the user left it. Lighting still applies because <code>scene.environment</code> is already set. (This sidesteps the earlier flicker where <code>content-change</code> reset the camera to zero and re-aligned.)</p>
 
   <h4>4 &middot; Environment</h4>
   <p><code>environment-src="assets/env/studio.hdr"</code> &mdash; a real HDR. (<code>neutral</code>/<code>legacy</code> resolve to null = unlit/black, so a real environment is required.)</p>
@@ -90,7 +91,7 @@ await viewer[$loadScene](
     <p>&bull; <b>Formalize assembly</b> so attaching models/meshes at nodes doesn't reach into three.js internals (<code>scene.trackNode</code>, <code>scene.model</code>, <code>content.add</code>, manual <code>content-change</code>).</p>
     <p>&bull; <b>Hierarchy material edits</b> &mdash; change the material of a sub-part <i>inside</i> an already-loaded model (this demo only swaps whole part-GLBs).</p>
     <p>&bull; <b>Resource management</b> &mdash; the viewer auto-releases a model when its key's URL changes, but leaves it attached to the scene (caller must detach). A helper that both releases and detaches, or clearer ownership, would reduce footguns.</p>
-    <p>&bull; <b>Camera</b> &mdash; can the per-load auto-frame be suppressed, so a swap keeps the camera without the restore burst?</p>
+    <p>&bull; <b>Camera / re-frame</b> &mdash; we get a seamless swap by NOT dispatching <code>content-change</code> on swaps (so the viewer doesn't re-frame), and only integrating the new tool. Is that the intended pattern, or should there be an explicit "update content without re-framing / without stealing the camera" API? (The alternative &mdash; save camera props and re-apply after &mdash; still flickered because the reset paints first.)</p>
   </div>
 </details>
 
@@ -113,7 +114,7 @@ await viewer[$loadScene](
   // currently-mounted tool's Model so we can detach AND dispose() it when swapping away —
   // otherwise its geometry/textures leak on every swap and the page eventually crashes.
   let currentTool = null;   // { model, scene } or null
-  const armM_ref = { current: null };
+  let established = false;   // true after the first load establishes the base + framing
 
   // Mount the tool at the arm's flange, then run the viewer's canonical single-model
   // assemble template (track every node, set scene.model, add to content, dispatch
@@ -122,7 +123,6 @@ await viewer[$loadScene](
     const armM = models.arm; if (!armM) return false;
     const arm = armM.scene;
     const sc = viewer.scene;
-    armM_ref.current = armM;
 
     // The viewer AUTO-RELEASES a model when its config key's URL changes (diff-aware) — we do
     // NOT dispose() it ourselves. But it may still be attached to the scene from our mount, so
@@ -143,46 +143,39 @@ await viewer[$loadScene](
       currentTool = { model: nextToolModel, scene: tool };
     }
 
-    arm.traverse(o => sc.trackNode(o));
-    if (sc.model && sc.model !== armM) { try { sc.content.remove(sc.model.scene); } catch(_){} }
-    sc.model = armM;   // the arm is the persistent base model, reused across swaps — never disposed
-    if (arm.parent !== sc.content) sc.content.add(arm);
-    sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
-    sc.queueUpdate && sc.queueUpdate();
-    sc.mixer && sc.mixer.setTime(0);
-    sc.dispatchEvent({ type: 'content-change' });
-    log('  assembled (' + Object.keys(models).join('+') + ') + content-change');
+    if (!established) {
+      // FIRST load: establish the base and frame it (content-change lights + bounds + frames)
+      arm.traverse(o => sc.trackNode(o));
+      sc.model = armM;
+      if (arm.parent !== sc.content) sc.content.add(arm);
+      sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
+      sc.queueUpdate && sc.queueUpdate();
+      sc.mixer && sc.mixer.setTime(0);
+      sc.dispatchEvent({ type: 'content-change' });
+      established = true;
+      log('  established base + content-change (framed)');
+    } else {
+      // SWAP: integrate the new tool ONLY. No content-change, so the viewer does NOT re-frame
+      // and the camera stays exactly where the user left it -> seamless swap. Lighting still
+      // applies because scene.environment is already set from the first load.
+      if (currentTool && currentTool.scene) currentTool.scene.traverse(o => sc.trackNode(o));
+      sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
+      sc.queueUpdate && sc.queueUpdate();
+      log('  swapped tool (no content-change) — camera preserved');
+    }
     return true;
   };
 
   viewer[$configuratorMode] = true;
 
-  // content-change auto-frames the scene, which we want on the FIRST load but not on a tool
-  // swap (a swap must keep the user's current view). Capture the camera before a swap and
-  // restore it after (twice, to beat the async auto-frame).
-  let firstLoad = true;
-  // getters return unit-tagged objects; the setters accept those exact objects (round-trips)
-  const captureCamera = () => { try { return { t: viewer.getCameraTarget(), r: viewer.getCameraRotation(), d: viewer.getCameraDistance() }; } catch(_) { return null; } };
-  const restoreCamera = (cam) => { if (!cam) return; try { viewer.setCameraTarget(cam.t); viewer.setCameraRotation(cam.r); viewer.setCameraDistance(cam.d); } catch(_){} };
-
   async function load(tool){
-    const cam = firstLoad ? null : captureCamera();
     const model = { arm: ARM };
     if (tool) model.tool = tool;
     log('--- $loadScene ' + JSON.stringify(model));
     const t0 = performance.now();
     try {
       const ok = await viewer[$loadScene]({ model }, assemble);
-      if (cam) {
-        // The auto-frame from content-change is async. Re-apply the saved camera every
-        // frame for a short burst so the framed pose never paints -> no flicker (per Neven:
-        // save the camera props on switch, re-add them once loaded).
-        let hold = 12;
-        const tick = () => { restoreCamera(cam); if (hold-- > 0) requestAnimationFrame(tick); };
-        tick();
-      }
-      firstLoad = false;
-      log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms' + (cam ? ' (camera kept)' : ' (framed)'));
+      log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms');
     } catch(e){ log('ERROR ' + e.message); }
   }
 
