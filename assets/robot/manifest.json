@@ -2,7 +2,7 @@
   "comment": "Part-Swap Configurator, Part A deliverable. Workspace: DCicero/configurators. Mount convention: origin = center of the flange bolt face; +Z = away from the flange (direction the tool extends); +Y = up. Tools are authored with ALL node transforms identity; the mount frame lives in vertex data.",
   "base": {
     "file": "robot_base_v3.glb",
-    "productUuid": "be3b39eb-3107-4085-9eeb-00e8eae6c91a",
+    "productUuid": "1d60e58e-b327-4b2e-8efe-20af8bfa18d3",
     "mountNode": "ToolMount",
     "mountMarkerMesh": "ToolMountMarker",
     "mountPointGltf": [
@@ -10,7 +10,7 @@
       1.3405,
       0.7358
     ],
-    "note": "v3 (2026-08-26): torch-adapter hardware removed; tools now mount directly on the arm's own bolt-circle tool flange. Mount point moved accordingly (read it dynamically from ToolMount / ToolMountMarker, never hardcode). Repo-served file contains the ToolMount empty (identity rotation at the flange). The PLATFORM-served conversion DROPS empties: derive the mount point from the world-space bounding-box center of the ToolMountMarker mesh instead (a 0.6mm triangle whose bbox center IS the mount point; it inherits the same uniform recenter shift as the arm, so a world-space Box3 lookup is always correct)."
+    "note": "v3 product (old be3b39eb was deleted in the platform). v3 (2026-08-26): torch-adapter hardware removed; tools now mount directly on the arm's own bolt-circle tool flange. Mount point moved accordingly (read it dynamically from ToolMount / ToolMountMarker, never hardcode). Repo-served file contains the ToolMount empty (identity rotation at the flange). The PLATFORM-served conversion DROPS empties: derive the mount point from the world-space bounding-box center of the ToolMountMarker mesh instead (a 0.6mm triangle whose bbox center IS the mount point; it inherits the same uniform recenter shift as the arm, so a world-space Box3 lookup is always correct)."
   },
   "tools": {
     "bare": null,
