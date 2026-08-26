@@ -82,7 +82,8 @@ await viewer[$loadScene](
 };</pre>
 
   <h4>3 &middot; Camera (seamless swap)</h4>
-  <p>Only the <b>first</b> load dispatches <code>content-change</code> (which lights, bounds, and frames). A <b>swap</b> integrates just the new tool (<code>trackNode</code> + <code>queueMeshGeometryUpdate</code>/<code>queueUpdate</code>) and does <b>not</b> dispatch <code>content-change</code> — so the viewer never re-frames and the camera stays exactly where the user left it. Lighting still applies because <code>scene.environment</code> is already set. (This sidesteps the earlier flicker where <code>content-change</code> reset the camera to zero and re-aligned.)</p>
+  <p>Every load dispatches <code>content-change</code> (lights, bounds, frames) so the new tool is properly lit and bounded. On a <b>swap</b> that re-frame would reset the camera, so we preserve the view with the camera API: <b>snapshot</b> all four camera props (<code>getCameraRotation/Target/Distance</code> + <code>getFieldOfView</code>, units m / rad) <b>synchronously right before</b> <code>$loadScene</code>, then write them back on the <code>updates-loaded</code> event. Result: byte-identical camera across a swap (verified rot/target/distance/fov all match).</p>
+  <p style="color:#b45309"><b>Heads-up for Neven:</b> your steer was capture-on-<code>scene-loaded</code> / restore-on-<code>updates-loaded</code>, but in this vendored <code>@vntana/viewer@3.0.0</code> the fit lands <b>before</b> <code>scene-loaded</code> fires (event trace: distance is already the fit value by <code>scene-loaded</code>, so capturing there grabs the already-reset camera — rotation/fov survive only because the fit doesn't touch them). Capturing <b>before</b> <code>$loadScene</code> instead makes it exact. Worth confirming whether newer builds moved the fit after <code>scene-loaded</code>.</p>
 
   <h4>4 &middot; Environment</h4>
   <p><code>environment-src="assets/env/studio.hdr"</code> &mdash; a real HDR. (<code>neutral</code>/<code>legacy</code> resolve to null = unlit/black, so a real environment is required.)</p>
@@ -92,7 +93,7 @@ await viewer[$loadScene](
     <p>&bull; <b>Formalize assembly</b> so attaching models/meshes at nodes doesn't reach into three.js internals (<code>scene.trackNode</code>, <code>scene.model</code>, <code>content.add</code>, manual <code>content-change</code>).</p>
     <p>&bull; <b>Hierarchy material edits</b> &mdash; change the material of a sub-part <i>inside</i> an already-loaded model (this demo only swaps whole part-GLBs).</p>
     <p>&bull; <b>Resource management</b> &mdash; the viewer auto-releases a model when its key's URL changes, but leaves it attached to the scene (caller must detach). A helper that both releases and detaches, or clearer ownership, would reduce footguns.</p>
-    <p>&bull; <b>Camera / re-frame</b> &mdash; we get a seamless swap by NOT dispatching <code>content-change</code> on swaps (so the viewer doesn't re-frame), and only integrating the new tool. Is that the intended pattern, or should there be an explicit "update content without re-framing / without stealing the camera" API? (The alternative &mdash; save camera props and re-apply after &mdash; still flickered because the reset paints first.)</p>
+    <p>&bull; <b>Camera / re-frame</b> &mdash; a swap always re-frames (via <code>content-change</code>), and we cancel it by snapshotting the camera before <code>$loadScene</code> and re-applying on <code>updates-loaded</code>. Works, but it's a workaround. Is there (or should there be) an explicit "assemble without re-framing / preserve camera" flag on <code>$loadScene</code>, so callers don't have to fight the fit? And should the fit fire after <code>scene-loaded</code> rather than before, so your capture-on-<code>scene-loaded</code> guidance holds?</p>
   </div>
 </details>
 
@@ -196,21 +197,57 @@ await viewer[$loadScene](
       established = true;
       log('  established base + content-change (framed)');
     } else {
-      // SWAP: integrate the new tool ONLY. No content-change, so the viewer does NOT re-frame
-      // and the camera stays exactly where the user left it -> seamless swap. Lighting still
-      // applies because scene.environment is already set from the first load.
+      // SWAP: integrate the new tool and dispatch content-change so the viewer relights + rebounds
+      // the new geometry. content-change re-frames (resets the camera) -> we counteract that with
+      // the pre-swap snapshot restored on 'updates-loaded' (see the camera block below).
       if (currentTool && currentTool.scene) currentTool.scene.traverse(o => sc.trackNode(o));
       sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
       sc.queueUpdate && sc.queueUpdate();
-      log('  swapped tool (no content-change) — camera preserved');
+      sc.dispatchEvent({ type: 'content-change' });
+      log('  swapped tool (content-change) — camera restored via scene/updates events');
     }
     return true;
   };
 
   viewer[$configuratorMode] = true;
 
+  // ---- Seamless camera across swaps --------------------------------------------------
+  // content-change re-frames the scene (resets camera distance + target; rotation/fov are left
+  // alone). Neven's steer was capture-on-scene-loaded / restore-on-updates-loaded, but in THIS
+  // vendored 3.0.0 the fit lands BEFORE 'scene-loaded' fires (verified via event trace: distance
+  // is already the fit value by scene-loaded). So we snapshot the camera SYNCHRONOUSLY right
+  // before $loadScene (still the user's view), then write every property back on 'updates-loaded'
+  // (after the fit). Units are m / rad; getters round-trip straight into the setters.
+  let preserveCamera = false;   // true for swaps, false for the initial framing load
+  let camSnap = null;
+  const CAM = [
+    ['getCameraRotation', 'setCameraRotation'],
+    ['getCameraTarget',   'setCameraTarget'],
+    ['getCameraDistance', 'setCameraDistance'],
+    ['getFieldOfView',    'setFieldOfView'],
+  ];
+  function snapshotCamera(){
+    camSnap = {};
+    for (const [get] of CAM) { try { camSnap[get] = viewer[get](); } catch(e){} }
+  }
+  function applyCam(){
+    if (!camSnap) return;
+    for (const [get, set] of CAM) {
+      if (camSnap[get] === undefined) continue;
+      try { viewer[set](camSnap[get]); } catch(e){}
+    }
+  }
+  viewer.addEventListener('updates-loaded', () => {
+    if (!preserveCamera || !camSnap) return;
+    applyCam();                                                    // restore the pre-swap view over the fit
+    requestAnimationFrame(() => { applyCam(); camSnap = null; });  // one safety re-apply, then clear
+    log('  camera restored (pre-swap snapshot -> updates-loaded)');
+  });
+
   async function load(toolKey){
     log('--- loading ' + (toolKey || 'bare'));
+    preserveCamera = established;   // established === base already framed -> this load is a swap
+    if (preserveCamera) snapshotCamera();   // capture the user's view BEFORE the load resets it
     const t0 = performance.now();
     try {
       const model = { arm: await urlFor(ARM_UUID) };
