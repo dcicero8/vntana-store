@@ -39,29 +39,41 @@
     vackit:  'assets/robot/tool_vackit_v1.glb',
   };
 
-  let mountedTool = null;
+  // Resource management is the caller's job (the interface only loads). We hold the
+  // currently-mounted tool's Model so we can detach AND dispose() it when swapping away —
+  // otherwise its geometry/textures leak on every swap and the page eventually crashes.
+  let currentTool = null;   // { model, scene } or null
+  const armM_ref = { current: null };
 
   // Mount the tool at the arm's flange, then run the viewer's canonical single-model
-  // assemble template (track every node, set scene.model, add to content, and dispatch
+  // assemble template (track every node, set scene.model, add to content, dispatch
   // 'content-change' so the viewer lights + bounds + frames it). Per the configurator README.
   const assemble = (models) => {
     const armM = models.arm; if (!armM) return false;
     const arm = armM.scene;
     const sc = viewer.scene;
+    armM_ref.current = armM;
 
-    // detach a previously mounted tool (the arm Model is reused across swaps)
-    if (mountedTool && mountedTool.parent) mountedTool.parent.remove(mountedTool);
-    mountedTool = null;
-    if (models.tool) {
-      const tool = models.tool.scene;
+    // release the outgoing tool if it is actually changing (same URL => same Model => keep)
+    const nextToolModel = models.tool || null;
+    if (currentTool && currentTool.model !== nextToolModel) {
+      if (currentTool.scene && currentTool.scene.parent) currentTool.scene.parent.remove(currentTool.scene);
+      try { currentTool.model.dispose(); log('  disposed old tool'); } catch(e){ log('  disposeErr ' + e.message); }
+      currentTool = null;
+    }
+
+    // mount the new tool
+    if (nextToolModel && (!currentTool || currentTool.model !== nextToolModel)) {
+      const tool = nextToolModel.scene;
       const mount = arm.getObjectByName('ToolMount') || arm;
       tool.position.set(0, 0, 0); tool.quaternion.identity(); tool.scale.set(1, 1, 1);
-      mount.add(tool); mountedTool = tool;
+      mount.add(tool);
+      currentTool = { model: nextToolModel, scene: tool };
     }
 
     arm.traverse(o => sc.trackNode(o));
     if (sc.model && sc.model !== armM) { try { sc.content.remove(sc.model.scene); } catch(_){} }
-    sc.model = armM;
+    sc.model = armM;   // the arm is the persistent base model, reused across swaps — never disposed
     if (arm.parent !== sc.content) sc.content.add(arm);
     sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
     sc.queueUpdate && sc.queueUpdate();
@@ -73,21 +85,40 @@
 
   viewer[$configuratorMode] = true;
 
+  // content-change auto-frames the scene, which we want on the FIRST load but not on a tool
+  // swap (a swap must keep the user's current view). Capture the camera before a swap and
+  // restore it after (twice, to beat the async auto-frame).
+  let firstLoad = true;
+  // getters return unit-tagged objects; the setters accept those exact objects (round-trips)
+  const captureCamera = () => { try { return { t: viewer.getCameraTarget(), r: viewer.getCameraRotation(), d: viewer.getCameraDistance() }; } catch(_) { return null; } };
+  const restoreCamera = (cam) => { if (!cam) return; try { viewer.setCameraTarget(cam.t); viewer.setCameraRotation(cam.r); viewer.setCameraDistance(cam.d); } catch(_){} };
+
   async function load(tool){
+    const cam = firstLoad ? null : captureCamera();
     const model = { arm: ARM };
     if (tool) model.tool = tool;
     log('--- $loadScene ' + JSON.stringify(model));
     const t0 = performance.now();
     try {
       const ok = await viewer[$loadScene]({ model }, assemble);
-      log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms');
+      if (cam) {
+        // the auto-frame from content-change is async; restore over a short window to win
+        restoreCamera(cam);
+        requestAnimationFrame(() => restoreCamera(cam));
+        setTimeout(() => restoreCamera(cam), 60);
+        setTimeout(() => restoreCamera(cam), 180);
+      }
+      firstLoad = false;
+      log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms' + (cam ? ' (camera kept)' : ' (framed)'));
     } catch(e){ log('ERROR ' + e.message); }
   }
 
   document.querySelectorAll('#bar button').forEach(b =>
     b.addEventListener('click', () => load(b.getAttribute('data-tool'))));
 
-  try { viewer[$preload]({ model: TOOLS }); } catch(_){}   // warm the tools for instant swaps
+  // No bulk preload: we load a tool on demand and dispose() the previous one on swap, so
+  // memory stays bounded (arm + one tool). Preloading-for-instant-swap can be layered in
+  // later, but must be paired with disposal of anything not currently shown.
   load(TOOLS.nozzle);
 </script>
 </body></html>
