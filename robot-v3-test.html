@@ -223,6 +223,20 @@ await viewer[$loadScene](
   document.querySelectorAll('#bar button').forEach(b =>
     b.addEventListener('click', () => load(b.getAttribute('data-tool'))));
 
-  load('nozzle');   // initial: base arm + nozzle, from the platform products
+  // Warm every tool blob so the FIRST click on each tool is instant (no on-demand fetch).
+  // $preload is diff-aware: arm is already resident so only the tool GLBs get fetched,
+  // and a later $loadScene with the same key+URL consumes the preloaded handle.
+  async function preloadAllTools(){
+    const arm = await urlFor(ARM_UUID);
+    for (const key of Object.keys(TOOL_UUID)){
+      try {
+        const tool = await urlFor(TOOL_UUID[key]);
+        viewer[$preload]({ model: { arm, tool } });
+      } catch(e){ log('preload ' + key + ' failed: ' + e.message); }
+    }
+    log('preloaded tools: ' + Object.keys(TOOL_UUID).join(', '));
+  }
+
+  load('nozzle').then(preloadAllTools);   // initial: base arm + nozzle, then warm the rest
 </script>
 </body></html>
