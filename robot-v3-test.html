@@ -197,14 +197,15 @@ await viewer[$loadScene](
       established = true;
       log('  established base + content-change (framed)');
     } else {
-      // SWAP: integrate the new tool and dispatch content-change so the viewer relights + rebounds
-      // the new geometry. content-change re-frames (resets the camera) -> we counteract that with
-      // the pre-swap snapshot restored on 'updates-loaded' (see the camera block below).
+      // SWAP: integrate just the new tool's geometry and re-render. We deliberately do NOT dispatch
+      // 'content-change' here: that's what re-frames the scene, and even with a same-tick camera
+      // restore the fit paints for a frame or two first (visible pop). Skipping it means the camera
+      // is never touched -> zero pop. Lighting still applies (scene.environment persists from the
+      // first load); only the bounding volume isn't recomputed, which the swap doesn't need.
       if (currentTool && currentTool.scene) currentTool.scene.traverse(o => sc.trackNode(o));
       sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
       sc.queueUpdate && sc.queueUpdate();
-      sc.dispatchEvent({ type: 'content-change' });
-      log('  swapped tool (content-change) — camera restored via scene/updates events');
+      log('  swapped tool (no content-change) — camera untouched, zero pop');
     }
     return true;
   };
