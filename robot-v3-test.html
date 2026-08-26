@@ -54,10 +54,10 @@ await viewer[$loadScene](
   <pre>const assemble = (models) =&gt; {
   const arm = models.arm.scene, sc = viewer.scene;
 
-  // resource management: release the OUTGOING tool so it doesn't leak
+  // viewer AUTO-RELEASES the old tool when its key's url changes; we just DETACH it from the
+  // scene (it may still be attached from our mount). We do NOT dispose() it ourselves.
   if (currentTool &amp;&amp; currentTool.model !== (models.tool || null)) {
-    currentTool.scene.parent?.remove(currentTool.scene);
-    currentTool.model.dispose();
+    currentTool.scene.parent?.remove(currentTool.scene);   // detach only
     currentTool = null;
   }
   // mount the NEW tool at the arm's flange (tool authored origin-at-mount, so identity)
@@ -89,7 +89,7 @@ await viewer[$loadScene](
   <div class="q">
     <p>&bull; <b>Formalize assembly</b> so attaching models/meshes at nodes doesn't reach into three.js internals (<code>scene.trackNode</code>, <code>scene.model</code>, <code>content.add</code>, manual <code>content-change</code>).</p>
     <p>&bull; <b>Hierarchy material edits</b> &mdash; change the material of a sub-part <i>inside</i> an already-loaded model (this demo only swaps whole part-GLBs).</p>
-    <p>&bull; <b>Resource-management helpers</b> &mdash; a supported way to release unused models/textures.</p>
+    <p>&bull; <b>Resource management</b> &mdash; the viewer auto-releases a model when its key's URL changes, but leaves it attached to the scene (caller must detach). A helper that both releases and detaches, or clearer ownership, would reduce footguns.</p>
     <p>&bull; <b>Camera</b> &mdash; can the per-load auto-frame be suppressed, so a swap keeps the camera without the restore burst?</p>
   </div>
 </details>
@@ -124,11 +124,13 @@ await viewer[$loadScene](
     const sc = viewer.scene;
     armM_ref.current = armM;
 
-    // release the outgoing tool if it is actually changing (same URL => same Model => keep)
+    // The viewer AUTO-RELEASES a model when its config key's URL changes (diff-aware) — we do
+    // NOT dispose() it ourselves. But it may still be attached to the scene from our mount, so
+    // our job is just to DETACH the outgoing tool from the graph (else it lingers attached).
     const nextToolModel = models.tool || null;
     if (currentTool && currentTool.model !== nextToolModel) {
       if (currentTool.scene && currentTool.scene.parent) currentTool.scene.parent.remove(currentTool.scene);
-      try { currentTool.model.dispose(); log('  disposed old tool'); } catch(e){ log('  disposeErr ' + e.message); }
+      log('  detached old tool (viewer auto-releases the resource)');
       currentTool = null;
     }
 
