@@ -24,10 +24,10 @@
 <div id="bar">
   <b>3.0.0 spike:</b>
   <button data-tool="">bare</button>
-  <button data-tool="assets/robot/tool_nozzle_v1.glb">nozzle</button>
-  <button data-tool="assets/robot/tool_gripper_v1.glb">gripper</button>
-  <button data-tool="assets/robot/tool_vacarm_v1.glb">vacarm</button>
-  <button data-tool="assets/robot/tool_vackit_v1.glb">vackit</button>
+  <button data-tool="nozzle">nozzle</button>
+  <button data-tool="gripper">gripper</button>
+  <button data-tool="vacarm">vacarm</button>
+  <button data-tool="vackit">vackit</button>
 </div>
 <div id="log"></div>
 
@@ -37,19 +37,20 @@
 
   <h4>1 &middot; Config passed to $loadScene</h4>
   <p>A map of arbitrary keys &rarr; GLB URLs (plus an optional <code>texture</code> map, unused here). The keys reappear in the <code>assemble</code> callback.</p>
+  <p>This build loads the <b>platform products</b> in <code>DCicero/configurators</code> (Live Public) &mdash; each UUID is resolved at runtime to its GLB blob URL (<code>/products/{uuid}/&hellip;</code> &rarr; <code>modelBlobId</code> &rarr; <code>/assets/products/{uuid}/&hellip;/{blob}.glb</code>), and those URLs go to <code>$loadScene</code>. Base arm = <code>be3b39eb</code>.</p>
   <pre>viewer[$configuratorMode] = true;              // src no longer drives loads
 
 await viewer[$loadScene](
   {
     model: {
-      arm:  'assets/robot/robot_base_v2.glb',   // persistent base, SAME url every load
-      tool: 'assets/robot/tool_nozzle_v1.glb',  // swappable part, omitted for "bare arm"
+      arm:  '&lt;base blob url&gt;',   // persistent base (uuid be3b39eb), SAME url every load
+      tool: '&lt;tool blob url&gt;',   // swappable part, omitted for "bare arm"
     },
-    // no `texture` map in this demo (not swapping finishes)
   },
-  assemble,                                      // (models, textures) => boolean
+  assemble,                       // (models, textures) => boolean
 );</pre>
   <p>Diff-aware reuse: <code>arm</code> keeps the same URL across every load, so it is not refetched (the base stays resident). Only the changed <code>tool</code> URL fetches.</p>
+  <p><b>Platform-pipeline quirks handled in assemble</b> (Convert Only): the <code>ToolMount</code> empty is dropped, so we derive the mount point from the <code>ToolMountMarker</code> mesh's world-bbox center; and a per-node recenter transform is injected on tools, so we zero every tool node's TRS before mounting. (Re-processing the parts through <b>Preserve Meshes and UVs</b> should remove both, letting us drop this handling.)</p>
 
   <h4>2 &middot; assemble(models) &mdash; mount + canonical single-model template</h4>
   <pre>const assemble = (models) =&gt; {
@@ -102,13 +103,46 @@ await viewer[$loadScene](
   const logEl = document.getElementById('log');
   const log = (...a) => { logEl.textContent += a.join(' ') + '\n'; };
 
-  const ARM = 'assets/robot/robot_base_v2.glb';
-  const TOOLS = {
-    nozzle:  'assets/robot/tool_nozzle_v1.glb',
-    gripper: 'assets/robot/tool_gripper_v1.glb',
-    vacarm:  'assets/robot/tool_vacarm_v1.glb',
-    vackit:  'assets/robot/tool_vackit_v1.glb',
+  // Platform products in DCicero/configurators (Live Public). Each UUID is resolved to its
+  // GLB blob URL at runtime; those URLs are what we hand to $loadScene.
+  const BASE = 'https://api.vntana.com', ORG = 'DCicero', WS = 'configurators';
+  const ARM_UUID = 'be3b39eb-3107-4085-9eeb-00e8eae6c91a';       // Robot Part - Base Arm v1
+  const TOOL_UUID = {
+    nozzle:  '7dd157c3-d228-495f-8846-aaa3f2704926',
+    gripper: '873cd7c4-952a-43c8-ad3d-e06b7ac63fab',
+    vacarm:  '0ea102da-ed75-4910-8317-cb7863d8a0c2',
+    vackit:  'b07a5039-28df-40bf-be3d-1b84fc6f1625',
   };
+  const urlCache = {};
+  async function urlFor(uuid){
+    if (urlCache[uuid]) return urlCache[uuid];
+    const p = await fetch(`${BASE}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
+    const models = (p.response.asset || {}).models || [];
+    const glb = models.find(m => (m.conversionFormat ?? m.type) === 'GLB') || models[0];
+    return (urlCache[uuid] = `${BASE}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${glb.modelBlobId}`);
+  }
+
+  // Platform "Convert Only" drops the ToolMount empty, so derive the mount point from the
+  // ToolMountMarker mesh's world-space bbox center (in arm-local space). No THREE import needed.
+  function markerCenterLocal(arm, marker){
+    const V = arm.position.constructor;   // THREE.Vector3
+    let a = Infinity, b = Infinity, c = Infinity, d = -Infinity, e = -Infinity, f = -Infinity;
+    const v = new V();
+    marker.traverse(o => {
+      if (o.isMesh && o.geometry && o.geometry.attributes.position) {
+        o.updateWorldMatrix(true, false);
+        const pos = o.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+          v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld);
+          if (v.x < a) a = v.x; if (v.y < b) b = v.y; if (v.z < c) c = v.z;
+          if (v.x > d) d = v.x; if (v.y > e) e = v.y; if (v.z > f) f = v.z;
+        }
+      }
+    });
+    v.set((a + d) / 2, (b + e) / 2, (c + f) / 2);
+    arm.worldToLocal(v);
+    return v;
+  }
 
   // Resource management is the caller's job (the interface only loads). We hold the
   // currently-mounted tool's Model so we can detach AND dispose() it when swapping away —
@@ -134,12 +168,19 @@ await viewer[$loadScene](
       currentTool = null;
     }
 
-    // mount the new tool
+    // mount the new tool. Platform quirks: (a) tools get a per-node recenter TRS injected ->
+    // zero EVERY node (tools are authored all-identity, so this removes only the injection);
+    // (b) the ToolMount empty is dropped -> fall back to the ToolMountMarker mesh center.
     if (nextToolModel && (!currentTool || currentTool.model !== nextToolModel)) {
       const tool = nextToolModel.scene;
-      const mount = arm.getObjectByName('ToolMount') || arm;
-      tool.position.set(0, 0, 0); tool.quaternion.identity(); tool.scale.set(1, 1, 1);
-      mount.add(tool);
+      tool.traverse(o => { o.position.set(0, 0, 0); o.quaternion.identity(); o.scale.set(1, 1, 1); });
+      const mount = arm.getObjectByName('ToolMount');
+      if (mount) { mount.add(tool); }
+      else {
+        const marker = arm.getObjectByName('ToolMountMarker');
+        arm.add(tool);
+        if (marker) tool.position.copy(markerCenterLocal(arm, marker));
+      }
       currentTool = { model: nextToolModel, scene: tool };
     }
 
@@ -168,12 +209,12 @@ await viewer[$loadScene](
 
   viewer[$configuratorMode] = true;
 
-  async function load(tool){
-    const model = { arm: ARM };
-    if (tool) model.tool = tool;
-    log('--- $loadScene ' + JSON.stringify(model));
+  async function load(toolKey){
+    log('--- loading ' + (toolKey || 'bare'));
     const t0 = performance.now();
     try {
+      const model = { arm: await urlFor(ARM_UUID) };
+      if (toolKey && TOOL_UUID[toolKey]) model.tool = await urlFor(TOOL_UUID[toolKey]);
       const ok = await viewer[$loadScene]({ model }, assemble);
       log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms');
     } catch(e){ log('ERROR ' + e.message); }
@@ -182,9 +223,6 @@ await viewer[$loadScene](
   document.querySelectorAll('#bar button').forEach(b =>
     b.addEventListener('click', () => load(b.getAttribute('data-tool'))));
 
-  // No bulk preload: we load a tool on demand and dispose() the previous one on swap, so
-  // memory stays bounded (arm + one tool). Preloading-for-instant-swap can be layered in
-  // later, but must be paired with disposal of anything not currently shown.
-  load(TOOLS.nozzle);
+  load('nozzle');   // initial: base arm + nozzle, from the platform products
 </script>
 </body></html>
