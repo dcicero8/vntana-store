@@ -212,15 +212,16 @@ await viewer[$loadScene](
 
   viewer[$configuratorMode] = true;
 
-  // ---- Seamless camera across swaps --------------------------------------------------
-  // content-change re-frames the scene (resets camera distance + target; rotation/fov are left
-  // alone). Neven's steer was capture-on-scene-loaded / restore-on-updates-loaded, but in THIS
-  // vendored 3.0.0 the fit lands BEFORE 'scene-loaded' fires (verified via event trace: distance
-  // is already the fit value by scene-loaded). So we snapshot the camera SYNCHRONOUSLY right
-  // before $loadScene (still the user's view), then write every property back on 'updates-loaded'
-  // (after the fit). Units are m / rad; getters round-trip straight into the setters.
-  let preserveCamera = false;   // true for swaps, false for the initial framing load
+  // ---- Seamless camera across swaps (CLAMP) ------------------------------------------
+  // $loadScene RE-FRAMES on every load (verified from a screen recording: even with no
+  // content-change dispatched, the view snaps to the fit and stays there). The fit lands DURING
+  // the load (already applied by 'loading-change', before the promise resolves), so a single
+  // restore on 'updates-loaded' paints the fit for a frame first = visible pop. Instead we CLAMP:
+  // snapshot the camera before $loadScene, then re-assert it every animation frame for the whole
+  // swap window (through the load + a short tail), so any reframe is overwritten before it paints.
+  // Units are m / rad; getters round-trip straight into the setters.
   let camSnap = null;
+  let clampUntil = 0;
   const CAM = [
     ['getCameraRotation', 'setCameraRotation'],
     ['getCameraTarget',   'setCameraTarget'],
@@ -238,25 +239,25 @@ await viewer[$loadScene](
       try { viewer[set](camSnap[get]); } catch(e){}
     }
   }
-  viewer.addEventListener('updates-loaded', () => {
-    if (!preserveCamera || !camSnap) return;
-    applyCam();                                                    // restore the pre-swap view over the fit
-    requestAnimationFrame(() => { applyCam(); camSnap = null; });  // one safety re-apply, then clear
-    log('  camera restored (pre-swap snapshot -> updates-loaded)');
-  });
+  function clampTick(){
+    if (!camSnap) return;
+    applyCam();
+    if (performance.now() < clampUntil) requestAnimationFrame(clampTick);
+    else camSnap = null;   // release; user regains free camera control
+  }
+  // Also re-assert on the load lifecycle events (belt-and-suspenders around the rAF clamp).
+  ['scene-loaded', 'updates-loaded'].forEach(ev => viewer.addEventListener(ev, applyCam));
 
   async function load(toolKey){
     log('--- loading ' + (toolKey || 'bare'));
-    // Swaps no longer dispatch content-change, so the scene never re-frames and the camera is left
-    // completely untouched -> zero pop. No snapshot/restore needed (the camera block below stays
-    // dormant: camSnap is never set). preserveCamera stays false. Verified: original no-content-
-    // change swaps kept the exact view with no restore machinery at all.
-    preserveCamera = false;
+    // SWAP (base already established): snapshot the user's view and start clamping through the load.
+    if (established) { snapshotCamera(); clampUntil = performance.now() + 4000; clampTick(); }
     const t0 = performance.now();
     try {
       const model = { arm: await urlFor(ARM_UUID) };
       if (toolKey && TOOL_UUID[toolKey]) model.tool = await urlFor(TOOL_UUID[toolKey]);
       const ok = await viewer[$loadScene]({ model }, assemble);
+      if (established && camSnap) { clampUntil = performance.now() + 400; }  // short tail after resolve, then release
       log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms');
     } catch(e){ log('ERROR ' + e.message); }
   }
