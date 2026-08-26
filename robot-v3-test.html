@@ -10,10 +10,10 @@
   vntana-viewer{width:100%;height:100%;display:block}
   #bar{padding:10px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid #e5e8ef}
   button{padding:8px 12px;border:1px solid #cdd3df;background:#fff;border-radius:6px;cursor:pointer;font:inherit}
-  #log{font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;padding:8px 14px;color:#333;max-height:22vh;overflow:auto;background:#fafbfc;border-top:1px solid #e5e8ef}
+  #log{font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;padding:8px 14px;color:#333;max-height:20vh;overflow:auto;background:#fafbfc;border-top:1px solid #e5e8ef}
 </style></head>
 <body>
-<div id="stage"><vntana-viewer id="viewer" environment-src="neutral"></vntana-viewer></div>
+<div id="stage"><vntana-viewer id="viewer" loading="eager" environment-src="assets/env/studio.hdr"></vntana-viewer></div>
 <div id="bar">
   <b>3.0.0 spike:</b>
   <button data-tool="">bare</button>
@@ -28,80 +28,50 @@
 <script type="module">
   import { $configuratorMode, $loadScene, $preload } from './vendor/viewer-v3/dist/core.js';
   const viewer = document.getElementById('viewer');
-
-  // Configurator mode doesn't auto-apply the viewer's environment, so metallic materials
-  // render black (nothing to reflect). Bulletproof workaround with zero dependencies:
-  // make each material self-lit — show its own base-color texture as emissive and drop
-  // metalness — so it's visible with no lights/env. (Flat-looking on purpose; the real fix
-  // is the viewer applying its environment in configurator mode. Env/lighting gap.)
-  const makeVisible = (root) => {
-    root.traverse(o => { if (o.isMesh && o.material) {
-      (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
-        try {
-          if (m.map && 'emissiveMap' in m) { m.emissiveMap = m.map; if (m.emissive) m.emissive.setHex(0xffffff); }
-          else if (m.emissive && m.color) { m.emissive.copy(m.color); }
-          if ('emissiveIntensity' in m) m.emissiveIntensity = 1;
-          if ('metalness' in m) m.metalness = 0;
-          m.needsUpdate = true;
-        } catch(_){}
-      });
-    }});
-  };
   const logEl = document.getElementById('log');
-  const log = (...a) => { logEl.textContent += a.join(' ') + '\n'; console.log('[v3]', ...a); };
+  const log = (...a) => { logEl.textContent += a.join(' ') + '\n'; };
 
   const ARM = 'assets/robot/robot_base_v2.glb';
-  let mountedTool = null, armModel = null;
+  const TOOLS = {
+    nozzle:  'assets/robot/tool_nozzle_v1.glb',
+    gripper: 'assets/robot/tool_gripper_v1.glb',
+    vacarm:  'assets/robot/tool_vacarm_v1.glb',
+    vackit:  'assets/robot/tool_vackit_v1.glb',
+  };
 
+  let mountedTool = null;
+
+  // Mount the tool at the arm's flange, then run the viewer's canonical single-model
+  // assemble template (track every node, set scene.model, add to content, and dispatch
+  // 'content-change' so the viewer lights + bounds + frames it). Per the configurator README.
   const assemble = (models) => {
-    const armM = models.arm;
-    const arm = armM && armM.scene;
-    const tool = models.tool && models.tool.scene;
-    log('assemble FIRED. keys=' + Object.keys(models).join(','));
-    if (!arm) { log('  no arm'); return false; }
+    const armM = models.arm; if (!armM) return false;
+    const arm = armM.scene;
+    const sc = viewer.scene;
+
+    // detach a previously mounted tool (the arm Model is reused across swaps)
     if (mountedTool && mountedTool.parent) mountedTool.parent.remove(mountedTool);
     mountedTool = null;
-    if (tool) {
-      const mount = arm.getObjectByName('ToolMount');
-      log('  ToolMount found: ' + !!mount);
-      tool.position.set(0,0,0); tool.quaternion.identity(); tool.scale.set(1,1,1);
-      (mount || arm).add(tool); mountedTool = tool;
+    if (models.tool) {
+      const tool = models.tool.scene;
+      const mount = arm.getObjectByName('ToolMount') || arm;
+      tool.position.set(0, 0, 0); tool.quaternion.identity(); tool.scale.set(1, 1, 1);
+      mount.add(tool); mountedTool = tool;
     }
-    armModel = armM;   // the Model object, not just .scene
-    return true;
-  };
 
-  // Register the arm as the tracked scene.model (the viewer frames/shadows/bounds off this),
-  // then recompute bounds + frame. Mirrors the viewer's own normal-load path.
-  // frame the composed model to its bounding box (centerCamera doesn't fit in this mode)
-  const frame = () => {
-    const sc = viewer.scene;
-    try { sc.queueContentBoundsUpdate(); sc.queueUpdate && sc.queueUpdate(); } catch(_){}
-    const b = sc.contentBoundingBox;
-    if (!b || b.min[1] == null) return false;   // bounds not ready yet
-    const cx = (b.min[0]+b.max[0])/2, cy = (b.min[1]+b.max[1])/2, cz = (b.min[2]+b.max[2])/2;
-    const dx = b.max[0]-b.min[0], dy = b.max[1]-b.min[1], dz = b.max[2]-b.min[2];
-    const r = Math.hypot(dx,dy,dz)/2;
-    try { viewer.setCameraTarget(cx, cy, cz); viewer.setCameraDistance(r*2.6); } catch(_){}
-    return true;
-  };
-
-  const showArm = () => {
-    const sc = viewer.scene;
-    if (!sc || !armModel) { log('  showArm: no scene/model'); return; }
-    if (sc.model && sc.model !== armModel) { try { sc.content.remove(sc.model.scene); } catch(_){} }
-    sc.model = armModel;
-    if (armModel.scene.parent !== sc.content) sc.content.add(armModel.scene);
-    makeVisible(armModel.scene);   // arm + mounted tool are both under armModel.scene
+    arm.traverse(o => sc.trackNode(o));
+    if (sc.model && sc.model !== armM) { try { sc.content.remove(sc.model.scene); } catch(_){} }
+    sc.model = armM;
+    if (arm.parent !== sc.content) sc.content.add(arm);
     sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
-    sc.queueContentBoundsUpdate && sc.queueContentBoundsUpdate();
     sc.queueUpdate && sc.queueUpdate();
-    // bounds compute async; retry the fit for ~2s until it lands
-    let tries = 0;
-    (function fit(){ if (frame() || tries++ > 40) return; requestAnimationFrame(fit); })();
-    let meshes = 0; sc.content.traverse(o => { if (o.isMesh) meshes++; });
-    log('  scene.model set; content meshes=' + meshes);
+    sc.mixer && sc.mixer.setTime(0);
+    sc.dispatchEvent({ type: 'content-change' });
+    log('  assembled (' + Object.keys(models).join('+') + ') + content-change');
+    return true;
   };
+
+  viewer[$configuratorMode] = true;
 
   async function load(tool){
     const model = { arm: ARM };
@@ -110,17 +80,14 @@
     const t0 = performance.now();
     try {
       const ok = await viewer[$loadScene]({ model }, assemble);
-      log('$loadScene RESOLVED = ' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms');
-      showArm();
-    } catch(e){ log('$loadScene ERROR: ' + e.message); }
+      log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms');
+    } catch(e){ log('ERROR ' + e.message); }
   }
-
-  try { viewer[$configuratorMode] = true; log('configuratorMode set = ' + viewer[$configuratorMode]); }
-  catch(e){ log('configuratorMode error: ' + e.message); }
 
   document.querySelectorAll('#bar button').forEach(b =>
     b.addEventListener('click', () => load(b.getAttribute('data-tool'))));
 
-  load('assets/robot/tool_nozzle_v1.glb');   // initial: arm + nozzle
+  try { viewer[$preload]({ model: TOOLS }); } catch(_){}   // warm the tools for instant swaps
+  load(TOOLS.nozzle);
 </script>
 </body></html>
