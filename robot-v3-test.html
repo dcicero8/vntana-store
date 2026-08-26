@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v3 configurator spike</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="vendor/viewer-v3/styles/viewer.css">
+<style>
+  html,body{margin:0;height:100%;font-family:system-ui,Arial,sans-serif}
+  #stage{position:relative;height:70vh;background:radial-gradient(circle at 50% 42%,#fff,#eef1f6)}
+  vntana-viewer{width:100%;height:100%;display:block}
+  #bar{padding:10px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid #e5e8ef}
+  button{padding:8px 12px;border:1px solid #cdd3df;background:#fff;border-radius:6px;cursor:pointer;font:inherit}
+  #log{font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;padding:8px 14px;color:#333;max-height:22vh;overflow:auto;background:#fafbfc;border-top:1px solid #e5e8ef}
+</style></head>
+<body>
+<div id="stage"><vntana-viewer id="viewer" environment-src="neutral"></vntana-viewer></div>
+<div id="bar">
+  <b>3.0.0 spike:</b>
+  <button data-tool="">bare</button>
+  <button data-tool="assets/robot/tool_nozzle_v1.glb">nozzle</button>
+  <button data-tool="assets/robot/tool_gripper_v1.glb">gripper</button>
+  <button data-tool="assets/robot/tool_vacarm_v1.glb">vacarm</button>
+  <button data-tool="assets/robot/tool_vackit_v1.glb">vackit</button>
+</div>
+<div id="log"></div>
+
+<script type="module" src="vendor/viewer-v3/dist/index.js"></script>
+<script type="module">
+  import { $configuratorMode, $loadScene, $preload } from './vendor/viewer-v3/dist/core.js';
+  import * as THREE from './vendor/viewer-v3/dist/chunks/three.module-B3nFRnSb.js';
+  const viewer = document.getElementById('viewer');
+
+  // configurator mode doesn't auto-apply the environment (renders black), so light the
+  // scene ourselves and reduce metalness so the base-color map shows. (This is exactly
+  // the "environment/lighting in configurator mode" gap for the viewer team.)
+  let litOnce = false;
+  const addLighting = (sc) => {
+    if (litOnce) return; litOnce = true;
+    try {
+      const hemi = new THREE.HemisphereLight(0xffffff, 0x9aa4b2, 2.4);
+      const d1 = new THREE.DirectionalLight(0xffffff, 2.6); d1.position.set(3, 5, 4);
+      const d2 = new THREE.DirectionalLight(0xffffff, 1.1); d2.position.set(-4, 2, -3);
+      (sc.lights || sc).add(hemi, d1, d2);
+    } catch(e){ console.warn('lighting', e); }
+  };
+  const softenMaterials = (root) => {
+    root.traverse(o => { if (o.isMesh && o.material) {
+      (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+        if ('metalness' in m) m.metalness = Math.min(m.metalness ?? 1, 0.15);
+        if ('roughness' in m) m.roughness = Math.max(m.roughness ?? 1, 0.6);
+        m.needsUpdate = true;
+      });
+    }});
+  };
+  const logEl = document.getElementById('log');
+  const log = (...a) => { logEl.textContent += a.join(' ') + '\n'; console.log('[v3]', ...a); };
+
+  const ARM = 'assets/robot/robot_base_v2.glb';
+  let mountedTool = null, armModel = null;
+
+  const assemble = (models) => {
+    const armM = models.arm;
+    const arm = armM && armM.scene;
+    const tool = models.tool && models.tool.scene;
+    log('assemble FIRED. keys=' + Object.keys(models).join(','));
+    if (!arm) { log('  no arm'); return false; }
+    if (mountedTool && mountedTool.parent) mountedTool.parent.remove(mountedTool);
+    mountedTool = null;
+    if (tool) {
+      const mount = arm.getObjectByName('ToolMount');
+      log('  ToolMount found: ' + !!mount);
+      tool.position.set(0,0,0); tool.quaternion.identity(); tool.scale.set(1,1,1);
+      (mount || arm).add(tool); mountedTool = tool;
+    }
+    armModel = armM;   // the Model object, not just .scene
+    return true;
+  };
+
+  // Register the arm as the tracked scene.model (the viewer frames/shadows/bounds off this),
+  // then recompute bounds + frame. Mirrors the viewer's own normal-load path.
+  // frame the composed model to its bounding box (centerCamera doesn't fit in this mode)
+  const frame = () => {
+    const sc = viewer.scene;
+    try { sc.queueContentBoundsUpdate(); sc.queueUpdate && sc.queueUpdate(); } catch(_){}
+    const b = sc.contentBoundingBox;
+    if (!b || b.min[1] == null) return false;   // bounds not ready yet
+    const cx = (b.min[0]+b.max[0])/2, cy = (b.min[1]+b.max[1])/2, cz = (b.min[2]+b.max[2])/2;
+    const dx = b.max[0]-b.min[0], dy = b.max[1]-b.min[1], dz = b.max[2]-b.min[2];
+    const r = Math.hypot(dx,dy,dz)/2;
+    try { viewer.setCameraTarget(cx, cy, cz); viewer.setCameraDistance(r*2.6); } catch(_){}
+    return true;
+  };
+
+  const showArm = () => {
+    const sc = viewer.scene;
+    if (!sc || !armModel) { log('  showArm: no scene/model'); return; }
+    if (sc.model && sc.model !== armModel) { try { sc.content.remove(sc.model.scene); } catch(_){} }
+    sc.model = armModel;
+    if (armModel.scene.parent !== sc.content) sc.content.add(armModel.scene);
+    addLighting(sc);
+    softenMaterials(armModel.scene);
+    sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
+    sc.queueContentBoundsUpdate && sc.queueContentBoundsUpdate();
+    sc.queueUpdate && sc.queueUpdate();
+    // bounds compute async; retry the fit for ~2s until it lands
+    let tries = 0;
+    (function fit(){ if (frame() || tries++ > 40) return; requestAnimationFrame(fit); })();
+    let meshes = 0; sc.content.traverse(o => { if (o.isMesh) meshes++; });
+    log('  scene.model set; content meshes=' + meshes);
+  };
+
+  async function load(tool){
+    const model = { arm: ARM };
+    if (tool) model.tool = tool;
+    log('--- $loadScene ' + JSON.stringify(model));
+    const t0 = performance.now();
+    try {
+      const ok = await viewer[$loadScene]({ model }, assemble);
+      log('$loadScene RESOLVED = ' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms');
+      showArm();
+    } catch(e){ log('$loadScene ERROR: ' + e.message); }
+  }
+
+  try { viewer[$configuratorMode] = true; log('configuratorMode set = ' + viewer[$configuratorMode]); }
+  catch(e){ log('configuratorMode error: ' + e.message); }
+
+  document.querySelectorAll('#bar button').forEach(b =>
+    b.addEventListener('click', () => load(b.getAttribute('data-tool'))));
+
+  load('assets/robot/tool_nozzle_v1.glb');   // initial: arm + nozzle
+</script>
+</body></html>

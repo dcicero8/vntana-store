@@ -1,0 +1,49 @@
+vntana-viewer::backdrop {
+  background-color: white;
+}
+
+.general-buttons {
+  position: absolute;
+  right: 19px;
+  bottom: 20px;
+  z-index: 4;
+
+  flex-direction: row;
+}
+
+.zoom-buttons {
+  position: absolute;
+  right: 19px;
+  bottom: 70px;
+  z-index: 3;
+
+  flex-direction: column;
+}
+
+.scene-buttons {
+  position: absolute;
+  left: 19px;
+  bottom: 20px;
+  z-index: 4;
+}
+
+.button-container {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 1px;
+
+  box-sizing: border-box;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.15);
+
+  border-radius: 5px;
+  background-color:  #CDCDCD;
+  overflow: hidden;
+}
+
+.button-container * {
+  flex: 0 1 auto;
+  position: static;
+  box-shadow: none;
+  border-radius: 0;
+}
