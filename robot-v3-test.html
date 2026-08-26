@@ -247,8 +247,11 @@ await viewer[$loadScene](
 
   async function load(toolKey){
     log('--- loading ' + (toolKey || 'bare'));
-    preserveCamera = established;   // established === base already framed -> this load is a swap
-    if (preserveCamera) snapshotCamera();   // capture the user's view BEFORE the load resets it
+    // Swaps no longer dispatch content-change, so the scene never re-frames and the camera is left
+    // completely untouched -> zero pop. No snapshot/restore needed (the camera block below stays
+    // dormant: camSnap is never set). preserveCamera stays false. Verified: original no-content-
+    // change swaps kept the exact view with no restore machinery at all.
+    preserveCamera = false;
     const t0 = performance.now();
     try {
       const model = { arm: await urlFor(ARM_UUID) };
