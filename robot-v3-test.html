@@ -11,6 +11,13 @@
   #bar{padding:10px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid #e5e8ef}
   button{padding:8px 12px;border:1px solid #cdd3df;background:#fff;border-radius:6px;cursor:pointer;font:inherit}
   #log{font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;padding:8px 14px;color:#333;max-height:20vh;overflow:auto;background:#fafbfc;border-top:1px solid #e5e8ef}
+  #howto{border-top:2px solid #e5e8ef;background:#fff;padding:6px 18px 24px;font:14px/1.55 system-ui,Arial,sans-serif;color:#222}
+  #howto summary{cursor:pointer;font-weight:700;padding:12px 0;font-size:15px}
+  #howto h4{margin:16px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#5a6472}
+  #howto p{margin:6px 0;max-width:900px}
+  #howto pre{background:#0f172a;color:#e2e8f0;padding:12px 14px;border-radius:8px;overflow:auto;font:12px/1.6 ui-monospace,Menlo,monospace;max-width:900px}
+  #howto code{background:#eef1f6;border-radius:3px;padding:1px 5px;font:12px ui-monospace,Menlo,monospace}
+  #howto .q{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;max-width:900px}
 </style></head>
 <body>
 <div id="stage"><vntana-viewer id="viewer" loading="eager" environment-src="assets/env/studio.hdr"></vntana-viewer></div>
@@ -23,6 +30,69 @@
   <button data-tool="assets/robot/tool_vackit_v1.glb">vackit</button>
 </div>
 <div id="log"></div>
+
+<details id="howto" open>
+  <summary>How this configurator is wired &mdash; for viewer-team review</summary>
+
+  <h4>1 &middot; Config passed to $loadScene</h4>
+  <p>A map of arbitrary keys &rarr; GLB URLs (plus an optional <code>texture</code> map, unused here). The keys reappear in the <code>assemble</code> callback.</p>
+  <pre>viewer[$configuratorMode] = true;              // src no longer drives loads
+
+await viewer[$loadScene](
+  {
+    model: {
+      arm:  'assets/robot/robot_base_v2.glb',   // persistent base, SAME url every load
+      tool: 'assets/robot/tool_nozzle_v1.glb',  // swappable part, omitted for "bare arm"
+    },
+    // no `texture` map in this demo (not swapping finishes)
+  },
+  assemble,                                      // (models, textures) => boolean
+);</pre>
+  <p>Diff-aware reuse: <code>arm</code> keeps the same URL across every load, so it is not refetched (the base stays resident). Only the changed <code>tool</code> URL fetches.</p>
+
+  <h4>2 &middot; assemble(models) &mdash; mount + canonical single-model template</h4>
+  <pre>const assemble = (models) =&gt; {
+  const arm = models.arm.scene, sc = viewer.scene;
+
+  // resource management: release the OUTGOING tool so it doesn't leak
+  if (currentTool &amp;&amp; currentTool.model !== (models.tool || null)) {
+    currentTool.scene.parent?.remove(currentTool.scene);
+    currentTool.model.dispose();
+    currentTool = null;
+  }
+  // mount the NEW tool at the arm's flange (tool authored origin-at-mount, so identity)
+  if (models.tool) {
+    const t = models.tool.scene;
+    t.position.set(0,0,0); t.quaternion.identity(); t.scale.set(1,1,1);
+    (arm.getObjectByName('ToolMount') || arm).add(t);
+    currentTool = { model: models.tool, scene: t };
+  }
+
+  // the built-in single-model template
+  arm.traverse(o =&gt; sc.trackNode(o));
+  sc.model = models.arm;                 // arm is the persistent base Model, never disposed
+  sc.content.add(arm);
+  sc.queueMeshGeometryUpdate();
+  sc.queueUpdate();
+  sc.mixer?.setTime(0);
+  sc.dispatchEvent({ type: 'content-change' });   // &lt;- lights + bounds + frames the scene
+  return true;
+};</pre>
+
+  <h4>3 &middot; Camera (save / restore on swap)</h4>
+  <p>First load auto-frames. On a swap we capture <code>getCameraTarget()/Rotation()/Distance()</code> before <code>$loadScene</code> and re-apply them via the matching <code>set*</code> methods every frame for ~12 frames, so <code>content-change</code>'s async auto-frame never paints and there is no flicker.</p>
+
+  <h4>4 &middot; Environment</h4>
+  <p><code>environment-src="assets/env/studio.hdr"</code> &mdash; a real HDR. (<code>neutral</code>/<code>legacy</code> resolve to null = unlit/black, so a real environment is required.)</p>
+
+  <h4>Open questions for the viewer team</h4>
+  <div class="q">
+    <p>&bull; <b>Formalize assembly</b> so attaching models/meshes at nodes doesn't reach into three.js internals (<code>scene.trackNode</code>, <code>scene.model</code>, <code>content.add</code>, manual <code>content-change</code>).</p>
+    <p>&bull; <b>Hierarchy material edits</b> &mdash; change the material of a sub-part <i>inside</i> an already-loaded model (this demo only swaps whole part-GLBs).</p>
+    <p>&bull; <b>Resource-management helpers</b> &mdash; a supported way to release unused models/textures.</p>
+    <p>&bull; <b>Camera</b> &mdash; can the per-load auto-frame be suppressed, so a swap keeps the camera without the restore burst?</p>
+  </div>
+</details>
 
 <script type="module" src="vendor/viewer-v3/dist/index.js"></script>
 <script type="module">
