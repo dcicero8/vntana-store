@@ -102,11 +102,12 @@
     try {
       const ok = await viewer[$loadScene]({ model }, assemble);
       if (cam) {
-        // the auto-frame from content-change is async; restore over a short window to win
-        restoreCamera(cam);
-        requestAnimationFrame(() => restoreCamera(cam));
-        setTimeout(() => restoreCamera(cam), 60);
-        setTimeout(() => restoreCamera(cam), 180);
+        // The auto-frame from content-change is async. Re-apply the saved camera every
+        // frame for a short burst so the framed pose never paints -> no flicker (per Neven:
+        // save the camera props on switch, re-add them once loaded).
+        let hold = 12;
+        const tick = () => { restoreCamera(cam); if (hold-- > 0) requestAnimationFrame(tick); };
+        tick();
       }
       firstLoad = false;
       log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms' + (cam ? ' (camera kept)' : ' (framed)'));
