@@ -10,6 +10,7 @@
   vntana-viewer{width:100%;height:100%;display:block}
   #bar{padding:10px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid #e5e8ef}
   button{padding:8px 12px;border:1px solid #cdd3df;background:#fff;border-radius:6px;cursor:pointer;font:inherit}
+  #bar button.selected{background:#0f172a;border-color:#0f172a;color:#fff;cursor:default}
   #log{font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;padding:8px 14px;color:#333;max-height:20vh;overflow:auto;background:#fafbfc;border-top:1px solid #e5e8ef}
   #howto{border-top:2px solid #e5e8ef;background:#fff;padding:6px 18px 24px;font:14px/1.55 system-ui,Arial,sans-serif;color:#222}
   #howto summary{cursor:pointer;font-weight:700;padding:12px 0;font-size:15px}
@@ -84,15 +85,16 @@ await viewer[$loadScene](
 };</pre>
   <p><b>Resource management</b> (per Neven): the viewer <b>auto-releases</b> a model when its config key's URL changes &mdash; do <i>not</i> call <code>model.dispose()</code> yourself. But it may still be attached to the scene from your mount, so the caller must <b>detach</b> the outgoing tool (<code>parent.remove</code>).</p>
 
-  <h4>3 &middot; Camera across a swap (the hard part &mdash; full findings)</h4>
-  <p>Goal: a tool swap must <b>not move the camera</b> (YKK-style seamless swap). This took several iterations; here is the ground truth we established in <code>@vntana/viewer@3.0.0</code>:</p>
+  <h4>3 &middot; Camera across a swap (corrected &mdash; verified against viewer source)</h4>
+  <p>Goal: a tool swap must <b>not move the camera</b> (YKK-style seamless swap). Ground truth in <code>@vntana/viewer@3.0.0</code>, traced through the source:</p>
   <ul style="max-width:900px;margin:6px 0;padding-left:22px">
-    <li><b>The scene re-frames on essentially every load.</b> First we thought <code>content-change</code> caused it and dropped it on swaps &mdash; a screen recording (frame-stepped) proved the view still snapped to the fit and <i>stayed</i> there. So <code>$loadScene</code> itself re-frames, independent of <code>content-change</code>.</li>
-    <li><b>The fit lands DURING the load</b>, before the promise resolves (already applied by <code>loading-change</code>, before <code>scene-loaded</code>). So capturing the camera on <code>scene-loaded</code> grabs the <i>already-reset</i> value, and a single restore on <code>updates-loaded</code> paints the fit for a frame or two first = a visible pop.</li>
-    <li>The fit changes <b>distance + target</b> (to frame bounds) but leaves <b>rotation + fov</b> alone &mdash; which is why early half-fixes looked like they preserved the view (only rotation survived).</li>
+    <li><b>The reset is <code>controls.jump()</code> snapping to the DEFAULT framing.</b> Every load, <code>$loadScene</code> runs <code>$triggerUpdates()</code>, which re-requests the auto camera props and jumps to them (<code>ControlsMixin</code>: once via <code>updateComplete.then(jump)</code>, again via the <code>updates-loaded</code> listener registered in the viewer's constructor). It is <i>not</i> <code>content-change</code> &mdash; that only invalidates the scene-graph cache.</li>
+    <li><b>The jump lands AFTER <code>scene-loaded</code>.</b> <code>$loadScene</code> dispatches <code>scene-loaded</code> <i>before</i> it calls <code>$triggerUpdates()</code> (<code>LoadingMixin</code>), so on <code>scene-loaded</code> the controls still hold the user's live orbit &mdash; the correct capture point. (The earlier &ldquo;already-reset on <code>scene-loaded</code>&rdquo; note was wrong; there is no fit during <code>loading-change</code>.)</li>
+    <li>The default framing sets <b>distance + target</b> (from bounds) but leaves <b>rotation + fov</b> alone &mdash; which is why early half-fixes looked like they preserved the view (only rotation survived).</li>
+    <li><b>A swap also grows the bounding sphere.</b> assemble tracks the new tool and calls <code>queueMeshGeometryUpdate()</code>, so the content bounds are recomputed (arm+tool vs bare arm differ) and <code>content-bounds-update</code> fires with a larger radius &mdash; <i>after</i> <code>scene-loaded</code>. Pinning an <b>absolute metre</b> distance would then leave the grown assembly clipped; the fix is to work in the getters' <b>radius-relative <code>r</code></b> units (rotation/fov stay absolute rad).</li>
   </ul>
-  <p><b>What actually works here (a workaround):</b> snapshot all four camera props <b>synchronously before</b> <code>$loadScene</code> (units m / rad; getters round-trip straight into the setters), then re-assert them two ways: (1) <b>synchronously inside the viewer's <code>camera-change</code> event</b> &mdash; the fit fires <code>camera-change</code>, and re-applying there (guarded against re-entry) beats it <i>before the browser paints</i>; and (2) a <b>rAF clamp</b> that re-applies every frame for the swap window (+400ms tail) as backup, then releases so the user regains free control. Verified byte-identical rot/target/distance/fov, swaps 50&ndash;130ms.</p>
-  <p style="color:#b45309"><b>For Neven:</b> this is a lot of machinery to fight the auto-frame. Two concrete asks: (a) an explicit <b>&ldquo;assemble without re-framing / preserve camera&rdquo;</b> option on <code>$loadScene</code> so callers don't have to; (b) if a re-frame does happen, have it fire <b>after</b> <code>scene-loaded</code> (not during the load) so the documented capture-on-<code>scene-loaded</code> / restore-on-<code>updates-loaded</code> pattern actually holds. Also: <code>setCameraDistance</code> has a min clamp (~2 units).</p>
+  <p><b>What works now (no rAF clamp):</b> on <code>scene-loaded</code> (before both the reframe and the bounds recompute), snapshot the four camera props via the public getters &mdash; distance/target in radius-relative <code>r</code>, so they encode the user's <i>framing ratio</i> against the old radius. Then re-assert that snapshot with <code>jumpCamera()</code> at two points: on <code>updates-loaded</code> (to beat the viewer's own default-framing jump, whose constructor-registered listener fires first) and on <code>content-bounds-update</code> (so the view re-lands proportionally once the larger radius is in effect); released when the load resolves. Because setting an <code>r</code> value re-evaluates against the current radius, the same ratio re-lands as a consistent framing of the resized model &mdash; no pop, no clipping.</p>
+  <p style="color:#b45309"><b>For Neven:</b> radius-relative units make this robust to the growing sphere with no new API, so the one ask that remains is (a) an explicit <b>&ldquo;assemble without re-framing / preserve camera&rdquo;</b> option on <code>$loadScene</code> so callers skip the scene-loaded / updates-loaded / content-bounds-update dance entirely. Also: <code>setCameraDistance</code> has a min clamp (~2 units), which can still bite if the user was zoomed very close before a large-tool swap.</p>
 
   <h4>4 &middot; Environment</h4>
   <p><code>environment-src="assets/env/studio.hdr"</code> &mdash; a real HDR. (<code>neutral</code>/<code>legacy</code> resolve to null = unlit/black, so a real environment is required.)</p>
@@ -102,7 +104,7 @@ await viewer[$loadScene](
     <p>&bull; <b>Formalize assembly</b> so attaching models/meshes at nodes doesn't reach into three.js internals (<code>scene.trackNode</code>, <code>scene.model</code>, <code>content.add</code>, manual <code>content-change</code>).</p>
     <p>&bull; <b>Hierarchy material edits</b> &mdash; change the material of a sub-part <i>inside</i> an already-loaded model (this demo only swaps whole part-GLBs).</p>
     <p>&bull; <b>Resource management</b> &mdash; the viewer auto-releases a model when its key's URL changes, but leaves it attached to the scene (caller must detach). A helper that both releases and detaches, or clearer ownership, would reduce footguns.</p>
-    <p>&bull; <b>Camera / re-frame</b> (the big one) &mdash; <code>$loadScene</code> re-frames on every load, and the fit lands <i>during</i> the load (before <code>scene-loaded</code>). We suppress it with a pre-load snapshot + synchronous re-assert inside <code>camera-change</code> + an rAF clamp (see &sect;3). Ask: an explicit <b>&ldquo;preserve camera / assemble without re-frame&rdquo;</b> option on <code>$loadScene</code>, and/or move the fit to <i>after</i> <code>scene-loaded</code> so a simple capture/restore works.</p>
+    <p>&bull; <b>Camera / re-frame</b> (the big one) &mdash; every load runs <code>controls.jump()</code> to the default framing (via <code>$triggerUpdates</code> / <code>updates-loaded</code>), wiping the user's orbit. We preserve it with a capture on <code>scene-loaded</code> + re-apply and <code>jumpCamera()</code> on <code>updates-loaded</code> (see &sect;3). Ask: an explicit <b>&ldquo;preserve camera / assemble without re-frame&rdquo;</b> option on <code>$loadScene</code>, plus a public absolute-meters camera getter.</p>
     <p>&bull; <b>Publish state vs the resolve API</b> &mdash; the public product-resolve endpoint 404s (empty body) for DRAFT/deleted products, which reads identically to a bad UUID. A clearer signal (or a documented &ldquo;must be LIVE_PUBLIC&rdquo;) would save debugging.</p>
   </div>
 </details>
@@ -207,87 +209,82 @@ await viewer[$loadScene](
       established = true;
       log('  established base + content-change (framed)');
     } else {
-      // SWAP: integrate just the new tool's geometry and re-render. We deliberately do NOT dispatch
-      // 'content-change' here: that's what re-frames the scene, and even with a same-tick camera
-      // restore the fit paints for a frame or two first (visible pop). Skipping it means the camera
-      // is never touched -> zero pop. Lighting still applies (scene.environment persists from the
-      // first load); only the bounding volume isn't recomputed, which the swap doesn't need.
+      // SWAP: integrate the new tool's geometry (trackNode) and re-render. queueMeshGeometryUpdate()
+      // recomputes the content bounds — arm+tool differs from the bare arm, so the bounding sphere
+      // grows and 'content-bounds-update' fires. Lighting persists (scene.environment from the first
+      // load). $loadScene still runs its reset jump; the scene-loaded/updates-loaded snapshot undoes
+      // it, re-applied in radius-relative units so the view stays proportional to the resized model.
       if (currentTool && currentTool.scene) currentTool.scene.traverse(o => sc.trackNode(o));
       sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
       sc.queueUpdate && sc.queueUpdate();
-      log('  swapped tool (no content-change) — camera untouched, zero pop');
+      log('  swapped tool — camera preserved (relative) across swap');
     }
     return true;
   };
 
   viewer[$configuratorMode] = true;
 
-  // ---- Seamless camera across swaps (CLAMP) ------------------------------------------
-  // $loadScene RE-FRAMES on every load (verified from a screen recording: even with no
-  // content-change dispatched, the view snaps to the fit and stays there). The fit lands DURING
-  // the load (already applied by 'loading-change', before the promise resolves), so a single
-  // restore on 'updates-loaded' paints the fit for a frame first = visible pop. Instead we CLAMP:
-  // snapshot the camera before $loadScene, then re-assert it every animation frame for the whole
-  // swap window (through the load + a short tail), so any reframe is overwritten before it paints.
-  // Units are m / rad; getters round-trip straight into the setters.
-  let camSnap = null;
-  let clampUntil = 0;
-  const CAM = [
-    ['getCameraRotation', 'setCameraRotation'],
-    ['getCameraTarget',   'setCameraTarget'],
-    ['getCameraDistance', 'setCameraDistance'],
-    ['getFieldOfView',    'setFieldOfView'],
-  ];
-  function snapshotCamera(){
-    camSnap = {};
-    for (const [get] of CAM) { try { camSnap[get] = viewer[get](); } catch(e){} }
+  // ---- Seamless camera across swaps (everything absolute) ----------------------------
+  // The jump was a UNITS problem. The viewer keeps the camera relative to the content bounding
+  // sphere: the auto distance/target defaults AND the distance LIMITS are radius-relative ("2r"
+  // etc.). A swap changes the sphere (assemble tracks the tool + queueMeshGeometryUpdate), so the
+  // per-load re-frame lands at a new distance and the rescaled min-distance clamps it. Restoring
+  // AFTER the re-frame is a race. Instead we make the re-frame a NO-OP: pin every camera prop to an
+  // ABSOLUTE value up front, so $loadScene's re-frame re-applies the user's exact view, and nothing
+  // rescales when the sphere resizes. getCameraX() returns radius-relative "r"; viewer.evaluate(prop,
+  // value, unit) converts to m/rad (the same helper the SDK's own camera-tools/analytics use).
+  let framed = false;        // set once the first load establishes the initial framing
+  let limitsPinned = false;
+  // Write the live camera back into every prop as an ABSOLUTE value. Refreshed before each swap so
+  // the user's latest orbit (which only moves the controls, not the props) becomes the pinned view;
+  // the re-frame then re-applies it unchanged.
+  function pinCameraAbsolute(){
+    viewer.cameraRotation = viewer.getCameraRotation();                                       // rad
+    viewer.fieldOfView    = viewer.getFieldOfView();                                          // rad
+    viewer.cameraDistance = viewer.evaluate('cameraDistance', viewer.getCameraDistance(), 'm') + 'm';
+    const [tx, ty, tz]    = viewer.evaluate('cameraTarget', viewer.getCameraTarget(), 'm');   // metres, centre-relative
+    viewer.cameraTarget   = `${tx}m ${ty}m ${tz}m`;
   }
-  let applyingCam = false;   // re-entry guard: our own setters fire 'camera-change'
-  function applyCam(){
-    if (!camSnap) return;
-    applyingCam = true;
-    for (const [get, set] of CAM) {
-      if (camSnap[get] === undefined) continue;
-      try { viewer[set](camSnap[get]); } catch(e){}
-    }
-    applyingCam = false;
+  // Freeze the INITIAL min/max distance (their radius-relative range, evaluated once) as absolute
+  // metres so a resized sphere can never rescale the limits and clamp the camera.
+  function pinDistanceLimits(){
+    viewer.minCameraDistance = viewer.evaluateProperty('minCameraDistance', 'm') + 'm';
+    viewer.maxCameraDistance = viewer.evaluateProperty('maxCameraDistance', 'm') + 'm';
+    limitsPinned = true;
+    log('  pinned camera + distance limits (absolute m)');
   }
-  function driftedFromSnap(){
-    for (const [get] of CAM) { try { if (viewer[get]() !== camSnap[get]) return true; } catch(e){} }
-    return false;
-  }
-  // PRIMARY: intercept the reframe at the source. The viewer fires 'camera-change' when it re-frames;
-  // re-assert our snapshot SYNCHRONOUSLY inside that event (before the browser paints) so the fit
-  // never shows even for one frame. Guarded so our own setters don't recurse.
-  viewer.addEventListener('camera-change', () => {
-    if (!camSnap || applyingCam) return;
-    if (driftedFromSnap()) applyCam();
-  });
-  function clampTick(){
-    if (!camSnap) return;
-    applyCam();                                                   // BACKUP: rAF clamp for anything the event misses
-    if (performance.now() < clampUntil) requestAnimationFrame(clampTick);
-    else camSnap = null;   // release; user regains free camera control
-  }
-  // Also re-assert on the load lifecycle events (belt-and-suspenders).
-  ['scene-loaded', 'updates-loaded'].forEach(ev => viewer.addEventListener(ev, applyCam));
+  // SWAP only: refresh the pinned props from the user's live orbit before the re-frame reads them.
+  viewer.addEventListener('scene-loaded', () => { if (framed) pinCameraAbsolute(); });
+  viewer.addEventListener('updates-loaded', () => { framed = true; });
 
   async function load(toolKey){
     log('--- loading ' + (toolKey || 'bare'));
-    // SWAP (base already established): snapshot the user's view and start clamping through the load.
-    if (established) { snapshotCamera(); clampUntil = performance.now() + 4000; clampTick(); }
     const t0 = performance.now();
     try {
       const model = { arm: await urlFor(ARM_UUID) };
       if (toolKey && TOOL_UUID[toolKey]) model.tool = await urlFor(TOOL_UUID[toolKey]);
       const ok = await viewer[$loadScene]({ model }, assemble);
-      if (established && camSnap) { clampUntil = performance.now() + 400; }  // short tail after resolve, then release
+      // First load establishes the default framing; then go fully absolute so every later swap's
+      // re-frame is a no-op.
+      if (!limitsPinned) { pinDistanceLimits(); pinCameraAbsolute(); }
       log('resolved=' + ok + ' in ' + Math.round(performance.now()-t0) + 'ms');
     } catch(e){ log('ERROR ' + e.message); }
   }
 
-  document.querySelectorAll('#bar button').forEach(b =>
-    b.addEventListener('click', () => load(b.getAttribute('data-tool'))));
+  // Radio-style selection: highlight the active tool, and make clicking it again a no-op.
+  const toolButtons = [...document.querySelectorAll('#bar button')];
+  let selectedKey = null;
+  function select(key){
+    if (key === selectedKey) return Promise.resolve();   // already active -> no-op
+    selectedKey = key;
+    for (const b of toolButtons){
+      const on = b.getAttribute('data-tool') === key;
+      b.classList.toggle('selected', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    return load(key);
+  }
+  toolButtons.forEach(b => b.addEventListener('click', () => select(b.getAttribute('data-tool'))));
 
   // Warm every tool blob so the FIRST click on each tool is instant (no on-demand fetch).
   // $preload is diff-aware: arm is already resident so only the tool GLBs get fetched,
@@ -303,6 +300,6 @@ await viewer[$loadScene](
     log('preloaded tools: ' + Object.keys(TOOL_UUID).join(', '));
   }
 
-  load('nozzle').then(preloadAllTools);   // initial: base arm + nozzle, then warm the rest
+  select('nozzle').then(preloadAllTools);   // initial: base arm + nozzle (selected), then warm the rest
 </script>
 </body></html>
