@@ -33,22 +33,24 @@
 
 <details id="howto" open>
   <summary>How this configurator is wired &mdash; for viewer-team review</summary>
+  <p style="margin:0 0 6px"><b>Source (GitHub):</b> <a href="https://github.com/derekcicero-vntana/store-demos/blob/main/robot-v3-test.html" target="_blank" rel="noopener">robot-v3-test.html</a> &mdash; the whole configurator is this one self-contained file (the camera/assemble/preload logic is the inline <code>&lt;script type="module"&gt;</code> at the bottom). Vendored viewer: <a href="https://github.com/derekcicero-vntana/store-demos/tree/main/vendor/viewer-v3" target="_blank" rel="noopener">vendor/viewer-v3</a> (<code>@vntana/viewer@3.0.0</code>).</p>
   <p style="margin:0 0 6px"><b>Full write-up (Google Doc):</b> <a href="https://docs.google.com/document/d/14t1J8iukK4zZjQzV-cpt6zR-l3cfHHqlhY5C4FbPRNA/edit" target="_blank" rel="noopener">VNTANA Configurator &mdash; Implementation Notes</a> &nbsp;&middot;&nbsp; <a href="https://docs.google.com/document/d/1hSTirlzJpKbCUP4qeoXplcGXnaHaIs7wl5u_RQkNZEo/edit" target="_blank" rel="noopener">Scalable 3D Configurators &mdash; Viewer API Asks</a></p>
 
   <h4>1 &middot; Config passed to $loadScene</h4>
   <p>A map of arbitrary keys &rarr; GLB URLs (plus an optional <code>texture</code> map, unused here). The keys reappear in the <code>assemble</code> callback.</p>
-  <p>This build loads the <b>platform products</b> in <code>DCicero/configurators</code> (Live Public) &mdash; each UUID is resolved at runtime to its GLB blob URL (<code>/products/{uuid}/&hellip;</code> &rarr; <code>modelBlobId</code> &rarr; <code>/assets/products/{uuid}/&hellip;/{blob}.glb</code>), and those URLs go to <code>$loadScene</code>. Base arm = <code>be3b39eb</code>.</p>
+  <p>This build loads the <b>platform products</b> in <code>DCicero/configurators</code> (Live Public) &mdash; each UUID is resolved at runtime to its GLB blob URL (<code>/products/{uuid}/&hellip;</code> &rarr; <code>modelBlobId</code> &rarr; <code>/assets/products/{uuid}/&hellip;/{blob}.glb</code>), and those URLs go to <code>$loadScene</code>. Base arm (v3, bare flange) = <code>1d60e58e</code>; tools = nozzle/gripper/vacarm/vackit. Note: that resolve endpoint returns <b>200 only when the product is published LIVE_PUBLIC</b> &mdash; a deleted or DRAFT product returns 404 with an empty body (bit us twice: a deleted base arm, then a re-upload left in DRAFT).</p>
   <pre>viewer[$configuratorMode] = true;              // src no longer drives loads
 
 await viewer[$loadScene](
   {
     model: {
-      arm:  '&lt;base blob url&gt;',   // persistent base (uuid be3b39eb), SAME url every load
+      arm:  '&lt;base blob url&gt;',   // persistent base (uuid 1d60e58e), SAME url every load
       tool: '&lt;tool blob url&gt;',   // swappable part, omitted for "bare arm"
     },
   },
   assemble,                       // (models, textures) => boolean
 );</pre>
+  <p><b>Preload</b> &mdash; after the first load, <code>$preload</code> each tool GLB (arm is resident, so only the tools fetch) so the first click on any tool is instant (~50&ndash;130ms) instead of stalling on an on-demand fetch (~2.6s).</p>
   <p>Diff-aware reuse: <code>arm</code> keeps the same URL across every load, so it is not refetched (the base stays resident). Only the changed <code>tool</code> URL fetches.</p>
   <p><b>Platform-pipeline quirks handled in assemble</b> (Convert Only): the <code>ToolMount</code> empty is dropped, so we derive the mount point from the <code>ToolMountMarker</code> mesh's world-bbox center; and a per-node recenter transform is injected on tools, so we zero every tool node's TRS before mounting. (Re-processing the parts through <b>Preserve Meshes and UVs</b> should remove both, letting us drop this handling.)</p>
 
@@ -77,13 +79,20 @@ await viewer[$loadScene](
   sc.queueMeshGeometryUpdate();
   sc.queueUpdate();
   sc.mixer?.setTime(0);
-  sc.dispatchEvent({ type: 'content-change' });   // &lt;- lights + bounds + frames the scene
+  if (firstLoad) sc.dispatchEvent({ type: 'content-change' }); // lights+bounds+frames — FIRST load only
   return true;
 };</pre>
+  <p><b>Resource management</b> (per Neven): the viewer <b>auto-releases</b> a model when its config key's URL changes &mdash; do <i>not</i> call <code>model.dispose()</code> yourself. But it may still be attached to the scene from your mount, so the caller must <b>detach</b> the outgoing tool (<code>parent.remove</code>).</p>
 
-  <h4>3 &middot; Camera (seamless swap)</h4>
-  <p>Every load dispatches <code>content-change</code> (lights, bounds, frames) so the new tool is properly lit and bounded. On a <b>swap</b> that re-frame would reset the camera, so we preserve the view with the camera API: <b>snapshot</b> all four camera props (<code>getCameraRotation/Target/Distance</code> + <code>getFieldOfView</code>, units m / rad) <b>synchronously right before</b> <code>$loadScene</code>, then write them back on the <code>updates-loaded</code> event. Result: byte-identical camera across a swap (verified rot/target/distance/fov all match).</p>
-  <p style="color:#b45309"><b>Heads-up for Neven:</b> your steer was capture-on-<code>scene-loaded</code> / restore-on-<code>updates-loaded</code>, but in this vendored <code>@vntana/viewer@3.0.0</code> the fit lands <b>before</b> <code>scene-loaded</code> fires (event trace: distance is already the fit value by <code>scene-loaded</code>, so capturing there grabs the already-reset camera — rotation/fov survive only because the fit doesn't touch them). Capturing <b>before</b> <code>$loadScene</code> instead makes it exact. Worth confirming whether newer builds moved the fit after <code>scene-loaded</code>.</p>
+  <h4>3 &middot; Camera across a swap (the hard part &mdash; full findings)</h4>
+  <p>Goal: a tool swap must <b>not move the camera</b> (YKK-style seamless swap). This took several iterations; here is the ground truth we established in <code>@vntana/viewer@3.0.0</code>:</p>
+  <ul style="max-width:900px;margin:6px 0;padding-left:22px">
+    <li><b>The scene re-frames on essentially every load.</b> First we thought <code>content-change</code> caused it and dropped it on swaps &mdash; a screen recording (frame-stepped) proved the view still snapped to the fit and <i>stayed</i> there. So <code>$loadScene</code> itself re-frames, independent of <code>content-change</code>.</li>
+    <li><b>The fit lands DURING the load</b>, before the promise resolves (already applied by <code>loading-change</code>, before <code>scene-loaded</code>). So capturing the camera on <code>scene-loaded</code> grabs the <i>already-reset</i> value, and a single restore on <code>updates-loaded</code> paints the fit for a frame or two first = a visible pop.</li>
+    <li>The fit changes <b>distance + target</b> (to frame bounds) but leaves <b>rotation + fov</b> alone &mdash; which is why early half-fixes looked like they preserved the view (only rotation survived).</li>
+  </ul>
+  <p><b>What actually works here (a workaround):</b> snapshot all four camera props <b>synchronously before</b> <code>$loadScene</code> (units m / rad; getters round-trip straight into the setters), then re-assert them two ways: (1) <b>synchronously inside the viewer's <code>camera-change</code> event</b> &mdash; the fit fires <code>camera-change</code>, and re-applying there (guarded against re-entry) beats it <i>before the browser paints</i>; and (2) a <b>rAF clamp</b> that re-applies every frame for the swap window (+400ms tail) as backup, then releases so the user regains free control. Verified byte-identical rot/target/distance/fov, swaps 50&ndash;130ms.</p>
+  <p style="color:#b45309"><b>For Neven:</b> this is a lot of machinery to fight the auto-frame. Two concrete asks: (a) an explicit <b>&ldquo;assemble without re-framing / preserve camera&rdquo;</b> option on <code>$loadScene</code> so callers don't have to; (b) if a re-frame does happen, have it fire <b>after</b> <code>scene-loaded</code> (not during the load) so the documented capture-on-<code>scene-loaded</code> / restore-on-<code>updates-loaded</code> pattern actually holds. Also: <code>setCameraDistance</code> has a min clamp (~2 units).</p>
 
   <h4>4 &middot; Environment</h4>
   <p><code>environment-src="assets/env/studio.hdr"</code> &mdash; a real HDR. (<code>neutral</code>/<code>legacy</code> resolve to null = unlit/black, so a real environment is required.)</p>
@@ -93,7 +102,8 @@ await viewer[$loadScene](
     <p>&bull; <b>Formalize assembly</b> so attaching models/meshes at nodes doesn't reach into three.js internals (<code>scene.trackNode</code>, <code>scene.model</code>, <code>content.add</code>, manual <code>content-change</code>).</p>
     <p>&bull; <b>Hierarchy material edits</b> &mdash; change the material of a sub-part <i>inside</i> an already-loaded model (this demo only swaps whole part-GLBs).</p>
     <p>&bull; <b>Resource management</b> &mdash; the viewer auto-releases a model when its key's URL changes, but leaves it attached to the scene (caller must detach). A helper that both releases and detaches, or clearer ownership, would reduce footguns.</p>
-    <p>&bull; <b>Camera / re-frame</b> &mdash; a swap always re-frames (via <code>content-change</code>), and we cancel it by snapshotting the camera before <code>$loadScene</code> and re-applying on <code>updates-loaded</code>. Works, but it's a workaround. Is there (or should there be) an explicit "assemble without re-framing / preserve camera" flag on <code>$loadScene</code>, so callers don't have to fight the fit? And should the fit fire after <code>scene-loaded</code> rather than before, so your capture-on-<code>scene-loaded</code> guidance holds?</p>
+    <p>&bull; <b>Camera / re-frame</b> (the big one) &mdash; <code>$loadScene</code> re-frames on every load, and the fit lands <i>during</i> the load (before <code>scene-loaded</code>). We suppress it with a pre-load snapshot + synchronous re-assert inside <code>camera-change</code> + an rAF clamp (see &sect;3). Ask: an explicit <b>&ldquo;preserve camera / assemble without re-frame&rdquo;</b> option on <code>$loadScene</code>, and/or move the fit to <i>after</i> <code>scene-loaded</code> so a simple capture/restore works.</p>
+    <p>&bull; <b>Publish state vs the resolve API</b> &mdash; the public product-resolve endpoint 404s (empty body) for DRAFT/deleted products, which reads identically to a bad UUID. A clearer signal (or a documented &ldquo;must be LIVE_PUBLIC&rdquo;) would save debugging.</p>
   </div>
 </details>
 
