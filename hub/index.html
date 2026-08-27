@@ -39,10 +39,15 @@
  <table><tr><th>Page</th><th>What it is</th><th>Updated</th><th>Live UUIDs</th><th>Note</th></tr>
  <tr class="keep">
       <td><a href="/robot-configurator.html" target="_blank">robot-configurator.html</a><div class="grp">Configurators</div></td>
-      <td>End-of-arm tooling configurator. Industrial robot (Sketchfab arm, welding torch removed in Blender) + 3 McMaster end effectors mounted on the wrist flange, each config a separate combined product. Chips swap viewer.src; camera preserved across swaps. Built from 4 source assets in the configurators ws.</td>
-      <td class="d">2026-08-24</td>
-      <td class="u"><code>configurators</code> ws: <code>59f8d231</code> (bare) · <code>44a8b683</code> (nozzle, Derek's copy of the original, already Live Public) · <code>c710334e</code> (gripper 9495N17) · <code>d8d2e21b</code> (vac arm 3136N511) · <code>5b843862</code> (vac kit 3136N512; abandoned first product 2f609f43 stuck CONVERTING, delete it)</td>
-      <td class="n">NEEDS: Derek publishes the 4 combined products Live Public (DRAFT; publish is UI-gated). Convert Only pipeline (optimizing pipelines 500 on the Sketchfab confetti geometry). Effectors brown-matched to the tool adapter, mount-face centered (v2 GLBs).</td></tr><tr class="keep">
+      <td><b>PROPER part-swap configurator (v3).</b> Base arm loads ONCE + stays resident; selecting a tool swaps only the end-of-arm GLB (mounted on the wrist flange), camera holds the user's view. @vntana/viewer@3.0.0 configurator mode ($loadScene/assemble), tools $preloaded, Neven's absolute-units camera pin. Embedded in imts.html (/custom/imts) + full-screen link. Replaced the old whole-model viewer.src swap.</td>
+      <td class="d">2026-08-27</td>
+      <td class="u"><code>configurators</code> ws (part GLBs): base arm <code>1d60e58e</code> (v3 bare flange) · tools <code>7dd157c3</code> (nozzle) · <code>873cd7c4</code> (gripper 9495N17) · <code>0ea102da</code> (vac arm 3136N511) · <code>b07a5039</code> (vac kit 3136N512). Old combined products (59f8d231/44a8b683/c710334e/d8d2e21b/5b843862) retired.</td>
+      <td class="n">Neven's camera fix is authoritative (pin camera + distance limits to absolute m so the per-load re-frame is a no-op). Reference spike + viewer-team review panel: robot-v3-test.html. Convert Only pipeline only (Sketchfab confetti geometry 500s optimizing pipelines).</td></tr><tr class="keep">
+      <td><a href="/robot-v3-test.html" target="_blank">robot-v3-test.html</a><div class="grp">Configurators</div></td>
+      <td>Reference spike / viewer-team review page for the part-swap configurator: same engine as robot-configurator.html but with a live log + an on-page "how it's wired" panel documenting the config/assemble/camera/resource findings and open questions for Neven. Keep as reference; also at try.vntana.com/robot-v3-test.html.</td>
+      <td class="d">2026-08-27</td>
+      <td class="u">same part GLBs as robot-configurator.html (base <code>1d60e58e</code> + 4 tools)</td>
+      <td class="n">Neven is a collaborator on the store-demos repo; his camera fix + radio-group UI merged here (PR #1). Reference only — the customer-facing one is robot-configurator.html.</td></tr><tr class="keep">
       <td><a href="/demos.html" target="_blank">demos.html</a><div class="grp">Public</div></td>
       <td>The public 'Use Case Demos' directory (full demo list). Copied here from the old index.html when index.html became the branded landing. Served at /custom/demos.</td>
       <td class="d">2026-08-17</td>
