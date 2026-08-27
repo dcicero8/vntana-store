@@ -10,6 +10,7 @@
   vntana-viewer{width:100%;height:100%;display:block}
   #bar{padding:10px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid #e5e8ef}
   button{padding:8px 12px;border:1px solid #cdd3df;background:#fff;border-radius:6px;cursor:pointer;font:inherit}
+  #bar button.selected{background:#0f172a;border-color:#0f172a;color:#fff;cursor:default}
   #log{font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;padding:8px 14px;color:#333;max-height:20vh;overflow:auto;background:#fafbfc;border-top:1px solid #e5e8ef}
   #howto{border-top:2px solid #e5e8ef;background:#fff;padding:6px 18px 24px;font:14px/1.55 system-ui,Arial,sans-serif;color:#222}
   #howto summary{cursor:pointer;font-weight:700;padding:12px 0;font-size:15px}
@@ -270,8 +271,20 @@ await viewer[$loadScene](
     } catch(e){ log('ERROR ' + e.message); }
   }
 
-  document.querySelectorAll('#bar button').forEach(b =>
-    b.addEventListener('click', () => load(b.getAttribute('data-tool'))));
+  // Radio-style selection: highlight the active tool, and make clicking it again a no-op.
+  const toolButtons = [...document.querySelectorAll('#bar button')];
+  let selectedKey = null;
+  function select(key){
+    if (key === selectedKey) return Promise.resolve();   // already active -> no-op
+    selectedKey = key;
+    for (const b of toolButtons){
+      const on = b.getAttribute('data-tool') === key;
+      b.classList.toggle('selected', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    return load(key);
+  }
+  toolButtons.forEach(b => b.addEventListener('click', () => select(b.getAttribute('data-tool'))));
 
   // Warm every tool blob so the FIRST click on each tool is instant (no on-demand fetch).
   // $preload is diff-aware: arm is already resident so only the tool GLBs get fetched,
@@ -287,6 +300,6 @@ await viewer[$loadScene](
     log('preloaded tools: ' + Object.keys(TOOL_UUID).join(', '));
   }
 
-  load('nozzle').then(preloadAllTools);   // initial: base arm + nozzle, then warm the rest
+  select('nozzle').then(preloadAllTools);   // initial: base arm + nozzle (selected), then warm the rest
 </script>
 </body></html>
