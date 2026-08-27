@@ -107,7 +107,7 @@ await viewer[$loadScene](
   // Platform products in DCicero/configurators (Live Public). Each UUID is resolved to its
   // GLB blob URL at runtime; those URLs are what we hand to $loadScene.
   const BASE = 'https://api.vntana.com', ORG = 'DCicero', WS = 'configurators';
-  const ARM_UUID = '96ea08a9-fbdb-4bab-afe0-9c1844b6146e';       // Robot Part - Base Arm (re-uploaded Aug 26, Live Public)
+  const ARM_UUID = '1d60e58e-b327-4b2e-8efe-20af8bfa18d3';       // Robot Part - Base Arm v3 (bare, published Live Public)
   const TOOL_UUID = {
     nozzle:  '7dd157c3-d228-495f-8846-aaa3f2704926',
     gripper: '873cd7c4-952a-43c8-ad3d-e06b7ac63fab',
@@ -232,20 +232,34 @@ await viewer[$loadScene](
     camSnap = {};
     for (const [get] of CAM) { try { camSnap[get] = viewer[get](); } catch(e){} }
   }
+  let applyingCam = false;   // re-entry guard: our own setters fire 'camera-change'
   function applyCam(){
     if (!camSnap) return;
+    applyingCam = true;
     for (const [get, set] of CAM) {
       if (camSnap[get] === undefined) continue;
       try { viewer[set](camSnap[get]); } catch(e){}
     }
+    applyingCam = false;
   }
+  function driftedFromSnap(){
+    for (const [get] of CAM) { try { if (viewer[get]() !== camSnap[get]) return true; } catch(e){} }
+    return false;
+  }
+  // PRIMARY: intercept the reframe at the source. The viewer fires 'camera-change' when it re-frames;
+  // re-assert our snapshot SYNCHRONOUSLY inside that event (before the browser paints) so the fit
+  // never shows even for one frame. Guarded so our own setters don't recurse.
+  viewer.addEventListener('camera-change', () => {
+    if (!camSnap || applyingCam) return;
+    if (driftedFromSnap()) applyCam();
+  });
   function clampTick(){
     if (!camSnap) return;
-    applyCam();
+    applyCam();                                                   // BACKUP: rAF clamp for anything the event misses
     if (performance.now() < clampUntil) requestAnimationFrame(clampTick);
     else camSnap = null;   // release; user regains free camera control
   }
-  // Also re-assert on the load lifecycle events (belt-and-suspenders around the rAF clamp).
+  // Also re-assert on the load lifecycle events (belt-and-suspenders).
   ['scene-loaded', 'updates-loaded'].forEach(ev => viewer.addEventListener(ev, applyCam));
 
   async function load(toolKey){
