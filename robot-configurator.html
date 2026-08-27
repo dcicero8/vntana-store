@@ -6,7 +6,7 @@
 <title>Robot — End-of-Arm Tooling Configurator</title>
 <meta name="robots" content="noindex">
 <script>if(new URLSearchParams(location.search).has('embed'))document.documentElement.classList.add('embed');</script>
-<link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
+<link rel="stylesheet" href="vendor/viewer-v3/styles/viewer.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -87,7 +87,7 @@
 <main>
   <div class="stage">
     <div class="loading" id="loading">Loading interactive 3D…</div>
-    <vntana-viewer id="viewer"></vntana-viewer>
+    <vntana-viewer id="viewer" loading="eager" environment-src="assets/env/studio.hdr"></vntana-viewer>
     <div class="hint">Pick a tool on the right. The robot keeps your view while the tooling swaps.</div>
   </div>
 
@@ -115,142 +115,181 @@
   <span class="pb">Powered by <b>VNTANA</b> 3D</span>
 </footer>
 
-<script type="module" src="vendor/viewer-test/dist/index.js"></script>
+<script type="module" src="vendor/viewer-v3/dist/index.js"></script>
 <script type="module">
-  const viewer   = document.getElementById("viewer");
-  const chipsEl  = document.getElementById("chips");
-  const detail   = document.getElementById("detail");
-  const loading  = document.getElementById("loading");
-  const titleEl  = document.getElementById("title");
-  const subEl    = document.getElementById("subtitle");
+  import { $configuratorMode, $loadScene, $preload } from './vendor/viewer-v3/dist/core.js';
 
-  const BASE="https://api.vntana.com", ORG="DCicero", WS="configurators";
+  const viewer  = document.getElementById("viewer");
+  const chipsEl = document.getElementById("chips");
+  const detail  = document.getElementById("detail");
+  const loading = document.getElementById("loading");
+  const titleEl = document.getElementById("title");
+  const subEl   = document.getElementById("subtitle");
+  const log = (...a) => console.debug("[configurator]", ...a);
 
-  /* Each configuration is its own VNTANA product: the same robot with a
-     different tool mounted on the wrist flange. Selecting one swaps
-     viewer.src while preserving the current camera. */
+  /* PART-SWAP configurator: the base arm loads ONCE and stays resident; selecting a
+     tool swaps only the end-of-arm GLB (mounted on the wrist flange) while the camera
+     holds the user's view. Products live in DCicero/configurators (Live Public); each
+     UUID is resolved to its GLB blob URL at runtime. */
+  const BASE = "https://api.vntana.com", ORG = "DCicero", WS = "configurators";
+  const ARM_UUID = "1d60e58e-b327-4b2e-8efe-20af8bfa18d3";   // Base Arm v3 (bare flange)
+  const TOOL_UUID = {
+    nozzle:  "7dd157c3-d228-495f-8846-aaa3f2704926",
+    gripper: "873cd7c4-952a-43c8-ad3d-e06b7ac63fab",
+    vacarm:  "0ea102da-ed75-4910-8317-cb7863d8a0c2",
+    vackit:  "b07a5039-28df-40bf-be3d-1b84fc6f1625",
+  };
+
+  /* Customer-facing copy per configuration. `tool` is the key into TOOL_UUID
+     (empty = bare arm, no tool mounted). */
   const CONFIGS = [
-    {
-      id:"bare", uuid:"59f8d231-7980-447a-a1b2-f00adff8a8d9",
-      name:"Bare Arm", tag:"Tool mount only",
+    { id:"bare", tool:"", name:"Bare Arm", tag:"Tool mount only",
       bullets:[
         "Six-axis industrial arm with the tool flange exposed",
         "ISO mounting pattern ready for any end effector",
         "The starting point for every tooling configuration"
       ],
-      note:"Select a tool below to see it mounted on the wrist."
-    },
-    {
-      id:"nozzle", uuid:"44a8b683-7b9d-4e96-8d78-86b99d283803",
-      name:"Dispensing Nozzle", tag:"Original tooling",
+      note:"Select a tool below to see it mounted on the wrist." },
+    { id:"nozzle", tool:"nozzle", name:"Dispensing Nozzle", tag:"Original tooling",
       bullets:[
         "The arm's original process tooling, as delivered",
         "Wrist-mounted nozzle for dispensing and welding work",
         "Reference configuration for the tooling swap"
       ],
-      note:"The as-built configuration this arm shipped with."
-    },
-    {
-      id:"gripper", uuid:"c710334e-21e3-46ad-a3ea-6c58d2e8ebcc",
-      name:"Gripper Fingers", tag:"Part No. 9495N17",
+      note:"The as-built configuration this arm shipped with." },
+    { id:"gripper", tool:"gripper", name:"Gripper Fingers", tag:"Part No. 9495N17",
       bullets:[
         "Ready-to-use fingers for a robot-ready electric parallel gripper, no machining required",
         "Bolt directly onto the gripper jaws; grip parts externally at the fingertips or internally from a bore",
         "Sizing rule of thumb: gripping force of about 10x the part's weight",
         "Jaw-position sensing on the gripper body can trigger the next pick cycle"
       ],
-      note:"Pick-and-place and machine-tending configuration."
-    },
-    {
-      id:"vacarm", uuid:"d8d2e21b-7e0d-47a6-a927-26d1c9369120",
-      name:"Vacuum Lifter Mount", tag:"Part No. 3136N511",
+      note:"Pick-and-place and machine-tending configuration." },
+    { id:"vacarm", tool:"vacarm", name:"Vacuum Lifter Mount", tag:"Part No. 3136N511",
       bullets:[
         "Any-which-way single-arm mount, anodized aluminum",
         "Ball-and-socket joints lock in place: 360&deg; rotation, 145&deg; tilt",
         "Hollow arm routes the vacuum line straight to the cup",
         "30 lb maximum load capacity"
       ],
-      note:"Single-point vacuum lifting configuration."
-    },
-    {
-      id:"vackit", uuid:"5b843862-c1a0-4472-a06f-2b2cbe7c4d9a",
-      name:"Vacuum Lifter Kit", tag:"Part No. 3136N512",
+      note:"Single-point vacuum lifting configuration." },
+    { id:"vackit", tool:"vackit", name:"Vacuum Lifter Kit", tag:"Part No. 3136N512",
       bullets:[
         "Any-which-way mount kit with three articulating arms",
         "Mounting plate with standard ISO 50 pattern fits common robot arms",
         "Accepts threaded vacuum lifters and cups of various sizes",
         "30 lb maximum load capacity"
       ],
-      note:"Multi-point vacuum lifting configuration."
-    }
+      note:"Multi-point vacuum lifting configuration." }
   ];
-
   const byId = Object.fromEntries(CONFIGS.map(c => [c.id, c]));
-  let activeId = null;
-  let firstLoad = true;
 
-  // camera getters are METHODS on the v3 build; setters are properties
-  const captureCamera = () => {
-    try {
-      return {
-        cameraTarget:   viewer.getCameraTarget(),
-        cameraRotation: viewer.getCameraRotation(),
-        cameraDistance: viewer.getCameraDistance(),
-        fieldOfView:    viewer.getFieldOfView()
-      };
-    } catch(_) { return null; }
-  };
-
-  /* Preload cache: uuid -> { objectUrl, viewerSettings }. Each config's GLB is
-     fetched once in the background and served to the viewer as a blob: URL, so
-     switching tools never waits on the network after warmup. */
-  const CACHE = new Map();
-
-  const resolveProduct = async (uuid) => {
+  // ---- Resolve UUID -> GLB blob URL (cached) -----------------------------------------
+  const urlCache = {};
+  async function urlFor(uuid){
+    if (urlCache[uuid]) return urlCache[uuid];
     const p = await fetch(`${BASE}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
-    const { asset, viewerSettings } = p.response;
-    const blobId = asset.models.find(m => (m.conversionFormat ?? m.type) === "GLB")?.modelBlobId
-                 || asset.models[0].modelBlobId;
-    return { url: `${BASE}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${blobId}`, viewerSettings };
-  };
+    const models = (p.response.asset || {}).models || [];
+    const glb = models.find(m => (m.conversionFormat ?? m.type) === "GLB") || models[0];
+    return (urlCache[uuid] = `${BASE}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${glb.modelBlobId}`);
+  }
 
-  const preload = async (uuid) => {
-    if (CACHE.has(uuid)) return CACHE.get(uuid);
-    const job = (async () => {
-      const { url, viewerSettings } = await resolveProduct(uuid);
-      const blob = await fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); });
-      return { objectUrl: URL.createObjectURL(blob), viewerSettings };
-    })();
-    CACHE.set(uuid, job);
-    job.catch(() => CACHE.delete(uuid));   // failed preloads retry on demand
-    return job;
-  };
-
-  const warmAll = () => CONFIGS.reduce(
-    (chain, c) => chain.then(() => preload(c.uuid).catch(()=>{})), Promise.resolve());
-
-  const loadConfig = async (uuid) => {
-    const cam = firstLoad ? null : captureCamera();
-    loading.textContent = "Loading configuration…";
-    loading.classList.remove("hidden");
-    try {
-      const { objectUrl, viewerSettings } = await preload(uuid);
-      viewer.addEventListener("load", () => {
-        // re-apply the user's view so the swap feels like a tool change, not a reload
-        if (cam && cam.cameraTarget) { try { Object.assign(viewer, cam); } catch(_){} }
-        else if (viewerSettings?.config) {
-          try { Object.assign(viewer, JSON.parse(viewerSettings.config)); } catch(_){}
+  // Platform "Convert Only" drops the ToolMount empty, so derive the mount point from the
+  // ToolMountMarker mesh's world-space bbox center (in arm-local space). No THREE import needed.
+  function markerCenterLocal(arm, marker){
+    const V = arm.position.constructor;   // THREE.Vector3
+    let a=Infinity,b=Infinity,c=Infinity,d=-Infinity,e=-Infinity,f=-Infinity;
+    const v = new V();
+    marker.traverse(o => {
+      if (o.isMesh && o.geometry && o.geometry.attributes.position){
+        o.updateWorldMatrix(true,false);
+        const pos = o.geometry.attributes.position;
+        for (let i=0;i<pos.count;i++){
+          v.fromBufferAttribute(pos,i).applyMatrix4(o.matrixWorld);
+          if(v.x<a)a=v.x; if(v.y<b)b=v.y; if(v.z<c)c=v.z;
+          if(v.x>d)d=v.x; if(v.y>e)e=v.y; if(v.z>f)f=v.z;
         }
-        loading.classList.add("hidden");
-      }, { once:true });
-      viewer.src = objectUrl;
-      if (firstLoad) { firstLoad = false; setTimeout(warmAll, 800); }  // warm the rest once the first view is on screen
-    } catch (err) {
-      loading.textContent = "Could not load the model. (Is the product Live Public?)";
-      console.error(err);
+      }
+    });
+    v.set((a+d)/2,(b+e)/2,(c+f)/2);
+    arm.worldToLocal(v);
+    return v;
+  }
+
+  // ---- assemble: mount the tool on the resident arm ----------------------------------
+  let currentTool = null;    // { model, scene } or null
+  let established = false;   // true once the base is established + framed
+  const assemble = (models) => {
+    const armM = models.arm; if (!armM) return false;
+    const arm = armM.scene, sc = viewer.scene;
+
+    // viewer auto-releases a model when its key's URL changes; we just DETACH the old tool.
+    const nextToolModel = models.tool || null;
+    if (currentTool && currentTool.model !== nextToolModel){
+      if (currentTool.scene && currentTool.scene.parent) currentTool.scene.parent.remove(currentTool.scene);
+      currentTool = null;
     }
+    // mount new tool: zero injected recenter TRS, then parent at ToolMount (or marker-center fallback)
+    if (nextToolModel && (!currentTool || currentTool.model !== nextToolModel)){
+      const tool = nextToolModel.scene;
+      tool.traverse(o => { o.position.set(0,0,0); o.quaternion.identity(); o.scale.set(1,1,1); });
+      const mount = arm.getObjectByName("ToolMount");
+      if (mount){ mount.add(tool); }
+      else { const marker = arm.getObjectByName("ToolMountMarker"); arm.add(tool); if (marker) tool.position.copy(markerCenterLocal(arm, marker)); }
+      currentTool = { model: nextToolModel, scene: tool };
+    }
+
+    if (!established){
+      arm.traverse(o => sc.trackNode(o));
+      sc.model = armM;
+      if (arm.parent !== sc.content) sc.content.add(arm);
+      sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
+      sc.queueUpdate && sc.queueUpdate();
+      sc.mixer && sc.mixer.setTime(0);
+      sc.dispatchEvent({ type:"content-change" });   // lights + bounds + frames (first load only)
+      established = true;
+    } else {
+      if (currentTool && currentTool.scene) currentTool.scene.traverse(o => sc.trackNode(o));
+      sc.queueMeshGeometryUpdate && sc.queueMeshGeometryUpdate();
+      sc.queueUpdate && sc.queueUpdate();
+    }
+    return true;
   };
 
+  viewer[$configuratorMode] = true;
+
+  // ---- Camera preserved across swaps (Neven's fix: pin to absolute units) ------------
+  // The per-load re-frame is radius-relative; a swap grows the bounding sphere, so restoring
+  // relative values drifts/clamps. Pin every camera prop (and the distance limits) to ABSOLUTE
+  // metres/rad after the first load, so each later re-frame re-applies the exact view unchanged.
+  let framed = false, limitsPinned = false;
+  function pinCameraAbsolute(){
+    viewer.cameraRotation = viewer.getCameraRotation();
+    viewer.fieldOfView    = viewer.getFieldOfView();
+    viewer.cameraDistance = viewer.evaluate("cameraDistance", viewer.getCameraDistance(), "m") + "m";
+    const [tx,ty,tz]      = viewer.evaluate("cameraTarget", viewer.getCameraTarget(), "m");
+    viewer.cameraTarget   = `${tx}m ${ty}m ${tz}m`;
+  }
+  function pinDistanceLimits(){
+    viewer.minCameraDistance = viewer.evaluateProperty("minCameraDistance", "m") + "m";
+    viewer.maxCameraDistance = viewer.evaluateProperty("maxCameraDistance", "m") + "m";
+    limitsPinned = true;
+  }
+  viewer.addEventListener("scene-loaded", () => { if (framed) pinCameraAbsolute(); });
+  viewer.addEventListener("updates-loaded", () => { framed = true; });
+
+  // ---- Load / swap -------------------------------------------------------------------
+  async function loadTool(toolKey){
+    try {
+      const model = { arm: await urlFor(ARM_UUID) };
+      if (toolKey && TOOL_UUID[toolKey]) model.tool = await urlFor(TOOL_UUID[toolKey]);
+      const ok = await viewer[$loadScene]({ model }, assemble);
+      if (!limitsPinned){ pinDistanceLimits(); pinCameraAbsolute(); }
+      return ok;
+    } catch(e){ log("load error", e); throw e; }
+  }
+
+  // ---- UI: chips + detail card + loading overlay -------------------------------------
   const renderCard = (c) => {
     detail.innerHTML = `
       <h2>${c.name}</h2>
@@ -259,25 +298,41 @@
       ${c.note ? `<div class="note">${c.note}</div>` : ``}`;
   };
 
-  const select = (id) => {
-    const c = byId[id]; if (!c || id === activeId) return;
-    activeId = id;
-    loadConfig(c.uuid);
+  let activeId = null, busy = false;
+  async function select(id){
+    const c = byId[id];
+    if (!c || id === activeId || busy) return;   // no-op on the active tool (or mid-swap)
+    activeId = id; busy = true;
     titleEl.textContent = `Industrial Robot — ${c.name}`;
     subEl.textContent = c.tag;
     renderCard(c);
     [...chipsEl.children].forEach(ch => ch.classList.toggle("active", ch.dataset.id === id));
-  };
+    if (!established){ loading.textContent = "Loading interactive 3D…"; loading.classList.remove("hidden"); }
+    try { await loadTool(c.tool); }
+    catch(_) { loading.textContent = "Could not load the model. (Is the product Live Public?)"; loading.classList.remove("hidden"); busy = false; return; }
+    loading.classList.add("hidden");
+    busy = false;
+  }
 
   CONFIGS.forEach(c => {
     const b = document.createElement("button");
     b.className = "chip"; b.dataset.id = c.id;
+    b.setAttribute("aria-pressed", "false");
     b.innerHTML = `${c.name}<span class="ph">${c.tag}</span>`;
     b.addEventListener("click", () => select(c.id));
     chipsEl.appendChild(b);
   });
 
-  select("bare");
+  // Warm every tool GLB after the first view is on screen so swaps are instant.
+  async function warmTools(){
+    const arm = await urlFor(ARM_UUID);
+    for (const key of Object.keys(TOOL_UUID)){
+      try { const tool = await urlFor(TOOL_UUID[key]); viewer[$preload]({ model:{ arm, tool } }); }
+      catch(e){ log("preload " + key + " failed", e); }
+    }
+  }
+
+  select("bare").then(warmTools);
 </script>
 <!-- Start of HubSpot Embed Code (top-level only; this page is also embedded in an iframe) -->
 <script>if(window.self===window.top){var hs=document.createElement("script");hs.type="text/javascript";hs.id="hs-script-loader";hs.async=true;hs.defer=true;hs.src="//js.hs-scripts.com/5892493.js";document.body.appendChild(hs);}</script>
