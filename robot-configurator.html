@@ -278,13 +278,29 @@
   viewer.addEventListener("scene-loaded", () => { if (framed) pinCameraAbsolute(); });
   viewer.addEventListener("updates-loaded", () => { framed = true; });
 
+  // Framed by Derek on the full-screen page (getter units: r / rad). Applied once after the first
+  // load so the arm fills the frame on open, then pinned to absolute so swaps hold it.
+  const DEFAULT_VIEW = {
+    rotation:    "-0.6972331144861784rad 0.654635786977119rad 0rad",
+    distance:    "2.487868757568271r",
+    fieldOfView: "0.5841466650508274rad",
+    target:      "-0.2900799041513524r 0.07036279824524921r 0.14835725659082907r",
+  };
+  async function applyDefaultView(){
+    viewer.cameraRotation = DEFAULT_VIEW.rotation;
+    viewer.cameraDistance = DEFAULT_VIEW.distance;
+    viewer.fieldOfView    = DEFAULT_VIEW.fieldOfView;
+    viewer.cameraTarget   = DEFAULT_VIEW.target;
+    await viewer.updateComplete;   // camera props are deferred to the update cycle; wait for them to apply
+  }
+
   // ---- Load / swap -------------------------------------------------------------------
   async function loadTool(toolKey){
     try {
       const model = { arm: await urlFor(ARM_UUID) };
       if (toolKey && TOOL_UUID[toolKey]) model.tool = await urlFor(TOOL_UUID[toolKey]);
       const ok = await viewer[$loadScene]({ model }, assemble);
-      if (!limitsPinned){ pinDistanceLimits(); pinCameraAbsolute(); }
+      if (!limitsPinned){ await applyDefaultView(); pinDistanceLimits(); pinCameraAbsolute(); }
       return ok;
     } catch(e){ log("load error", e); throw e; }
   }
