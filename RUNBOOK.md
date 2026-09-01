@@ -405,3 +405,91 @@ is the problem.
 - **Interactive parts catalog** (`parts.html`): click-to-select with a parts table and renders.
 - **Taco 007e** (`taco-007e.html`): embed swap for a re-materialed asset, turntable + still
   gallery. The cast-green material was baked per §8.
+
+---
+
+## 14. Part-swap configurators (Track C)
+
+A base model loads ONCE and stays resident; selecting an option swaps only a part GLB
+(mounted on a flange) while the camera holds the user's view. Reference build:
+**`robot-configurator.html`** (production, styled, embedded in `imts.html` at `/custom/imts`).
+Spike + viewer-team review panel: **`robot-v3-test.html`**. Full spec:
+`Part-Swap-Configurator-Spec.md`.
+
+> **Status (as of Sept 2026): the configurator API is UNOFFICIAL** — symbol-keyed, off the
+> public attribute surface, and it WILL change. It is being formalized as a split
+> **"VNTANA configurator" package** with work starting ~November 2026. Keep these demo-grade,
+> not production, and expect to re-port when the official interface lands. Do not tell clients
+> it is a supported/GA feature yet.
+
+**Requires `@vntana/viewer@3.0.0+`** (our `vendor/viewer-v3/`). The 2.3.0 build hangs on
+`$loadScene`. Import the symbols from the same package: `import { $configuratorMode, $loadScene,
+$preload } from './vendor/viewer-v3/dist/core.js'`.
+
+### Assets
+- **Split products, each Live Public in the `configurators` workspace**: one base + one GLB per
+  swappable part. Resolve each UUID to its GLB blob URL at runtime
+  (`/products/{uuid}/organizations/DCicero/clients/configurators` -> `modelBlobId` ->
+  `/assets/products/{uuid}/.../{blob}.glb`).
+- **Mount contract**: part authored origin-at-mount (identity). The base carries a `ToolMount`
+  empty at the flange. **Platform quirk**: Convert Only DROPS empty nodes, so fall back to a
+  `ToolMountMarker` mesh and mount at its world-bbox center (arm-local); and it injects a
+  per-node recenter TRS on parts, so zero every part node's TRS before mounting.
+- **Publish-state gotcha**: the resolve endpoint returns **404 with an empty body** for a
+  DRAFT or deleted product, which looks identical to a bad UUID. Publish to LIVE_PUBLIC first
+  (UI-gated). This bit us twice.
+
+### Engine (in `assemble`)
+- `viewer[$configuratorMode] = true`; drive loads via `viewer[$loadScene]({ model: { base: url,
+  part: url } }, assemble)`, NOT `src`. Same key+URL across loads = diff-aware reuse (base stays
+  resident, only the changed part fetches).
+- Mount the part at `getObjectByName('ToolMount')` or the marker fallback. **Resource mgmt
+  (per Neven):** the viewer AUTO-RELEASES a model when its key's URL changes — do NOT
+  `dispose()`; just DETACH the outgoing part from the scene graph (`parent.remove`).
+- First load only: run the canonical template (`traverse(trackNode)`, `scene.model = base`,
+  `content.add`, `queueMeshGeometryUpdate`, `queueUpdate`, `dispatchEvent('content-change')` —
+  this lights + bounds + FRAMES). On swaps, integrate just the new part (`trackNode` +
+  `queueMeshGeometryUpdate` + `queueUpdate`); do not re-dispatch content-change.
+- **Environment is required for lighting**: set a real `environment-src` HDR
+  (`assets/env/studio.hdr`). `neutral`/`legacy` resolve to null = unlit/black.
+
+### Camera across swaps (Neven's fix — pin to ABSOLUTE units)
+`$loadScene` re-frames on every load (a `controls.jump()` to the default framing, after
+`scene-loaded`). The viewer keeps the camera RADIUS-RELATIVE to the content bounding sphere,
+and a swap grows the sphere, so restoring relative (`"r"`) values drifts and hits the min-distance
+clamp. Fix: after the FIRST load, pin every camera prop AND the distance limits to absolute
+metres/rad so each later re-frame re-applies the exact view unchanged:
+```
+viewer.cameraRotation = viewer.getCameraRotation();                                    // rad
+viewer.fieldOfView    = viewer.getFieldOfView();                                       // rad
+viewer.cameraDistance = viewer.evaluate('cameraDistance', viewer.getCameraDistance(),'m') + 'm';
+const [x,y,z]         = viewer.evaluate('cameraTarget', viewer.getCameraTarget(), 'm');
+viewer.cameraTarget   = `${x}m ${y}m ${z}m`;
+viewer.minCameraDistance = viewer.evaluateProperty('minCameraDistance','m') + 'm';
+viewer.maxCameraDistance = viewer.evaluateProperty('maxCameraDistance','m') + 'm';
+```
+Refresh the pin from the user's live orbit on `scene-loaded` before each swap.
+
+### A custom initial view (open the demo framed, not on the auto-frame)
+Frame it in the full-screen page, then in the console run
+`copy(JSON.stringify({rotation:viewer.getCameraRotation(),distance:viewer.getCameraDistance(),
+fieldOfView:viewer.getFieldOfView(),target:viewer.getCameraTarget()}))` and hardcode the values.
+Apply them once after the first load, then pin. **Camera props are DEFERRED to the viewer's
+update cycle** — set them, then `await viewer.updateComplete` BEFORE reading/pinning, or the pin
+captures the stale auto-frame default. (`jumpCamera()` / property-set do not apply synchronously.)
+
+### Polish
+- **Preload** every part after the first load: `viewer[$preload]({ model:{ base, part } })` per
+  part (base resident -> only parts fetch), so the first click on each is instant (~50-130ms vs
+  ~2.6s cold).
+- **Hide the load progress bar** so swaps stay seamless (Neven's tip):
+  `vntana-viewer::part(default-progress-bar){ display:none }` (or recolor it to brand).
+- **Radio-group UI**: highlight the active option and make clicking it again a no-op.
+- `loading="eager"`.
+
+### Deploy / verify
+- Same as §11 (git push auto-deploys Railway from the `company` remote). Verify functionally
+  (console errors, camera props round-trip, swap holds the view) — the browser preview pane
+  pauses WebGL when backgrounded, so it CANNOT show the swap visually; trust the JS checks and
+  ask Derek to eyeball on a real browser.
+- Goal: a simple demo configurator in **under 3 hours** via this runbook.
