@@ -314,7 +314,31 @@
     uuidPath = {}; leaves.forEach(l=>uuidPath[l.uuid]=l.path);
     casingUuids = new Set(leaves.filter(l=>l.path.includes("case, goulds")||l.path.includes("casing socket")).map(l=>l.uuid));
     window.__leaves = leaves;
+    fixNormals();                              // CAD exported ~60% of fasteners with no normals -> they render black; compute them
     if(mode==="procedure") goStep(current);   // re-apply highlight + camera + animation once leaves are ready
+  }
+
+  // The source CAD dropped vertex normals on most fastener geometry (bolts/studs/nuts).
+  // A diffuse surface with no normals returns near-zero irradiance under IBL and renders black.
+  // Compute flat normals client-side so they catch the studio HDR like the rest of the pump.
+  let normalsFixed = false;
+  function fixNormals(){
+    if(normalsFixed) return;
+    const sc = viewer.scene;
+    if(!sc || !sc.traverse) return;
+    let n = 0;
+    try{
+      sc.traverse(o=>{
+        const g = o && o.geometry;
+        if(g && g.attributes && !g.attributes.normal && typeof g.computeVertexNormals==="function"){
+          g.computeVertexNormals();
+          if(o.material) o.material.needsUpdate = true;
+          n++;
+        }
+      });
+    }catch(_){}
+    if(n>0){ normalsFixed = true; renderNow(); }
+    window.__normalsFixed = n;
   }
 
   // ===== Phase 2: client-side disassembly animation (no baked glTF anims) =====
