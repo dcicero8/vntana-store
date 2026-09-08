@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>White Venetian&reg; Configurator | Wilbert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#00456b;--slate:#4f758b;--gray:#f4f4f4;--line:#e2e2e2;--ink:#333;--muted:#6b7680}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:Lato,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.5}
+  a{color:var(--navy);text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+  header.top{border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 22px}
+  .logo img{height:50px}
+  .top nav{display:flex;gap:20px}
+  .top nav a{color:#1f2d38;font-weight:700;font-size:13px;letter-spacing:.02em;text-transform:uppercase}
+  .top nav a:hover{color:var(--slate)}
+
+  .hero{background:#c96a2b url('https://www.wilbert.com/cms/images/layout/general/ibannerbg.png') center/cover no-repeat;min-height:104px;display:flex;align-items:center}
+  .hero h1{color:#fff;font-weight:400;font-size:30px;letter-spacing:.06em;margin:0;text-shadow:0 1px 6px rgba(0,0,0,.25)}
+
+  .config{display:grid;grid-template-columns:1fr 372px;gap:30px;padding:28px 0 20px}
+
+  /* stage */
+  .stage{position:relative;background:var(--gray);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+  .pane{display:none}
+  .pane.active{display:block}
+  .pane iframe{width:100%;height:560px;border:0;display:block;background:var(--gray)}
+  .pane-photo.active{display:flex;align-items:center;justify-content:center;height:560px;background:#fff}
+  .pane-photo img{max-height:100%;object-fit:contain}
+  .badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 10px;border-radius:3px;z-index:2}
+  .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;padding:22px 16px 12px;text-align:center;pointer-events:none}
+
+  /* option panel */
+  .panel{border:1px solid var(--line);border-radius:5px;overflow:hidden;align-self:start}
+  .panel h2{background:var(--slate);color:#fff;margin:0;padding:15px 18px;font-size:19px;font-weight:400;letter-spacing:.04em}
+  .panel .body{padding:6px 18px 18px}
+  .group{padding:16px 0;border-bottom:1px solid var(--line)}
+  .group:last-of-type{border-bottom:none}
+  .group .lbl{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:11px}
+  .group .lbl .live{background:#e6f4ea;color:#1f7a44;font-size:9px;padding:2px 6px;border-radius:10px;letter-spacing:.04em}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opt{border:1.5px solid var(--line);border-radius:5px;padding:9px 13px;font-size:13.5px;cursor:pointer;background:#fff;color:#2f3a42;font-weight:700;transition:.12s}
+  .opt:hover{border-color:var(--slate)}
+  .opt.sel{border-color:var(--navy);background:#eef4f8;color:var(--navy)}
+  .opt[disabled]{opacity:.45;cursor:not-allowed;font-weight:400}
+  .opt.soon::after{content:" soon";color:var(--muted);font-weight:400;font-size:11px}
+  .swatches{display:flex;flex-wrap:wrap;gap:8px}
+  .sw{width:38px;height:38px;border-radius:5px;border:2px solid var(--line);cursor:pointer;overflow:hidden;background-size:cover;background-position:center}
+  .sw.sel{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy) inset}
+  .namefield{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:5px;font-family:inherit;font-size:14px}
+  .subgroup{margin-top:12px}
+  .subgroup.hide{display:none}
+  .summary{background:var(--gray);border-radius:5px;padding:13px 15px;margin-top:4px;font-size:13px;color:#3d4a54}
+  .summary b{color:var(--navy)}
+  .cta{display:block;text-align:center;background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:13.5px;padding:14px;border-radius:5px;margin-top:14px}
+  .cta:hover{background:#00354f}
+  .note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.45}
+
+  .vntana-note{background:#f7f9fb;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:12px;margin-top:30px}
+
+  @media(max-width:900px){
+    .config{grid-template-columns:1fr}
+    .top nav{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="https://www.wilbert.com"><img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert"></a>
+    <nav><a href="#">Burial</a><a href="#">Cremation</a><a href="#">Memorialization</a><a href="#">Find a Funeral Home</a></nav>
+  </div>
+</header>
+
+<section class="hero"><div class="wrap"><h1>WHITE&nbsp;&nbsp;VENETIAN&reg; &middot; Personalize</h1></div></section>
+
+<div class="wrap">
+  <div class="config">
+
+    <!-- stage -->
+    <div class="stage">
+      <span class="badge" id="stageBadge">Interactive 3D</span>
+      <div class="pane pane-3d active" id="pane-3d">
+        <iframe src="https://embed.vntana.com/v2?productUuid=fa3036f6-0100-4796-87e5-974a32f4c90a&clientSlug=vaultdemo&organizationSlug=wilbert"
+          title="White Venetian burial vault, interactive 3D" allow="xr-spatial-tracking; fullscreen" loading="eager"></iframe>
+        <span class="cue">Drag to rotate &middot; scroll to zoom</span>
+      </div>
+      <div class="pane pane-photo" id="pane-photo">
+        <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian with Legacy Custom Series print">
+      </div>
+    </div>
+
+    <!-- options -->
+    <div class="panel">
+      <h2>Build your tribute</h2>
+      <div class="body">
+
+        <div class="group">
+          <div class="lbl">Model</div>
+          <div class="opts">
+            <button class="opt sel">White Venetian&reg;</button>
+            <button class="opt soon" disabled>Stainless Triune&reg;</button>
+            <button class="opt soon" disabled>Venetian&reg;</button>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="lbl">Personalization <span class="live">live example</span></div>
+          <div class="opts" id="persoOpts">
+            <button class="opt sel" data-perso="none" data-view="3d">Plain marble top</button>
+            <button class="opt" data-perso="print" data-view="photo">Legacy Custom Series&trade; print</button>
+            <button class="opt soon" disabled>Life's Reflections&reg;</button>
+            <button class="opt soon" disabled>The Canvas&trade;</button>
+          </div>
+
+          <div class="subgroup hide" id="printSub">
+            <div class="lbl" style="margin-top:14px">Print tier</div>
+            <div class="opts">
+              <button class="opt tier" data-tier="Silver">Silver</button>
+              <button class="opt tier sel" data-tier="Gold">Gold</button>
+              <button class="opt tier" data-tier="Platinum">Platinum</button>
+            </div>
+            <div class="lbl" style="margin-top:14px">Cover design</div>
+            <div class="swatches" id="swatches">
+              <div class="sw sel" title="Family photo print" style="background:linear-gradient(135deg,#8fb5d6,#c9d8e6)"></div>
+              <div class="sw" title="American Flag" style="background:linear-gradient(135deg,#b22234,#3c3b6e)"></div>
+              <div class="sw" title="Autumn Lake" style="background:linear-gradient(135deg,#c98a3a,#5a7d3a)"></div>
+              <div class="sw" title="Sunrise/Sunset" style="background:linear-gradient(135deg,#f4a259,#e05a47)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="lbl">Nameplate</div>
+          <input class="namefield" id="nameInput" placeholder="In loving memory of..." maxlength="40">
+        </div>
+
+        <div class="summary" id="summary">
+          <b>White Venetian&reg;</b> &middot; Basic Protection<br>
+          Personalization: <b id="sumPerso">Plain marble top</b>
+        </div>
+
+        <a class="cta" href="#">Find a Funeral Home Near Me</a>
+        <div class="note">Demonstration configurator. One live example is wired: choosing <b>Legacy Custom Series print</b> swaps the plain 3D vault for the personalized cover. Remaining options are scaffolding to be connected to real assets.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="vntana-note">Interactive 3D experience powered by VNTANA &middot; demonstration page</div>
+
+<script>
+  (function(){
+    var panes={ "3d":document.getElementById('pane-3d'), "photo":document.getElementById('pane-photo') };
+    var badge=document.getElementById('stageBadge');
+    var printSub=document.getElementById('printSub');
+    var sumPerso=document.getElementById('sumPerso');
+
+    // Personalization: the one live example (swaps the stage image)
+    document.querySelectorAll('#persoOpts .opt[data-perso]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        document.querySelectorAll('#persoOpts .opt[data-perso]').forEach(function(b){ b.classList.toggle('sel', b===btn); });
+        var view=btn.dataset.view;
+        Object.keys(panes).forEach(function(k){ panes[k].classList.toggle('active', k===view); });
+        var isPrint=btn.dataset.perso==='print';
+        printSub.classList.toggle('hide', !isPrint);
+        badge.textContent = isPrint ? 'Personalized cover' : 'Interactive 3D';
+        sumPerso.textContent = isPrint ? 'Legacy Custom Series print' : 'Plain marble top';
+      });
+    });
+
+    // tier + swatch selection (visual only in this scaffold)
+    function radio(sel){ document.querySelectorAll(sel).forEach(function(el){ el.addEventListener('click',function(){
+      el.parentNode.querySelectorAll(el.classList.contains('sw')?'.sw':'.tier').forEach(function(s){ s.classList.toggle('sel', s===el); });
+    }); }); }
+    radio('.tier'); radio('#swatches .sw');
+  })();
+</script>
+</body>
+</html>
