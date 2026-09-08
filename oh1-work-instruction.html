@@ -85,6 +85,8 @@
   table.bom tr.clk{cursor:pointer}
   table.bom tr.clk:hover td{background:#eef5fb}
   table.bom tr.mapped td.no::after{content:"›";color:var(--sky);float:right}
+  table.bom tr.mapped td.no, table.bom tr.mapped td:nth-child(2){font-weight:700}
+  table.bom tr.unmapped td{color:#aab1ba}  /* not linked to 3D — not clickable */
 
   /* ---- right: 3D stage ---- */
   .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px;display:flex;flex-direction:column}
@@ -216,8 +218,15 @@
     }catch(e){}
   }
   // Parts Explorer: zoom the camera onto the selected part.
-  // We set the orbit target directly in three.js world coords (the viewer honors controls.target),
-  // then size the zoom from the part's own bounding box (~3x its largest dimension matches the step cams).
+  // The viewer's camera target is in its own "r" space (a rotated view frame), not three.js world
+  // coords, so we map the part's world-space bbox center -> r with an affine fit derived from the
+  // known-good STEP_CAM values, then drive the supported setCameraTarget/Distance API.
+  // world[x,y,z] -> r: each row is [xw, yw, zw, 1] dotted with these coeffs.
+  const W2R = {
+    x:[0.25024, 0.10031, -0.00674, -0.01048],
+    y:[0.00662, 0.23682,  0.01005, -0.29069],
+    z:[0.00012,-0.00008,  0.09696, -0.00508],
+  };
   function framePart(patterns){
     if(!ready) return;
     const uuids = uuidsMatching(patterns);
@@ -240,13 +249,13 @@
     if(!cnt) return;
     const c=[(min[0]+max[0])/2,(min[1]+max[1])/2,(min[2]+max[2])/2];
     const dim=Math.max(max[0]-min[0],max[1]-min[1],max[2]-min[2]);
-    const distR=Math.max(dim*3, 0.35).toFixed(3);      // clamp so tiny parts don't clip into the min camera distance
+    const distR=Math.max(dim*3, 0.4).toFixed(4);       // clamp so tiny parts don't clip into the min camera distance
+    const rr=a=>(a[0]*c[0]+a[1]*c[1]+a[2]*c[2]+a[3]).toFixed(5);
     try{
       viewer.setCameraRotation(DEFAULT_VIEW.rotation);
       viewer.setFieldOfView(DEFAULT_VIEW.fieldOfView);
       viewer.setCameraDistance(distR+"r");
-      const ct = viewer.controls && viewer.controls.target;
-      if(ct && ct.set){ ct.set(c[0],c[1],c[2]); viewer.controls.update && viewer.controls.update(); }
+      viewer.setCameraTarget(`${rr(W2R.x)}r ${rr(W2R.y)}r ${rr(W2R.z)}r`);
     }catch(e){}
     renderNow();
   }
@@ -284,7 +293,7 @@
     const f=(filter||"").toLowerCase();
     $("bom").innerHTML = BOM.filter(r=>!f || r[0].toLowerCase().includes(f) || r[1].toLowerCase().includes(f))
       .map(r=>{ const m=hasMap(r[0]);
-        return `<tr class="clk${m?' mapped':''}" data-part="${r[0]}"><td class="no">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`;
+        return `<tr class="${m?'clk mapped':'unmapped'}" data-part="${r[0]}"><td class="no">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`;
       }).join("");
   }
   renderBom("");
