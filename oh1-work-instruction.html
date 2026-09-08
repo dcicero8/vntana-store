@@ -314,31 +314,43 @@
     uuidPath = {}; leaves.forEach(l=>uuidPath[l.uuid]=l.path);
     casingUuids = new Set(leaves.filter(l=>l.path.includes("case, goulds")||l.path.includes("casing socket")).map(l=>l.uuid));
     window.__leaves = leaves;
-    fixNormals();                              // CAD exported ~60% of fasteners with no normals -> they render black; compute them
-    if(mode==="procedure") goStep(current);   // re-apply highlight + camera + animation once leaves are ready
+    // loose fasteners render black under the viewer's IBL (small dense threaded geometry);
+    // they're visual noise in the walk-through anyway, so stash them off-screen in procedure mode.
+    FASTENER_UUIDS = leaves.filter(l=>FASTENER_RE.test(l.path) && !FASTENER_EXCLUDE.test(l.path)).map(l=>l.uuid);
+    window.__fasteners = FASTENER_UUIDS.length;
+    if(mode==="procedure"){ stashFasteners(true); goStep(current); }  // re-apply highlight + camera + animation once leaves are ready
+    else stashFasteners(false);
   }
 
-  // The source CAD dropped vertex normals on most fastener geometry (bolts/studs/nuts).
-  // A diffuse surface with no normals returns near-zero irradiance under IBL and renders black.
-  // Compute flat normals client-side so they catch the studio HDR like the rest of the pump.
-  let normalsFixed = false;
-  function fixNormals(){
-    if(normalsFixed) return;
-    const sc = viewer.scene;
-    if(!sc || !sc.traverse) return;
-    let n = 0;
+  // Which leaves are loose fasteners (bolts/studs/screws/nuts/pipe plugs) vs real pump parts.
+  const FASTENER_RE = /bolt|stud|screw|washer|hex nut|hex cap|hex head|hex bolt|eye bolt|pipe plug|threaded rod|\bnut\b|370-|370f|370b|370_|355 hex|250b|250n/i;
+  const FASTENER_EXCLUDE = /casing socket|discharge|base plate|baseplate/i;
+  let FASTENER_UUIDS = [], fastenerStash = new Map();
+  // Hide by translating off-screen — the one runtime mutation the viewer's render pass honors
+  // (same object.position mechanism the Phase 2 animation uses), unlike material/visibility edits.
+  function stashFasteners(hide){
+    if(!ready) return;
     try{
-      sc.traverse(o=>{
-        const g = o && o.geometry;
-        if(g && g.attributes && !g.attributes.normal && typeof g.computeVertexNormals==="function"){
-          g.computeVertexNormals();
-          if(o.material) o.material.needsUpdate = true;
-          n++;
-        }
-      });
+      if(hide){
+        FASTENER_UUIDS.forEach(u=>{
+          if(fastenerStash.has(u)) return;
+          const o = viewer.scene && viewer.scene.getObjectByProperty ? viewer.scene.getObjectByProperty("uuid",u) : null;
+          if(!o || !o.position) return;
+          const home = o.position.clone();
+          const wp = new home.constructor(); o.getWorldPosition(wp); wp.y += 100;   // 100m up, well out of frame
+          const tgt = o.parent ? o.parent.worldToLocal(wp) : wp;
+          o.position.copy(tgt);
+          fastenerStash.set(u, home);
+        });
+      } else {
+        fastenerStash.forEach((home,u)=>{
+          const o = viewer.scene && viewer.scene.getObjectByProperty ? viewer.scene.getObjectByProperty("uuid",u) : null;
+          if(o && o.position) o.position.copy(home);
+        });
+        fastenerStash.clear();
+      }
     }catch(_){}
-    if(n>0){ normalsFixed = true; renderNow(); }
-    window.__normalsFixed = n;
+    renderNow();
   }
 
   // ===== Phase 2: client-side disassembly animation (no baked glTF anims) =====
@@ -442,8 +454,8 @@
     $("mode-procedure").classList.toggle("hide", m!=="procedure");
     $("mode-parts").classList.toggle("hide", m!=="parts");
     $("stepnav").style.display = m==="procedure" ? "flex" : "none";
-    if(m==="procedure"){ $("hint").textContent="The highlighted part(s) are what this step acts on. Drag to orbit."; goStep(current); }
-    else { $("hint").textContent="Click any part in the model to inspect it."; resetMoved(); renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
+    if(m==="procedure"){ $("hint").textContent="The highlighted part(s) are what this step acts on. Drag to orbit."; stashFasteners(true); goStep(current); }
+    else { $("hint").textContent="Click any part in the model to inspect it."; stashFasteners(false); resetMoved(); renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
   }
   document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 
