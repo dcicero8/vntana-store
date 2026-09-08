@@ -212,7 +212,11 @@
   ];
 
   // ---- viewer glue (parts-explorer pattern) ----
-  let leaves=[], ready=false, current=0;
+  // The asset is the COMPLETE installation (pump + baseplate + floor + discharge piping).
+  // Treat the installation context as always-dimmed so the pump is the subject.
+  const CONTEXT = ["floor","base plate","vertical piping","complete discharge","discharge pipe","assembley","spindle","valve","bolt with nuts_discharge"];
+  let leaves=[], pumpLeaves=[], contextUuids=[], ready=false, current=0;
+  function isContext(path){ return CONTEXT.some(c=>path.includes(c)); }
   function buildLeaves(tries){
     const sg = viewer.sceneGraph;
     if(!sg){ if(tries>0) setTimeout(()=>buildLeaves(tries-1),400); return; }
@@ -222,22 +226,26 @@
       if(n.type==="primitive" || n.type==="mesh") leaves.push({uuid:n.uuid, path:(p||"").toLowerCase()});
       (n.children||[]).forEach(c=>walk(c,p));
     })(sg,"");
+    pumpLeaves = leaves.filter(l=>!isContext(l.path));
+    contextUuids = leaves.filter(l=>isContext(l.path)).map(l=>l.uuid);
     window.__leaves = leaves;
   }
   function uuidsMatching(patterns){
     if(!patterns || !patterns.length) return [];
     const pl = patterns.map(s=>s.toLowerCase());
-    return leaves.filter(l=>pl.some(p=>l.path.includes(p))).map(l=>l.uuid);
+    return pumpLeaves.filter(l=>pl.some(p=>l.path.includes(p))).map(l=>l.uuid);
   }
   function clearFx(){ try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(e){} }
   function highlight(patterns){
     clearFx();
     if(!ready) return;
-    const hit = new Set(uuidsMatching(patterns));
-    if(hit.size===0) return;                       // step with no target: show whole model, nothing dimmed
     try{
-      hit.forEach(u=>viewer.setEffect(u,"glow","outline"));
-      leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); });
+      contextUuids.forEach(u=>viewer.setEffect(u,"dim"));         // installation context always dimmed
+      const hit = new Set(uuidsMatching(patterns));
+      if(hit.size){
+        hit.forEach(u=>viewer.setEffect(u,"glow","outline"));      // this step's parts pop
+        pumpLeaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); });
+      }
     }catch(e){}
   }
 
@@ -291,11 +299,16 @@
   fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json()).then(p=>{
     const models=(p.response.asset||{}).models||[];
     const glb=models.find(m=>(m.conversionFormat??m.type)==="GLB")||models[0];
-    viewer.addEventListener("load", ()=>{
-      ready=true; buildLeaves(12); $("loading").classList.add("hidden");
+    let inited=false;
+    function init(){
+      if(inited || !viewer.sceneGraph) return;
+      inited=true; ready=true; buildLeaves(12); $("loading").classList.add("hidden");
       setTimeout(()=>goStep(0), 300);
-    }, { once:true });
+    }
+    viewer.addEventListener("load", init, { once:true });
     viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${glb.modelBlobId}`;
+    // fallback: some builds don't fire 'load' reliably — poll the scene graph
+    let polls=0; const t=setInterval(()=>{ if(inited || polls++>60){ clearInterval(t); } else if(viewer.sceneGraph){ init(); clearInterval(t); } }, 500);
   }).catch(e=>{ $("loading").textContent="Could not load the model."; console.error(e); });
 </script>
 <!-- HubSpot -->
