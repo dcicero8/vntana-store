@@ -169,7 +169,6 @@
         <button id="next" class="primary">Next ›</button>
       </span>
       <div class="spacer"></div>
-      <button id="xray">Transparency</button>
       <label>Explode <input type="range" id="explode" min="0" max="1" step="0.01" value="0"></label>
       <button id="reset">Reset view</button>
     </div>
@@ -450,11 +449,8 @@
     const pl = patterns.map(s=>s.toLowerCase());
     return pumpLeaves.filter(l=>pl.some(p=>l.path.includes(p))).map(l=>l.uuid);
   }
-  let xray=false;
   function clearFx(){ try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(e){} }
-  function setXrayBtn(on){ xray=on; const b=$("xray"); if(b) b.classList.toggle("primary",on); }
   function highlight(patterns){
-    setXrayBtn(false);
     clearFx();
     if(!ready) return;
     try{
@@ -515,17 +511,6 @@
   $("next").addEventListener("click",()=>goStep(current+1));
   $("explode").addEventListener("input",e=>{ try{ viewer.setExplodedStrength(parseFloat(e.target.value)); }catch(_){} });
   $("reset").addEventListener("click",()=>{ applyView(); resetMoved(); renderNow(); $("explode").value=0; try{viewer.setExplodedStrength(0);}catch(_){} });
-  // transparency: make the whole assembly see-through to reveal internal components ("Catalog transparency")
-  $("xray").addEventListener("click",()=>{
-    if(xray){                                   // turn off -> restore current mode
-      if(mode==="procedure") highlight(STEPS[current].targets);
-      else { setXrayBtn(false); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
-    } else {
-      setXrayBtn(true); clearFx();
-      if(ready) leaves.forEach(l=>{ try{ viewer.setEffect(l.uuid,"dim"); }catch(_){} });
-      $("hint").textContent="Transparency on — internal components visible through the housing.";
-    }
-  });
   $("partsearch").addEventListener("input",e=>renderBom(e.target.value));
 
   // --- procedure: clicking a (NNN) part reference in the step text highlights it, staying in the step ---
