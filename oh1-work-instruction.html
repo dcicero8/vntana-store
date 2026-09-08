@@ -156,7 +156,7 @@
   <!-- RIGHT: 3D -->
   <div class="stage">
     <div class="loading" id="loading">Loading interactive 3D…</div>
-    <vntana-viewer id="viewer" loading="eager" picking="true" environment-src="assets/env/studio.hdr">
+    <vntana-viewer id="viewer" loading="eager" picking="true" environment-src="assets/env/studio.hdr" min-camera-distance="0.05m">
       <vntana-exploded-view></vntana-exploded-view>
     </vntana-viewer>
     <div class="hint" id="hint">The highlighted part(s) are what this step acts on. Drag to orbit.</div>
@@ -213,7 +213,7 @@
     "500":["coupling"], "100":["case, goulds","casing socket"], "108":["adapter"],
     "370":["370-"], "370F":["370f"], "132":["eye bolt 132"], "241":["frame foot"],
     "360D":["360 d"], "408":["408 pipe plug hex"], "251":["oiler"], "133":["oiler","pipe nipple"],
-    "400":["key"], "101":[], "122":[], "351":[], "418":[], "412A":[], "228A":[], "126":[],
+    "400":["key"], "101":["360 d"], "122":[], "351":[], "418":[], "412A":[], "228A":[], "126":[],
   };
   const hasMap = p => PARTS[p] && PARTS[p].length;
   const partInfo = {}; BOM.forEach(r=>partInfo[r[0]]={name:r[1],qty:r[2]});
@@ -262,11 +262,11 @@
       body:["Slide the back pull-out assembly from the casing using the jacking bolts (418) provided.","Tilt the pull-out assembly to drain any remaining oil, then install the foot block."],
       warn:"Never use heat to disassemble the pump — trapped liquid can expand and cause an explosion." },
     { n:8, title:"Remove Casing Gasket", sub:"Case gasket (351)",
-      targets:["360 D","Case, Goulds"],
+      targets:["Case, Goulds"],
       body:["Remove the casing gasket (351) from the casing / adapter joint face."],
       note:"" },
     { n:9, title:"Unscrew and Remove Impeller", sub:"Impeller (101), key (400), O-ring (412A)",
-      targets:["KEY"],
+      targets:["360 D","KEY"],
       body:["Install the shaft wrench.","Unscrew the impeller (101) from the shaft (122) — threads are right-handed.","Remove the impeller, then the key (400).","Remove the O-ring (412A) that seals between the impeller and shaft/sleeve."],
       warn:"Do not damage the OD vane tip, and never use heat to unscrew the impeller." },
   ];
