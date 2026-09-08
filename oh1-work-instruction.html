@@ -162,6 +162,22 @@
   const $ = id => document.getElementById(id);
   const viewer = $("viewer");
 
+  // Default opening view (framed on the pump). Units: r / rad, from the getters.
+  const DEFAULT_VIEW = {
+    rotation:"-0.8545115835109771rad -0.39350821442200434rad 0rad",
+    distance:"2.0609317782552656r",
+    fieldOfView:"0.3405379969498001rad",
+    target:"0.12959945693149236r -0.08461413303673701r -0.031935402388145205r",
+  };
+  function applyView(){
+    try{
+      viewer.setCameraRotation(DEFAULT_VIEW.rotation);
+      viewer.setCameraDistance(DEFAULT_VIEW.distance);
+      viewer.setFieldOfView(DEFAULT_VIEW.fieldOfView);
+      viewer.setCameraTarget(DEFAULT_VIEW.target);
+    }catch(e){}
+  }
+
   // ---- Bill of materials (from the OH1 parts list) ----
   const BOM = [
     ["500","Coupling","1"],["502","Base Plate","1"],["501","Motor","1"],["100","Casing","1"],
@@ -309,7 +325,7 @@
   $("prev").addEventListener("click",()=>goStep(current-1));
   $("next").addEventListener("click",()=>goStep(current+1));
   $("explode").addEventListener("input",e=>{ try{ viewer.setExplodedStrength(parseFloat(e.target.value)); }catch(_){} });
-  $("reset").addEventListener("click",()=>{ try{ viewer.resetCamera && viewer.resetCamera(); }catch(_){} $("explode").value=0; try{viewer.setExplodedStrength(0);}catch(_){} });
+  $("reset").addEventListener("click",()=>{ applyView(); $("explode").value=0; try{viewer.setExplodedStrength(0);}catch(_){} });
 
   // clicking a part number (in the step text or the Parts tab) highlights that part in 3D
   function focusPart(pn){
@@ -339,6 +355,8 @@
       if(inited || !viewer.sceneGraph) return;
       inited=true; ready=true; buildLeaves(12); $("loading").classList.add("hidden");
       setTimeout(()=>goStep(0), 300);
+      // apply the framed opening view, re-applying a few times to beat the load auto-frame
+      let n=0; (function frame(){ applyView(); if(n++<6) setTimeout(frame,150); })();
     }
     viewer.addEventListener("load", init, { once:true });
     viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${glb.modelBlobId}`;
