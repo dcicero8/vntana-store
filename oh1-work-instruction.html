@@ -253,7 +253,7 @@
   // The asset is the COMPLETE installation (pump + baseplate + floor + discharge piping).
   // Treat the installation context as always-dimmed so the pump is the subject.
   const CONTEXT = ["floor","base plate","vertical piping","complete discharge","discharge pipe","assembley","spindle","valve","bolt with nuts_discharge"];
-  let leaves=[], pumpLeaves=[], contextUuids=[], ready=false, current=0;
+  let leaves=[], pumpLeaves=[], contextUuids=[], uuidPath={}, ready=false, current=0;
   function isContext(path){ return CONTEXT.some(c=>path.includes(c)); }
   function buildLeaves(tries){
     const sg = viewer.sceneGraph;
@@ -266,6 +266,7 @@
     })(sg,"");
     pumpLeaves = leaves.filter(l=>!isContext(l.path));
     contextUuids = leaves.filter(l=>isContext(l.path)).map(l=>l.uuid);
+    uuidPath = {}; leaves.forEach(l=>uuidPath[l.uuid]=l.path);
     window.__leaves = leaves;
   }
   function uuidsMatching(patterns){
@@ -338,6 +339,18 @@
     const ref = e.target.closest(".partref"); if(ref){ focusPart(ref.dataset.part); return; }
     const row = e.target.closest("tr.clk"); if(row){ focusPart(row.dataset.part);
       document.querySelector('.tab[data-tab="task"]').click(); }
+  });
+
+  // click a part in 3D -> identify it (show its name) + highlight the whole part
+  viewer.addEventListener("object-select", e=>{
+    const hits = (e.detail && e.detail.intersections) || [];
+    if(!hits.length) return;
+    const path = uuidPath[hits[0].uuid] || "";
+    const segs = path.split(" / ").filter(s=>s && !/^\.\d+$/.test(s) && s!=="default" && s!=="oh1_completeassembly");
+    const label = segs[segs.length-1] || path || "(unnamed)";
+    $("hint").textContent = "Part: " + label;
+    console.log("[identify]", path);
+    highlight([label]);   // highlight the whole clicked part by its name
   });
 
   // debug helpers (identify DWG parts): window.iso("impeller-guess") glows matches, dims rest; window.paths() lists leaf paths
