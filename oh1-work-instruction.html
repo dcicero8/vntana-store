@@ -186,6 +186,26 @@
     fieldOfView:"0.3405379969498001rad",
     target:"0.12959945693149236r -0.08461413303673701r -0.031935402388145205r",
   };
+  // per-step camera: keep the default angle, retarget + zoom onto each step's part (computed from the CAD)
+  const STEP_CAM = {
+    2:{target:"-0.0314r -0.2192r -0.0071r", distance:"0.77r"},
+    3:{target:"0.0376r -0.2166r -0.0243r", distance:"0.62r"},
+    4:{target:"0.0731r -0.1670r -0.0072r", distance:"0.40r"},
+    5:{target:"0.0736r -0.2653r -0.0071r", distance:"0.81r"},
+    6:{target:"0.1023r -0.2081r -0.0069r", distance:"1.19r"},
+    7:{target:"0.0929r -0.2214r -0.0071r", distance:"1.10r"},
+    8:{target:"0.1186r -0.2081r -0.0069r", distance:"1.11r"},
+    9:{target:"0.0236r -0.2150r -0.0071r", distance:"0.84r"},
+  };
+  function frameStep(n){
+    const cam = STEP_CAM[n];
+    try{
+      viewer.setCameraRotation(DEFAULT_VIEW.rotation);
+      viewer.setFieldOfView(DEFAULT_VIEW.fieldOfView);
+      viewer.setCameraTarget((cam||DEFAULT_VIEW).target);
+      viewer.setCameraDistance((cam||DEFAULT_VIEW).distance);
+    }catch(e){}
+  }
   function applyView(){
     try{
       viewer.setCameraRotation(DEFAULT_VIEW.rotation);
@@ -213,7 +233,7 @@
     "500":["coupling"], "100":["case, goulds","casing socket"], "108":["adapter"],
     "370":["370-"], "370F":["370f"], "132":["eye bolt 132"], "241":["frame foot"],
     "360D":["360 d"], "408":["408 pipe plug hex"], "251":["oiler"], "133":["oiler","pipe nipple"],
-    "400":["key"], "101":["360 d"], "122":[], "351":[], "418":[], "412A":[], "228A":[], "126":[],
+    "400":["key"], "101":["360 d"], "122":[], "351":[], "418":[], "412A":[], "228A":["1087883"], "126":[],
   };
   const hasMap = p => PARTS[p] && PARTS[p].length;
   const partInfo = {}; BOM.forEach(r=>partInfo[r[0]]={name:r[1],qty:r[2]});
@@ -336,6 +356,7 @@
     document.querySelectorAll(".steprow").forEach((el,idx)=>el.classList.toggle("active",idx===current));
     renderDetail();
     highlight(STEPS[current].targets);
+    frameStep(STEPS[current].n);        // fly the camera onto this step's part
   }
 
   // ===== two modes: Procedure (walk-through) vs Parts Explorer (catalog) =====
