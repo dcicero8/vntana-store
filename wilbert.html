@@ -59,6 +59,10 @@
   .stage .pane-photo.active{display:flex;align-items:center;justify-content:center;background:#fff;height:520px}
   .stage iframe{width:100%;height:520px;border:0;display:block;background:var(--gray)}
   .stage .pane-photo img{max-height:100%;object-fit:contain}
+  /* close-up of the marble top: zoomed crop of the same product photo */
+  .stage .pane-detail{height:520px;background:#fff url('https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg') no-repeat;background-size:250%;background-position:47% 16%}
+  .stage .pane-detail.active{display:block}
+  .thumb-detail{background:#fff url('https://www.wilbert.com/assets/1/14/BV-W-Ven-PlainLiner750.jpg') no-repeat;background-size:250%;background-position:47% 16%}
   .stage .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:22px 16px 12px;text-align:center;pointer-events:none}
   .stage .badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:3px;z-index:2}
   .thumbs{display:flex;gap:10px;padding:12px;border-top:1px solid var(--line);background:#fff}
@@ -157,7 +161,7 @@
       <div class="product">
         <div class="viewer">
           <div class="stage">
-            <div class="pane pane-3d active" id="pane-3d">
+            <div class="pane pane-3d active" data-pane="3d">
               <span class="badge">Interactive 3D</span>
               <iframe
                 src="https://embed.vntana.com/v2?productUuid=fa3036f6-0100-4796-87e5-974a32f4c90a&clientSlug=vaultdemo&organizationSlug=wilbert"
@@ -166,9 +170,10 @@
                 loading="eager"></iframe>
               <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; tap a marker to explore the vault</span>
             </div>
-            <div class="pane pane-photo" id="pane-photo">
+            <div class="pane pane-photo" data-pane="photo">
               <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault, product photograph">
             </div>
+            <div class="pane pane-detail" data-pane="detail" role="img" aria-label="Close-up of the polished marble top"></div>
           </div>
           <div class="thumbs">
             <button class="thumb active" data-pane="3d" aria-label="Interactive 3D">
@@ -177,6 +182,7 @@
             <button class="thumb" data-pane="photo" aria-label="Product photo">
               <img src="https://www.wilbert.com/assets/1/14/BV-W-Ven-PlainLiner750.jpg" alt="">
             </button>
+            <button class="thumb thumb-detail" data-pane="detail" aria-label="Close-up of the marble top"></button>
           </div>
         </div>
 
@@ -240,12 +246,12 @@
   // product gallery: switch the main stage between the 3D embed and the product photo
   (function(){
     var thumbs=document.querySelectorAll('.thumb');
-    var panes={ "3d":document.getElementById('pane-3d'), "photo":document.getElementById('pane-photo') };
+    var panes=document.querySelectorAll('.stage .pane');
     thumbs.forEach(function(t){
       t.addEventListener('click',function(){
         var which=t.dataset.pane;
         thumbs.forEach(function(x){ x.classList.toggle('active', x===t); });
-        Object.keys(panes).forEach(function(k){ panes[k].classList.toggle('active', k===which); });
+        panes.forEach(function(p){ p.classList.toggle('active', p.dataset.pane===which); });
       });
     });
   })();
