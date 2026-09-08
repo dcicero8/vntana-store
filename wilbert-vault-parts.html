@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>White Venetian&reg; Vault — Parts Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#00456b;--slate:#4f758b;--gray:#f4f4f4;--line:#d9dee3;--ink:#2f3a42;--muted:#6b7680}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:Lato,Arial,sans-serif;color:var(--ink);background:#fff}
+  .sheet{max-width:1080px;margin:0 auto;padding:26px 30px 40px}
+  .head{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:6px}
+  .head .t h1{margin:0;font-size:22px;color:var(--navy);letter-spacing:.01em}
+  .head .t p{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+  .head img{height:44px}
+  .layout{display:grid;grid-template-columns:1.25fr .9fr;gap:26px;margin-top:20px;align-items:start}
+
+  .figure{position:relative;background:var(--gray);border:1px solid var(--line);border-radius:6px;padding:10px}
+  .figure img{width:100%;display:block;border-radius:3px}
+  .pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.35);border:2px solid #fff}
+  .pin.ext{background:var(--slate)}
+  .pin::after{content:"";position:absolute;width:var(--len,0);height:2px;background:var(--navy);left:50%;top:50%;transform-origin:left center;transform:rotate(var(--ang,0deg));z-index:-1}
+
+  .legend h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);margin:0 0 12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  .row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+  .row:last-child{border-bottom:none}
+  .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .num.ext{background:var(--slate)}
+  .rc .nm{font-weight:700;font-size:14.5px;color:var(--navy)}
+  .rc .cat{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:1px 0 3px}
+  .rc .ds{font-size:12.5px;color:#404a52;line-height:1.4}
+  .foot{margin-top:22px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+  .keycap{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin:0 3px}
+  .keycap.n{background:var(--navy)} .keycap.s{background:var(--slate)}
+
+  @media print{ .sheet{max-width:none;padding:0} body{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="head">
+    <div class="t">
+      <h1>White Venetian&reg; Burial Vault — Parts Reference</h1>
+      <p>Component call-outs for 3D creation &middot; keyed to the 3D Creation Scope</p>
+    </div>
+    <img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert">
+  </div>
+
+  <div class="layout">
+    <div class="figure" id="figure">
+      <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault">
+      <!-- pins positioned in % of the figure; calibrated to the product photo -->
+      <div class="pin"     style="left:60%;top:40%">1</div>
+      <div class="pin"     style="left:74%;top:34%">2</div>
+      <div class="pin ext" style="left:45%;top:46%">3</div>
+      <div class="pin ext" style="left:30%;top:58%">4</div>
+      <div class="pin"     style="left:80%;top:60%">5</div>
+      <div class="pin"     style="left:56%;top:64%">6</div>
+    </div>
+
+    <div class="legend">
+      <h2>Components</h2>
+
+      <div class="row"><div class="num">1</div><div class="rc">
+        <div class="nm">Vault Cover (Lid)</div><div class="cat">Cover (3D)</div>
+        <div class="ds">Sloped cover that seals to the base. One mesh, shared across the Basic line.</div></div></div>
+
+      <div class="row"><div class="num">2</div><div class="rc">
+        <div class="nm">Polished Marble Top</div><div class="cat">Cover (3D) &middot; material zone</div>
+        <div class="ds">Polished-marble material on the top face of the cover; stucco on the sides.</div></div></div>
+
+      <div class="row"><div class="num ext">3</div><div class="rc">
+        <div class="nm">Cover Print</div><div class="cat">Decal (2D)</div>
+        <div class="ds">Legacy Custom Series&trade; / Legacy Series&trade; print. Plane-mesh overlay conformed to the cover; not geometry.</div></div></div>
+
+      <div class="row"><div class="num ext">4</div><div class="rc">
+        <div class="nm">Nameplate</div><div class="cat">Decal (3D &amp; 2D)</div>
+        <div class="ds">Low-poly plate + 2D text decal. Standard or U.S. flag (Veteran) variant.</div></div></div>
+
+      <div class="row"><div class="num">5</div><div class="rc">
+        <div class="nm">Vault Base (Body)</div><div class="cat">Base (3D)</div>
+        <div class="ds">Lower concrete receptacle that houses the casket. One mesh, bottom-center origin.</div></div></div>
+
+      <div class="row"><div class="num">6</div><div class="rc">
+        <div class="nm">Interior Liner</div><div class="cat">Interior (3D) &middot; internal</div>
+        <div class="ds">Reinforcing liner fitted inside base + cover (not visible in this view). Plain or marble-look.</div></div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="keycap n"></span> 3D mesh / material &nbsp;&nbsp; <span class="keycap s"></span> 2D decal / overlay &nbsp; &middot; &nbsp;
+    Measurements and full build notes in Wilbert_3D-Creation_Scope_Vault.xlsx. Base + cover geometry shared across the Basic Protection line. Print &amp; appliqu&eacute; are overlays, not geometry.
+  </div>
+
+</div>
+</body>
+</html>
