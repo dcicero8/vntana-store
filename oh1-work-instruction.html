@@ -35,11 +35,22 @@
   .meta h1{font-size:1.25rem;font-weight:900;margin:0 0 8px;letter-spacing:-.02em}
   .meta .grid{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:.8rem}
   .meta .grid b{color:var(--muted);font-weight:600}
-  .tabs{display:flex;gap:2px;padding:10px 16px 0;border-bottom:1px solid var(--line)}
-  .tab{padding:8px 14px;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;border-radius:8px 8px 0 0;border:1px solid transparent;border-bottom:none}
-  .tab.active{color:var(--blue);background:#f7f9fc;border-color:var(--line)}
-  .tabbody{padding:8px 0 40px;flex:1}
-  .tabbody.hide{display:none}
+  .modeswitch{display:flex;gap:6px;padding:12px 16px;border-bottom:1px solid var(--line);background:#f7f9fc}
+  .mode{flex:1;padding:9px 12px;font:inherit;font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;
+    background:#fff;border:1px solid var(--line);border-radius:9px}
+  .mode.active{color:#fff;background:var(--blue);border-color:var(--blue)}
+  .modebody{padding:8px 0 40px;flex:1}
+  .modebody.hide{display:none}
+  .prereq{margin:6px 14px 4px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe}
+  .prereq summary{cursor:pointer;font-weight:700;font-size:.82rem;padding:10px 14px;color:var(--blue-dark)}
+  .prereq .prose{padding:0 14px 12px}
+  .search{width:calc(100% - 44px);margin:2px 22px 10px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:.85rem}
+  .partdetail{margin:0 22px 14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fbfcfe;min-height:74px}
+  .partdetail .ph{color:#9aa2b2;font-size:.82rem;font-style:italic}
+  .partdetail .pn{font-family:var(--mono);color:var(--blue);font-size:.8rem;font-weight:600}
+  .partdetail h3{margin:2px 0 4px;font-size:1.05rem;font-weight:900}
+  .partdetail .row{font-size:.8rem;color:var(--muted);margin-top:6px}
+  table.bom tr.sel td{background:#eef5fb}
 
   /* prereq + parts */
   .prose{padding:12px 22px;font-size:.85rem;line-height:1.5;color:#33404f}
@@ -114,27 +125,31 @@
       </div>
     </div>
 
-    <div class="tabs">
-      <div class="tab" data-tab="prereq">Prerequisites</div>
-      <div class="tab" data-tab="parts">Parts</div>
-      <div class="tab active" data-tab="task">Task</div>
+    <div class="modeswitch">
+      <button class="mode active" data-mode="procedure">Procedure</button>
+      <button class="mode" data-mode="parts">Parts Explorer</button>
     </div>
 
-    <div class="tabbody hide" id="tab-prereq">
-      <div class="prose">
-        <p>This instruction assists those installing, operating, and maintaining an OH1 pump. Review it fully before performing any work on the pump or motor.</p>
-        <p><b>Handling:</b> Do not hoist the pump by the eyebolts — they are for removing the back pull-out assembly only. Hoist an assembled pump with a sling under the suction flange and under the rear of the bearing frame. Hoist bedplate-mounted units with slings under the bedplate below both pump and driver.</p>
-        <p><b>Before disassembly:</b> make sure all replacement parts are on hand.</p>
-      </div>
-    </div>
-
-    <div class="tabbody hide" id="tab-parts">
-      <table class="bom"><thead><tr><th>Part No.</th><th>Description</th><th>Qty</th></tr></thead><tbody id="bom"></tbody></table>
-    </div>
-
-    <div class="tabbody" id="tab-task">
+    <!-- PROCEDURE: step-by-step disassembly walk-through -->
+    <div class="modebody" id="mode-procedure">
+      <details class="prereq">
+        <summary>Prerequisites &amp; safety</summary>
+        <div class="prose">
+          <p>Review this manual fully before performing any work on the pump or motor.</p>
+          <p><b>Handling:</b> do not hoist the pump by the eyebolts — they are for removing the back pull-out assembly only. Hoist an assembled pump with a sling under the suction flange and under the rear of the bearing frame.</p>
+          <p><b>Before disassembly:</b> make sure all replacement parts are on hand.</p>
+        </div>
+      </details>
       <ul class="steplist" id="steplist"></ul>
       <div class="detail" id="detail"></div>
+    </div>
+
+    <!-- PARTS EXPLORER: interactive catalog / BOM -->
+    <div class="modebody hide" id="mode-parts">
+      <div class="prose" style="padding-bottom:6px">Click any part in the 3D model, or a row below, to highlight and inspect it.</div>
+      <input id="partsearch" class="search" placeholder="Search parts by name or number…">
+      <div class="partdetail" id="partdetail"><span class="ph">No part selected. Click a component in the model.</span></div>
+      <table class="bom"><thead><tr><th>Part No.</th><th>Description</th><th>Qty</th></tr></thead><tbody id="bom"></tbody></table>
     </div>
   </div>
 
@@ -146,9 +161,11 @@
     </vntana-viewer>
     <div class="hint" id="hint">The highlighted part(s) are what this step acts on. Drag to orbit.</div>
     <div class="controls">
-      <button id="prev">‹ Prev</button>
-      <span class="counter" id="counter">Step 0 / 9</span>
-      <button id="next" class="primary">Next ›</button>
+      <span id="stepnav" style="display:flex;gap:10px;align-items:center">
+        <button id="prev">‹ Prev</button>
+        <span class="counter" id="counter">Step 0 / 9</span>
+        <button id="next" class="primary">Next ›</button>
+      </span>
       <div class="spacer"></div>
       <label>Explode <input type="range" id="explode" min="0" max="1" step="0.01" value="0"></label>
       <button id="reset">Reset view</button>
@@ -199,10 +216,15 @@
     "400":["key"], "101":[], "122":[], "351":[], "418":[], "412A":[], "228A":[], "126":[],
   };
   const hasMap = p => PARTS[p] && PARTS[p].length;
-  $("bom").innerHTML = BOM.map(r=>{
-    const m = hasMap(r[0]);
-    return `<tr class="${m?'clk mapped':''}" ${m?`data-part="${r[0]}"`:''}><td class="no">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`;
-  }).join("");
+  const partInfo = {}; BOM.forEach(r=>partInfo[r[0]]={name:r[1],qty:r[2]});
+  function renderBom(filter){
+    const f=(filter||"").toLowerCase();
+    $("bom").innerHTML = BOM.filter(r=>!f || r[0].toLowerCase().includes(f) || r[1].toLowerCase().includes(f))
+      .map(r=>{ const m=hasMap(r[0]);
+        return `<tr class="clk${m?' mapped':''}" data-part="${r[0]}"><td class="no">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`;
+      }).join("");
+  }
+  renderBom("");
   // wrap "(NNN)" part references in the step text as clickable links
   function linkify(text){
     return text.replace(/\(([0-9]{2,3}[A-Z]{0,2})\)/g, (full,pn)=>
@@ -316,41 +338,68 @@
     highlight(STEPS[current].targets);
   }
 
-  // tabs
-  document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");
-    ["prereq","parts","task"].forEach(k=>$("tab-"+k).classList.toggle("hide", k!==t.dataset.tab));
-  }));
+  // ===== two modes: Procedure (walk-through) vs Parts Explorer (catalog) =====
+  let mode = "procedure";
+  function setMode(m){
+    mode = m;
+    document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active", b.dataset.mode===m));
+    $("mode-procedure").classList.toggle("hide", m!=="procedure");
+    $("mode-parts").classList.toggle("hide", m!=="parts");
+    $("stepnav").style.display = m==="procedure" ? "flex" : "none";
+    if(m==="procedure"){ $("hint").textContent="The highlighted part(s) are what this step acts on. Drag to orbit."; highlight(STEPS[current].targets); }
+    else { $("hint").textContent="Click any part in the model to inspect it."; clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
+  }
+  document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+
   // controls
   $("prev").addEventListener("click",()=>goStep(current-1));
   $("next").addEventListener("click",()=>goStep(current+1));
   $("explode").addEventListener("input",e=>{ try{ viewer.setExplodedStrength(parseFloat(e.target.value)); }catch(_){} });
   $("reset").addEventListener("click",()=>{ applyView(); $("explode").value=0; try{viewer.setExplodedStrength(0);}catch(_){} });
+  $("partsearch").addEventListener("input",e=>renderBom(e.target.value));
 
-  // clicking a part number (in the step text or the Parts tab) highlights that part in 3D
-  function focusPart(pn){
-    const pats = PARTS[pn];
-    if(!pats || !pats.length) return;
-    highlight(pats);
-    $("hint").textContent = `Part ${pn} highlighted. Click a step to return to the procedure.`;
+  // --- procedure: clicking a (NNN) part reference in the step text highlights it, staying in the step ---
+  function focusPart(pn){ if(hasMap(pn)){ highlight(PARTS[pn]); $("hint").textContent=`Part ${pn} highlighted.`; } }
+
+  // --- parts explorer: select a part (by BOM number or by clicked node) ---
+  function showDetail(pn, name, qty, extra){
+    $("partdetail").innerHTML =
+      `<div class="pn">Part ${pn}</div><h3>${name}</h3>`+
+      (qty?`<div class="row">Qty: ${qty}</div>`:"")+
+      (extra?`<div class="row">${extra}</div>`:"");
   }
+  function selectByPart(pn){
+    setMode("parts");
+    const info = partInfo[pn] || {name:"(part)",qty:""};
+    if(hasMap(pn)) highlight(PARTS[pn]); else clearFx();
+    showDetail(pn, info.name, info.qty, hasMap(pn)?"":"Not linked to the 3D yet (drawing-numbered part).");
+    document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.toggle("sel", tr.dataset.part===pn));
+  }
+  function pnForLabel(label){ for(const pn in PARTS){ if(PARTS[pn].some(p=>label.includes(p))) return pn; } return null; }
+  function selectByNode(label){
+    const pn = pnForLabel(label);
+    if(pn){ selectByPart(pn); return; }
+    highlight([label]);                         // unmapped (DWG) part — identify it
+    showDetail("—", label, "", "Drawing-numbered part, not yet linked to the BOM.");
+    document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.remove("sel"));
+    console.log("[identify]", label);
+  }
+
   document.addEventListener("click", e=>{
     const ref = e.target.closest(".partref"); if(ref){ focusPart(ref.dataset.part); return; }
-    const row = e.target.closest("tr.clk"); if(row){ focusPart(row.dataset.part);
-      document.querySelector('.tab[data-tab="task"]').click(); }
+    const row = e.target.closest("#bom tr.clk"); if(row){ selectByPart(row.dataset.part); }
   });
 
-  // click a part in 3D -> identify it (show its name) + highlight the whole part
+  // --- 3D click: Parts Explorer mode -> identify/select the clicked part; Procedure mode -> ignore (steps drive it) ---
   viewer.addEventListener("object-select", e=>{
+    if(mode!=="parts") return;
     const hits = (e.detail && e.detail.intersections) || [];
     if(!hits.length) return;
     const path = uuidPath[hits[0].uuid] || "";
     const segs = path.split(" / ").filter(s=>s && !/^\.\d+$/.test(s) && s!=="default" && s!=="oh1_completeassembly");
     const label = segs[segs.length-1] || path || "(unnamed)";
     $("hint").textContent = "Part: " + label;
-    console.log("[identify]", path);
-    highlight([label]);   // highlight the whole clicked part by its name
+    selectByNode(label);
   });
 
   // debug helpers (identify DWG parts): window.iso("impeller-guess") glows matches, dims rest; window.paths() lists leaf paths
