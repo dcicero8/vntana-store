@@ -51,11 +51,23 @@
   .prodtitle{background:var(--slate);color:#fff;padding:16px 22px;border-radius:3px;font-size:23px;font-weight:400;letter-spacing:.06em}
   .product{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;margin-top:22px}
 
-  /* 3D viewer slot (replaces the static product photo) */
-  .viewer{background:var(--gray);border:1px solid var(--line);border-radius:4px;overflow:hidden;position:relative}
-  .viewer iframe{width:100%;height:520px;border:0;display:block;background:var(--gray)}
-  .viewer .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:22px 16px 12px;text-align:center;pointer-events:none}
-  .viewer .badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:3px}
+  /* product gallery: interactive 3D + product photo(s) */
+  .viewer{background:var(--gray);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .stage{position:relative}
+  .stage .pane{display:none;position:relative}
+  .stage .pane.active{display:block}
+  .stage .pane-photo.active{display:flex;align-items:center;justify-content:center;background:#fff;height:520px}
+  .stage iframe{width:100%;height:520px;border:0;display:block;background:var(--gray)}
+  .stage .pane-photo img{max-height:100%;object-fit:contain}
+  .stage .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:22px 16px 12px;text-align:center;pointer-events:none}
+  .stage .badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:3px;z-index:2}
+  .thumbs{display:flex;gap:10px;padding:12px;border-top:1px solid var(--line);background:#fff}
+  .thumb{width:82px;height:66px;border:2px solid var(--line);border-radius:4px;background:#fff;cursor:pointer;overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;position:relative}
+  .thumb:hover{border-color:var(--slate)}
+  .thumb.active{border-color:var(--slate);box-shadow:0 0 0 1px var(--slate) inset}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .thumb .t3d{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;color:var(--navy);font-size:13px;letter-spacing:.04em}
+  .thumb .t3d small{font-weight:700;font-size:8.5px;color:var(--muted);letter-spacing:.06em}
 
   .spec .eyebrow{color:var(--slate);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:13px;margin-bottom:14px}
   .spec ul{list-style:none;margin:0 0 22px;padding:0}
@@ -144,13 +156,28 @@
 
       <div class="product">
         <div class="viewer">
-          <span class="badge">Interactive 3D</span>
-          <iframe
-            src="https://embed.vntana.com/v2?productUuid=fa3036f6-0100-4796-87e5-974a32f4c90a&clientSlug=vaultdemo&organizationSlug=wilbert"
-            title="White Venetian burial vault, interactive 3D"
-            allow="xr-spatial-tracking; fullscreen"
-            loading="eager"></iframe>
-          <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; tap a marker to explore the vault</span>
+          <div class="stage">
+            <div class="pane pane-3d active" id="pane-3d">
+              <span class="badge">Interactive 3D</span>
+              <iframe
+                src="https://embed.vntana.com/v2?productUuid=fa3036f6-0100-4796-87e5-974a32f4c90a&clientSlug=vaultdemo&organizationSlug=wilbert"
+                title="White Venetian burial vault, interactive 3D"
+                allow="xr-spatial-tracking; fullscreen"
+                loading="eager"></iframe>
+              <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; tap a marker to explore the vault</span>
+            </div>
+            <div class="pane pane-photo" id="pane-photo">
+              <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault, product photograph">
+            </div>
+          </div>
+          <div class="thumbs">
+            <button class="thumb active" data-pane="3d" aria-label="Interactive 3D">
+              <span class="t3d">3D<small>INTERACTIVE</small></span>
+            </button>
+            <button class="thumb" data-pane="photo" aria-label="Product photo">
+              <img src="https://www.wilbert.com/assets/1/14/BV-W-Ven-PlainLiner750.jpg" alt="">
+            </button>
+          </div>
         </div>
 
         <div class="spec">
@@ -209,5 +236,19 @@
 
 <div class="vntana-note">Interactive 3D experience powered by VNTANA &middot; demonstration page</div>
 
+<script>
+  // product gallery: switch the main stage between the 3D embed and the product photo
+  (function(){
+    var thumbs=document.querySelectorAll('.thumb');
+    var panes={ "3d":document.getElementById('pane-3d'), "photo":document.getElementById('pane-photo') };
+    thumbs.forEach(function(t){
+      t.addEventListener('click',function(){
+        var which=t.dataset.pane;
+        thumbs.forEach(function(x){ x.classList.toggle('active', x===t); });
+        Object.keys(panes).forEach(function(k){ panes[k].classList.toggle('active', k===which); });
+      });
+    });
+  })();
+</script>
 </body>
 </html>
