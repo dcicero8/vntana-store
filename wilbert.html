@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>White Venetian&reg; | Wilbert Funeral Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#00456b;      /* deep brand navy */
+    --slate:#4f758b;     /* product title bar */
+    --gray:#f4f4f4;      /* panel background */
+    --line:#e2e2e2;
+    --ink:#333;
+    --muted:#6b7680;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:Lato,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.5}
+  a{color:var(--navy);text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+  /* ---------- top bar ---------- */
+  header.top{border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:18px;padding-bottom:18px}
+  .logo img{height:56px}
+  .top nav{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:flex-end}
+  .top nav a{color:#1f2d38;font-weight:700;font-size:13.5px;letter-spacing:.02em;text-transform:uppercase}
+  .top nav a:hover{color:var(--slate)}
+  .top .util{display:flex;gap:14px;align-items:center;margin-left:8px}
+  .top .util .btn{border:1px solid var(--line);border-radius:4px;padding:7px 14px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+
+  /* ---------- hero strip ---------- */
+  .hero{background:#c96a2b url('https://www.wilbert.com/cms/images/layout/general/ibannerbg.png') center/cover no-repeat;min-height:132px;display:flex;align-items:center}
+  .hero h1{color:#fff;font-weight:400;font-size:38px;letter-spacing:.08em;margin:0;text-shadow:0 1px 6px rgba(0,0,0,.25)}
+
+  /* ---------- body layout ---------- */
+  .page{display:grid;grid-template-columns:236px 1fr;gap:34px;padding:32px 0 10px}
+  aside .side-head{background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:14px;padding:12px 16px;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:8px}
+  aside .side-head::before{content:"";width:16px;height:16px;border-radius:50%;background:#fff;display:inline-block;-webkit-mask:radial-gradient(circle at 60% 50%,transparent 3px,#000 3.5px) center/100% no-repeat}
+  aside ul{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-top:none;border-radius:0 0 3px 3px}
+  aside li a{display:block;padding:11px 16px;font-size:13.5px;color:#3d4a54;border-bottom:1px solid var(--line);font-weight:700}
+  aside li:last-child a{border-bottom:none}
+  aside li a.sub{padding-left:30px;font-weight:400;color:#5a6a75}
+  aside li a:hover{background:var(--gray)}
+  aside li a.active{color:var(--navy);text-decoration:underline}
+
+  .prodtitle{background:var(--slate);color:#fff;padding:16px 22px;border-radius:3px;font-size:23px;font-weight:400;letter-spacing:.06em}
+  .product{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;margin-top:22px}
+
+  /* 3D viewer slot (replaces the static product photo) */
+  .viewer{background:var(--gray);border:1px solid var(--line);border-radius:4px;overflow:hidden;position:relative}
+  .viewer iframe{width:100%;height:520px;border:0;display:block;background:var(--gray)}
+  .viewer .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:22px 16px 12px;text-align:center;pointer-events:none}
+  .viewer .badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:3px}
+
+  .spec .eyebrow{color:var(--slate);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:13px;margin-bottom:14px}
+  .spec ul{list-style:none;margin:0 0 22px;padding:0}
+  .spec li{position:relative;padding:0 0 12px 20px;font-size:15px;color:#404a52}
+  .spec li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;background:var(--slate);border-radius:50%}
+  .cta{display:inline-block;background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:13.5px;padding:14px 22px;border-radius:4px}
+  .cta:hover{background:#00354f}
+  .cta.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--navy);margin-left:10px}
+  .cta.ghost:hover{background:var(--gray)}
+  .itemno{margin-top:16px;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+
+  /* ---------- related ---------- */
+  .related{border-top:1px solid var(--line);margin-top:40px;padding:34px 0 10px}
+  .related h2{color:var(--navy);font-weight:700;font-size:20px;margin:0 0 22px}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .card{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#fff;transition:box-shadow .15s}
+  .card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08)}
+  .card .ph{background:var(--gray);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
+  .card .ph img{height:100%;object-fit:contain}
+  .card .meta{padding:14px 16px}
+  .card .meta h3{margin:0 0 6px;font-size:16px;color:var(--navy)}
+  .card .meta p{margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--navy);color:#cfe0ea;margin-top:44px}
+  footer .wrap{padding:34px 22px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;align-items:center}
+  footer .tag{font-style:italic;font-size:15px;color:#fff}
+  footer nav{display:flex;gap:26px;flex-wrap:wrap}
+  footer nav a{color:#cfe0ea;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  footer nav a:hover{color:#fff}
+  .vntana-note{background:#f7f9fb;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:12px}
+
+  @media(max-width:900px){
+    .page{grid-template-columns:1fr}
+    aside{order:2}
+    .product{grid-template-columns:1fr}
+    .cards{grid-template-columns:repeat(2,1fr)}
+    .top nav{display:none}
+    .hero h1{font-size:28px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="https://www.wilbert.com" aria-label="Wilbert Funeral Services">
+      <img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert">
+    </a>
+    <nav>
+      <a href="#">Burial</a>
+      <a href="#">Cremation</a>
+      <a href="#">Memorialization</a>
+      <a href="#">Resources</a>
+      <a href="#">Giving Back</a>
+      <a href="#">About</a>
+      <a href="#">Find a Funeral Home</a>
+      <span class="util"><span class="btn">Search</span><span class="btn">Log In</span></span>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap"><h1>WHITE&nbsp;&nbsp;VENETIAN&reg;</h1></div>
+</section>
+
+<div class="wrap">
+  <div class="page">
+
+    <aside>
+      <div class="side-head">Burial</div>
+      <ul>
+        <li><a href="#">Burial Vaults</a></li>
+        <li><a class="sub" href="#">Premium Protection</a></li>
+        <li><a class="sub" href="#">Standard Protection</a></li>
+        <li><a class="sub active" href="#">Basic Protection</a></li>
+        <li><a class="sub" href="#">Infant Casket/Vault</a></li>
+        <li><a href="#">Personalization</a></li>
+        <li><a href="#">Memorial Jewelry</a></li>
+      </ul>
+    </aside>
+
+    <main>
+      <div class="prodtitle">WHITE&nbsp;&nbsp;VENETIAN&reg;</div>
+
+      <div class="product">
+        <div class="viewer">
+          <span class="badge">Interactive 3D</span>
+          <iframe
+            src="https://embed.vntana.com/v2?productUuid=fa3036f6-0100-4796-87e5-974a32f4c90a&clientSlug=vaultdemo&organizationSlug=wilbert"
+            title="White Venetian burial vault, interactive 3D"
+            allow="xr-spatial-tracking; fullscreen"
+            loading="eager"></iframe>
+          <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; tap a marker to explore the vault</span>
+        </div>
+
+        <div class="spec">
+          <div class="eyebrow">Single-Reinforced Protection (shown with optional personalization)</div>
+          <ul>
+            <li>Finest single-reinforced burial vault</li>
+            <li>High-strength concrete with high-impact plastic and a reinforced cover and base</li>
+            <li>Rich look of polished marble on top (marble look on liners may be available, ask your funeral professional)</li>
+            <li>Personalization choices available (shown with Legacy Custom Series&trade; print)</li>
+          </ul>
+          <a class="cta" href="#">Find a Funeral Home Near Me</a>
+          <a class="cta ghost" href="#">Request Information</a>
+          <div class="itemno">Item Number: White Venetian</div>
+        </div>
+      </div>
+
+      <section class="related">
+        <h2>You may also be interested in</h2>
+        <div class="cards">
+          <a class="card" href="#">
+            <div class="ph"><img src="https://www.wilbert.com/assets/1/14/DimCart/BV-Ven-PlainLiner-7501.jpg" alt="Venetian"></div>
+            <div class="meta"><h3>Venetian&reg;</h3><p>Single-Reinforced Protection</p></div>
+          </a>
+          <a class="card" href="#">
+            <div class="ph"><img src="https://www.wilbert.com/assets/1/14/DimCart/BV-Salut-750.jpg" alt="Salute"></div>
+            <div class="meta"><h3>Salute&reg;</h3><p>Single-Reinforced Protection</p></div>
+          </a>
+          <a class="card" href="#">
+            <div class="ph"><img src="https://www.wilbert.com/assets/1/14/DimCart/BV-Cont-7501.jpg" alt="Continental"></div>
+            <div class="meta"><h3>Continental&reg;</h3><p>Single-Reinforced Protection</p></div>
+          </a>
+          <a class="card" href="#">
+            <div class="ph"><img src="https://www.wilbert.com/assets/1/14/DimCart/BV-Mon-750.jpg" alt="Monticello"></div>
+            <div class="meta"><h3>Monticello&reg;</h3><p>Single-Reinforced Protection</p></div>
+          </a>
+        </div>
+      </section>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="tag">Investing In Our Partners' Success</div>
+    <nav>
+      <a href="#">Burial</a>
+      <a href="#">Cremation</a>
+      <a href="#">Website for Funeral Pros</a>
+      <a href="#">Find a Funeral Home</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="vntana-note">Interactive 3D experience powered by VNTANA &middot; demonstration page</div>
+
+</body>
+</html>
