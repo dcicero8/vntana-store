@@ -350,7 +350,7 @@
       anims.push({obj:o, home, target});
     });
     moved = anims.map(a=>({obj:a.obj, home:a.home.clone()}));
-    const t0=performance.now(), dur=900;
+    const t0=performance.now(), dur=2200;
     (function tick(){
       const t=Math.min(1,(performance.now()-t0)/dur), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
       anims.forEach(a=>a.obj.position.lerpVectors(a.home,a.target,e));
