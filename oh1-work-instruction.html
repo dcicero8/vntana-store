@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OH1 Pump — Installation & Maintenance</title>
+<meta name="robots" content="noindex">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#00548f; --blue-dark:#003a63; --sky:#3fa9f5; --accent:#00548f;
+    --ink:#1a1f2b; --muted:#5c6473; --line:#e5e8ef; --bg:#f4f6f9; --card:#fff;
+    --warn:#b45309; --warnbg:#fffbeb; --note:#0e7490; --notebg:#ecfeff;
+    --font:'Roboto',Arial,sans-serif; --mono:'Roboto Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+  header.top{height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    padding:0 22px;gap:14px;position:sticky;top:0;z-index:20}
+  header.top .wm{font-weight:900;letter-spacing:-.01em;font-size:1.05rem;color:var(--blue-dark)}
+  header.top .wm span{color:var(--accent)}
+  header.top .sub{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  header.top .rev{margin-left:auto;font-size:.72rem;color:var(--muted)}
+
+  main{display:grid;grid-template-columns:440px 1fr;height:calc(100vh - 56px)}
+  @media(max-width:900px){main{grid-template-columns:1fr;height:auto}}
+
+  /* ---- left: procedure ---- */
+  .panel{background:var(--card);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column}
+  .meta{padding:18px 22px 12px;border-bottom:1px solid var(--line)}
+  .meta h1{font-size:1.25rem;font-weight:900;margin:0 0 8px;letter-spacing:-.02em}
+  .meta .grid{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:.8rem}
+  .meta .grid b{color:var(--muted);font-weight:600}
+  .tabs{display:flex;gap:2px;padding:10px 16px 0;border-bottom:1px solid var(--line)}
+  .tab{padding:8px 14px;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;border-radius:8px 8px 0 0;border:1px solid transparent;border-bottom:none}
+  .tab.active{color:var(--blue);background:#f7f9fc;border-color:var(--line)}
+  .tabbody{padding:8px 0 40px;flex:1}
+  .tabbody.hide{display:none}
+
+  /* prereq + parts */
+  .prose{padding:12px 22px;font-size:.85rem;line-height:1.5;color:#33404f}
+  .prose p{margin:0 0 10px}
+  table.bom{width:100%;border-collapse:collapse;font-size:.78rem}
+  table.bom th,table.bom td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+  table.bom th{position:sticky;top:0;background:#f7f9fc;color:var(--muted);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}
+  table.bom td.no{font-family:var(--mono);color:var(--blue);width:64px}
+
+  /* steps */
+  .steplist{list-style:none;margin:0;padding:6px 0}
+  .steprow{display:flex;gap:12px;padding:11px 20px;cursor:pointer;border-left:3px solid transparent;transition:.12s}
+  .steprow:hover{background:#f7f9fc}
+  .steprow.active{background:#eef5fb;border-left-color:var(--blue)}
+  .steprow .num{font-family:var(--mono);font-weight:600;color:var(--blue);min-width:22px}
+  .steprow .st{font-size:.86rem;font-weight:600;line-height:1.3}
+  .steprow.active .st{color:var(--blue-dark)}
+  .steprow .sub{display:block;font-weight:400;color:var(--muted);font-size:.76rem;margin-top:2px}
+
+  .detail{border-top:1px solid var(--line);padding:16px 22px 30px;background:#fbfcfe}
+  .detail .eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:700}
+  .detail h2{font-size:1.05rem;font-weight:900;margin:4px 0 10px}
+  .detail ol{margin:0;padding-left:18px}
+  .detail li{font-size:.85rem;color:#33404f;margin-bottom:7px;line-height:1.45}
+  .callout{border-radius:8px;padding:9px 12px;font-size:.78rem;line-height:1.45;margin:10px 0}
+  .callout.warn{background:var(--warnbg);border:1px solid #fde68a;color:#78350f}
+  .callout.note{background:var(--notebg);border:1px solid #a5f3fc;color:#155e75}
+  .callout b{text-transform:uppercase;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:2px}
+
+  /* ---- right: 3D stage ---- */
+  .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px;display:flex;flex-direction:column}
+  vntana-viewer{width:100%;flex:1;display:block}
+  vntana-viewer::part(default-progress-bar){display:none}
+  .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa2b2;font-size:.9rem}
+  .loading.hidden{display:none}
+  .controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;border-top:1px solid var(--line)}
+  .controls button{font:inherit;font-size:.82rem;font-weight:600;padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;color:#40485a}
+  .controls button:hover{border-color:var(--sky);color:var(--blue)}
+  .controls button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  .controls button:disabled{opacity:.4;cursor:default}
+  .controls .counter{font-family:var(--mono);font-size:.82rem;color:var(--muted);min-width:96px;text-align:center}
+  .controls .spacer{flex:1}
+  .controls label{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .controls input[type=range]{width:110px}
+  .hint{position:absolute;left:0;right:0;bottom:70px;text-align:center;font-size:.78rem;color:#8b93a4;pointer-events:none}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wm">OH1 <span>Work Instruction</span></div>
+  <div class="sub">Goulds 3196 · Installation &amp; Maintenance</div>
+  <div class="rev">Powered by <b>VNTANA</b> 3D · Rev 001</div>
+</header>
+
+<main>
+  <!-- LEFT: procedure -->
+  <div class="panel">
+    <div class="meta">
+      <h1>OH1 Pump — Installation &amp; Maintenance</h1>
+      <div class="grid">
+        <b>Work type</b><span>Maintenance · Overhaul disassembly</span>
+        <b>Role</b><span>Pump technician / millwright</span>
+        <b>Assembly</b><span>OH1 overhung process pump (3196 MT 1.5x3-13)</span>
+        <b>Section</b><span>Disassembly, steps 1–9 (through impeller removal)</span>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab" data-tab="prereq">Prerequisites</div>
+      <div class="tab" data-tab="parts">Parts</div>
+      <div class="tab active" data-tab="task">Task</div>
+    </div>
+
+    <div class="tabbody hide" id="tab-prereq">
+      <div class="prose">
+        <p>This instruction assists those installing, operating, and maintaining an OH1 pump. Review it fully before performing any work on the pump or motor.</p>
+        <p><b>Handling:</b> Do not hoist the pump by the eyebolts — they are for removing the back pull-out assembly only. Hoist an assembled pump with a sling under the suction flange and under the rear of the bearing frame. Hoist bedplate-mounted units with slings under the bedplate below both pump and driver.</p>
+        <p><b>Before disassembly:</b> make sure all replacement parts are on hand.</p>
+      </div>
+    </div>
+
+    <div class="tabbody hide" id="tab-parts">
+      <table class="bom"><thead><tr><th>Part No.</th><th>Description</th><th>Qty</th></tr></thead><tbody id="bom"></tbody></table>
+    </div>
+
+    <div class="tabbody" id="tab-task">
+      <ul class="steplist" id="steplist"></ul>
+      <div class="detail" id="detail"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: 3D -->
+  <div class="stage">
+    <div class="loading" id="loading">Loading interactive 3D…</div>
+    <vntana-viewer id="viewer" loading="eager" picking="true">
+      <vntana-exploded-view></vntana-exploded-view>
+    </vntana-viewer>
+    <div class="hint" id="hint">The highlighted part(s) are what this step acts on. Drag to orbit.</div>
+    <div class="controls">
+      <button id="prev">‹ Prev</button>
+      <span class="counter" id="counter">Step 0 / 9</span>
+      <button id="next" class="primary">Next ›</button>
+      <div class="spacer"></div>
+      <label>Explode <input type="range" id="explode" min="0" max="1" step="0.01" value="0"></label>
+      <button id="reset">Reset view</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  const BASE="https://api.vntana.com", ORG="DCicero", WS="configurators";
+  const UUID="1586828a-514f-431a-96b0-eea1ad8be054";
+  const $ = id => document.getElementById(id);
+  const viewer = $("viewer");
+
+  // ---- Bill of materials (from the OH1 parts list) ----
+  const BOM = [
+    ["500","Coupling","1"],["502","Base Plate","1"],["501","Motor","1"],["100","Casing","1"],
+    ["131","Pump Foot","1"],["184","Seal Chamber / Stuffing Box Cover","1"],["351","Gasket - Case","1"],
+    ["108","Adapter - Bearing Frame","1"],["370","Hex Head Cap Screw - Adapter to Case","16"],
+    ["418","Hex Tap Bolt - Adapter Case (jacking)","3"],["132","Eye Bolt with Nut","1"],["247","Drip Basin","1"],
+    ["360D","Gasket - Adapter","1"],["123","Deflector","1"],["228A","Bearing Frame","1"],["113A","Breather","1"],
+    ["241","Frame Foot","1"],["370F","Dowel Bolt - Frame Foot to Bearing Frame","1"],["251","Sight Oiler","1"],
+    ["133","Pipe Nipple - Oiler","1"],["168","Ball Bearing - Inboard","1"],["134","Bearing Housing - Thrust","1"],
+    ["136","Bearing Locknut","1"],["122","Shaft","1"],["101","Impeller","1"],["412A","O-Ring - Impeller","1"],
+    ["126","Shaft Sleeve","1"],["107","Gland - Upper and Lower Half","2"],["210","Gland Packing","1"],
+    ["408","Pipe Plug - Oil Drain","1"],["400","Key - Square End","1"],
+  ];
+  $("bom").innerHTML = BOM.map(r=>`<tr><td class="no">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+
+  // ---- Steps 1–9 (disassembly). targets = node-name patterns to highlight. ----
+  const STEPS = [
+    { n:1, title:"Preparation", sub:"Lock out, isolate, drain",
+      targets:[],
+      body:["Lock out power supply to the motor.","Shut off the valves controlling flow to and from the pump.","Flush the pump of all corrosive or toxic liquid, if required.","Remove all auxiliary tubing and piping."],
+      note:"Make sure all replacement parts are available before you disassemble the pump for overhaul." },
+    { n:2, title:"Remove Coupling", sub:"Coupling guard, spacer, hub",
+      targets:["coupling"],
+      body:["Remove the coupling guard hex nuts and bolts.","Remove the driver-side end plate and both coupling guard halves.","Pull the coupling hubs back and remove the spacer, then the pump-side coupling.","Install the pump sling."],
+      note:"Scribe the shaft at the coupling hub for proper positioning of the hub during reassembly, then remove the hub." },
+    { n:3, title:"Drain Oil", sub:"Oiler + oil-drain plug (408)",
+      targets:["oiler","408 Pipe Plug Hex"],
+      body:["Position a pail under the bearing frame.","Remove the oiler top, then the oiler bottom cup.","Remove the hex-head pipe plug (3/8 NPTF) oil drain (408) and drain the oil."],
+      note:"In hot applications, disconnect the cooling water source and remove the pipe/nipple to drain the water jackets before continuing." },
+    { n:4, title:"Set Up Sling", sub:"Eyebolt (132), frame (228A)",
+      targets:["EYE BOLT 132"],
+      body:["Move the hoist trolley into position.","Place a sling from the hoist through the eyebolt (132). On ST units, place the sling through the frame (228A) above the shaft (122)."],
+      note:"" },
+    { n:5, title:"Remove Frame Foot Bolts", sub:"Frame foot (241) + dowel bolt (370F)",
+      targets:["Frame Foot","370F"],
+      body:["Remove the frame foot hex bolt / dowel bolt (370F) securing the frame foot (241)."],
+      note:"" },
+    { n:6, title:"Remove Frame / Adapter-to-Casing Bolts", sub:"Bolts (370), adapter (108), casing (100)",
+      targets:["ADAPTER","Case, Goulds"],
+      body:["Remove the bolts (370) holding the frame (228A) or frame adapter (108) to the casing (100)."],
+      note:"" },
+    { n:7, title:"Slide Back the Pull-Out Assembly", sub:"Jacking bolts (418)",
+      targets:["ADAPTER","Frame Foot"],
+      body:["Slide the back pull-out assembly from the casing using the jacking bolts (418) provided.","Tilt the pull-out assembly to drain any remaining oil, then install the foot block."],
+      warn:"Never use heat to disassemble the pump — trapped liquid can expand and cause an explosion." },
+    { n:8, title:"Remove Casing Gasket", sub:"Case gasket (351)",
+      targets:["360 D","Case, Goulds"],
+      body:["Remove the casing gasket (351) from the casing / adapter joint face."],
+      note:"" },
+    { n:9, title:"Unscrew and Remove Impeller", sub:"Impeller (101), key (400), O-ring (412A)",
+      targets:["KEY"],
+      body:["Install the shaft wrench.","Unscrew the impeller (101) from the shaft (122) — threads are right-handed.","Remove the impeller, then the key (400).","Remove the O-ring (412A) that seals between the impeller and shaft/sleeve."],
+      warn:"Do not damage the OD vane tip, and never use heat to unscrew the impeller." },
+  ];
+
+  // ---- viewer glue (parts-explorer pattern) ----
+  let leaves=[], ready=false, current=0;
+  function buildLeaves(tries){
+    const sg = viewer.sceneGraph;
+    if(!sg){ if(tries>0) setTimeout(()=>buildLeaves(tries-1),400); return; }
+    leaves=[];
+    (function walk(n, path){
+      const p = n.name ? (path? path+" / "+n.name : n.name) : path;
+      if(n.type==="primitive" || n.type==="mesh") leaves.push({uuid:n.uuid, path:(p||"").toLowerCase()});
+      (n.children||[]).forEach(c=>walk(c,p));
+    })(sg,"");
+    window.__leaves = leaves;
+  }
+  function uuidsMatching(patterns){
+    if(!patterns || !patterns.length) return [];
+    const pl = patterns.map(s=>s.toLowerCase());
+    return leaves.filter(l=>pl.some(p=>l.path.includes(p))).map(l=>l.uuid);
+  }
+  function clearFx(){ try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(e){} }
+  function highlight(patterns){
+    clearFx();
+    if(!ready) return;
+    const hit = new Set(uuidsMatching(patterns));
+    if(hit.size===0) return;                       // step with no target: show whole model, nothing dimmed
+    try{
+      hit.forEach(u=>viewer.setEffect(u,"glow","outline"));
+      leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); });
+    }catch(e){}
+  }
+
+  function renderSteps(){
+    $("steplist").innerHTML = STEPS.map((s,i)=>
+      `<li class="steprow${i===current?' active':''}" data-i="${i}">
+         <span class="num">${s.n}</span>
+         <span class="st">${s.title}<span class="sub">${s.sub}</span></span>
+       </li>`).join("");
+    $("steplist").querySelectorAll(".steprow").forEach(el=>
+      el.addEventListener("click",()=>goStep(+el.dataset.i)));
+  }
+  function renderDetail(){
+    const s = STEPS[current];
+    $("detail").innerHTML =
+      `<div class="eyebrow">Step ${s.n} of ${STEPS.length}</div>
+       <h2>${s.title}</h2>
+       <ol>${s.body.map(b=>`<li>${b}</li>`).join("")}</ol>
+       ${s.warn?`<div class="callout warn"><b>Warning</b>${s.warn}</div>`:""}
+       ${s.note?`<div class="callout note"><b>Note</b>${s.note}</div>`:""}`;
+    $("counter").textContent = `Step ${s.n} / ${STEPS.length}`;
+    $("prev").disabled = current===0;
+    $("next").disabled = current===STEPS.length-1;
+  }
+  function goStep(i){
+    current = Math.max(0, Math.min(STEPS.length-1, i));
+    document.querySelectorAll(".steprow").forEach((el,idx)=>el.classList.toggle("active",idx===current));
+    renderDetail();
+    highlight(STEPS[current].targets);
+  }
+
+  // tabs
+  document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    ["prereq","parts","task"].forEach(k=>$("tab-"+k).classList.toggle("hide", k!==t.dataset.tab));
+  }));
+  // controls
+  $("prev").addEventListener("click",()=>goStep(current-1));
+  $("next").addEventListener("click",()=>goStep(current+1));
+  $("explode").addEventListener("input",e=>{ try{ viewer.setExplodedStrength(parseFloat(e.target.value)); }catch(_){} });
+  $("reset").addEventListener("click",()=>{ try{ viewer.resetCamera && viewer.resetCamera(); }catch(_){} $("explode").value=0; try{viewer.setExplodedStrength(0);}catch(_){} });
+
+  // debug helpers (identify DWG parts): window.iso("impeller-guess") glows matches, dims rest; window.paths() lists leaf paths
+  window.iso = p => highlight([p]);
+  window.paths = () => [...new Set(leaves.map(l=>l.path))];
+
+  renderSteps(); renderDetail();
+
+  // load the asset, then wire the scene graph
+  fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json()).then(p=>{
+    const models=(p.response.asset||{}).models||[];
+    const glb=models.find(m=>(m.conversionFormat??m.type)==="GLB")||models[0];
+    viewer.addEventListener("load", ()=>{
+      ready=true; buildLeaves(12); $("loading").classList.add("hidden");
+      setTimeout(()=>goStep(0), 300);
+    }, { once:true });
+    viewer.src = `${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${glb.modelBlobId}`;
+  }).catch(e=>{ $("loading").textContent="Could not load the model."; console.error(e); });
+</script>
+<!-- HubSpot -->
+<script>if(window.self===window.top){var hs=document.createElement("script");hs.type="text/javascript";hs.id="hs-script-loader";hs.async=true;hs.defer=true;hs.src="//js.hs-scripts.com/5892493.js";document.body.appendChild(hs);}</script>
+</body>
+</html>
