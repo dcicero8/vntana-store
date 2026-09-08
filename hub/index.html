@@ -34,10 +34,20 @@
    <span class="key"><span class="sw" style="background:#fff5f5;border:1px solid #f3c0c8"></span> Retire candidate</span>
    <span class="key"><span class="sw" style="background:#fffdf2;border:1px solid #ece3b0"></span> Version family, pick canonical</span>
    <span class="key"><span class="sw" style="background:#fff;border:1px solid var(--line)"></span> Keep</span>
-   <span style="margin-left:auto">51 pages</span>
+   <span style="margin-left:auto">53 pages</span>
  </div>
  <table><tr><th>Page</th><th>What it is</th><th>Updated</th><th>Live UUIDs</th><th>Note</th></tr>
  <tr class="keep">
+      <td><a href="/wilbert.html" target="_blank">wilbert.html</a><div class="grp">Wilbert</div></td>
+      <td><b>White Venetian burial vault demo.</b> Wilbert.com look-and-feel product page (real logo, sunset hero, navy sidebar, slate title bar, spec bullets, related-vault carousel, Find-a-Funeral-Home CTA) with the White Venetian 3D asset embedded via iframe where the static product photo sits. Visualizer / education play (not commerce) per the Sep 8 Wilbert call.</td>
+      <td class="d">2026-09-08</td>
+      <td class="u">embed.vntana.com/v2 <code>fa3036f6-0100-4796-87e5-974a32f4c90a</code> (clientSlug <code>vaultdemo</code>, org <code>wilbert</code>)</td>
+      <td class="n">For the Sep 11 regroup + end-of-month licensee demo. Derek adds hotspots on the asset itself. GLB: Vault_Body + Vault_Lid, ~62k tris, 10.1MB, baked 2K PBR. Next model up: Stainless Steel Triune.</td></tr><tr class="keep">
+      <td><a href="/oh1-work-instruction.html" target="_blank">oh1-work-instruction.html</a><div class="grp">Hydro</div></td>
+      <td><b>Cortona-style work instruction, OH1 Goulds 3196 pump.</b> Two modes: Procedure walk-through (steps 1-9, per-step part highlight + camera framing + client-side disassembly animation, no baked glTF anims) and Parts Explorer (click-to-highlight + zoom, BOM table, clickable cross-refs). Loose fasteners hidden in the walk-through (they render black under the viewer IBL, logged to Neven).</td>
+      <td class="d">2026-09-08</td>
+      <td class="u"><code>1586828a-514f-431a-96b0-eea1ad8be054</code> (loaded via @vntana/viewer public bundle, environment-src studio.hdr)</td>
+      <td class="n">Client-side animation via three.js position tween proves Phase 2 with no Blender/pipeline authoring. Camera framing uses a world-to-r affine fit from the step cameras. Black-fastener finding written up for Neven (Google Doc).</td></tr><tr class="keep">
       <td><a href="/robot-configurator.html" target="_blank">robot-configurator.html</a><div class="grp">Configurators</div></td>
       <td><b>PROPER part-swap configurator (v3).</b> Base arm loads ONCE + stays resident; selecting a tool swaps only the end-of-arm GLB (mounted on the wrist flange), camera holds the user's view. @vntana/viewer@3.0.0 configurator mode ($loadScene/assemble), tools $preloaded, Neven's absolute-units camera pin. Embedded in imts.html (/custom/imts) + full-screen link. Replaced the old whole-model viewer.src swap.</td>
       <td class="d">2026-08-27</td>
