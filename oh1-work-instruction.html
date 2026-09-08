@@ -233,8 +233,15 @@
   const PARTS = {
     "500":["coupling"], "100":["case, goulds","casing socket"], "108":["adapter"],
     "370":["370-"], "370F":["370f"], "132":["eye bolt 132"], "241":["frame foot"],
-    "360D":["360 d"], "408":["408 pipe plug hex"], "251":["oiler"], "133":["oiler","pipe nipple"],
-    "400":["key"], "101":["360 d"], "122":[], "351":[], "418":[], "412A":[], "228A":["1087883"], "126":[],
+    "360D":["360 d"], "408":["408 pipe plug hex"], "251":["oiler"], "133":["pipe nipple"],
+    "400":["key"], "101":["360 d"], "228A":["1087883"], "501":["motor"],
+    "107":["gland-1"], "210":["gland packing"],
+    // inferred from geometry (CAD is drawing-numbered, not BOM-numbered) — verify these land right:
+    "131":["1082577"],   // Pump Foot: flat foot below the axis at the wet end
+    "184":["1087879"],   // Seal Chamber / Stuffing Box Cover: large round cover behind the casing
+    "351":["1082532"],   // Case gasket: thin disc between casing and adapter
+    "122":["1083043"],   // Shaft: ~325mm rod on the axis (thought missing — appears present)
+    "418":[], "412A":[], "126":[], "123":[], "134":[], "136":[], "168":[], "113A":[], "247":[],
   };
   const hasMap = p => PARTS[p] && PARTS[p].length;
   const partInfo = {}; BOM.forEach(r=>partInfo[r[0]]={name:r[1],qty:r[2]});
