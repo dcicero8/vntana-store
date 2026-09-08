@@ -300,17 +300,20 @@
   function isContext(path){ return CONTEXT.some(c=>path.includes(c)); }
   function buildLeaves(tries){
     const sg = viewer.sceneGraph;
-    if(!sg){ if(tries>0) setTimeout(()=>buildLeaves(tries-1),400); return; }
-    leaves=[];
-    (function walk(n, path){
+    const found = [];
+    if(sg) (function walk(n, path){
       const p = n.name ? (path? path+" / "+n.name : n.name) : path;
-      if(n.type==="primitive" || n.type==="mesh") leaves.push({uuid:n.uuid, path:(p||"").toLowerCase()});
+      if(n.type==="primitive" || n.type==="mesh") found.push({uuid:n.uuid, path:(p||"").toLowerCase()});
       (n.children||[]).forEach(c=>walk(c,p));
     })(sg,"");
+    // the scene graph can exist before its geometry is populated — retry until meshes appear
+    if(found.length===0){ if(tries>0) setTimeout(()=>buildLeaves(tries-1),400); return; }
+    leaves = found;
     pumpLeaves = leaves.filter(l=>!isContext(l.path));
     contextUuids = leaves.filter(l=>isContext(l.path)).map(l=>l.uuid);
     uuidPath = {}; leaves.forEach(l=>uuidPath[l.uuid]=l.path);
     window.__leaves = leaves;
+    if(mode==="procedure") highlight(STEPS[current].targets);   // re-apply once leaves are ready
   }
   function uuidsMatching(patterns){
     if(!patterns || !patterns.length) return [];
@@ -451,7 +454,7 @@
     let inited=false;
     function init(){
       if(inited || !viewer.sceneGraph) return;
-      inited=true; ready=true; buildLeaves(12); $("loading").classList.add("hidden");
+      inited=true; ready=true; buildLeaves(30); $("loading").classList.add("hidden");
       setTimeout(()=>goStep(0), 300);
       // apply the framed opening view, re-applying a few times to beat the load auto-frame
       let n=0; (function frame(){ applyView(); if(n++<6) setTimeout(frame,150); })();
