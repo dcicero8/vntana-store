@@ -215,6 +215,41 @@
       viewer.setCameraTarget(DEFAULT_VIEW.target);
     }catch(e){}
   }
+  // Parts Explorer: zoom the camera onto the selected part.
+  // We set the orbit target directly in three.js world coords (the viewer honors controls.target),
+  // then size the zoom from the part's own bounding box (~3x its largest dimension matches the step cams).
+  function framePart(patterns){
+    if(!ready) return;
+    const uuids = uuidsMatching(patterns);
+    if(!uuids.length) return;
+    let min=[Infinity,Infinity,Infinity], max=[-Infinity,-Infinity,-Infinity], cnt=0;
+    uuids.forEach(u=>{
+      const o = viewer.scene && viewer.scene.getObjectByProperty ? viewer.scene.getObjectByProperty("uuid",u) : null;
+      if(!o || !o.traverse) return;
+      o.traverse(m=>{
+        if(m.isMesh && m.geometry){
+          m.geometry.computeBoundingBox();
+          const b = m.geometry.boundingBox.clone(); b.applyMatrix4(m.matrixWorld);
+          if(b.max.y>10) return;                       // skip any stashed-off-screen fastener
+          min=[Math.min(min[0],b.min.x),Math.min(min[1],b.min.y),Math.min(min[2],b.min.z)];
+          max=[Math.max(max[0],b.max.x),Math.max(max[1],b.max.y),Math.max(max[2],b.max.z)];
+          cnt++;
+        }
+      });
+    });
+    if(!cnt) return;
+    const c=[(min[0]+max[0])/2,(min[1]+max[1])/2,(min[2]+max[2])/2];
+    const dim=Math.max(max[0]-min[0],max[1]-min[1],max[2]-min[2]);
+    const distR=Math.max(dim*3, 0.35).toFixed(3);      // clamp so tiny parts don't clip into the min camera distance
+    try{
+      viewer.setCameraRotation(DEFAULT_VIEW.rotation);
+      viewer.setFieldOfView(DEFAULT_VIEW.fieldOfView);
+      viewer.setCameraDistance(distR+"r");
+      const ct = viewer.controls && viewer.controls.target;
+      if(ct && ct.set){ ct.set(c[0],c[1],c[2]); viewer.controls.update && viewer.controls.update(); }
+    }catch(e){}
+    renderNow();
+  }
 
   // ---- Bill of materials (from the OH1 parts list) ----
   const BOM = [
@@ -485,7 +520,7 @@
   $("partsearch").addEventListener("input",e=>renderBom(e.target.value));
 
   // --- procedure: clicking a (NNN) part reference in the step text highlights it, staying in the step ---
-  function focusPart(pn){ if(hasMap(pn)){ highlight(PARTS[pn]); $("hint").textContent=`Part ${pn} highlighted.`; } }
+  function focusPart(pn){ if(hasMap(pn)){ highlight(PARTS[pn]); framePart(PARTS[pn]); $("hint").textContent=`Part ${pn} highlighted.`; } }
 
   // --- parts explorer: select a part (by BOM number or by clicked node) ---
   function showDetail(pn, name, qty, extra){
@@ -497,7 +532,7 @@
   function selectByPart(pn){
     setMode("parts");
     const info = partInfo[pn] || {name:"(part)",qty:""};
-    if(hasMap(pn)) highlight(PARTS[pn]); else clearFx();
+    if(hasMap(pn)){ highlight(PARTS[pn]); framePart(PARTS[pn]); } else clearFx();
     showDetail(pn, info.name, info.qty, hasMap(pn)?"":"Not linked to the 3D yet (drawing-numbered part).");
     document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.toggle("sel", tr.dataset.part===pn));
   }
@@ -505,7 +540,7 @@
   function selectByNode(label){
     const pn = pnForLabel(label);
     if(pn){ selectByPart(pn); return; }
-    highlight([label]);                         // unmapped (DWG) part — identify it
+    highlight([label]); framePart([label]);     // unmapped (DWG) part — identify it
     showDetail("—", label, "", "Drawing-numbered part, not yet linked to the BOM.");
     document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.remove("sel"));
     console.log("[identify]", label);
