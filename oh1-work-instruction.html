@@ -454,7 +454,7 @@
     let inited=false;
     function init(){
       if(inited || !viewer.sceneGraph) return;
-      inited=true; ready=true; buildLeaves(30); $("loading").classList.add("hidden");
+      inited=true; ready=true; buildLeaves(150); $("loading").classList.add("hidden");
       setTimeout(()=>goStep(0), 300);
       // apply the framed opening view, re-applying a few times to beat the load auto-frame
       let n=0; (function frame(){ applyView(); if(n++<6) setTimeout(frame,150); })();
