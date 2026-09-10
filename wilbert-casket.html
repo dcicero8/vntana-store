@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Premium Casket | Wilbert Funeral Services</title>
+<title>Delane&trade; Casket | Wilbert Funeral Services</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -38,20 +38,35 @@
   aside li a.active{color:var(--navy);text-decoration:underline}
 
   .prodtitle{background:var(--slate);color:#fff;padding:16px 22px;border-radius:3px;font-size:23px;font-weight:400;letter-spacing:.06em}
-  .product{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;margin-top:22px}
+  .product{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;margin-top:22px;align-items:start}
 
   .viewer{background:var(--gray);border:1px solid var(--line);border-radius:4px;overflow:hidden;position:relative}
   .viewer iframe{width:100%;height:540px;border:0;display:block;background:var(--gray)}
   .viewer .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:22px 16px 12px;text-align:center;pointer-events:none}
   .viewer .badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:3px}
 
-  .spec .eyebrow{color:var(--slate);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:13px;margin-bottom:14px}
-  .spec ul{list-style:none;margin:0 0 22px;padding:0}
-  .spec li{position:relative;padding:0 0 12px 20px;font-size:15px;color:#404a52}
-  .spec li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;background:var(--slate);border-radius:50%}
-  .cta{display:inline-block;background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:13.5px;padding:14px 22px;border-radius:4px}
+  /* configurator panel */
+  .panel{border:1px solid var(--line);border-radius:5px;overflow:hidden;align-self:start}
+  .panel h2{background:var(--slate);color:#fff;margin:0;padding:15px 18px;font-size:19px;font-weight:400;letter-spacing:.04em}
+  .panel .body{padding:4px 18px 18px}
+  .grp{padding:15px 0;border-bottom:1px solid var(--line)}
+  .grp:last-of-type{border-bottom:none}
+  .grp .lbl{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:11px}
+  .grp .lbl .live{background:#e6f4ea;color:#1f7a44;font-size:9px;padding:2px 6px;border-radius:10px;letter-spacing:.04em}
+  .grp .lbl .val{margin-left:auto;color:var(--navy);font-weight:700;text-transform:none;letter-spacing:0;font-size:12.5px}
+  .swatches{display:flex;flex-wrap:wrap;gap:9px}
+  .sw{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);cursor:pointer;position:relative}
+  .sw.sel{border-color:var(--navy);box-shadow:0 0 0 2px #fff inset,0 0 0 3px var(--navy)}
+  .sw:hover{transform:scale(1.08)}
+  .opts{display:flex;flex-wrap:wrap;gap:7px}
+  .opt{border:1.5px solid var(--line);border-radius:5px;padding:7px 11px;font-size:12.5px;cursor:pointer;background:#fff;color:#2f3a42;font-weight:700;transition:.12s}
+  .opt:hover{border-color:var(--slate)}
+  .opt.sel{border-color:var(--navy);background:#eef4f8;color:var(--navy)}
+  .lockup{background:var(--gray);border-radius:5px;padding:13px 15px;margin-top:6px;font-size:14px;color:#3d4a54}
+  .lockup b{color:var(--navy)}
+  .cta{display:block;text-align:center;background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:13.5px;padding:14px;border-radius:5px;margin-top:14px}
   .cta:hover{background:#00354f}
-  .itemno{margin-top:16px;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+  .note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.45}
 
   footer{background:var(--navy);color:#cfe0ea;margin-top:44px}
   footer .wrap{padding:34px 22px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;align-items:center}
@@ -91,7 +106,7 @@
 </header>
 
 <section class="hero">
-  <div class="wrap"><h1>PREMIUM&nbsp;&nbsp;CASKET</h1></div>
+  <div class="wrap"><h1>DELANE&trade;</h1></div>
 </section>
 
 <div class="wrap">
@@ -101,8 +116,8 @@
       <div class="side-head">Burial</div>
       <ul>
         <li><a href="#">Caskets</a></li>
-        <li><a class="sub active" href="#">Premium</a></li>
-        <li><a class="sub" href="#">Standard</a></li>
+        <li><a class="sub active" href="#">Delane&trade;</a></li>
+        <li><a class="sub" href="#">Themed Caskets</a></li>
         <li><a class="sub" href="#">Personalization</a></li>
         <li><a href="/wilbert.html">Burial Vaults</a></li>
         <li><a href="#">Memorial Jewelry</a></li>
@@ -110,29 +125,48 @@
     </aside>
 
     <main>
-      <div class="prodtitle">PREMIUM&nbsp;&nbsp;CASKET</div>
+      <div class="prodtitle">DELANE&trade; &middot; 20 Gauge Non-Gasketed Steel</div>
 
       <div class="product">
         <div class="viewer">
           <span class="badge">Interactive 3D</span>
           <iframe
             src="https://embed.vntana.com/v2?productUuid=d7900ae1-790c-4d4c-83b4-92793c2fb988&clientSlug=products&organizationSlug=wilbert"
-            title="Premium casket, interactive 3D"
+            title="Delane casket, interactive 3D"
             allow="xr-spatial-tracking; fullscreen"
             loading="eager"></iframe>
           <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; explore every detail</span>
         </div>
 
-        <div class="spec">
-          <div class="eyebrow">Crafted for a lasting tribute</div>
-          <ul>
-            <li>Rich, hand-finished exterior with a deep, even luster</li>
-            <li>Soft crepe interior with tailored pillow and throw</li>
-            <li>Precision hardware, bars, and corner detailing</li>
-            <li>Personalization options available through your funeral professional</li>
-          </ul>
-          <a class="cta" href="#">Find a Funeral Home Near Me</a>
-          <div class="itemno">Shown in interactive 3D</div>
+        <div class="panel">
+          <h2>Build the Delane&trade;</h2>
+          <div class="body">
+
+            <div class="grp">
+              <div class="lbl">Exterior color <span class="live">live</span> <span class="val" id="colorVal">Metallic Blue</span></div>
+              <div class="swatches" id="colors"></div>
+            </div>
+
+            <div class="grp">
+              <div class="lbl">Interior <span class="val" id="crepeVal">White Crepe</span></div>
+              <div class="note" style="margin:0">Paired automatically with the exterior color, per the Delane color card.</div>
+            </div>
+
+            <div class="grp">
+              <div class="lbl">Head panel theme <span class="val" id="themeVal">Praying Hands</span></div>
+              <div class="opts" id="themes"></div>
+            </div>
+
+            <div class="grp">
+              <div class="lbl">Decal <span class="val" id="decalVal">Praying Hands</span></div>
+              <div class="opts" id="decals"></div>
+            </div>
+
+            <div class="lockup" id="lockup"></div>
+
+            <a class="cta" href="#">Find a Funeral Home Near Me</a>
+            <div class="note">Demonstration configurator. The exterior color and its paired interior crepe update live (the one wired example); the head panel and decal are the full Delane option set. The viewer shows the base model. Swapping the 3D per color connects to per-variant assets on the platform.</div>
+          </div>
         </div>
       </div>
     </main>
@@ -154,5 +188,57 @@
 
 <div class="vntana-note">Interactive 3D experience powered by VNTANA &middot; demonstration page</div>
 
+<script>
+  // Delane options from the color card + themed-casket sheet
+  var COLORS = [
+    {name:"Orchid",        hex:"#c49bb8", crepe:"Pink Crepe"},
+    {name:"Almond",        hex:"#e6d9bd", crepe:"Rosetan Crepe"},
+    {name:"Light Blue",    hex:"#a7c2d6", crepe:"Blue Crepe"},
+    {name:"Bronze",        hex:"#8a6a49", crepe:"Rosetan Crepe"},
+    {name:"Silver",        hex:"#c6cacf", crepe:"White Crepe"},
+    {name:"Metallic Blue", hex:"#33455d", crepe:"White Crepe"},
+    {name:"White",         hex:"#f1f1ee", crepe:"Pink Crepe"},
+    {name:"Black Metallic",hex:"#2a2e35", crepe:"White Crepe"}
+  ];
+  var THEMES = ["Sunburst","May The Work I've Done","Praying Hands","Flag at Rest","Going Home",
+                "Mother with Roses","V-Ray","Our Lady of Guadalupe","Dad"];
+  var DECALS = ["Three Crosses","Praying Hands","Flag & Eagle","Sacred Heart","Going Home",
+                "Shepherd & Sheep","Iron Scroll","Immaculate Heart","Lady of Guadalupe","Yellow Rose"];
+
+  var state = {color:"Metallic Blue", crepe:"White Crepe", theme:"Praying Hands", decal:"Praying Hands"};
+
+  function el(id){ return document.getElementById(id); }
+  function lockup(){
+    el("lockup").innerHTML = "Your selection: <b>Delane "+state.color+"</b> &middot; <b>"+state.theme+
+      "</b> Theme &middot; <b>"+state.crepe+"</b>";
+  }
+  // color swatches
+  COLORS.forEach(function(c){
+    var s=document.createElement("div"); s.className="sw"+(c.name===state.color?" sel":"");
+    s.style.background=c.hex; s.title=c.name+" / "+c.crepe;
+    if(c.hex==="#f1f1ee") s.style.borderColor="#ccc";
+    s.addEventListener("click",function(){
+      state.color=c.name; state.crepe=c.crepe;
+      document.querySelectorAll("#colors .sw").forEach(function(x){ x.classList.toggle("sel", x===s); });
+      el("colorVal").textContent=c.name; el("crepeVal").textContent=c.crepe; lockup();
+    });
+    el("colors").appendChild(s);
+  });
+  // theme + decal buttons
+  function buttons(host, list, key, valId){
+    list.forEach(function(t){
+      var b=document.createElement("button"); b.className="opt"+(t===state[key]?" sel":""); b.textContent=t;
+      b.addEventListener("click",function(){
+        state[key]=t;
+        host.querySelectorAll(".opt").forEach(function(x){ x.classList.toggle("sel", x===b); });
+        el(valId).textContent=t; lockup();
+      });
+      host.appendChild(b);
+    });
+  }
+  buttons(el("themes"), THEMES, "theme", "themeVal");
+  buttons(el("decals"), DECALS, "decal", "decalVal");
+  lockup();
+</script>
 </body>
 </html>
