@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Premium Casket | Wilbert Funeral Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#00456b;--slate:#4f758b;--gray:#f4f4f4;--line:#e2e2e2;--ink:#333;--muted:#6b7680}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:Lato,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.5}
+  a{color:var(--navy);text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+  header.top{border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 22px}
+  .logo img{height:56px}
+  .top nav{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:flex-end}
+  .top nav a{color:#1f2d38;font-weight:700;font-size:13.5px;letter-spacing:.02em;text-transform:uppercase}
+  .top nav a:hover{color:var(--slate)}
+  .top .util{display:flex;gap:14px;align-items:center;margin-left:8px}
+  .top .util .btn{border:1px solid var(--line);border-radius:4px;padding:7px 14px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+
+  .hero{background:#c96a2b url('https://www.wilbert.com/cms/images/layout/general/ibannerbg.png') center/cover no-repeat;min-height:132px;display:flex;align-items:center}
+  .hero h1{color:#fff;font-weight:400;font-size:38px;letter-spacing:.08em;margin:0;text-shadow:0 1px 6px rgba(0,0,0,.25)}
+
+  .page{display:grid;grid-template-columns:236px 1fr;gap:34px;padding:32px 0 10px}
+  aside .side-head{background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:14px;padding:12px 16px;border-radius:3px 3px 0 0}
+  aside ul{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-top:none;border-radius:0 0 3px 3px}
+  aside li a{display:block;padding:11px 16px;font-size:13.5px;color:#3d4a54;border-bottom:1px solid var(--line);font-weight:700}
+  aside li:last-child a{border-bottom:none}
+  aside li a.sub{padding-left:30px;font-weight:400;color:#5a6a75}
+  aside li a:hover{background:var(--gray)}
+  aside li a.active{color:var(--navy);text-decoration:underline}
+
+  .prodtitle{background:var(--slate);color:#fff;padding:16px 22px;border-radius:3px;font-size:23px;font-weight:400;letter-spacing:.06em}
+  .product{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;margin-top:22px}
+
+  .viewer{background:var(--gray);border:1px solid var(--line);border-radius:4px;overflow:hidden;position:relative}
+  .viewer iframe{width:100%;height:540px;border:0;display:block;background:var(--gray)}
+  .viewer .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:22px 16px 12px;text-align:center;pointer-events:none}
+  .viewer .badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:3px}
+
+  .spec .eyebrow{color:var(--slate);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:13px;margin-bottom:14px}
+  .spec ul{list-style:none;margin:0 0 22px;padding:0}
+  .spec li{position:relative;padding:0 0 12px 20px;font-size:15px;color:#404a52}
+  .spec li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;background:var(--slate);border-radius:50%}
+  .cta{display:inline-block;background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:13.5px;padding:14px 22px;border-radius:4px}
+  .cta:hover{background:#00354f}
+  .itemno{margin-top:16px;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+
+  footer{background:var(--navy);color:#cfe0ea;margin-top:44px}
+  footer .wrap{padding:34px 22px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;align-items:center}
+  footer .tag{font-style:italic;font-size:15px;color:#fff}
+  footer nav{display:flex;gap:26px;flex-wrap:wrap}
+  footer nav a{color:#cfe0ea;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  footer nav a:hover{color:#fff}
+  .vntana-note{background:#f7f9fb;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:12px}
+
+  @media(max-width:900px){
+    .page{grid-template-columns:1fr}
+    aside{order:2}
+    .product{grid-template-columns:1fr}
+    .top nav{display:none}
+    .hero h1{font-size:28px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="https://www.wilbert.com" aria-label="Wilbert Funeral Services">
+      <img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert">
+    </a>
+    <nav>
+      <a href="#">Burial</a>
+      <a href="#">Cremation</a>
+      <a href="#">Memorialization</a>
+      <a href="#">Resources</a>
+      <a href="#">Giving Back</a>
+      <a href="#">About</a>
+      <a href="#">Find a Funeral Home</a>
+      <span class="util"><span class="btn">Search</span><span class="btn">Log In</span></span>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap"><h1>PREMIUM&nbsp;&nbsp;CASKET</h1></div>
+</section>
+
+<div class="wrap">
+  <div class="page">
+
+    <aside>
+      <div class="side-head">Burial</div>
+      <ul>
+        <li><a href="#">Caskets</a></li>
+        <li><a class="sub active" href="#">Premium</a></li>
+        <li><a class="sub" href="#">Standard</a></li>
+        <li><a class="sub" href="#">Personalization</a></li>
+        <li><a href="/wilbert.html">Burial Vaults</a></li>
+        <li><a href="#">Memorial Jewelry</a></li>
+      </ul>
+    </aside>
+
+    <main>
+      <div class="prodtitle">PREMIUM&nbsp;&nbsp;CASKET</div>
+
+      <div class="product">
+        <div class="viewer">
+          <span class="badge">Interactive 3D</span>
+          <iframe
+            src="https://embed.vntana.com/v2?productUuid=d7900ae1-790c-4d4c-83b4-92793c2fb988&clientSlug=products&organizationSlug=wilbert"
+            title="Premium casket, interactive 3D"
+            allow="xr-spatial-tracking; fullscreen"
+            loading="eager"></iframe>
+          <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; explore every detail</span>
+        </div>
+
+        <div class="spec">
+          <div class="eyebrow">Crafted for a lasting tribute</div>
+          <ul>
+            <li>Rich, hand-finished exterior with a deep, even luster</li>
+            <li>Soft crepe interior with tailored pillow and throw</li>
+            <li>Precision hardware, bars, and corner detailing</li>
+            <li>Personalization options available through your funeral professional</li>
+          </ul>
+          <a class="cta" href="#">Find a Funeral Home Near Me</a>
+          <div class="itemno">Shown in interactive 3D</div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="tag">Investing In Our Partners' Success</div>
+    <nav>
+      <a href="#">Burial</a>
+      <a href="#">Cremation</a>
+      <a href="#">Website for Funeral Pros</a>
+      <a href="#">Find a Funeral Home</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="vntana-note">Interactive 3D experience powered by VNTANA &middot; demonstration page</div>
+
+</body>
+</html>
