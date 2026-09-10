@@ -49,18 +49,20 @@
   aside li a.active{color:var(--navy);text-decoration:underline}
 
   .prodtitle{background:var(--slate);color:#fff;padding:16px 22px;border-radius:3px;font-size:23px;font-weight:400;letter-spacing:.06em}
-  .product{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;margin-top:22px}
+  .product{margin-top:6px}
+  .stage-hero{margin:16px 0 24px}
+  .prodtitle{margin-top:26px}
 
   /* product gallery: interactive 3D + product photo(s) */
   .viewer{background:var(--gray);border:1px solid var(--line);border-radius:4px;overflow:hidden}
   .stage{position:relative}
   .stage .pane{display:none;position:relative}
   .stage .pane.active{display:block}
-  .stage .pane-photo.active{display:flex;align-items:center;justify-content:center;background:#fff;height:520px}
-  .stage iframe{width:100%;height:520px;border:0;display:block;background:var(--gray)}
+  .stage .pane-photo.active{display:flex;align-items:center;justify-content:center;background:#fff;height:clamp(440px,62vh,660px)}
+  .stage iframe{width:100%;height:clamp(440px,62vh,660px);border:0;display:block;background:var(--gray)}
   .stage .pane-photo img{max-height:100%;object-fit:contain}
   /* close-up of the marble top: zoomed crop of the same product photo */
-  .stage .pane-detail{height:520px;background:#fff url('https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg') no-repeat;background-size:250%;background-position:47% 16%}
+  .stage .pane-detail{height:clamp(440px,62vh,660px);background:#fff url('https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg') no-repeat;background-size:250%;background-position:47% 16%}
   .stage .pane-detail.active{display:block}
   .thumb-detail{background:#fff url('https://www.wilbert.com/assets/1/14/BV-W-Ven-PlainLiner750.jpg') no-repeat;background-size:250%;background-position:47% 16%}
   .stage .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:22px 16px 12px;text-align:center;pointer-events:none}
@@ -158,6 +160,38 @@
 </section>
 
 <div class="wrap">
+
+  <div class="prodtitle">WHITE&nbsp;&nbsp;VENETIAN&reg;</div>
+
+  <div class="stage-hero">
+    <div class="viewer">
+      <div class="stage">
+        <div class="pane pane-3d active" data-pane="3d">
+          <span class="badge">Interactive 3D</span>
+          <iframe
+            src="https://embed.vntana.com/v2?productUuid=fa3036f6-0100-4796-87e5-974a32f4c90a&clientSlug=vaultdemo&organizationSlug=wilbert"
+            title="White Venetian burial vault, interactive 3D"
+            allow="xr-spatial-tracking; fullscreen"
+            loading="eager"></iframe>
+          <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; tap a marker to explore the vault</span>
+        </div>
+        <div class="pane pane-photo" data-pane="photo">
+          <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault, product photograph">
+        </div>
+        <div class="pane pane-detail" data-pane="detail" role="img" aria-label="Close-up of the polished marble top"></div>
+      </div>
+      <div class="thumbs">
+        <button class="thumb active" data-pane="3d" aria-label="Interactive 3D">
+          <span class="t3d">3D<small>INTERACTIVE</small></span>
+        </button>
+        <button class="thumb" data-pane="photo" aria-label="Product photo">
+          <img src="https://www.wilbert.com/assets/1/14/BV-W-Ven-PlainLiner750.jpg" alt="">
+        </button>
+        <button class="thumb thumb-detail" data-pane="detail" aria-label="Close-up of the marble top"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="page">
 
     <aside>
@@ -174,36 +208,7 @@
     </aside>
 
     <main>
-      <div class="prodtitle">WHITE&nbsp;&nbsp;VENETIAN&reg;</div>
-
       <div class="product">
-        <div class="viewer">
-          <div class="stage">
-            <div class="pane pane-3d active" data-pane="3d">
-              <span class="badge">Interactive 3D</span>
-              <iframe
-                src="https://embed.vntana.com/v2?productUuid=fa3036f6-0100-4796-87e5-974a32f4c90a&clientSlug=vaultdemo&organizationSlug=wilbert"
-                title="White Venetian burial vault, interactive 3D"
-                allow="xr-spatial-tracking; fullscreen"
-                loading="eager"></iframe>
-              <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; tap a marker to explore the vault</span>
-            </div>
-            <div class="pane pane-photo" data-pane="photo">
-              <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault, product photograph">
-            </div>
-            <div class="pane pane-detail" data-pane="detail" role="img" aria-label="Close-up of the polished marble top"></div>
-          </div>
-          <div class="thumbs">
-            <button class="thumb active" data-pane="3d" aria-label="Interactive 3D">
-              <span class="t3d">3D<small>INTERACTIVE</small></span>
-            </button>
-            <button class="thumb" data-pane="photo" aria-label="Product photo">
-              <img src="https://www.wilbert.com/assets/1/14/BV-W-Ven-PlainLiner750.jpg" alt="">
-            </button>
-            <button class="thumb thumb-detail" data-pane="detail" aria-label="Close-up of the marble top"></button>
-          </div>
-        </div>
-
         <div class="spec">
           <div class="eyebrow">Single-Reinforced Protection (shown with optional personalization)</div>
           <ul>
