@@ -37,18 +37,21 @@
   aside li a:hover{background:var(--gray)}
   aside li a.active{color:var(--navy);text-decoration:underline}
 
-  .prodtitle{background:var(--slate);color:#fff;padding:16px 22px;border-radius:3px;font-size:23px;font-weight:400;letter-spacing:.06em}
-  .product{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;margin-top:22px;align-items:start}
+  .prodtitle{background:var(--slate);color:#fff;padding:16px 22px;border-radius:3px;font-size:23px;font-weight:400;letter-spacing:.06em;margin-top:26px}
 
-  .viewer{background:var(--gray);border:1px solid var(--line);border-radius:4px;overflow:hidden;position:relative}
-  .viewer iframe{width:100%;height:540px;border:0;display:block;background:var(--gray)}
+  /* full-width landscape 3D hero — lead with the special sauce */
+  .stage-hero{margin:16px 0 26px}
+  .viewer{background:var(--gray);border:1px solid var(--line);border-radius:6px;overflow:hidden;position:relative}
+  .viewer iframe{width:100%;height:clamp(440px,64vh,680px);border:0;display:block;background:var(--gray)}
   .viewer .cue{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.42),transparent);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:22px 16px 12px;text-align:center;pointer-events:none}
   .viewer .badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:3px}
 
   /* configurator panel */
   .panel{border:1px solid var(--line);border-radius:5px;overflow:hidden;align-self:start}
   .panel h2{background:var(--slate);color:#fff;margin:0;padding:15px 18px;font-size:19px;font-weight:400;letter-spacing:.04em}
-  .panel .body{padding:4px 18px 18px}
+  .panel .body{padding:4px 20px 20px}
+  .cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 34px}
+  @media(max-width:760px){.cfg-grid{grid-template-columns:1fr}}
   .grp{padding:15px 0;border-bottom:1px solid var(--line)}
   .grp:last-of-type{border-bottom:none}
   .grp .lbl{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:11px}
@@ -110,6 +113,21 @@
 </section>
 
 <div class="wrap">
+
+  <div class="prodtitle">DELANE&trade; &middot; 20 Gauge Non-Gasketed Steel</div>
+
+  <div class="stage-hero">
+    <div class="viewer">
+      <span class="badge">Interactive 3D</span>
+      <iframe
+        src="https://embed.vntana.com/v2?productUuid=d7900ae1-790c-4d4c-83b4-92793c2fb988&clientSlug=products&organizationSlug=wilbert"
+        title="Delane casket, interactive 3D"
+        allow="xr-spatial-tracking; fullscreen"
+        loading="eager"></iframe>
+      <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; explore every detail</span>
+    </div>
+  </div>
+
   <div class="page">
 
     <aside>
@@ -125,48 +143,36 @@
     </aside>
 
     <main>
-      <div class="prodtitle">DELANE&trade; &middot; 20 Gauge Non-Gasketed Steel</div>
-
-      <div class="product">
-        <div class="viewer">
-          <span class="badge">Interactive 3D</span>
-          <iframe
-            src="https://embed.vntana.com/v2?productUuid=d7900ae1-790c-4d4c-83b4-92793c2fb988&clientSlug=products&organizationSlug=wilbert"
-            title="Delane casket, interactive 3D"
-            allow="xr-spatial-tracking; fullscreen"
-            loading="eager"></iframe>
-          <span class="cue">Drag to rotate &nbsp;&middot;&nbsp; scroll to zoom &nbsp;&middot;&nbsp; explore every detail</span>
-        </div>
-
-        <div class="panel">
-          <h2>Build the Delane&trade;</h2>
-          <div class="body">
-
-            <div class="grp">
-              <div class="lbl">Exterior color <span class="live">live</span> <span class="val" id="colorVal">Metallic Blue</span></div>
-              <div class="swatches" id="colors"></div>
+      <div class="panel">
+        <h2>Build the Delane&trade;</h2>
+        <div class="body">
+          <div class="cfg-grid">
+            <div>
+              <div class="grp">
+                <div class="lbl">Exterior color <span class="live">live</span> <span class="val" id="colorVal">Metallic Blue</span></div>
+                <div class="swatches" id="colors"></div>
+              </div>
+              <div class="grp">
+                <div class="lbl">Interior <span class="val" id="crepeVal">White Crepe</span></div>
+                <div class="note" style="margin:0">Paired automatically with the exterior color, per the Delane color card.</div>
+              </div>
             </div>
-
-            <div class="grp">
-              <div class="lbl">Interior <span class="val" id="crepeVal">White Crepe</span></div>
-              <div class="note" style="margin:0">Paired automatically with the exterior color, per the Delane color card.</div>
+            <div>
+              <div class="grp">
+                <div class="lbl">Head panel theme <span class="val" id="themeVal">Praying Hands</span></div>
+                <div class="opts" id="themes"></div>
+              </div>
+              <div class="grp">
+                <div class="lbl">Decal <span class="val" id="decalVal">Praying Hands</span></div>
+                <div class="opts" id="decals"></div>
+              </div>
             </div>
-
-            <div class="grp">
-              <div class="lbl">Head panel theme <span class="val" id="themeVal">Praying Hands</span></div>
-              <div class="opts" id="themes"></div>
-            </div>
-
-            <div class="grp">
-              <div class="lbl">Decal <span class="val" id="decalVal">Praying Hands</span></div>
-              <div class="opts" id="decals"></div>
-            </div>
-
-            <div class="lockup" id="lockup"></div>
-
-            <a class="cta" href="#">Find a Funeral Home Near Me</a>
-            <div class="note">Demonstration configurator. The exterior color and its paired interior crepe update live (the one wired example); the head panel and decal are the full Delane option set. The viewer shows the base model. Swapping the 3D per color connects to per-variant assets on the platform.</div>
           </div>
+
+          <div class="lockup" id="lockup"></div>
+
+          <a class="cta" href="#">Find a Funeral Home Near Me</a>
+          <div class="note">Demonstration configurator. The exterior color and its paired interior crepe update live (the one wired example); the head panel and decal are the full Delane option set. The viewer shows the base model. Swapping the 3D per color connects to per-variant assets on the platform.</div>
         </div>
       </div>
     </main>
