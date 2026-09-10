@@ -61,6 +61,7 @@
   .sw{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);cursor:pointer;position:relative}
   .sw.sel{border-color:var(--navy);box-shadow:0 0 0 2px #fff inset,0 0 0 3px var(--navy)}
   .sw:hover{transform:scale(1.08)}
+  .sw.has3d::after{content:"";position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;background:#1f7a44;border:2px solid #fff}
   .opts{display:flex;flex-wrap:wrap;gap:7px}
   .opt{border:1.5px solid var(--line);border-radius:5px;padding:7px 11px;font-size:12.5px;cursor:pointer;background:#fff;color:#2f3a42;font-weight:700;transition:.12s}
   .opt:hover{border-color:var(--slate)}
@@ -119,7 +120,7 @@
   <div class="stage-hero">
     <div class="viewer">
       <span class="badge">Interactive 3D</span>
-      <iframe
+      <iframe id="viewer3d"
         src="https://embed.vntana.com/v2?productUuid=d7900ae1-790c-4d4c-83b4-92793c2fb988&clientSlug=products&organizationSlug=wilbert"
         title="Delane casket, interactive 3D"
         allow="xr-spatial-tracking; fullscreen"
@@ -172,7 +173,7 @@
           <div class="lockup" id="lockup"></div>
 
           <a class="cta" href="#">Find a Funeral Home Near Me</a>
-          <div class="note">Demonstration configurator. The exterior color and its paired interior crepe update live (the one wired example); the head panel and decal are the full Delane option set. The viewer shows the base model. Swapping the 3D per color connects to per-variant assets on the platform.</div>
+          <div class="note">Live demo: the swatches with a green dot (Metallic Blue, Orchid) load real 3D models and swap the viewer instantly. The other colors, head panels, and decals are the full Delane option set, ready to connect as those assets are published.</div>
         </div>
       </div>
     </main>
@@ -196,13 +197,14 @@
 
 <script>
   // Delane options from the color card + themed-casket sheet
+  var EMBED = "https://embed.vntana.com/v2?clientSlug=products&organizationSlug=wilbert&productUuid=";
   var COLORS = [
-    {name:"Orchid",        hex:"#c49bb8", crepe:"Pink Crepe"},
+    {name:"Orchid",        hex:"#c49bb8", crepe:"Pink Crepe",  uuid:"519b1ea3-98a4-49b8-8cf6-3d69a2aeada4"},
     {name:"Almond",        hex:"#e6d9bd", crepe:"Rosetan Crepe"},
     {name:"Light Blue",    hex:"#a7c2d6", crepe:"Blue Crepe"},
     {name:"Bronze",        hex:"#8a6a49", crepe:"Rosetan Crepe"},
     {name:"Silver",        hex:"#c6cacf", crepe:"White Crepe"},
-    {name:"Metallic Blue", hex:"#33455d", crepe:"White Crepe"},
+    {name:"Metallic Blue", hex:"#33455d", crepe:"White Crepe", uuid:"d7900ae1-790c-4d4c-83b4-92793c2fb988"},
     {name:"White",         hex:"#f1f1ee", crepe:"Pink Crepe"},
     {name:"Black Metallic",hex:"#2a2e35", crepe:"White Crepe"}
   ];
@@ -220,13 +222,14 @@
   }
   // color swatches
   COLORS.forEach(function(c){
-    var s=document.createElement("div"); s.className="sw"+(c.name===state.color?" sel":"");
-    s.style.background=c.hex; s.title=c.name+" / "+c.crepe;
+    var s=document.createElement("div"); s.className="sw"+(c.name===state.color?" sel":"")+(c.uuid?" has3d":"");
+    s.style.background=c.hex; s.title=c.name+" / "+c.crepe+(c.uuid?" (live 3D)":"");
     if(c.hex==="#f1f1ee") s.style.borderColor="#ccc";
     s.addEventListener("click",function(){
       state.color=c.name; state.crepe=c.crepe;
       document.querySelectorAll("#colors .sw").forEach(function(x){ x.classList.toggle("sel", x===s); });
       el("colorVal").textContent=c.name; el("crepeVal").textContent=c.crepe; lockup();
+      if(c.uuid){ el("viewer3d").src = EMBED + c.uuid; el("colorVal").innerHTML = c.name; }   // real 3D swap
     });
     el("colors").appendChild(s);
   });
