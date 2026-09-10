@@ -66,6 +66,11 @@
   .opt{border:1.5px solid var(--line);border-radius:5px;padding:7px 11px;font-size:12.5px;cursor:pointer;background:#fff;color:#2f3a42;font-weight:700;transition:.12s}
   .opt:hover{border-color:var(--slate)}
   .opt.sel{border-color:var(--navy);background:#eef4f8;color:var(--navy)}
+  .opt.disabled{opacity:.4;cursor:not-allowed;background:#fafafa;font-weight:400}
+  .opt.disabled:hover{border-color:var(--line)}
+  .opt.disabled.sel{opacity:1;border-color:var(--navy);background:#eef4f8;color:var(--navy);font-weight:700;cursor:default}
+  .sw.disabled{opacity:.35;cursor:not-allowed;filter:grayscale(.35)}
+  .sw.disabled:hover{transform:none}
   .lockup{background:var(--gray);border-radius:5px;padding:13px 15px;margin-top:6px;font-size:14px;color:#3d4a54}
   .lockup b{color:var(--navy)}
   .cta{display:block;text-align:center;background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:13.5px;padding:14px;border-radius:5px;margin-top:14px}
@@ -173,7 +178,7 @@
           <div class="lockup" id="lockup"></div>
 
           <a class="cta" href="#">Find a Funeral Home Near Me</a>
-          <div class="note">Live demo: the swatches with a green dot (Metallic Blue, Orchid) load real 3D models and swap the viewer instantly. The other colors, head panels, and decals are the full Delane option set, ready to connect as those assets are published.</div>
+          <div class="note">Live demo: two configurations are published (green-dot swatches, Metallic Blue and Orchid). Selecting one loads that real 3D model and highlights its head panel and decal; the remaining options are greyed until their assets are built. The full Delane option set is shown so the range is clear.</div>
         </div>
       </div>
     </main>
@@ -213,6 +218,13 @@
   var DECALS = ["Three Crosses","Praying Hands","Flag & Eagle","Sacred Heart","Going Home",
                 "Shepherd & Sheep","Iron Scroll","Immaculate Heart","Lady of Guadalupe","Yellow Rose"];
 
+  // The two PUBLISHED configurations. Each live color = one real asset with a fixed combo.
+  // Head panels confirmed from the models; decals are a best read — confirm/adjust.
+  var CONFIG = {
+    "Metallic Blue": {theme:"Praying Hands",           decal:"Praying Hands"},
+    "Orchid":        {theme:"May The Work I've Done",  decal:"Going Home"}
+  };
+
   var state = {color:"Metallic Blue", crepe:"White Crepe", theme:"Praying Hands", decal:"Praying Hands"};
 
   function el(id){ return document.getElementById(id); }
@@ -220,34 +232,50 @@
     el("lockup").innerHTML = "Your selection: <b>Delane "+state.color+"</b> &middot; <b>"+state.theme+
       "</b> Theme &middot; <b>"+state.crepe+"</b>";
   }
-  // color swatches
+  function highlight(host, val){
+    host.querySelectorAll(".opt").forEach(function(b){ b.classList.toggle("sel", b.dataset.v===val); });
+  }
+
+  // color swatches — only the two published colors are selectable; the rest are greyed
   COLORS.forEach(function(c){
-    var s=document.createElement("div"); s.className="sw"+(c.name===state.color?" sel":"")+(c.uuid?" has3d":"");
-    s.style.background=c.hex; s.title=c.name+" / "+c.crepe+(c.uuid?" (live 3D)":"");
+    var s=document.createElement("div"); var live=!!c.uuid;
+    s.className="sw"+(c.name===state.color?" sel":"")+(live?" has3d":" disabled");
+    s.style.background=c.hex; s.title=c.name+" / "+c.crepe+(live?" (live 3D)":" (coming soon)");
     if(c.hex==="#f1f1ee") s.style.borderColor="#ccc";
-    s.addEventListener("click",function(){
-      state.color=c.name; state.crepe=c.crepe;
-      document.querySelectorAll("#colors .sw").forEach(function(x){ x.classList.toggle("sel", x===s); });
-      el("colorVal").textContent=c.name; el("crepeVal").textContent=c.crepe; lockup();
-      if(c.uuid){ el("viewer3d").src = EMBED + c.uuid; el("colorVal").innerHTML = c.name; }   // real 3D swap
-    });
+    if(live){ s.addEventListener("click",function(){ selectColor(c, s); }); }
     el("colors").appendChild(s);
   });
-  // theme + decal buttons
-  function buttons(host, list, key, valId){
+
+  // head panel + decal — display only; they reflect the chosen config and grey out otherwise
+  function chips(host, list){
     list.forEach(function(t){
-      var b=document.createElement("button"); b.className="opt"+(t===state[key]?" sel":""); b.textContent=t;
-      b.addEventListener("click",function(){
-        state[key]=t;
-        host.querySelectorAll(".opt").forEach(function(x){ x.classList.toggle("sel", x===b); });
-        el(valId).textContent=t; lockup();
-      });
+      var b=document.createElement("button"); b.className="opt disabled"; b.textContent=t; b.dataset.v=t; b.disabled=true;
       host.appendChild(b);
     });
   }
-  buttons(el("themes"), THEMES, "theme", "themeVal");
-  buttons(el("decals"), DECALS, "decal", "decalVal");
-  lockup();
+  chips(el("themes"), THEMES);
+  chips(el("decals"), DECALS);
+
+  function selectColor(c, sw){
+    var cfg = CONFIG[c.name] || {};
+    state.color=c.name; state.crepe=c.crepe;
+    if(cfg.theme) state.theme=cfg.theme;
+    if(cfg.decal) state.decal=cfg.decal;
+    document.querySelectorAll("#colors .sw").forEach(function(x){ x.classList.toggle("sel", x===sw); });
+    el("colorVal").textContent=c.name; el("crepeVal").textContent=c.crepe;
+    el("themeVal").textContent=state.theme; el("decalVal").textContent=state.decal;
+    highlight(el("themes"), state.theme); highlight(el("decals"), state.decal);
+    if(c.uuid) el("viewer3d").src = EMBED + c.uuid;
+    lockup();
+  }
+
+  // init to the default (Metallic Blue) config without reloading the iframe (already loaded)
+  (function(){
+    var cfg=CONFIG[state.color]; state.theme=cfg.theme; state.decal=cfg.decal;
+    el("themeVal").textContent=state.theme; el("decalVal").textContent=state.decal;
+    highlight(el("themes"), state.theme); highlight(el("decals"), state.decal);
+    lockup();
+  })();
 </script>
 </body>
 </html>
