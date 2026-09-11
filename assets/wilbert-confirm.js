@@ -14,8 +14,6 @@
     + '.confirm .qcheck{margin-top:2px;width:16px;height:16px;flex:0 0 auto;cursor:pointer;accent-color:#00456b}'
     + '.confirm .qtext{flex:1 1 180px;font-size:13px;color:#3d4a52;line-height:1.4;cursor:pointer}'
     + '.confirm li.done .qtext{color:#9aa1a8;text-decoration:line-through}'
-    + '.confirm .qnote{flex:1 1 100%;margin-left:25px;margin-top:2px;font-size:12px;padding:5px 9px;border:1px solid #d9dee3;border-radius:4px;font-family:inherit;color:#333;background:#fff}'
-    + '.confirm .qnote.has{border-color:#4f758b;background:#f4f8fb}'
     + '.cbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:2px 0 16px}'
     + '.cbar .prog{font-size:12.5px;font-weight:700;color:#00456b}'
     + '.cbar .prog .bar{display:inline-block;width:120px;height:7px;border-radius:4px;background:#e6ebf0;vertical-align:middle;margin-left:6px;overflow:hidden}'
@@ -43,16 +41,12 @@
     var html=li.innerHTML, text=li.textContent.trim(), id=slug(text);
     var cb=document.createElement('input'); cb.type='checkbox'; cb.className='qcheck';
     var tx=document.createElement('span'); tx.className='qtext'; tx.innerHTML=html;
-    var note=document.createElement('input'); note.type='text'; note.className='qnote';
-    note.placeholder="Wilbert's answer / note";
-    li.innerHTML=''; li.appendChild(cb); li.appendChild(tx); li.appendChild(note);
+    li.innerHTML=''; li.appendChild(cb); li.appendChild(tx);
     if(get('check:'+id)==='1'){ cb.checked=true; li.classList.add('done'); }
-    var nv=get('note:'+id); if(nv){ note.value=nv; note.classList.add('has'); }
     function apply(){ li.classList.toggle('done', cb.checked); put('check:'+id, cb.checked?'1':'0'); progress(); }
     cb.addEventListener('change', apply);
     tx.addEventListener('click', function(){ cb.checked=!cb.checked; apply(); });
-    note.addEventListener('input', function(){ put('note:'+id, note.value); note.classList.toggle('has', !!note.value.trim()); });
-    recs.push({li:li, cb:cb, note:note, text:text, id:id});
+    recs.push({li:li, cb:cb, text:text, id:id});
   });
 
   function progress(){
@@ -68,7 +62,7 @@
 
   document.getElementById('ccopy').addEventListener('click', function(){
     var title=(document.querySelector('.head .t h1')||{}).textContent||'Wilbert vault';
-    var lines=recs.map(function(r){ return (r.cb.checked?'[x] ':'[ ] ')+r.text+(r.note.value.trim()?'  -> '+r.note.value.trim():''); });
+    var lines=recs.map(function(r){ return (r.cb.checked?'[x] ':'[ ] ')+r.text; });
     var out=title.replace(/\s+/g,' ').trim()+' - items to confirm\n\n'+lines.join('\n');
     function ok(){ flash('Copied'); }
     if(navigator.clipboard && navigator.clipboard.writeText){
@@ -82,9 +76,9 @@
   });
 
   document.getElementById('creset').addEventListener('click', function(){
-    if(!window.confirm('Clear all checkmarks and notes on this browser?')) return;
+    if(!window.confirm('Clear all checkmarks on this browser?')) return;
     recs.forEach(function(r){
-      r.cb.checked=false; r.li.classList.remove('done'); r.note.value=''; r.note.classList.remove('has');
+      r.cb.checked=false; r.li.classList.remove('done');
       drop('check:'+r.id); drop('note:'+r.id);
     });
     progress();
