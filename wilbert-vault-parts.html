@@ -35,6 +35,17 @@
   .keycap{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin:0 3px}
   .keycap.n{background:var(--navy)} .keycap.s{background:var(--slate)}
 
+  .confirm{margin-top:28px;border-top:3px solid var(--slate);padding-top:16px}
+  .confirm h2{color:var(--slate);font-size:17px;margin:0 0 3px}
+  .confirm .sub{color:var(--muted);font-size:12.5px;margin-bottom:16px}
+  .confirm .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 30px}
+  .confirm .grp h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);margin:0 0 6px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  .confirm ul{list-style:none;margin:0;padding:0}
+  .confirm li{position:relative;padding:5px 0 5px 24px;font-size:13px;color:#3d4a52;line-height:1.4}
+  .confirm li::before{content:"";position:absolute;left:0;top:6px;width:13px;height:13px;border:1.5px solid var(--slate);border-radius:3px}
+  .confirm li b{color:var(--navy)}
+  @media(max-width:760px){ .confirm .grid{grid-template-columns:1fr} }
+
   @media print{ .sheet{max-width:none;padding:0} body{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
 </head>
@@ -97,6 +108,54 @@
       <div class="row"><div class="num ext">8</div><div class="rc">
         <div class="nm">Foot Label</div><div class="cat">Decal (2D)</div>
         <div class="ds">Small identification label at the foot of the lid. 2D overlay. Confirm placement with Wilbert.</div></div></div>
+    </div>
+  </div>
+
+  <div class="confirm">
+    <h2>To confirm with Wilbert</h2>
+    <div class="sub">What we need pointed out and validated so the 3D scope is right. Built from the website; please correct anything wrong.</div>
+    <div class="grid">
+
+      <div class="grp">
+        <h3>Models &middot; geometry</h3>
+        <ul>
+          <li><b>The Wilbert Bronze</b> &mdash; confirm it is a distinct mesh (looks like a different cast).</li>
+          <li><b>Triune (bronze / copper)</b> &mdash; confirm this is one model in two color variants, not two meshes.</li>
+          <li><b>Standard Triunes</b> (Stainless, Cameo Rose, Veteran) &mdash; confirm these are color variants of one mesh.</li>
+          <li><b>Corner "notch"</b> on the Basic / Standard line &mdash; real geometry, or a surface relief we can do with a normal map?</li>
+          <li>Is the <b>cover</b> always shown off and leaning against the base?</li>
+        </ul>
+      </div>
+
+      <div class="grp">
+        <h3>Hardware</h3>
+        <ul>
+          <li><b>Handles</b> &mdash; how many distinct handles? (we see ~2&ndash;3: Continental, Wilbert Bronze, small ones on Monticello / Salute). Which models have them, and how many variants?</li>
+          <li><b>Nameplate</b> &mdash; standard on every model? Placement and variants?</li>
+          <li><b>Foot label</b> (plate at the foot of the lid) &mdash; placement, and is it always present?</li>
+        </ul>
+      </div>
+
+      <div class="grp">
+        <h3>Emblems &middot; personalization</h3>
+        <ul>
+          <li><b>Emblems</b> &mdash; the site shows 13; are there more ("ask about other available emblems")? Confirm bronze / copper / stainless finishes (13 x 3 = 39).</li>
+          <li><b>Salute emblem</b> &mdash; exclusive to the Salute model, or available on others?</li>
+          <li><b>Legacy Custom tiers</b> (Silver / Gold / Platinum) &mdash; is that the metal the print is applied to?</li>
+          <li>Which components can be <b>turned on / off</b> (e.g. the Delane pinstripe)?</li>
+        </ul>
+      </div>
+
+      <div class="grp">
+        <h3>Interior &middot; scope</h3>
+        <ul>
+          <li><b>Interior liner</b> &mdash; color variants, or separate meshes? Is the marble-look liner available per model?</li>
+          <li>Confirm the <b>exterior colors</b> available for each model.</li>
+          <li><b>Infant caskets / vaults</b> &mdash; in scope?</li>
+          <li><b>Measurements</b> &mdash; our mock used dimensions off the website (SKU D1007); confirm the real dimensions.</li>
+        </ul>
+      </div>
+
     </div>
   </div>
 
