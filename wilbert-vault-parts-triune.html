@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stainless Steel Triune&reg; Vault — Parts Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#00456b;--slate:#4f758b;--gray:#f4f4f4;--line:#d9dee3;--ink:#2f3a42;--muted:#6b7680}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:Lato,Arial,sans-serif;color:var(--ink);background:#fff}
+  .sheet{max-width:1080px;margin:0 auto;padding:26px 30px 40px}
+  .head{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:6px}
+  .head .t h1{margin:0;font-size:22px;color:var(--navy);letter-spacing:.01em}
+  .head .t p{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+  .head img{height:44px}
+  .layout{display:grid;grid-template-columns:1.25fr .9fr;gap:26px;margin-top:20px;align-items:start}
+
+  .figure{position:relative;background:var(--gray);border:1px solid var(--line);border-radius:6px;padding:10px}
+  .figure img{width:100%;display:block;border-radius:3px}
+  .pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.35);border:2px solid #fff}
+  .pin.ext{background:var(--slate)}
+
+  .legend h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);margin:0 0 12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  .row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+  .row:last-child{border-bottom:none}
+  .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .num.ext{background:var(--slate)}
+  .rc .nm{font-weight:700;font-size:14.5px;color:var(--navy)}
+  .rc .cat{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:1px 0 3px}
+  .rc .ds{font-size:12.5px;color:#404a52;line-height:1.4}
+  .foot{margin-top:22px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+  .keycap{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin:0 3px}
+  .keycap.n{background:var(--navy)} .keycap.s{background:var(--slate)}
+
+  .confirm{margin-top:28px;border-top:3px solid var(--slate);padding-top:16px}
+  .confirm h2{color:var(--slate);font-size:17px;margin:0 0 3px}
+  .confirm .sub{color:var(--muted);font-size:12.5px;margin-bottom:16px}
+  .confirm .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 30px}
+  .confirm .grp h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);margin:0 0 6px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  .confirm ul{list-style:none;margin:0;padding:0}
+  .confirm li{position:relative;padding:5px 0 5px 24px;font-size:13px;color:#3d4a52;line-height:1.4}
+  .confirm li::before{content:"";position:absolute;left:0;top:6px;width:13px;height:13px;border:1.5px solid var(--slate);border-radius:3px}
+  .confirm li b{color:var(--navy)}
+  @media(max-width:760px){ .confirm .grid{grid-template-columns:1fr} }
+
+  @media print{ .sheet{max-width:none;padding:0} body{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="head">
+    <div class="t">
+      <h1>Stainless Steel Triune&reg; Burial Vault — Parts Reference</h1>
+      <p>Standard Protection &middot; component call-outs for 3D creation, keyed to the 3D Creation Scope</p>
+    </div>
+    <img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert">
+  </div>
+
+  <div class="layout">
+    <div class="figure" id="figure">
+      <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-SST-750.jpg" alt="Stainless Steel Triune burial vault">
+      <!-- pins positioned in % of the figure; calibrated to the product photo -->
+      <div class="pin"     style="left:17%;top:41%">1</div>
+      <div class="pin"     style="left:45%;top:37%">2</div>
+      <div class="pin"     style="left:28%;top:35%">3</div>
+      <div class="pin"     style="left:55%;top:43%">4</div>
+      <div class="pin"     style="left:81%;top:45%">5</div>
+      <div class="pin"     style="left:53%;top:26%">6</div>
+      <div class="pin ext" style="left:72%;top:46%">7</div>
+      <div class="pin ext" style="left:39%;top:47%">8</div>
+    </div>
+
+    <div class="legend">
+      <h2>Components</h2>
+
+      <div class="row"><div class="num">1</div><div class="rc">
+        <div class="nm">Vault Cover (Lid)</div><div class="cat">Cover (3D)</div>
+        <div class="ds">Concrete cover carrying the stainless carapace. Seals to the base.</div></div></div>
+
+      <div class="row"><div class="num">2</div><div class="rc">
+        <div class="nm">Stainless Steel Carapace</div><div class="cat">Cover (3D) &middot; material</div>
+        <div class="ds">The mirror-finish stainless shell over the concrete cover &mdash; the Triune signature. Same Triune body also comes in bronze and copper.</div></div></div>
+
+      <div class="row"><div class="num">3</div><div class="rc">
+        <div class="nm">Emblem</div><div class="cat">Hardware (3D)</div>
+        <div class="ds">Metal emblem on the carapace. Special emblems come with the Triune. True geometry; finishes in bronze / copper / stainless.</div></div></div>
+
+      <div class="row"><div class="num">4</div><div class="rc">
+        <div class="nm">Nameplate</div><div class="cat">Hardware (3D) &amp; Decal (2D)</div>
+        <div class="ds">Customized nameplate on the carapace. Low-poly plate + 2D text decal.</div></div></div>
+
+      <div class="row"><div class="num">5</div><div class="rc">
+        <div class="nm">Vault Base (Body)</div><div class="cat">Base (3D)</div>
+        <div class="ds">Lower concrete receptacle. Double-reinforced with stainless steel + high-impact plastic. One mesh, bottom-center origin.</div></div></div>
+
+      <div class="row"><div class="num">6</div><div class="rc">
+        <div class="nm">Interior Liner</div><div class="cat">Interior (3D)</div>
+        <div class="ds">Reinforcing liner fitted inside base + cover (metal / high-impact plastic).</div></div></div>
+
+      <div class="row"><div class="num ext">7</div><div class="rc">
+        <div class="nm">Foot Label</div><div class="cat">Decal (2D)</div>
+        <div class="ds">Small identification label at the foot of the lid. 2D overlay. Confirm placement with Wilbert.</div></div></div>
+
+      <div class="row"><div class="num ext">8</div><div class="rc">
+        <div class="nm">Cover Print / Appliqu&eacute;</div><div class="cat">Decal (2D)</div>
+        <div class="ds">Optional personalization on the carapace: Legacy Custom / Legacy Series print or Life's Reflections appliqu&eacute;. Overlay, not geometry.</div></div></div>
+    </div>
+  </div>
+
+  <div class="confirm">
+    <h2>To confirm with Wilbert</h2>
+    <div class="sub">What we need pointed out and validated so the 3D scope is right. Built from the website; please correct anything wrong.</div>
+    <div class="grid">
+
+      <div class="grp">
+        <h3>Models &middot; geometry</h3>
+        <ul>
+          <li><b>Stainless carapace</b> &mdash; a separate mesh over the concrete cover, or a material applied to the cover?</li>
+          <li><b>Triune</b> &mdash; confirm this is one body in three finishes (stainless / bronze / copper), not three meshes.</li>
+          <li><b>Cameo Rose &amp; Veteran</b> &mdash; confirm these are variants of the same Triune body.</li>
+          <li><b>Corner "notch"</b> &mdash; real geometry, or a surface relief we can do with a normal map?</li>
+          <li>Is the <b>cover</b> always shown off and leaning against the base?</li>
+        </ul>
+      </div>
+
+      <div class="grp">
+        <h3>Hardware</h3>
+        <ul>
+          <li><b>Handles</b> &mdash; does the Triune have handles? If so, which and how many variants?</li>
+          <li><b>Nameplate</b> &mdash; standard on every Triune? Placement and variants?</li>
+          <li><b>Foot label</b> (plate at the foot of the lid) &mdash; placement, and is it always present?</li>
+        </ul>
+      </div>
+
+      <div class="grp">
+        <h3>Emblems &middot; personalization</h3>
+        <ul>
+          <li><b>Emblems</b> &mdash; the site shows 13; are there more ("ask about other available emblems")? Confirm bronze / copper / stainless finishes (13 x 3 = 39).</li>
+          <li>Which emblem(s) come <b>standard</b> on the Triune vs. selectable?</li>
+          <li><b>Legacy Custom tiers</b> (Silver / Gold / Platinum) &mdash; is that the metal the print is applied to?</li>
+          <li>Which components can be <b>turned on / off</b> (e.g. the Delane pinstripe)?</li>
+        </ul>
+      </div>
+
+      <div class="grp">
+        <h3>Interior &middot; scope</h3>
+        <ul>
+          <li><b>Interior liner</b> &mdash; color variants, or separate meshes? Marble-look available?</li>
+          <li>Confirm the <b>finishes</b> available for the Triune body.</li>
+          <li><b>Infant caskets / vaults</b> &mdash; in scope?</li>
+          <li><b>Measurements</b> &mdash; confirm the real dimensions vs. our website-based mock.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="keycap n"></span> 3D mesh / material &nbsp;&nbsp; <span class="keycap s"></span> 2D decal / overlay &nbsp; &middot; &nbsp;
+    Full build notes in the 3D Creation scope. The stainless carapace, emblem, and nameplate are what separate the Triune from the Basic line; the base + interior follow the same rules. See also the White Venetian parts sheet.
+  </div>
+
+</div>
+</body>
+</html>
