@@ -8,6 +8,7 @@
 <style>
   :root{--navy:#00456b;--slate:#4f758b;--gray:#f4f4f4;--line:#d9dee3;--ink:#2f3a42;--muted:#6b7680}
   *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
   html,body{margin:0}
   body{font-family:Lato,Arial,sans-serif;color:var(--ink);background:#fff}
   .sheet{max-width:1080px;margin:0 auto;padding:26px 30px 40px}
@@ -35,6 +36,14 @@
   .keycap{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin:0 3px}
   .keycap.n{background:var(--navy)} .keycap.s{background:var(--slate)}
 
+  .pagenav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 2px}
+  .pagenav a{font-size:12.5px;font-weight:700;padding:6px 13px;border:1px solid var(--line);border-radius:20px;color:var(--slate);text-decoration:none}
+  .pagenav a:hover{border-color:var(--slate)}
+  .pagenav a.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .rc .nm a{color:var(--navy);text-decoration:none;border-bottom:1px dotted var(--sky,#a9c3d6)}
+  .rc .nm a:hover{border-bottom-style:solid}
+  .rc .np{font-size:10.5px;color:var(--muted);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0}
+
   .confirm{margin-top:28px;border-top:3px solid var(--slate);padding-top:16px}
   .confirm h2{color:var(--slate);font-size:17px;margin:0 0 3px}
   .confirm .sub{color:var(--muted);font-size:12.5px;margin-bottom:16px}
@@ -60,6 +69,11 @@
     <img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert">
   </div>
 
+  <div class="pagenav">
+    <a class="active" href="/wilbert-vault-parts.html">White Venetian</a>
+    <a href="/wilbert-vault-parts-triune.html">Stainless Steel Triune</a>
+  </div>
+
   <div class="layout">
     <div class="figure" id="figure">
       <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault">
@@ -69,8 +83,6 @@
       <div class="pin ext" style="left:45%;top:46%">3</div>
       <div class="pin ext" style="left:30%;top:58%">4</div>
       <div class="pin"     style="left:80%;top:60%">5</div>
-      <div class="pin"     style="left:52%;top:49%">6</div>
-      <div class="pin"     style="left:34%;top:38%">7</div>
       <div class="pin ext" style="left:19%;top:52%">8</div>
     </div>
 
@@ -78,35 +90,35 @@
       <h2>Components</h2>
 
       <div class="row"><div class="num">1</div><div class="rc">
-        <div class="nm">Vault Cover (Lid)</div><div class="cat">Cover (3D)</div>
+        <div class="nm"><a href="#q-models">Vault Cover (Lid)</a></div><div class="cat">Cover (3D)</div>
         <div class="ds">Sloped cover that seals to the base. One mesh, shared across the Basic line.</div></div></div>
 
       <div class="row"><div class="num">2</div><div class="rc">
-        <div class="nm">Polished Marble Top</div><div class="cat">Cover (3D) &middot; material zone</div>
+        <div class="nm"><a href="#q-models">Polished Marble Top</a></div><div class="cat">Cover (3D) &middot; material zone</div>
         <div class="ds">Polished-marble material on the top face of the cover; stucco on the sides.</div></div></div>
 
       <div class="row"><div class="num ext">3</div><div class="rc">
-        <div class="nm">Cover Print</div><div class="cat">Decal (2D)</div>
+        <div class="nm"><a href="#q-emblems">Cover Print</a></div><div class="cat">Decal (2D)</div>
         <div class="ds">Legacy Custom Series&trade; / Legacy Series&trade; print. Plane-mesh overlay conformed to the cover; not geometry.</div></div></div>
 
       <div class="row"><div class="num ext">4</div><div class="rc">
-        <div class="nm">Nameplate</div><div class="cat">Decal (3D &amp; 2D)</div>
+        <div class="nm"><a href="#q-hardware">Nameplate</a></div><div class="cat">Decal (3D &amp; 2D)</div>
         <div class="ds">Low-poly plate + 2D text decal. Standard or U.S. flag (Veteran) variant.</div></div></div>
 
       <div class="row"><div class="num">5</div><div class="rc">
-        <div class="nm">Vault Base (Body)</div><div class="cat">Base (3D)</div>
+        <div class="nm"><a href="#q-models">Vault Base (Body)</a></div><div class="cat">Base (3D)</div>
         <div class="ds">Lower concrete receptacle that houses the casket. One mesh, bottom-center origin.</div></div></div>
 
       <div class="row"><div class="num">6</div><div class="rc">
-        <div class="nm">Interior Liner</div><div class="cat">Interior (3D) &middot; internal</div>
+        <div class="nm"><a href="#q-interior">Interior Liner</a> <span class="np">(not pictured here)</span></div><div class="cat">Interior (3D) &middot; internal</div>
         <div class="ds">Reinforcing liner fitted inside base + cover (not visible in this view). Plain or marble-look.</div></div></div>
 
       <div class="row"><div class="num">7</div><div class="rc">
-        <div class="nm">Emblem</div><div class="cat">Hardware (3D)</div>
+        <div class="nm"><a href="#q-emblems">Emblem</a> <span class="np">(not pictured here)</span></div><div class="cat">Hardware (3D)</div>
         <div class="ds">Metal emblem on the carapace (bronze, copper, or stainless). True geometry; 13 designs, the wreath being the densest. Not always present on the White Venetian.</div></div></div>
 
       <div class="row"><div class="num ext">8</div><div class="rc">
-        <div class="nm">Foot Label</div><div class="cat">Decal (2D)</div>
+        <div class="nm"><a href="#q-hardware">Foot Label</a></div><div class="cat">Decal (2D)</div>
         <div class="ds">Small identification label at the foot of the lid. 2D overlay. Confirm placement with Wilbert.</div></div></div>
     </div>
   </div>
@@ -116,7 +128,7 @@
     <div class="sub">What we need pointed out and validated so the 3D scope is right. Built from the website; please correct anything wrong.</div>
     <div class="grid">
 
-      <div class="grp">
+      <div class="grp" id="q-models">
         <h3>Models &middot; geometry</h3>
         <ul>
           <li><b>The Wilbert Bronze</b> &mdash; confirm it is a distinct mesh (looks like a different cast).</li>
@@ -127,7 +139,7 @@
         </ul>
       </div>
 
-      <div class="grp">
+      <div class="grp" id="q-hardware">
         <h3>Hardware</h3>
         <ul>
           <li><b>Handles</b> &mdash; how many distinct handles? (we see ~2&ndash;3: Continental, Wilbert Bronze, small ones on Monticello / Salute). Which models have them, and how many variants?</li>
@@ -136,7 +148,7 @@
         </ul>
       </div>
 
-      <div class="grp">
+      <div class="grp" id="q-emblems">
         <h3>Emblems &middot; personalization</h3>
         <ul>
           <li><b>Emblems</b> &mdash; the site shows 13; are there more ("ask about other available emblems")? Confirm bronze / copper / stainless finishes (13 x 3 = 39).</li>
@@ -146,7 +158,7 @@
         </ul>
       </div>
 
-      <div class="grp">
+      <div class="grp" id="q-interior">
         <h3>Interior &middot; scope</h3>
         <ul>
           <li><b>Interior liner</b> &mdash; color variants, or separate meshes? Is the marble-look liner available per model?</li>

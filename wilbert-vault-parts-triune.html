@@ -8,6 +8,7 @@
 <style>
   :root{--navy:#00456b;--slate:#4f758b;--gray:#f4f4f4;--line:#d9dee3;--ink:#2f3a42;--muted:#6b7680}
   *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
   html,body{margin:0}
   body{font-family:Lato,Arial,sans-serif;color:var(--ink);background:#fff}
   .sheet{max-width:1080px;margin:0 auto;padding:26px 30px 40px}
@@ -34,6 +35,14 @@
   .keycap{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin:0 3px}
   .keycap.n{background:var(--navy)} .keycap.s{background:var(--slate)}
 
+  .pagenav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 2px}
+  .pagenav a{font-size:12.5px;font-weight:700;padding:6px 13px;border:1px solid var(--line);border-radius:20px;color:var(--slate);text-decoration:none}
+  .pagenav a:hover{border-color:var(--slate)}
+  .pagenav a.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .rc .nm a{color:var(--navy);text-decoration:none;border-bottom:1px dotted var(--sky,#a9c3d6)}
+  .rc .nm a:hover{border-bottom-style:solid}
+  .rc .np{font-size:10.5px;color:var(--muted);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0}
+
   .confirm{margin-top:28px;border-top:3px solid var(--slate);padding-top:16px}
   .confirm h2{color:var(--slate);font-size:17px;margin:0 0 3px}
   .confirm .sub{color:var(--muted);font-size:12.5px;margin-bottom:16px}
@@ -59,6 +68,11 @@
     <img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert">
   </div>
 
+  <div class="pagenav">
+    <a href="/wilbert-vault-parts.html">White Venetian</a>
+    <a class="active" href="/wilbert-vault-parts-triune.html">Stainless Steel Triune</a>
+  </div>
+
   <div class="layout">
     <div class="figure" id="figure">
       <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-SST-750.jpg" alt="Stainless Steel Triune burial vault">
@@ -68,44 +82,42 @@
       <div class="pin"     style="left:28%;top:35%">3</div>
       <div class="pin"     style="left:55%;top:43%">4</div>
       <div class="pin"     style="left:81%;top:45%">5</div>
-      <div class="pin"     style="left:53%;top:26%">6</div>
       <div class="pin ext" style="left:72%;top:46%">7</div>
-      <div class="pin ext" style="left:39%;top:47%">8</div>
     </div>
 
     <div class="legend">
       <h2>Components</h2>
 
       <div class="row"><div class="num">1</div><div class="rc">
-        <div class="nm">Vault Cover (Lid)</div><div class="cat">Cover (3D)</div>
+        <div class="nm"><a href="#q-models">Vault Cover (Lid)</a></div><div class="cat">Cover (3D)</div>
         <div class="ds">Concrete cover carrying the stainless carapace. Seals to the base.</div></div></div>
 
       <div class="row"><div class="num">2</div><div class="rc">
-        <div class="nm">Stainless Steel Carapace</div><div class="cat">Cover (3D) &middot; material</div>
+        <div class="nm"><a href="#q-models">Stainless Steel Carapace</a></div><div class="cat">Cover (3D) &middot; material</div>
         <div class="ds">The mirror-finish stainless shell over the concrete cover &mdash; the Triune signature. Same Triune body also comes in bronze and copper.</div></div></div>
 
       <div class="row"><div class="num">3</div><div class="rc">
-        <div class="nm">Emblem</div><div class="cat">Hardware (3D)</div>
+        <div class="nm"><a href="#q-emblems">Emblem</a></div><div class="cat">Hardware (3D)</div>
         <div class="ds">Metal emblem on the carapace. Special emblems come with the Triune. True geometry; finishes in bronze / copper / stainless.</div></div></div>
 
       <div class="row"><div class="num">4</div><div class="rc">
-        <div class="nm">Nameplate</div><div class="cat">Hardware (3D) &amp; Decal (2D)</div>
+        <div class="nm"><a href="#q-hardware">Nameplate</a></div><div class="cat">Hardware (3D) &amp; Decal (2D)</div>
         <div class="ds">Customized nameplate on the carapace. Low-poly plate + 2D text decal.</div></div></div>
 
       <div class="row"><div class="num">5</div><div class="rc">
-        <div class="nm">Vault Base (Body)</div><div class="cat">Base (3D)</div>
+        <div class="nm"><a href="#q-models">Vault Base (Body)</a></div><div class="cat">Base (3D)</div>
         <div class="ds">Lower concrete receptacle. Double-reinforced with stainless steel + high-impact plastic. One mesh, bottom-center origin.</div></div></div>
 
       <div class="row"><div class="num">6</div><div class="rc">
-        <div class="nm">Interior Liner</div><div class="cat">Interior (3D)</div>
+        <div class="nm"><a href="#q-interior">Interior Liner</a> <span class="np">(not pictured here)</span></div><div class="cat">Interior (3D)</div>
         <div class="ds">Reinforcing liner fitted inside base + cover (metal / high-impact plastic).</div></div></div>
 
       <div class="row"><div class="num ext">7</div><div class="rc">
-        <div class="nm">Foot Label</div><div class="cat">Decal (2D)</div>
+        <div class="nm"><a href="#q-hardware">Foot Label</a></div><div class="cat">Decal (2D)</div>
         <div class="ds">Small identification label at the foot of the lid. 2D overlay. Confirm placement with Wilbert.</div></div></div>
 
       <div class="row"><div class="num ext">8</div><div class="rc">
-        <div class="nm">Cover Print / Appliqu&eacute;</div><div class="cat">Decal (2D)</div>
+        <div class="nm"><a href="#q-emblems">Cover Print / Appliqu&eacute;</a> <span class="np">(not pictured here)</span></div><div class="cat">Decal (2D)</div>
         <div class="ds">Optional personalization on the carapace: Legacy Custom / Legacy Series print or Life's Reflections appliqu&eacute;. Overlay, not geometry.</div></div></div>
     </div>
   </div>
@@ -115,7 +127,7 @@
     <div class="sub">What we need pointed out and validated so the 3D scope is right. Built from the website; please correct anything wrong.</div>
     <div class="grid">
 
-      <div class="grp">
+      <div class="grp" id="q-models">
         <h3>Models &middot; geometry</h3>
         <ul>
           <li><b>Stainless carapace</b> &mdash; a separate mesh over the concrete cover, or a material applied to the cover?</li>
@@ -126,7 +138,7 @@
         </ul>
       </div>
 
-      <div class="grp">
+      <div class="grp" id="q-hardware">
         <h3>Hardware</h3>
         <ul>
           <li><b>Handles</b> &mdash; does the Triune have handles? If so, which and how many variants?</li>
@@ -135,7 +147,7 @@
         </ul>
       </div>
 
-      <div class="grp">
+      <div class="grp" id="q-emblems">
         <h3>Emblems &middot; personalization</h3>
         <ul>
           <li><b>Emblems</b> &mdash; the site shows 13; are there more ("ask about other available emblems")? Confirm bronze / copper / stainless finishes (13 x 3 = 39).</li>
@@ -145,7 +157,7 @@
         </ul>
       </div>
 
-      <div class="grp">
+      <div class="grp" id="q-interior">
         <h3>Interior &middot; scope</h3>
         <ul>
           <li><b>Interior liner</b> &mdash; color variants, or separate meshes? Marble-look available?</li>
