@@ -40,7 +40,10 @@
 
   .media{position:relative}
   .stage{position:relative;background:var(--soft);border-radius:12px;overflow:hidden;aspect-ratio:1/1}
-  .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .slide{position:absolute;inset:0;display:none}
+  .slide.active{display:block}
+  .slide iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .slide img{width:100%;height:100%;object-fit:contain;display:block;padding:4%}
   .badges{position:absolute;top:14px;left:14px;display:flex;flex-direction:column;gap:8px;z-index:2;pointer-events:none}
   .badge{width:84px;height:84px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;font-weight:800;line-height:1.05;box-shadow:0 4px 12px rgba(0,0,0,.18)}
   .badge.xbox{background:var(--green);font-size:10px;padding:6px}
@@ -48,9 +51,10 @@
   .badge.award b{font-size:12px;display:block;margin:2px 0}
   .viewer-tag{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;z-index:2}
 
-  .thumbs{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px}
-  .thumb{aspect-ratio:1/1;border-radius:8px;background:var(--soft);border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;color:#b7bcc2;font-size:11px;font-weight:700;cursor:pointer}
-  .thumb.active{border-color:var(--ink);color:var(--ink)}
+  .thumbs{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:12px}
+  .thumb{aspect-ratio:1/1;border-radius:8px;background:var(--soft);border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;color:#b7bcc2;font-size:11px;font-weight:700;cursor:pointer;overflow:hidden;padding:0}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb.active{border-color:var(--ink)}
   .thumb .d3{background:var(--ink);color:#fff;border-radius:5px;padding:3px 7px;font-size:10px;letter-spacing:.04em}
 
   /* buy box */
@@ -112,23 +116,32 @@
       <!-- LEFT: 3D viewer replaces the product image -->
       <div class="media">
         <div class="stage">
-          <div class="badges">
-            <div class="badge xbox">DESIGNED<br>FOR<br>XBOX</div>
-            <div class="badge award">BEST OF<b>GAMESCOM</b>2026</div>
+          <div class="slide active" data-slide="0">
+            <div class="badges">
+              <div class="badge xbox">DESIGNED<br>FOR<br>XBOX</div>
+              <div class="badge award">BEST OF<b>GAMESCOM</b>2026</div>
+            </div>
+            <iframe
+              src="https://embed.vntana.com/v2?productUuid=04720e34-98c2-4753-983e-070e6f4fbc6f&clientSlug=example-files&organizationSlug=DCicero"
+              allow="xr-spatial-tracking; fullscreen; accelerometer; gyroscope; magnetometer"
+              allowfullscreen loading="lazy" title="Aeon Pro 3D viewer"></iframe>
+            <div class="viewer-tag">Drag to rotate &middot; interactive 3D</div>
           </div>
-          <iframe
-            src="https://embed.vntana.com/v2?productUuid=04720e34-98c2-4753-983e-070e6f4fbc6f&clientSlug=example-files&organizationSlug=DCicero"
-            allow="xr-spatial-tracking; fullscreen; accelerometer; gyroscope; magnetometer"
-            allowfullscreen loading="lazy" title="Aeon Pro 3D viewer"></iframe>
-          <div class="viewer-tag">Drag to rotate &middot; interactive 3D</div>
+          <div class="slide" data-slide="1"><img src="/assets/aeon/aeon-01.webp" alt="Aeon Pro controller on dock"></div>
+          <div class="slide" data-slide="2"><img src="/assets/aeon/aeon-02.webp" alt="Aeon Pro controller"></div>
+          <div class="slide" data-slide="3"><img src="/assets/aeon/aeon-03.webp" alt="Aeon Pro detail"></div>
+          <div class="slide" data-slide="4"><img src="/assets/aeon/aeon-04.webp" alt="Aeon Pro detail"></div>
+          <div class="slide" data-slide="5"><img src="/assets/aeon/aeon-05.webp" alt="Aeon Pro detail"></div>
+          <div class="slide" data-slide="6"><img src="/assets/aeon/aeon-06.webp" alt="Aeon Pro detail"></div>
         </div>
         <div class="thumbs">
-          <div class="thumb active"><span class="d3">3D</span></div>
-          <div class="thumb">Front</div>
-          <div class="thumb">Dock</div>
-          <div class="thumb">OLED</div>
-          <div class="thumb">Back</div>
-          <div class="thumb">Grip</div>
+          <button class="thumb active" type="button" data-target="0"><span class="d3">3D</span></button>
+          <button class="thumb" type="button" data-target="1"><img src="/assets/aeon/aeon-01.webp" alt=""></button>
+          <button class="thumb" type="button" data-target="2"><img src="/assets/aeon/aeon-02.webp" alt=""></button>
+          <button class="thumb" type="button" data-target="3"><img src="/assets/aeon/aeon-03.webp" alt=""></button>
+          <button class="thumb" type="button" data-target="4"><img src="/assets/aeon/aeon-04.webp" alt=""></button>
+          <button class="thumb" type="button" data-target="5"><img src="/assets/aeon/aeon-05.webp" alt=""></button>
+          <button class="thumb" type="button" data-target="6"><img src="/assets/aeon/aeon-06.webp" alt=""></button>
         </div>
       </div>
 
@@ -183,6 +196,18 @@
     <p>Seamlessly switch between your XBOX and PC. Patent Pending.</p>
     <button class="film" type="button">&#9658;&nbsp; Watch Product Film</button>
   </section>
+
+  <script>
+    var slides = document.querySelectorAll('.stage .slide');
+    var thumbs = document.querySelectorAll('.thumbs .thumb');
+    thumbs.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var t = btn.dataset.target;
+        slides.forEach(function(s){ s.classList.toggle('active', s.dataset.slide === t); });
+        thumbs.forEach(function(b){ b.classList.toggle('active', b === btn); });
+      });
+    });
+  </script>
 
   <div class="demofoot">
     Layout recreated for demonstration. Real-time 3D by <b>VNTANA</b>. Not affiliated with SteelSeries; product imagery and copy belong to their respective owners.
