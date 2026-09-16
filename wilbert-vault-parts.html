@@ -69,6 +69,12 @@
   .confirm li::before{content:"";position:absolute;left:0;top:6px;width:13px;height:13px;border:1.5px solid var(--slate);border-radius:3px}
   .confirm li b{color:var(--navy)}
   @media(max-width:760px){ .confirm .grid{grid-template-columns:1fr} }
+  .owed{margin-top:20px;background:#fff7e6;border:1px solid #e7c67a;border-radius:6px;padding:14px 16px}
+  .owed h3{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#8a6a17}
+  .owed ul{margin:0;padding-left:18px}
+  .owed li{font-size:12.5px;color:#5b4a1f;line-height:1.6}
+  .deliver{margin-top:16px;background:#eef4f8;border:1px solid var(--line);border-radius:6px;padding:12px 16px;font-size:12.5px;color:#31434f;line-height:1.5}
+  .deliver b{color:var(--navy)}
 
   @media print{ .sheet{max-width:none;padding:0} body{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
@@ -122,19 +128,19 @@
 
       <div class="row"><div class="num">1</div><div class="rc">
         <div class="nm"><a href="#q-models">Vault Cover (Lid)</a></div><div class="cat">Cover (3D)</div>
-        <div class="ds">Sloped cover that seals to the base. One mesh, shared across the Basic line.</div></div></div>
+        <div class="ds">Sloped cover that seals to the base. Molded as one solid piece, so model it as a single mesh even though the DWG shows multiple pieces.</div></div></div>
 
       <div class="row"><div class="num">2</div><div class="rc">
-        <div class="nm"><a href="#q-models">Polished Marble Top</a></div><div class="cat">Cover (3D) &middot; material zone</div>
-        <div class="ds">Polished-marble material on the top face of the cover; stucco on the sides.</div></div></div>
+        <div class="nm"><a href="#q-models">Polished Marble Top</a></div><div class="cat">Cover material zone (2D print)</div>
+        <div class="ds">Printed vinyl covering that mimics marble, thermoformed and adhered to the lid. No real dimension, so we do it as a 2D material map on the top face, not separate geometry. With no customization the top is just polished marble.</div></div></div>
 
       <div class="row"><div class="num ext">3</div><div class="rc">
         <div class="nm"><a href="#q-emblems">Cover Print</a></div><div class="cat">Decal (2D)</div>
         <div class="ds">Legacy Custom Series&trade; / Legacy Series&trade; print. Plane-mesh overlay conformed to the cover; not geometry.</div></div></div>
 
       <div class="row"><div class="num ext">4</div><div class="rc">
-        <div class="nm"><a href="#q-hardware">Nameplate</a></div><div class="cat">Decal (3D &amp; 2D)</div>
-        <div class="ds">Low-poly plate + 2D text decal. Standard or U.S. flag (Veteran) variant.</div></div></div>
+        <div class="nm"><a href="#q-hardware">Nameplate</a></div><div class="cat">Hardware (3D) &middot; optional</div>
+        <div class="ds">A plate that stands off the surface, so true 3D, with a 2D text decal. Optional on every model, toggles on and off like the emblems. Wilbert nameplate art owed.</div></div></div>
 
       <div class="row"><div class="num">5</div><div class="rc">
         <div class="nm"><a href="#q-models">Vault Base (Body)</a></div><div class="cat">Base (3D)</div>
@@ -142,63 +148,76 @@
 
       <div class="row"><div class="num">6</div><div class="rc">
         <div class="nm"><a href="#q-interior">Interior Liner</a> <span class="np">(not pictured here)</span></div><div class="cat">Interior (3D) &middot; internal</div>
-        <div class="ds">Reinforcing liner fitted inside base + cover (not visible in this view). Plain or marble-look.</div></div></div>
+        <div class="ds">Reinforcing liner fitted inside base + cover (not visible in this view). Color is independent of the body: the white marble insert lets one body pair with many exterior colorways while keeping a white marbled interior. Standard Venetian ships in its cream colorway.</div></div></div>
 
       <div class="row"><div class="num">7</div><div class="rc">
         <div class="nm"><a href="#q-emblems">Emblem</a> <span class="np">(not pictured here)</span></div><div class="cat">Hardware (3D)</div>
-        <div class="ds">Metal emblem on the carapace (bronze, copper, or stainless). True geometry; 13 designs, the wreath being the densest. Not always present on the White Venetian.</div></div></div>
+        <div class="ds">Metal emblem on the carapace (bronze, copper, or stainless). True geometry; 13 designs plus a Veteran emblem (14 total), the wreath being the densest. Optional, not always present on the White Venetian. Veteran emblem art owed.</div></div></div>
 
       <div class="row"><div class="num ext">8</div><div class="rc">
         <div class="nm"><a href="#q-hardware">Foot Label</a></div><div class="cat">Decal (2D)</div>
-        <div class="ds">Small identification label at the foot of the lid. 2D overlay. Confirm placement with Wilbert.</div></div></div>
+        <div class="ds">Metal plate at the foot of the lid, printed and adhered flat with no raised element, so 2D. A slightly recessed logo whose wording varies by vault (Wilbert Venetian, Wilbert Triune). Foot-label art owed.</div></div></div>
     </div>
   </div>
 
   <div class="confirm">
-    <h2>To confirm with Wilbert</h2>
-    <div class="sub">What we need pointed out and validated so the 3D scope is right. Built from the website; please correct anything wrong.</div>
+    <h2>Confirmed on the Sept 16 call</h2>
+    <div class="sub">Answers captured on the Sept 16 PoC sync with Chris Sides and Jerry Pavlik (Wilbert). This is the build spec for the White Venetian.</div>
     <div class="grid">
 
       <div class="grp" id="q-models">
         <h3>Models &middot; geometry</h3>
         <ul>
-          <li><b>The Wilbert Bronze</b> &mdash; confirm it is a distinct mesh (looks like a different cast).</li>
-          <li><b>Triune (bronze / copper)</b> &mdash; confirm this is one model in two color variants, not two meshes.</li>
-          <li><b>Standard Triunes</b> (Stainless, Cameo Rose, Veteran) &mdash; confirm these are color variants of one mesh.</li>
-          <li><b>Corner "notch"</b> on the Basic / Standard line &mdash; real geometry, or a surface relief we can do with a normal map?</li>
-          <li>Is the <b>cover</b> always shown off and leaning against the base?</li>
+          <li><b>Lid is one solid piece.</b> Molded as a single unit, so model it as one mesh even though the DWG breaks it into pieces.</li>
+          <li><b>Marble top is a printed vinyl.</b> Thermoformed plastic that mimics marble, adhered to the lid with no real dimension. Do it as a 2D material map, not geometry.</li>
+          <li><b>Side texture stays a 2D map.</b> The two-tone texture is molded into the concrete on the real product, but we represent it with a map to keep the mesh light, not modeled relief.</li>
+          <li><b>Corner notch is real geometry, keep it.</b> It is the cable lift point. Model it in, do not fake it with a normal map.</li>
+          <li><b>Show two states.</b> A hero with the cover off and set to the side, and a closed version shown in place.</li>
         </ul>
       </div>
 
       <div class="grp" id="q-hardware">
         <h3>Hardware</h3>
         <ul>
-          <li><b>Handles</b> &mdash; how many distinct handles? (we see ~2&ndash;3: Continental, Wilbert Bronze, small ones on Monticello / Salute). Which models have them, and how many variants?</li>
-          <li><b>Nameplate</b> &mdash; standard on every model? Placement and variants?</li>
-          <li><b>Foot label</b> (plate at the foot of the lid) &mdash; placement, and is it always present?</li>
+          <li><b>Three handle types.</b> Two are thin lifting hoops for pulling the lid off (e.g. Monticello); the third is a thicker, more elegant handle. Some models have no handles at all.</li>
+          <li><b>Nameplate is 3D and optional.</b> A plate that stands off the surface, toggles on and off on every model like the emblems.</li>
+          <li><b>Foot label is 2D.</b> A printed metal plate adhered flat to the lid, no raised element. Wording varies by vault (Wilbert Venetian, Wilbert Triune).</li>
         </ul>
       </div>
 
       <div class="grp" id="q-emblems">
         <h3>Emblems &middot; personalization</h3>
         <ul>
-          <li><b>Emblems</b> &mdash; the site shows 13; are there more ("ask about other available emblems")? Confirm bronze / copper / stainless finishes (13 x 3 = 39).</li>
-          <li><b>Salute emblem</b> &mdash; exclusive to the Salute model, or available on others?</li>
-          <li><b>Legacy Custom tiers</b> (Silver / Gold / Platinum) &mdash; is that the metal the print is applied to?</li>
-          <li>Which components can be <b>turned on / off</b> (e.g. the Delane pinstripe)?</li>
+          <li><b>Emblems are 3D: 13 designs plus Veteran (14).</b> Modeled as true geometry, in bronze, copper, and stainless finishes.</li>
+          <li><b>Everything else on the top is 2D.</b> Cover prints, appliqu&eacute;s, applications, and all top graphics are maps, not geometry.</li>
+          <li><b>Cover prints stay 2D and are easy to add.</b> New print options do not need modeling; the emblems are the pieces we must dial in.</li>
         </ul>
       </div>
 
       <div class="grp" id="q-interior">
         <h3>Interior &middot; scope</h3>
         <ul>
-          <li><b>Interior liner</b> &mdash; color variants, or separate meshes? Is the marble-look liner available per model?</li>
-          <li>Confirm the <b>exterior colors</b> available for each model.</li>
-          <li><b>Infant caskets / vaults</b> &mdash; in scope?</li>
-          <li><b>Measurements</b> &mdash; our mock used dimensions off the website (SKU D1007); confirm the real dimensions.</li>
+          <li><b>Liner color is independent of the body.</b> The white marble insert lets one body pair with many exterior colorways (blue and silver, red and silver) while keeping a white marbled interior. Standard Venetian ships cream.</li>
+          <li><b>Infant caskets and vaults are out of scope.</b></li>
+          <li><b>Measurements are complete.</b> We have the DWG files and the dimension spreadsheet.</li>
         </ul>
       </div>
 
+    </div>
+
+    <div class="owed">
+      <h3>Assets owed by Wilbert (Chris Sides)</h3>
+      <ul>
+        <li>Veteran emblem art (for the Veteran Triune).</li>
+        <li>Wilbert nameplate art (goes on the lid, back).</li>
+        <li>Foot-label art (per-vault wording).</li>
+        <li>Cover texture map (the side texture).</li>
+        <li>New website dev link and password (to match the demo page styling).</li>
+      </ul>
+    </div>
+
+    <div class="deliver">
+      <b>Deliverable for the 29th:</b> a configured <b>White Venetian</b> configurator on a demo page built in Wilbert's new web design. If the <b>Personalized Venetian</b> is close enough we will fold it in too. Epicor GLB color issue is tracked separately and is the only outside blocker.
     </div>
   </div>
 

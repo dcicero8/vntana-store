@@ -61,6 +61,12 @@
   .confirm li::before{content:"";position:absolute;left:0;top:6px;width:13px;height:13px;border:1.5px solid var(--slate);border-radius:3px}
   .confirm li b{color:var(--navy)}
   @media(max-width:760px){ .confirm .grid{grid-template-columns:1fr} }
+  .owed{margin-top:20px;background:#fff7e6;border:1px solid #e7c67a;border-radius:6px;padding:14px 16px}
+  .owed h3{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#8a6a17}
+  .owed ul{margin:0;padding-left:18px}
+  .owed li{font-size:12.5px;color:#5b4a1f;line-height:1.6}
+  .deliver{margin-top:16px;background:#eef4f8;border:1px solid var(--line);border-radius:6px;padding:12px 16px;font-size:12.5px;color:#31434f;line-height:1.5}
+  .deliver b{color:var(--navy)}
 
   @media print{ .sheet{max-width:none;padding:0} body{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
@@ -106,11 +112,11 @@
 
       <div class="row"><div class="num">3</div><div class="rc">
         <div class="nm"><a href="#q-emblems">Emblem</a></div><div class="cat">Hardware (3D)</div>
-        <div class="ds">Metal emblem on the carapace. Special emblems come with the Triune. True geometry; finishes in bronze / copper / stainless.</div></div></div>
+        <div class="ds">Metal emblem on the carapace. True geometry; 13 designs plus a Veteran emblem (14 total), in bronze / copper / stainless. The Veteran Triune needs its own Veteran emblem, art owed.</div></div></div>
 
       <div class="row"><div class="num">4</div><div class="rc">
-        <div class="nm"><a href="#q-hardware">Nameplate</a></div><div class="cat">Hardware (3D) &amp; Decal (2D)</div>
-        <div class="ds">Customized nameplate on the carapace. Low-poly plate + 2D text decal.</div></div></div>
+        <div class="nm"><a href="#q-hardware">Nameplate</a></div><div class="cat">Hardware (3D) &middot; optional</div>
+        <div class="ds">Customized nameplate on the carapace. A plate that stands off the surface (3D) with a 2D text decal. Optional, toggles on and off. Wilbert nameplate art owed.</div></div></div>
 
       <div class="row"><div class="num">5</div><div class="rc">
         <div class="nm"><a href="#q-models">Vault Base (Body)</a></div><div class="cat">Base (3D)</div>
@@ -122,7 +128,7 @@
 
       <div class="row"><div class="num ext">7</div><div class="rc">
         <div class="nm"><a href="#q-hardware">Foot Label</a></div><div class="cat">Decal (2D)</div>
-        <div class="ds">Small identification label at the foot of the lid. 2D overlay. Confirm placement with Wilbert.</div></div></div>
+        <div class="ds">Metal plate at the foot of the lid, printed and adhered flat with no raised element, so 2D. A slightly recessed logo whose wording varies by vault (Wilbert Triune). Foot-label art owed.</div></div></div>
 
       <div class="row"><div class="num ext">8</div><div class="rc">
         <div class="nm"><a href="#q-emblems">Cover Print / Appliqu&eacute;</a> <span class="np">(not pictured here)</span></div><div class="cat">Decal (2D)</div>
@@ -131,50 +137,62 @@
   </div>
 
   <div class="confirm">
-    <h2>To confirm with Wilbert</h2>
-    <div class="sub">What we need pointed out and validated so the 3D scope is right. Built from the website; please correct anything wrong.</div>
+    <h2>Confirmed on the Sept 16 call</h2>
+    <div class="sub">Answers captured on the Sept 16 PoC sync with Chris Sides and Jerry Pavlik (Wilbert). Same rules as the White Venetian, with the Triune specifics below.</div>
     <div class="grid">
 
       <div class="grp" id="q-models">
         <h3>Models &middot; geometry</h3>
         <ul>
-          <li><b>Stainless carapace</b> &mdash; a separate mesh over the concrete cover, or a material applied to the cover?</li>
-          <li><b>Triune</b> &mdash; confirm this is one body in three finishes (stainless / bronze / copper), not three meshes.</li>
-          <li><b>Cameo Rose &amp; Veteran</b> &mdash; confirm these are variants of the same Triune body.</li>
-          <li><b>Corner "notch"</b> &mdash; real geometry, or a surface relief we can do with a normal map?</li>
-          <li>Is the <b>cover</b> always shown off and leaning against the base?</li>
+          <li><b>Triune body is one mesh.</b> Stainless, bronze, and copper are the same geometry with the material swapped, not three meshes.</li>
+          <li><b>Cameo Rose and Veteran are pre-configured Triunes.</b> Specific set-color models (Cameo Rose is pink with a white face), not free variants. Build each as its fixed configuration.</li>
+          <li><b>Lid is one solid piece.</b> Molded as a single unit, so model it as one mesh even though the DWG breaks it into pieces.</li>
+          <li><b>Corner notch is real geometry, keep it.</b> It is the cable lift point, not a normal map.</li>
+          <li><b>Show two states.</b> A hero with the cover off and set to the side, and a closed version shown in place.</li>
         </ul>
       </div>
 
       <div class="grp" id="q-hardware">
         <h3>Hardware</h3>
         <ul>
-          <li><b>Handles</b> &mdash; does the Triune have handles? If so, which and how many variants?</li>
-          <li><b>Nameplate</b> &mdash; standard on every Triune? Placement and variants?</li>
-          <li><b>Foot label</b> (plate at the foot of the lid) &mdash; placement, and is it always present?</li>
+          <li><b>Three handle types across the line.</b> Two are thin lifting hoops for pulling the lid off; the third is a thicker, more elegant handle. Some models have none.</li>
+          <li><b>Nameplate is 3D and optional.</b> Stands off the surface, toggles on and off like the emblems.</li>
+          <li><b>Foot label is 2D.</b> A printed metal plate adhered flat, wording varies by vault (Wilbert Triune).</li>
         </ul>
       </div>
 
       <div class="grp" id="q-emblems">
         <h3>Emblems &middot; personalization</h3>
         <ul>
-          <li><b>Emblems</b> &mdash; the site shows 13; are there more ("ask about other available emblems")? Confirm bronze / copper / stainless finishes (13 x 3 = 39).</li>
-          <li>Which emblem(s) come <b>standard</b> on the Triune vs. selectable?</li>
-          <li><b>Legacy Custom tiers</b> (Silver / Gold / Platinum) &mdash; is that the metal the print is applied to?</li>
-          <li>Which components can be <b>turned on / off</b> (e.g. the Delane pinstripe)?</li>
+          <li><b>Emblems are 3D: 13 designs plus Veteran (14).</b> In bronze, copper, and stainless. The Veteran Triune needs its own Veteran emblem, which is not one of the standard picks.</li>
+          <li><b>Everything else on the top is 2D.</b> Cover prints and appliqu&eacute;s are maps, easy to add without modeling.</li>
         </ul>
       </div>
 
       <div class="grp" id="q-interior">
         <h3>Interior &middot; scope</h3>
         <ul>
-          <li><b>Interior liner</b> &mdash; color variants, or separate meshes? Marble-look available?</li>
-          <li>Confirm the <b>finishes</b> available for the Triune body.</li>
-          <li><b>Infant caskets / vaults</b> &mdash; in scope?</li>
-          <li><b>Measurements</b> &mdash; confirm the real dimensions vs. our website-based mock.</li>
+          <li><b>Liner color is independent of the body.</b> A white marble insert pairs with many exterior colorways while keeping a white marbled interior.</li>
+          <li><b>Infant caskets and vaults are out of scope.</b></li>
+          <li><b>Measurements are complete.</b> We have the DWG files and the dimension spreadsheet.</li>
         </ul>
       </div>
 
+    </div>
+
+    <div class="owed">
+      <h3>Assets owed by Wilbert (Chris Sides)</h3>
+      <ul>
+        <li>Veteran emblem art (for the Veteran Triune).</li>
+        <li>Wilbert nameplate art (goes on the lid, back).</li>
+        <li>Foot-label art (per-vault wording).</li>
+        <li>Cover texture map (the side texture).</li>
+        <li>New website dev link and password (to match the demo page styling).</li>
+      </ul>
+    </div>
+
+    <div class="deliver">
+      <b>Deliverable for the 29th:</b> the <b>White Venetian</b> is the target for the configured demo page; the Triune follows once the first vault is locked in. Epicor GLB color issue is tracked separately and is the only outside blocker.
     </div>
   </div>
 
