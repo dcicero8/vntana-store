@@ -83,6 +83,27 @@
   .deliver{margin-top:16px;background:#00456b;color:#eaf2f8;border-radius:6px;padding:13px 16px;font-size:12.5px;line-height:1.55}
   .deliver b{color:#fff}
 
+  .phase{margin:14px 0 2px;background:#eaf6ee;border:1px solid #9cccae;border-radius:6px;padding:11px 15px;font-size:13.5px;color:#245038;line-height:1.5}
+  .phase b{color:#12401f}
+  .phase .p1{display:inline-block;background:#1c6b3f;color:#fff;font-weight:900;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:4px;margin-right:8px;vertical-align:1px}
+
+  .tiers{margin-top:26px;border-top:3px solid var(--slate);padding-top:16px}
+  .tiers h2{color:var(--slate);font-size:17px;margin:0 0 3px}
+  .tiers .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+  .tiers .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .tier{border:1px solid var(--line);border-radius:6px;padding:13px 15px;background:#fbfcfd}
+  .tier.now{border-color:#9cccae;background:#eaf6ee}
+  .tier h3{margin:0 0 2px;font-size:14px;color:var(--navy)}
+  .tier .ph{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .tier.now .ph{color:#1c6b3f}
+  .tier ul{list-style:none;margin:0;padding:0}
+  .tier li{font-size:12.5px;color:#3d4a52;line-height:1.5;padding:3px 0;border-bottom:1px dotted var(--line)}
+  .tier li:last-child{border-bottom:none}
+  .tier li b{color:var(--navy)}
+  .tier .star{color:#1c6b3f;font-weight:900}
+  .tier .mnote{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}
+  @media(max-width:760px){ .tiers .grid{grid-template-columns:1fr} }
+
   .cadref{margin-top:26px;border-top:3px solid var(--slate);padding-top:16px}
   .cadref h2{color:var(--slate);font-size:17px;margin:0 0 3px}
   .cadref .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
@@ -112,6 +133,10 @@
     <a href="/wilbert-vault-parts-triune.html">Stainless Steel Triune</a>
   </div>
 
+  <div class="phase">
+    <span class="p1">Phase 1</span> <b>Basic &mdash; White Venetian.</b> This is the only model in the current build. Standard (Triune) and Premium (Wilbert Bronze) come in later phases. See the full line by tier below.
+  </div>
+
   <div class="layout">
     <div>
       <div class="viewtoggle">
@@ -121,21 +146,21 @@
       <div class="figure" id="figure">
         <div class="view view-print active">
           <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault, base version">
-          <div class="pin"     style="left:60%;top:40%">1</div>
-          <div class="pin"     style="left:74%;top:34%">2</div>
-          <div class="pin ext" style="left:45%;top:46%">3</div>
-          <div class="pin ext" style="left:30%;top:58%">4</div>
-          <div class="pin"     style="left:80%;top:60%">5</div>
-          <div class="pin ext" style="left:19%;top:52%">8</div>
+          <div class="pin"     style="left:31%;top:57%">1</div>
+          <div class="pin"     style="left:25%;top:40%">2</div>
+          <div class="pin ext" style="left:40%;top:44%">3</div>
+          <div class="pin ext" style="left:63%;top:50%">4</div>
+          <div class="pin"     style="left:77%;top:50%">5</div>
+          <div class="pin ext" style="left:85%;top:41%">8</div>
         </div>
         <div class="view view-perso">
           <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-Ven-PlainLiner-7501.jpg" alt="Venetian burial vault, personalized (graphic)">
-          <div class="pin"     style="left:20%;top:47%">1</div>
-          <div class="pin"     style="left:40%;top:36%">2</div>
-          <div class="pin ext" style="left:27%;top:41%">3</div>
-          <div class="pin ext" style="left:56%;top:45%">4</div>
-          <div class="pin"     style="left:81%;top:29%">5</div>
-          <div class="pin ext" style="left:70%;top:45%">8</div>
+          <div class="pin"     style="left:30%;top:60%">1</div>
+          <div class="pin"     style="left:28%;top:42%">2</div>
+          <div class="pin ext" style="left:38%;top:47%">3</div>
+          <div class="pin ext" style="left:66%;top:51%">4</div>
+          <div class="pin"     style="left:78%;top:48%">5</div>
+          <div class="pin ext" style="left:85%;top:41%">8</div>
         </div>
       </div>
     </div>
@@ -174,6 +199,49 @@
       <div class="row"><div class="num ext">8</div><div class="rc">
         <div class="nm"><a href="#q-build">Side / End Pattern</a></div><div class="cat">Decal (2D)</div>
         <div class="ds">The picture-frame pattern on the sides and ends. In reality it is a debossed relief in the concrete, but Chris approved keeping it a 2D map so the mesh stays light (modeling it crashes the CAD). Foot label is likewise a flat 2D plate.</div></div></div>
+    </div>
+  </div>
+
+  <div class="tiers">
+    <h2>Vault line by tier (build phasing)</h2>
+    <div class="sub">Wilbert groups the vaults into three tiers. We build in that order, starting with the Basic White Venetian.</div>
+    <div class="grid">
+
+      <div class="tier now">
+        <h3>Basic Protection</h3>
+        <div class="ph">Phase 1 &mdash; building now</div>
+        <ul>
+          <li><span class="star">&#9733;</span> <b>White Venetian</b> &mdash; Phase 1. White plastic liner.</li>
+          <li>Venetian &mdash; same body, cream liner / different color scheme.</li>
+          <li>Continental &mdash; flat top and round top; own handles.</li>
+          <li>Monticello &mdash; two-bump cover, thin molded-in handles.</li>
+          <li>Salute &mdash; a version of the Monticello.</li>
+        </ul>
+        <div class="mnote">Concrete base + cover, plastic liners. The cover profile (bump count) and pattern define each one.</div>
+      </div>
+
+      <div class="tier">
+        <h3>Standard Protection</h3>
+        <div class="ph">Later phase</div>
+        <ul>
+          <li><b>SST Triune</b> &mdash; stainless carapace, fully configurable.</li>
+          <li>Cameo Rose &mdash; pre-configured Triune (set pink colorway).</li>
+          <li>Veteran &mdash; pre-configured Triune (flag nameplate + military emblem).</li>
+        </ul>
+        <div class="mnote">One Triune body; Cameo Rose and Veteran are the same geometry, just locked configurations.</div>
+      </div>
+
+      <div class="tier">
+        <h3>Premium Protection</h3>
+        <div class="ph">Later phase</div>
+        <ul>
+          <li>Bronze Triune &mdash; Triune body, bronze material.</li>
+          <li>Copper Triune &mdash; Triune body, copper material.</li>
+          <li><b>The Wilbert Bronze</b> &mdash; its own body (chamfered corners, plastic liner inside + outside plus a metal liner).</li>
+        </ul>
+        <div class="mnote">Bronze / Copper Triunes share the Triune geometry (material swap). The Wilbert Bronze is a distinct model.</div>
+      </div>
+
     </div>
   </div>
 
