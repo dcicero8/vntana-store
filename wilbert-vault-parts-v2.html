@@ -83,6 +83,16 @@
   .deliver{margin-top:16px;background:#00456b;color:#eaf2f8;border-radius:6px;padding:13px 16px;font-size:12.5px;line-height:1.55}
   .deliver b{color:#fff}
 
+  .cadref{margin-top:26px;border-top:3px solid var(--slate);padding-top:16px}
+  .cadref h2{color:var(--slate);font-size:17px;margin:0 0 3px}
+  .cadref .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+  .cadref .imgs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .cadref figure{margin:0}
+  .cadref img{width:100%;display:block;border:1px solid var(--line);border-radius:6px;background:var(--gray)}
+  .cadref figcaption{font-size:12px;color:#3d4a52;line-height:1.45;margin-top:7px}
+  .cadref figcaption b{color:var(--navy)}
+  @media(max-width:760px){ .cadref .imgs{grid-template-columns:1fr} }
+
   @media print{ .sheet{max-width:none;padding:0} body{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
 </head>
@@ -164,6 +174,21 @@
       <div class="row"><div class="num ext">8</div><div class="rc">
         <div class="nm"><a href="#q-build">Side / End Pattern</a></div><div class="cat">Decal (2D)</div>
         <div class="ds">The picture-frame pattern on the sides and ends. In reality it is a debossed relief in the concrete, but Chris approved keeping it a 2D map so the mesh stays light (modeling it crashes the CAD). Foot label is likewise a flat 2D plate.</div></div></div>
+    </div>
+  </div>
+
+  <div class="cadref">
+    <h2>CAD reference &mdash; Edgar's Creo session (Sept 18)</h2>
+    <div class="sub">Screenshots of the Venetian assembly (3086_VEN_FLAT_CR) in Creo. Best reference we have for form and stack until the STEP files land; only one product photo exists.</div>
+    <div class="imgs">
+      <figure>
+        <img src="/assets/wilbert/venetian-cad-exploded.webp" alt="Venetian assembly exploded view in Creo">
+        <figcaption><b>Exploded assembly.</b> Top to bottom: white cover liner (note the stepped three-bump profile), the concrete cover, the butyl seal ring, and the concrete base. Use this for the exploded / cover-off hero layout and the component stack.</figcaption>
+      </figure>
+      <figure>
+        <img src="/assets/wilbert/venetian-cad-corner.webp" alt="Venetian cover corner detail in Creo">
+        <figcaption><b>Corner detail.</b> The chamfered corner and edge profile where the cover meets the base. Match these bevels; this is the kind of edge the single product photo does not show clearly.</figcaption>
+      </figure>
     </div>
   </div>
 
