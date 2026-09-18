@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>White Venetian&reg; Vault — Parts Reference (v2)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#00456b;--slate:#4f758b;--gray:#f4f4f4;--line:#d9dee3;--ink:#2f3a42;--muted:#6b7680}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html,body{margin:0}
+  body{font-family:Lato,Arial,sans-serif;color:var(--ink);background:#fff}
+  .sheet{max-width:1080px;margin:0 auto;padding:26px 30px 40px}
+  .head{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:6px}
+  .head .t h1{margin:0;font-size:22px;color:var(--navy);letter-spacing:.01em}
+  .head .t p{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+  .head img{height:44px}
+  .layout{display:grid;grid-template-columns:1.25fr .9fr;gap:26px;margin-top:20px;align-items:start}
+
+  .figure{position:relative;background:var(--gray);border:1px solid var(--line);border-radius:6px;padding:10px}
+  .figure img{width:100%;display:block;border-radius:3px}
+  .pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.35);border:2px solid #fff}
+  .pin.ext{background:var(--slate)}
+
+  .legend h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);margin:0 0 12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  .row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+  .row:last-child{border-bottom:none}
+  .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .num.ext{background:var(--slate)}
+  .rc .nm{font-weight:700;font-size:14.5px;color:var(--navy)}
+  .rc .cat{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:1px 0 3px}
+  .rc .ds{font-size:12.5px;color:#404a52;line-height:1.4}
+  .foot{margin-top:22px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+  .keycap{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin:0 3px}
+  .keycap.n{background:var(--navy)} .keycap.s{background:var(--slate)}
+
+  .pagenav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 2px}
+  .pagenav a{font-size:12.5px;font-weight:700;padding:6px 13px;border:1px solid var(--line);border-radius:20px;color:var(--slate);text-decoration:none}
+  .pagenav a:hover{border-color:var(--slate)}
+  .pagenav a.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .rc .nm a{color:var(--navy);text-decoration:none;border-bottom:1px dotted #a9c3d6}
+  .rc .nm a:hover{border-bottom-style:solid}
+  .rc .np{font-size:10.5px;color:var(--muted);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0}
+
+  .viewtoggle{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .viewtoggle button{font-size:12px;font-weight:700;padding:7px 12px;border:1.5px solid var(--line);border-radius:5px;background:#fff;color:#2f3a42;cursor:pointer}
+  .viewtoggle button:hover{border-color:var(--slate)}
+  .viewtoggle button.active{border-color:var(--navy);background:#eef4f8;color:var(--navy)}
+  .view{display:none;position:relative}
+  .view.active{display:block}
+
+  .options{margin-top:26px;border-top:3px solid var(--slate);padding-top:16px}
+  .options h2{color:var(--slate);font-size:17px;margin:0 0 3px}
+  .options .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+  .options .grp{margin-bottom:14px}
+  .options .grp h3{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--navy);margin:0 0 5px}
+  .options .grp p{margin:0;font-size:12.5px;color:#3d4a52;line-height:1.5}
+  .options .grp a{color:var(--slate)}
+
+  .confirm{margin-top:28px;border-top:3px solid var(--slate);padding-top:16px}
+  .confirm h2{color:var(--slate);font-size:17px;margin:0 0 3px}
+  .confirm .sub{color:var(--muted);font-size:12.5px;margin-bottom:16px}
+  .confirm .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 30px}
+  .confirm .grp h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);margin:0 0 6px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  .confirm ul{list-style:none;margin:0;padding:0}
+  .confirm li{position:relative;padding:5px 0 5px 24px;font-size:13px;color:#3d4a52;line-height:1.4}
+  .confirm li::before{content:"";position:absolute;left:0;top:6px;width:13px;height:13px;border:1.5px solid var(--slate);border-radius:3px}
+  .confirm li b{color:var(--navy)}
+  @media(max-width:760px){ .confirm .grid{grid-template-columns:1fr} }
+
+  .callout{margin-top:20px;border-radius:6px;padding:14px 16px}
+  .callout h3{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  .callout ul{margin:0;padding-left:18px}
+  .callout li{font-size:12.5px;line-height:1.6}
+  .callout li b{font-weight:700}
+  .build{background:#eaf6ee;border:1px solid #9cccae}
+  .build h3{color:#1c6b3f} .build li{color:#245038} .build li b{color:#12401f}
+  .cad{background:#eef4f8;border:1px solid #b7cede}
+  .cad h3{color:#00456b} .cad li{color:#31434f} .cad li b{color:#00456b}
+  .owed{background:#fff7e6;border:1px solid #e7c67a}
+  .owed h3{color:#8a6a17} .owed li{color:#5b4a1f} .owed li b{color:#6e5310}
+  .deliver{margin-top:16px;background:#00456b;color:#eaf2f8;border-radius:6px;padding:13px 16px;font-size:12.5px;line-height:1.55}
+  .deliver b{color:#fff}
+
+  @media print{ .sheet{max-width:none;padding:0} body{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="head">
+    <div class="t">
+      <h1>White Venetian&reg; Burial Vault — Parts Reference</h1>
+      <p>Component call-outs for 3D creation &middot; updated with the Sept 16 (Chris) and Sept 18 (Edgar / CAD) calls</p>
+    </div>
+    <img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert">
+  </div>
+
+  <div class="pagenav">
+    <a class="active" href="/wilbert-vault-parts-v2.html">White Venetian</a>
+    <a href="/wilbert-vault-parts-triune.html">Stainless Steel Triune</a>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="viewtoggle">
+        <button class="active" data-view="print">Base White Venetian</button>
+        <button data-view="perso">Personalized Venetian &mdash; shows graphic</button>
+      </div>
+      <div class="figure" id="figure">
+        <div class="view view-print active">
+          <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault, base version">
+          <div class="pin"     style="left:60%;top:40%">1</div>
+          <div class="pin"     style="left:74%;top:34%">2</div>
+          <div class="pin ext" style="left:45%;top:46%">3</div>
+          <div class="pin ext" style="left:30%;top:58%">4</div>
+          <div class="pin"     style="left:80%;top:60%">5</div>
+          <div class="pin ext" style="left:19%;top:52%">8</div>
+        </div>
+        <div class="view view-perso">
+          <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-Ven-PlainLiner-7501.jpg" alt="Venetian burial vault, personalized (graphic)">
+          <div class="pin"     style="left:20%;top:47%">1</div>
+          <div class="pin"     style="left:40%;top:36%">2</div>
+          <div class="pin ext" style="left:27%;top:41%">3</div>
+          <div class="pin ext" style="left:56%;top:45%">4</div>
+          <div class="pin"     style="left:81%;top:29%">5</div>
+          <div class="pin ext" style="left:70%;top:45%">8</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <h2>Components</h2>
+
+      <div class="row"><div class="num">1</div><div class="rc">
+        <div class="nm"><a href="#q-models">Vault Cover (Lid)</a></div><div class="cat">Concrete (3D)</div>
+        <div class="ds">Concrete cover that seals to the base. Molded as one solid piece: model it as a single mesh even though the DWG shows multiple pieces. The lid is the hard part (angles, notches, holes, debossed logo); the box itself is quick.</div></div></div>
+
+      <div class="row"><div class="num">2</div><div class="rc">
+        <div class="nm"><a href="#q-models">Carapace (cover top / print surface)</a></div><div class="cat">Plastic (3D) &middot; print is 2D</div>
+        <div class="ds">Plastic piece on top of the cover. This is where the customer print or graphic goes. Default is the plain white / marble look. Model the plate; the print itself is a swappable 2D map, not heavy geometry.</div></div></div>
+
+      <div class="row"><div class="num ext">3</div><div class="rc">
+        <div class="nm"><a href="#q-emblems">Cover Print</a></div><div class="cat">Decal (2D)</div>
+        <div class="ds">Legacy Series&trade; / Legacy Custom&trade; print applied on the carapace. Flat mesh plane, swappable image, not geometry.</div></div></div>
+
+      <div class="row"><div class="num ext">4</div><div class="rc">
+        <div class="nm"><a href="#q-build">Wilbert Venetian Logo (deboss)</a></div><div class="cat">Concrete relief (3D) &middot; model it</div>
+        <div class="ds">The Wilbert Venetian name is debossed (recessed) into the concrete cover. Not in the Creo file, so model the recess; drop the logo art in as 2D. Standoff nameplates (true 3D plates) appear on other models, not the White Venetian.</div></div></div>
+
+      <div class="row"><div class="num">5</div><div class="rc">
+        <div class="nm"><a href="#q-models">Vault Base (Body)</a></div><div class="cat">Concrete (3D)</div>
+        <div class="ds">Lower concrete receptacle that houses the casket. One mesh, bottom-center origin. Concrete base + concrete cover are the only concrete parts.</div></div></div>
+
+      <div class="row"><div class="num">6</div><div class="rc">
+        <div class="nm"><a href="#q-interior">Liners (carapace + cover + base)</a> <span class="np">(interior, seen with cover off)</span></div><div class="cat">Plastic (3D)</div>
+        <div class="ds">Three plastic parts: carapace, cover liner, base liner. The liner is white inside, which is what makes it a "White" Venetian. Use the current liner only; one liner fits all for our purposes (the customer does not choose the liner).</div></div></div>
+
+      <div class="row"><div class="num">7</div><div class="rc">
+        <div class="nm"><a href="#q-emblems">Emblem</a> <span class="np">(not on the White Venetian V1)</span></div><div class="cat">Hardware (3D)</div>
+        <div class="ds">Metal emblems glued to the carapace on higher models (13 designs plus Veteran, in bronze / copper / stainless). True 3D, modeled from imagery: Wilbert has no CAD or drawings for these. Out of scope for the White Venetian first build.</div></div></div>
+
+      <div class="row"><div class="num ext">8</div><div class="rc">
+        <div class="nm"><a href="#q-build">Side / End Pattern</a></div><div class="cat">Decal (2D)</div>
+        <div class="ds">The picture-frame pattern on the sides and ends. In reality it is a debossed relief in the concrete, but Chris approved keeping it a 2D map so the mesh stays light (modeling it crashes the CAD). Foot label is likewise a flat 2D plate.</div></div></div>
+    </div>
+  </div>
+
+  <div class="confirm">
+    <h2>Confirmed with Wilbert — Sept 16 (Chris) &amp; Sept 18 (Edgar)</h2>
+    <div class="sub">Build spec for the White Venetian, from the PoC sync with Chris Sides and the CAD call with Edgar Espinoza (the Creo modeler) and Melanie Sidebottom.</div>
+    <div class="grid">
+
+      <div class="grp" id="q-models">
+        <h3>Materials &middot; construction</h3>
+        <ul>
+          <li><b>Only two concrete parts:</b> the base and the cover. Everything else on the Venetian is plastic.</li>
+          <li><b>Three plastic parts:</b> carapace (top), cover liner, base liner.</li>
+          <li><b>The cover defines the model.</b> The Venetian cover has three bumps. White = the plastic liner inside is white.</li>
+          <li><b>Lid is one solid mesh</b> even though the DWG and Creo break it into pieces. The lid is the only tricky part.</li>
+          <li><b>Deliver two states:</b> a hero with the cover off and leaning, and a closed version.</li>
+        </ul>
+      </div>
+
+      <div class="grp" id="q-hardware">
+        <h3>Hardware</h3>
+        <ul>
+          <li><b>White Venetian has no handles.</b> It has pickup holes at the ends instead (that is how it is lifted).</li>
+          <li><b>Other models have handles</b> (three types across the line: molded-in bars on Monticello/Salute, distinct handles on Continental and Wilbert Bronze). Later scope.</li>
+          <li><b>Nameplate:</b> true 3D standoff plate on some models; the White Venetian instead has the debossed Wilbert Venetian logo.</li>
+        </ul>
+      </div>
+
+      <div class="grp" id="q-emblems">
+        <h3>Emblems &middot; personalization</h3>
+        <ul>
+          <li><b>Emblems are true 3D, modeled from imagery.</b> Wilbert has no CAD or drawings for them. 13 designs plus Veteran, in bronze / copper / stainless. Not on the White Venetian V1.</li>
+          <li><b>Everything else on the top is 2D.</b> Cover prints and appliqu&eacute;s are swappable flat maps on the carapace, not geometry.</li>
+        </ul>
+      </div>
+
+      <div class="grp" id="q-interior">
+        <h3>Interior &middot; scope</h3>
+        <ul>
+          <li><b>Plastic liner, white for the White Venetian.</b> One current liner; one liner fits all for the model.</li>
+          <li><b>Side / end pattern stays 2D</b> (a map, not modeled relief).</li>
+          <li><b>Infant vaults are out of scope.</b> Measurements come from the STEP and DWG files.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="callout build" id="q-build">
+      <h3>Model these — not in the Creo CAD</h3>
+      <ul>
+        <li><b>Pickup holes</b> at the ends (the White Venetian has holes, not handles).</li>
+        <li><b>Wilbert Venetian debossed logo</b> recessed into the cover (logo art applied as 2D).</li>
+        <li><b>Half-moon notches</b> at the end corners (cable-lift points; welded half-moons on the form). Keep as real geometry.</li>
+        <li><b>Side / end picture-frame pattern</b> as a 2D map, not modeled relief (Chris approved 2D).</li>
+      </ul>
+    </div>
+
+    <div class="callout cad">
+      <h3>CAD &amp; file handoff (Edgar, Creo)</h3>
+      <ul>
+        <li><b>STEP files</b> incoming: one contained full assembly, an exploded view, and each part exported individually with correct names (carapace, cover liner, base liner, cover, base). IGES is the fallback.</li>
+        <li><b>No GLB out of their Creo</b> (checked live: only STEP / OBJ). We convert to GLB on our side.</li>
+        <li><b>Confirm units on import</b> and expect no materials through STEP: it carries geometry only, which is all we need.</li>
+        <li><b>Delivered via SharePoint</b> (NDA in place). Current liner only.</li>
+      </ul>
+    </div>
+
+    <div class="callout owed">
+      <h3>Still owed by Wilbert</h3>
+      <ul>
+        <li>Emblem art / references (no CAD exists; model from imagery when we get there).</li>
+        <li>Wilbert Venetian logo art for the debossed cover.</li>
+        <li>Higher-resolution reference images (only one product photo exists today).</li>
+        <li>The STEP exports from Edgar (in progress).</li>
+      </ul>
+    </div>
+
+    <div class="deliver">
+      <b>V1 ask (end of next week):</b> the base <b>White Venetian</b> only, focus on speed and process. Two models (cover on and cover off), the side pattern as a 2D map, the pickup holes / logo deboss / corner notches modeled, a <b>swappable cover print</b> slot (we build the swap; the file just needs to support it), and placeholder art anywhere Wilbert has not delivered. Emblems, nameplates and handles come in later phases. Configurator demo targets the 29th.
+    </div>
+  </div>
+
+  <div class="options">
+    <h2>Personalization options</h2>
+    <div class="sub">The full library, for reference &mdash; text only. See the linked pages for the imagery.</div>
+    <div class="grid">
+      <div class="grp">
+        <h3>Legacy Series prints &mdash; 59 (<a href="https://www.wilbert.com/store/burial/burial-vaults/personalization/legacy/?F_All=Y" target="_blank">view</a>)</h3>
+        <p>U.S. Flag, Autumn Lake, Bridge 1, Bridge 2, Cardinal, Clouds, Combine, Corn, Country Road, Crucifix on Bible, Dock, EMT, Farm Field &amp; Tractor, Father 1, Father 2, Firefighter, Fisherman, Fisherman w/Dog, Footprints, Footprints with Poem, Going Home, Golf Course, Golfer, Gone Fishin', Green Field &amp; Barn, Horses, Irish Blessing, Jesus, Jesus at Dawn, Jewish 1, Jewish 2, Motorcycle, Motorcycle 2, Pieta, Lighthouse, Mother 1, Mother 2, Music, Police, Red Barn, Red Roses, Roses on Silk, Stained Glass Marble Gold Venetian, Stained Glass Marble White Venetian, School, Sunrise/Sunset 1, Sunrise/Sunset 2, Three Crosses, Tobacco Field, Tobacco Barn, Tropical Island, Whitetail Buck, Our Lady of Guadalupe, Cross Gold, Cross White, Marble Gold, Marble White, Star of David Gold, Star of David White.</p>
+      </div>
+      <div class="grp">
+        <h3>Legacy Custom &mdash; photo, 3 tiers (<a href="https://www.wilbert.com/wilbert-legacy-custom-prints/" target="_blank">view</a>)</h3>
+        <p>Silver, Gold, Platinum. Family photos scanned into a one-of-a-kind printed cover; the tier is the metal it is printed on.</p>
+      </div>
+      <div class="grp">
+        <h3>Life's Reflections appliqu&eacute;s &mdash; 11 (<a href="https://www.wilbert.com/store/burial/burial-vaults/personalization/life-s-reflections-appliqu-s/" target="_blank">view</a>)</h3>
+        <p>U.S. Air Force, U.S. Army, U.S. Coast Guard, U.S. Marine Corps, U.S. Navy, Chapel, Country Roads, Farm Scene, Going Home, Music, Soaring Eagle.</p>
+      </div>
+      <div class="grp">
+        <h3>Life Expressions emblems &mdash; 14, in bronze / copper / stainless (<a href="https://www.wilbert.com/store/burial/burial-vaults/personalization/life-expressions-emblems/?F_All=Y" target="_blank">view</a>)</h3>
+        <p>Wreath, Cross, Crucifix, U.S. Air Force, U.S. Army, U.S. Marine Corps, U.S. Navy, Roses, Praying Hands, Palm Leaf, Eastern Star, Russian Orthodox Cross, Masonic Guild, Salute.</p>
+      </div>
+      <div class="grp">
+        <h3>Canvas Carapace (<a href="https://www.wilbert.com/store/burial/burial-vaults/personalization/canvas-carapace/" target="_blank">view</a>)</h3>
+        <p>A smooth white cover surface friends and family can sign; can be combined with Life's Reflections appliqu&eacute;s.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="keycap n"></span> 3D mesh / geometry &nbsp;&nbsp; <span class="keycap s"></span> 2D map / decal &nbsp; &middot; &nbsp;
+    Full build spec in Wilbert-Vault-3D-Creation-v3.xlsx (Full Scope tab). STEP from Creo carries geometry only; base + cover are the only concrete parts, carapace and liners are plastic. Prints and patterns are 2D maps, not geometry.
+  </div>
+
+</div>
+<script>
+  document.querySelectorAll('.viewtoggle button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var v=b.dataset.view;
+      document.querySelectorAll('.viewtoggle button').forEach(function(x){ x.classList.toggle('active', x===b); });
+      document.querySelectorAll('.view').forEach(function(p){ p.classList.toggle('active', p.classList.contains('view-'+v)); });
+    });
+  });
+</script>
+<script src="/assets/wilbert-confirm.js?v=3"></script>
+</body>
+</html>
