@@ -104,16 +104,6 @@
   .tier .mnote{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}
   @media(max-width:760px){ .tiers .grid{grid-template-columns:1fr} }
 
-  .cadref{margin-top:26px;border-top:3px solid var(--slate);padding-top:16px}
-  .cadref h2{color:var(--slate);font-size:17px;margin:0 0 3px}
-  .cadref .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
-  .cadref .imgs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .cadref figure{margin:0}
-  .cadref img{width:100%;display:block;border:1px solid var(--line);border-radius:6px;background:var(--gray)}
-  .cadref figcaption{font-size:12px;color:#3d4a52;line-height:1.45;margin-top:7px}
-  .cadref figcaption b{color:var(--navy)}
-  @media(max-width:760px){ .cadref .imgs{grid-template-columns:1fr} }
-
   @media print{ .sheet{max-width:none;padding:0} body{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
 </head>
@@ -123,7 +113,7 @@
   <div class="head">
     <div class="t">
       <h1>White Venetian&reg; Burial Vault — Parts Reference</h1>
-      <p>Component call-outs for 3D creation &middot; updated with the Sept 16 (Chris) and Sept 18 (Edgar / CAD) calls</p>
+      <p>Component call-outs for 3D creation &middot; updated from the Sept 16 and Sept 18 Wilbert calls</p>
     </div>
     <img src="https://www.wilbert.com/cms/images/layout/general/WilbertWebsite-HeaderLogo.png" alt="Wilbert">
   </div>
@@ -198,7 +188,7 @@
 
       <div class="row"><div class="num ext">8</div><div class="rc">
         <div class="nm"><a href="#q-build">Side / End Pattern</a></div><div class="cat">Decal (2D)</div>
-        <div class="ds">The picture-frame pattern on the sides and ends. In reality it is a debossed relief in the concrete, but Chris approved keeping it a 2D map so the mesh stays light (modeling it crashes the CAD). Foot label is likewise a flat 2D plate.</div></div></div>
+        <div class="ds">The picture-frame pattern on the sides and ends. In reality it is a debossed relief in the concrete, but Wilbert approved keeping it a 2D map so the mesh stays light (modeling it crashes the CAD). Foot label is likewise a flat 2D plate.</div></div></div>
     </div>
   </div>
 
@@ -245,24 +235,9 @@
     </div>
   </div>
 
-  <div class="cadref">
-    <h2>CAD reference &mdash; Edgar's Creo session (Sept 18)</h2>
-    <div class="sub">Screenshots of the Venetian assembly (3086_VEN_FLAT_CR) in Creo. Best reference we have for form and stack until the STEP files land; only one product photo exists.</div>
-    <div class="imgs">
-      <figure>
-        <img src="/assets/wilbert/venetian-cad-exploded.webp" alt="Venetian assembly exploded view in Creo">
-        <figcaption><b>Exploded assembly.</b> Top to bottom: white cover liner (note the stepped three-bump profile), the concrete cover, the butyl seal ring, and the concrete base. Use this for the exploded / cover-off hero layout and the component stack.</figcaption>
-      </figure>
-      <figure>
-        <img src="/assets/wilbert/venetian-cad-corner.webp" alt="Venetian cover corner detail in Creo">
-        <figcaption><b>Corner detail.</b> The chamfered corner and edge profile where the cover meets the base. Match these bevels; this is the kind of edge the single product photo does not show clearly.</figcaption>
-      </figure>
-    </div>
-  </div>
-
   <div class="confirm">
-    <h2>Confirmed with Wilbert — Sept 16 (Chris) &amp; Sept 18 (Edgar)</h2>
-    <div class="sub">Build spec for the White Venetian, from the PoC sync with Chris Sides and the CAD call with Edgar Espinoza (the Creo modeler) and Melanie Sidebottom.</div>
+    <h2>Confirmed with Wilbert — Sept 16 &amp; 18 calls</h2>
+    <div class="sub">Build spec for the White Venetian, from the PoC sync and the CAD / Creo call with the Wilbert team.</div>
     <div class="grid">
 
       <div class="grp" id="q-models">
@@ -310,12 +285,12 @@
         <li><b>Pickup holes</b> at the ends (the White Venetian has holes, not handles).</li>
         <li><b>Wilbert Venetian debossed logo</b> recessed into the cover (logo art applied as 2D).</li>
         <li><b>Half-moon notches</b> at the end corners (cable-lift points; welded half-moons on the form). Keep as real geometry.</li>
-        <li><b>Side / end picture-frame pattern</b> as a 2D map, not modeled relief (Chris approved 2D).</li>
+        <li><b>Side / end picture-frame pattern</b> as a 2D map, not modeled relief (Wilbert approved 2D).</li>
       </ul>
     </div>
 
     <div class="callout cad">
-      <h3>CAD &amp; file handoff (Edgar, Creo)</h3>
+      <h3>CAD &amp; file handoff (Creo)</h3>
       <ul>
         <li><b>STEP files</b> incoming: one contained full assembly, an exploded view, and each part exported individually with correct names (carapace, cover liner, base liner, cover, base). IGES is the fallback.</li>
         <li><b>No GLB out of their Creo</b> (checked live: only STEP / OBJ). We convert to GLB on our side.</li>
@@ -330,7 +305,7 @@
         <li>Emblem art / references (no CAD exists; model from imagery when we get there).</li>
         <li>Wilbert Venetian logo art for the debossed cover.</li>
         <li>Higher-resolution reference images (only one product photo exists today).</li>
-        <li>The STEP exports from Edgar (in progress).</li>
+        <li>The STEP exports from Wilbert engineering (in progress).</li>
       </ul>
     </div>
 
