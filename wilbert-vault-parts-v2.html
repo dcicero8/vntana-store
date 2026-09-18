@@ -22,12 +22,16 @@
   .figure img{width:100%;display:block;border-radius:3px}
   .pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.35);border:2px solid #fff}
   .pin.ext{background:var(--slate)}
+  .pin.ghost{background:#aeb8c0;border-style:dashed;opacity:.75}
 
   .legend h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);margin:0 0 12px;border-bottom:1px solid var(--line);padding-bottom:8px}
   .row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start}
   .row:last-child{border-bottom:none}
   .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:1px}
   .num.ext{background:var(--slate)}
+  .row.ghost{opacity:.6}
+  .row.ghost .num{background:#aeb8c0}
+  .row .later{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#77828b;border:1px solid #cfd6dc;border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:1px}
   .rc .nm{font-weight:700;font-size:14.5px;color:var(--navy)}
   .rc .cat{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:1px 0 3px}
   .rc .ds{font-size:12.5px;color:#404a52;line-height:1.4}
@@ -141,7 +145,9 @@
           <div class="pin ext" style="left:40%;top:44%">3</div>
           <div class="pin ext" style="left:63%;top:50%">4</div>
           <div class="pin"     style="left:77%;top:50%">5</div>
-          <div class="pin ext" style="left:85%;top:41%">8</div>
+          <div class="pin"     style="left:70%;top:37%">6</div>
+          <div class="pin ghost" style="left:50%;top:41%">7</div>
+          <div class="pin ext" style="left:85%;top:45%">8</div>
         </div>
         <div class="view view-perso">
           <img src="https://www.wilbert.com/assets/1/14/DimLarge/BV-Ven-PlainLiner-7501.jpg" alt="Venetian burial vault, personalized (graphic)">
@@ -150,6 +156,8 @@
           <div class="pin ext" style="left:38%;top:47%">3</div>
           <div class="pin ext" style="left:66%;top:51%">4</div>
           <div class="pin"     style="left:78%;top:48%">5</div>
+          <div class="pin"     style="left:70%;top:37%">6</div>
+          <div class="pin ghost" style="left:48%;top:44%">7</div>
           <div class="pin ext" style="left:85%;top:41%">8</div>
         </div>
       </div>
@@ -182,8 +190,8 @@
         <div class="nm"><a href="#q-interior">Liners (carapace + cover + base)</a> <span class="np">(interior, seen with cover off)</span></div><div class="cat">Plastic (3D)</div>
         <div class="ds">Three plastic parts: carapace, cover liner, base liner. The liner is white inside, which is what makes it a "White" Venetian. Use the current liner only; one liner fits all for our purposes (the customer does not choose the liner).</div></div></div>
 
-      <div class="row"><div class="num">7</div><div class="rc">
-        <div class="nm"><a href="#q-emblems">Emblem</a> <span class="np">(not on the White Venetian V1)</span></div><div class="cat">Hardware (3D)</div>
+      <div class="row ghost"><div class="num">7</div><div class="rc">
+        <div class="nm"><a href="#q-emblems">Emblem</a> <span class="later">later phase</span></div><div class="cat">Hardware (3D) &middot; ghosted, not on the White Venetian</div>
         <div class="ds">Metal emblems glued to the carapace on higher models (13 designs plus Veteran, in bronze / copper / stainless). True 3D, modeled from imagery: Wilbert has no CAD or drawings for these. Out of scope for the White Venetian first build.</div></div></div>
 
       <div class="row"><div class="num ext">8</div><div class="rc">
@@ -342,7 +350,7 @@
   </div>
 
   <div class="foot">
-    <span class="keycap n"></span> 3D mesh / geometry &nbsp;&nbsp; <span class="keycap s"></span> 2D map / decal &nbsp; &middot; &nbsp;
+    <span class="keycap n"></span> 3D mesh / geometry &nbsp;&nbsp; <span class="keycap s"></span> 2D map / decal &nbsp;&nbsp; <span class="keycap" style="background:#aeb8c0"></span> ghosted = later phase, not in this build &nbsp; &middot; &nbsp;
     Full build spec in Wilbert-Vault-3D-Creation-v3.xlsx (Full Scope tab). STEP from Creo carries geometry only; base + cover are the only concrete parts, carapace and liners are plastic. Prints and patterns are 2D maps, not geometry.
   </div>
 
