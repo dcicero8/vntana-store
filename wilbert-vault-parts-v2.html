@@ -92,15 +92,15 @@
   .tiers .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
   .tiers .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
   .tier{border:1px solid var(--line);border-radius:6px;padding:13px 15px;background:#fbfcfd}
-  .tier.now{border-color:#9cccae;background:#eaf6ee}
   .tier h3{margin:0 0 2px;font-size:14px;color:var(--navy)}
   .tier .ph{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-  .tier.now .ph{color:#1c6b3f}
   .tier ul{list-style:none;margin:0;padding:0}
   .tier li{font-size:12.5px;color:#3d4a52;line-height:1.5;padding:3px 0;border-bottom:1px dotted var(--line)}
   .tier li:last-child{border-bottom:none}
   .tier li b{color:var(--navy)}
-  .tier .star{color:#1c6b3f;font-weight:900}
+  .tier li.p1{background:#eaf6ee;border:1px solid #9cccae;border-radius:5px;padding:7px 9px;margin:3px 0}
+  .tier li.p1 b{color:#12401f}
+  .p1b{display:inline-block;background:#1c6b3f;color:#fff;font-weight:900;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:3px;margin-right:6px;vertical-align:1px}
   .tier .mnote{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}
   @media(max-width:760px){ .tiers .grid{grid-template-columns:1fr} }
 
@@ -194,25 +194,25 @@
 
   <div class="tiers">
     <h2>Vault line by tier (build phasing)</h2>
-    <div class="sub">Wilbert groups the vaults into three tiers. We build in that order, starting with the Basic White Venetian.</div>
+    <div class="sub">Wilbert groups the vaults into three tiers. <b>Only the White Venetian is in the current build (Phase 1)</b> &mdash; everything else on this page is a later phase, shown for context.</div>
     <div class="grid">
 
-      <div class="tier now">
+      <div class="tier">
         <h3>Basic Protection</h3>
-        <div class="ph">Phase 1 &mdash; building now</div>
+        <div class="ph">Concrete body + plastic liner</div>
         <ul>
-          <li><span class="star">&#9733;</span> <b>White Venetian</b> &mdash; Phase 1. White plastic liner.</li>
+          <li class="p1"><span class="p1b">Phase 1</span> <b>White Venetian</b> &mdash; building now. White plastic liner.</li>
           <li>Venetian &mdash; same body, cream liner / different color scheme.</li>
           <li>Continental &mdash; flat top and round top; own handles.</li>
           <li>Monticello &mdash; two-bump cover, thin molded-in handles.</li>
           <li>Salute &mdash; a version of the Monticello.</li>
         </ul>
-        <div class="mnote">Concrete base + cover, plastic liners. The cover profile (bump count) and pattern define each one.</div>
+        <div class="mnote">Concrete base + cover, plastic liners. The cover profile (bump count) and pattern define each one. Only the White Venetian is in scope now; the rest are later.</div>
       </div>
 
       <div class="tier">
         <h3>Standard Protection</h3>
-        <div class="ph">Later phase</div>
+        <div class="ph">Later phase &middot; stainless carapace</div>
         <ul>
           <li><b>SST Triune</b> &mdash; stainless carapace, fully configurable.</li>
           <li>Cameo Rose &mdash; pre-configured Triune (set pink colorway).</li>
@@ -223,7 +223,7 @@
 
       <div class="tier">
         <h3>Premium Protection</h3>
-        <div class="ph">Later phase</div>
+        <div class="ph">Later phase &middot; top of line</div>
         <ul>
           <li>Bronze Triune &mdash; Triune body, bronze material.</li>
           <li>Copper Triune &mdash; Triune body, copper material.</li>
