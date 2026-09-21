@@ -130,6 +130,14 @@
     .cad-card .fmt span { display:block; font-weight:400; font-size:.72rem; color:var(--muted); margin-top:.1rem; }
     .dl { font-size:.72rem; font-weight:700; color:var(--blue); border:1px solid #cdd7e2; background:#fff; border-radius:5px; padding:.45rem .8rem; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:.4rem; white-space:nowrap; }
     .dl:hover { background:#f0f6fb; }
+    .dl.live { color:#1e7a2e; border-color:#7fc98b; background:#f2faf3; }
+    .dl.live:hover { background:#e2f4e6; border-color:#3fae4f; }
+    .dl.live svg { stroke:#1e7a2e; }
+    .row.mock { opacity:.45; }
+    .row.mock .dl { cursor:not-allowed; }
+    .livechip { display:inline-block; font-size:.55rem; font-weight:800; letter-spacing:.08em; color:#1e7a2e; background:#e2f4e6; border-radius:3px; padding:.1rem .35rem; margin-left:.4rem; vertical-align:1px; }
+    .gate .go { width:100%; margin-top:1.1rem; background:var(--red); color:#fff; border:0; border-radius:6px; padding:.75rem; font-family:inherit; font-size:.9rem; font-weight:800; cursor:pointer; }
+    .gate .go:hover { background:var(--red-d); }
     .dl svg { flex:none; }
     .chips { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:1.1rem; }
     .chip { font-size:.68rem; font-weight:600; color:#4b5158; background:#fff; border:1px solid var(--line); border-radius:99px; padding:.32rem .7rem; }
@@ -300,12 +308,12 @@
     </div>
     <div class="cad">
       <div class="cad-card">
-        <div class="row"><div class="fmt">Native source (.sldprt)<span>The original CAD you uploaded, preserved</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="row"><div class="fmt">STEP (.step / .stp)<span>Neutral CAD solid, most widely adopted</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="row"><div class="fmt">IGES (.igs)<span>Neutral CAD surface / solid interchange</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="row"><div class="fmt">GLB (.glb)<span>Web and real-time 3D, compressed</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="row"><div class="fmt">USDZ (.usdz)<span>Apple AR Quick Look</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
-        <div class="row"><div class="fmt">FBX (.fbx)<span>DCC tools and game engines</span></div><button class="dl download-cad"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row mock"><div class="fmt">Native source (.sldprt)<span>The original CAD you uploaded, preserved</span></div><button class="dl download-cad" disabled><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">STEP (.step / .stp)<span class="livechip">LIVE</span><span>Neutral CAD solid, most widely adopted</span></div><button class="dl download-cad live" data-fmt="STEP"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row mock"><div class="fmt">IGES (.igs)<span>Neutral CAD surface / solid interchange</span></div><button class="dl download-cad" disabled><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">GLB (.glb)<span class="livechip">LIVE</span><span>Web and real-time 3D, compressed</span></div><button class="dl download-cad live" data-fmt="GLB"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">USDZ (.usdz)<span class="livechip">LIVE</span><span>Apple AR Quick Look</span></div><button class="dl download-cad live" data-fmt="USDZ"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="row"><div class="fmt">FBX (.fbx)<span class="livechip">LIVE</span><span>DCC tools and game engines</span></div><button class="dl download-cad live" data-fmt="FBX"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#005496" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
       </div>
       <div class="cad-side">
         <div class="box">
@@ -352,8 +360,9 @@
         <label>Work Email</label><input type="email" placeholder="you@company.com">
         <label>Company</label><input type="text" placeholder="Company name">
         <label>Format</label>
-        <select><option>Native source (.sldprt)</option><option>STEP (.step)</option><option>IGES (.igs)</option><option>GLB (.glb)</option><option>USDZ (.usdz)</option><option>FBX (.fbx)</option></select>
-        <p class="fine">Demo only, no file is sent. In production this posts the lead to HubSpot and returns the download link.</p>
+        <select id="gateFmt"><option value="STEP">STEP (.step)</option><option value="GLB">GLB (.glb)</option><option value="USDZ">USDZ (.usdz)</option><option value="FBX">FBX (.fbx)</option></select>
+        <button class="go" id="gateGo">Download file</button>
+        <p class="fine">STEP, GLB, USDZ and FBX are real files generated by VNTANA from the uploaded CAD and download immediately. In production the form fields post the lead to HubSpot with the exact part and format requested.</p>
       </div>
     </div>
   </div>
@@ -563,8 +572,44 @@
     var gate = document.getElementById('gate');
     function openGate(){ gate.classList.add('open'); document.body.style.overflow='hidden'; }
     function closeGate(){ gate.classList.remove('open'); document.body.style.overflow=''; }
+    // real download blobs per product (public API, Live Public assets)
+    var API_BASE = 'https://api.vntana.com';
+    var ORG = 'caplugs', WS = 'products';
+    var BLOBS = {};
+    function collectUuids(){
+      var us = [];
+      Object.keys(SERIES).forEach(function(k){
+        var s = SERIES[k];
+        us.push(s.uuid);
+        (s.materials || []).forEach(function(m){ us.push(m.uuid); });
+      });
+      return us.filter(function(u, i){ return us.indexOf(u) === i; });
+    }
+    collectUuids().forEach(function(u){
+      fetch(API_BASE + '/products/' + u + '/organizations/' + ORG + '/clients/' + WS)
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var ms = ((d.response || {}).asset || {}).models || [];
+          var map = {};
+          ms.forEach(function(m){ if (m.conversionFormat && m.modelBlobId) map[m.conversionFormat] = m.modelBlobId; });
+          BLOBS[u] = map;
+        }).catch(function(){});
+    });
+    function downloadFmt(fmt){
+      var uuid = curUuid();
+      var blob = (BLOBS[uuid] || {})[fmt];
+      if (!blob) return;
+      var a = document.createElement('a');
+      a.href = API_BASE + '/assets/products/' + uuid + '/organizations/' + ORG + '/clients/' + WS + '/' + blob;
+      a.download = '';
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+    var gateFmt = document.getElementById('gateFmt');
     document.getElementById('dlBtn').addEventListener('click', openGate);
-    document.querySelectorAll('.download-cad').forEach(function(b){ b.addEventListener('click', openGate); });
+    document.querySelectorAll('.download-cad.live').forEach(function(b){
+      b.addEventListener('click', function(){ gateFmt.value = b.getAttribute('data-fmt'); openGate(); });
+    });
+    document.getElementById('gateGo').addEventListener('click', function(){ downloadFmt(gateFmt.value); closeGate(); });
     document.getElementById('gateX').addEventListener('click', closeGate);
     gate.addEventListener('click', function(e){ if(e.target === gate) closeGate(); });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeGate(); });
