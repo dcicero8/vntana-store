@@ -164,7 +164,7 @@
             <!-- Real VNTANA 3.0.0 configurator (GLB baked into the bundle). Renders behind the poster. -->
             <wilbert-configurator id="cfg" lid-position="off" cover-fit="cover" emblem-fit="contain"></wilbert-configurator>
             <!-- Product photo shown first; click to enter the live 3D. -->
-            <img class="poster" id="poster" src="assets/wilbert/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault">
+            <img class="poster" id="poster" src="assets/wilbert/BV-W-Ven-PlainLiner750.jpg?v=2" alt="White Venetian burial vault">
             <button class="enter3d" id="enter3d" type="button">
               <span class="ico">&#9654;</span><span class="lbl">Interactive&nbsp;3D</span><span class="sub">Click to explore</span>
             </button>
@@ -239,6 +239,9 @@
   /* Real Wilbert Legacy Series prints (the actual cover options). Local copies in assets/wilbert/. */
   var BASE='assets/wilbert/covers/';
   var EBASE='assets/wilbert/emblems/';
+  /* Cache-bust: the edge CDN cached the index fallback for a couple of asset paths during a
+     deploy race; a version query sidesteps the poisoned entries and future ones. */
+  var AV='?v=2';
   var PRINTS=[
     {n:'U.S. Flag',f:'WLP-AmFlag-L2-750.jpg'},{n:'Autumn Lake',f:'WLP-AutumnLake-L2-750.jpg'},
     {n:'Bridge 1',f:'WLP-Bridge-1-L2-750.jpg'},{n:'Bridge 2',f:'WLP-Bridge-2-L2-750.jpg'},
@@ -303,7 +306,7 @@
     var wrap=document.getElementById('covers');
     var h='<div class="cchip plain active" data-cover="Plain">Plain</div>';
     PRINTS.forEach(function(p){
-      var url=BASE+p.f;
+      var url=BASE+p.f+AV;
       h+='<div class="cchip" data-cover="'+p.n+'" data-src="'+url+'"><img loading="lazy" src="'+url+'" alt="'+p.n+'"><span class="nm">'+p.n+'</span></div>';
     });
     wrap.innerHTML=h;
@@ -315,7 +318,7 @@
     var wrap=document.getElementById('emblems');
     var h='<div class="cchip plain active" data-emblem="None">None</div>';
     EMBLEMS.forEach(function(e){
-      var url=EBASE+e.f;
+      var url=EBASE+e.f+AV;
       h+='<div class="cchip" data-emblem="'+e.n+'" data-src="'+url+'"><img loading="lazy" src="'+url+'" alt="'+e.n+'"><span class="nm">'+e.n+'</span></div>';
     });
     wrap.innerHTML=h;
@@ -335,6 +338,25 @@
     /* nudge the renderer in case it sized while covered */
     window.dispatchEvent(new Event('resize'));
   });
+
+  /* ============ initial hero camera ============
+     <wilbert-configurator> auto-frames on load and exposes no camera input, so we set the
+     initial camera on the vntana-viewer inside its shadow DOM. We apply it once, right after
+     the model's first frame, then step back so the user's own rotate/zoom is preserved
+     (the viewer keeps the camera across cover/emblem/lid reloads on its own). */
+  var CAM_ROT='-24deg 25deg 0deg', CAM_DIST='1.9r';
+  (function heroCamera(){
+    var sr=cfg.shadowRoot, v=sr&&sr.querySelector('vntana-viewer');
+    if(!v){ return setTimeout(heroCamera, 150); }
+    var applied=false;
+    var apply=function(){ if(applied) return; applied=true;
+      v.setAttribute('camera-rotation', CAM_ROT);
+      v.setAttribute('camera-distance', CAM_DIST);
+      v.removeEventListener('updates-loaded', apply);
+    };
+    v.addEventListener('updates-loaded', apply);
+    setTimeout(apply, 2000); /* fallback if the first frame already fired */
+  })();
 </script>
 
   <!-- Real VNTANA 3.0.0 configurator bundle (three.js + lit + viewer-module inlined).
