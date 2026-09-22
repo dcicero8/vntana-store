@@ -339,12 +339,17 @@
      initial camera on the vntana-viewer inside its shadow DOM. We apply it once, right after
      the model's first frame, then step back so the user's own rotate/zoom is preserved
      (the viewer keeps the camera across cover/emblem/lid reloads on its own). */
-  /* Pulled from the authored embed view (embed.vntana.com, productUuid 1663b85c... vaultdemo/wilbert). */
+  /* Camera pulled from the authored embed view (embed.vntana.com, productUuid 1663b85c... vaultdemo/wilbert).
+     Lighting: the viewer's default Studio.hdr at exposure 1.4 threw a blown-out specular hotspot on the
+     glossy cover print; dropping exposure to 0.95 and rotating the environment moves that glare off the
+     cover face and evens out the lighting. (Studio.hdr is the only env map available on that host.) */
   var CAM={
     'camera-rotation':'-0.38672700145951727rad 0.7252520134596132rad 0rad',
     'camera-distance':'2.5517548080222427r',
     'camera-target':'0.0864328970010166r -0.022183923568980413r -0.14704529419947254r',
-    'field-of-view':'0.6303545972893357rad'
+    'field-of-view':'0.6303545972893357rad',
+    'exposure':'0.95',
+    'environment-rotation':'0deg 130deg 0deg'
   };
   (function heroCamera(){
     var sr=cfg.shadowRoot, v=sr&&sr.querySelector('vntana-viewer');
