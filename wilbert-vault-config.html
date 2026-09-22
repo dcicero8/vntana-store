@@ -66,7 +66,7 @@
   .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   .carapace{position:absolute;left:20%;top:41%;width:34%;height:12%;transform:rotate(-13deg);border-radius:2px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:Oswald,sans-serif;font-weight:500;color:#fff;font-size:12px;letter-spacing:.03em;text-shadow:0 1px 3px rgba(0,0,0,.5);box-shadow:0 3px 10px rgba(0,0,0,.25);transition:opacity .25s, background .25s;background-size:cover;background-position:center}
   .carapace.plain{background:linear-gradient(135deg,#f3f1ea,#e7e2d4);color:#8a8676;text-shadow:none}
-  .emblem{position:absolute;left:32%;top:44%;width:9%;aspect-ratio:1;transform:rotate(-13deg);border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 30%,#d9b25a,#7c5a17);color:#fff2cf;font-size:13px;box-shadow:0 3px 10px rgba(0,0,0,.35);transition:opacity .25s}
+  .emblem{position:absolute;left:31%;top:43%;width:10%;aspect-ratio:1;transform:rotate(-13deg);border-radius:50%;background:#fff center/85% no-repeat;box-shadow:0 3px 10px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.7);transition:opacity .25s}
   .viewer-note{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9a9481}
   .ribbon{position:absolute;top:14px;left:14px;background:var(--blue);color:#fff;font-family:Oswald,sans-serif;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:2px}
   .stage.off .carapace,.stage.off .emblem{opacity:.25}
@@ -165,7 +165,7 @@
         <!-- configurator controls -->
         <div class="buy">
           <h1>White Venetian&reg;<br>Burial Vault</h1>
-          <div class="tag">Configure the cover and personalization, then send it to your Wilbert funeral professional.</div>
+          <div class="tag">Basic Protection. Provides dependable protection and practical value while helping families meet cemetery requirements and create dignified memorials. Configure the cover and personalization, then send it to your Wilbert funeral professional.</div>
           <div class="price">Estimated pricing at your funeral home <small>MSRP VARIES</small></div>
 
           <div class="grp">
@@ -175,13 +175,7 @@
 
           <div class="grp">
             <h2>Emblem <b id="emblemLabel">None</b></h2>
-            <div class="opts" id="emblems">
-              <button class="opt active" data-emblem="None">None</button>
-              <button class="opt" data-emblem="Cross">Cross</button>
-              <button class="opt" data-emblem="Wreath">Wreath</button>
-              <button class="opt" data-emblem="Praying Hands">Praying Hands</button>
-              <button class="opt" data-emblem="Veteran">Veteran</button>
-            </div>
+            <div class="covergrid" id="emblems"></div>
             <div class="vnnote" style="text-align:left;margin-top:8px">An emblem replaces the cover print (one or the other).</div>
           </div>
 
@@ -269,6 +263,15 @@
     {n:'Marble White',f:'WLP-Marble-W-L2-750.jpg'},{n:'Star of David Gold',f:'WLP-StarOfDavid-G-L2-750.jpg'},
     {n:'Star of David White',f:'WLP-StarOfDavid-W-L2-750.jpg'}
   ];
+  /* Real Wilbert Life Expressions emblems (the actual emblem options). */
+  var EMBLEMS=[
+    {n:'Wreath',f:'Wreathweb.jpg'},{n:'Cross',f:'LifeExp-Cross-SST.jpg'},
+    {n:'Crucifix',f:'LifeExp-Crucifix-SST.jpg'},{n:'Praying Hands',f:'LifeExp-Praying-Hands-J592.jpg'},
+    {n:'Roses',f:'LifeExp-Roses-J539.jpg'},{n:'Palm Leaf',f:'LifeExp-Palm-Leaf-J536.jpg'},
+    {n:'Eastern Star',f:'LifeExp-Eastern-Star-J590.jpg'},{n:'Russian Orthodox Cross',f:'LifeExp-Russian-Orth-Cross-J545.jpg'},
+    {n:'U.S. Air Force',f:'LifeExp-USAF-J554.jpg'},{n:'U.S. Army',f:'LifeExp-Army-J548.jpg'},
+    {n:'U.S. Marine Corps',f:'LifeExp-USMC-J594.jpg'},{n:'U.S. Navy',f:'LifeExp-Navy-J5551.jpg'}
+  ];
 
   var configurator = {
     position:'on', cover:'Plain', coverSrc:null, emblem:'None',
@@ -280,19 +283,19 @@
       else{ carapace.className='carapace'; carapace.style.backgroundImage='url("'+src+'")'; carapace.textContent=''; }
       document.getElementById('coverLabel').textContent=name;
     },
-    setEmblem:function(name){
-      this.emblem=name;
+    setEmblem:function(name, src){
+      this.emblem=name; this.emblemSrc=src||null;
       document.getElementById('emblemLabel').textContent=name;
-      if(name==='None'){ emblemEl.style.display='none'; return; }
+      if(name==='None'){ emblemEl.style.display='none'; emblemEl.style.backgroundImage=''; return; }
       this.cover='Plain'; this.coverSrc=null; syncCoverButtons('Plain');
       carapace.className='carapace plain'; carapace.style.backgroundImage=''; carapace.textContent='Plain';
       document.getElementById('coverLabel').textContent='Plain';
-      emblemEl.style.display='flex'; emblemEl.textContent=name.charAt(0);
+      emblemEl.style.display='block'; emblemEl.style.backgroundImage= src?'url("'+src+'")':'';
     }
   };
 
   function syncCoverButtons(name){ document.querySelectorAll('#covers .cchip').forEach(function(b){ b.classList.toggle('active', b.dataset.cover===name); }); }
-  function syncEmblemButtons(name){ document.querySelectorAll('#emblems .opt').forEach(function(b){ b.classList.toggle('active', b.dataset.emblem===name); }); }
+  function syncEmblemButtons(name){ document.querySelectorAll('#emblems .cchip').forEach(function(b){ b.classList.toggle('active', b.dataset.emblem===name); }); }
 
   (function renderCovers(){
     var wrap=document.getElementById('covers');
@@ -306,9 +309,18 @@
       ch.addEventListener('click', function(){ syncCoverButtons(ch.dataset.cover); configurator.setCover(ch.dataset.cover, ch.dataset.src||null); });
     });
   })();
-  document.querySelectorAll('#emblems .opt').forEach(function(b){
-    b.addEventListener('click', function(){ syncEmblemButtons(b.dataset.emblem); configurator.setEmblem(b.dataset.emblem); });
-  });
+  (function renderEmblems(){
+    var wrap=document.getElementById('emblems');
+    var h='<div class="cchip plain active" data-emblem="None">None</div>';
+    EMBLEMS.forEach(function(e){
+      var url=BASE+e.f;
+      h+='<div class="cchip" data-emblem="'+e.n+'" data-src="'+url+'"><img loading="lazy" src="'+url+'" alt="'+e.n+'"><span class="nm">'+e.n+'</span></div>';
+    });
+    wrap.innerHTML=h;
+    wrap.querySelectorAll('.cchip').forEach(function(ch){
+      ch.addEventListener('click', function(){ syncEmblemButtons(ch.dataset.emblem); configurator.setEmblem(ch.dataset.emblem, ch.dataset.src||null); });
+    });
+  })();
   document.querySelectorAll('#lid .opt').forEach(function(b){
     b.addEventListener('click', function(){ document.querySelectorAll('#lid .opt').forEach(function(x){x.classList.toggle('active',x===b);}); configurator.setPosition(b.dataset.pos); });
   });
