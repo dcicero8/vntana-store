@@ -162,7 +162,7 @@
         <div>
           <div class="stage" id="stage">
             <!-- Real VNTANA 3.0.0 configurator (GLB baked into the bundle). Renders behind the poster. -->
-            <wilbert-configurator id="cfg" lid-position="off" cover-fit="cover" emblem-fit="contain"></wilbert-configurator>
+            <wilbert-configurator id="cfg" lid-position="off" cover-fit="fill" emblem-fit="contain"></wilbert-configurator>
             <!-- Product photo shown first; click to enter the live 3D. -->
             <img class="poster" id="poster" src="assets/wilbert/BV-W-Ven-PlainLiner750.jpg?v=2" alt="White Venetian burial vault">
             <button class="enter3d" id="enter3d" type="button">
@@ -241,7 +241,7 @@
   var EBASE='assets/wilbert/emblems/';
   /* Cache-bust: the edge CDN cached the index fallback for a couple of asset paths during a
      deploy race; a version query sidesteps the poisoned entries and future ones. */
-  var AV='?v=2';
+  var AV='?v=3';
   var PRINTS=[
     {n:'U.S. Flag',f:'WLP-AmFlag-L2-750.jpg'},{n:'Autumn Lake',f:'WLP-AutumnLake-L2-750.jpg'},
     {n:'Bridge 1',f:'WLP-Bridge-1-L2-750.jpg'},{n:'Bridge 2',f:'WLP-Bridge-2-L2-750.jpg'},
@@ -264,15 +264,10 @@
     {n:'Mother 2',f:'WLP-Mother-2-L2-750.jpg'},{n:'Music',f:'WLP-Music-L2-750.jpg'},
     {n:'Police',f:'WLP-Police-L2-750.jpg'},{n:'Red Barn',f:'WLP-RedBarn-L2-750.jpg'},
     {n:'Red Roses',f:'WLP-R-Roses-L2-750.jpg'},{n:'Roses on Silk',f:'WLP-Roses_On_Silk-L2-750.jpg'},
-    {n:'Stained Glass Marble Gold',f:'WLP-Stained-Glass-Marble-G-L2-750.jpg'},{n:'Stained Glass Marble White',f:'WLP-Stained-Glass-Marble-W-L2-750.jpg'},
     {n:'School',f:'WLP-School-L2-750.jpg'},{n:'Sunrise/Sunset 1',f:'WLP-Sunrise-Sunset-L2-750.jpg'},
     {n:'Sunrise/Sunset 2',f:'WLP-Sunrise-Sunset-3-L2.jpg-750.jpg'},{n:'Three Crosses',f:'WLP-3-Crosses-L2-7501.jpg'},
     {n:'Tobacco Field',f:'WLP-TobaccoField-750.jpg'},{n:'Tobacco Barn',f:'WLP-TobBarn-L2-750.jpg'},
-    {n:'Tropical Island',f:'WLP-Tropical-Island-L2-750.jpg'},{n:'Whitetail Buck',f:'WLP-WhitetailBuck-L2-750.jpg'},
-    {n:'Our Lady of Guadalupe',f:'WLP-OurLadyOfGuadalupe-Clouds-750.jpg'},{n:'Cross Gold',f:'WLP-Cross-G-L2-750.jpg'},
-    {n:'Cross White',f:'WLP-Cross-S-L2-750.jpg'},{n:'Marble Gold',f:'WLP-Marble-G-L2-750.jpg'},
-    {n:'Marble White',f:'WLP-Marble-W-L2-750.jpg'},{n:'Star of David Gold',f:'WLP-StarOfDavid-G-L2-750.jpg'},
-    {n:'Star of David White',f:'WLP-StarOfDavid-W-L2-750.jpg'}
+    {n:'Tropical Island',f:'WLP-Tropical-Island-L2-750.jpg'},{n:'Whitetail Buck',f:'WLP-WhitetailBuck-L2-750.jpg'}
   ];
   /* Emblem set (styled service medallions Derek supplied — the only ones to show for now). */
   var EMBLEMS=[
