@@ -88,6 +88,13 @@
   .opt:hover{border-color:var(--blue);color:var(--blue)}
   .opt.active{background:var(--blue);border-color:var(--blue);color:#fff}
   .lidrow{display:flex;gap:9px}
+  .covergrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px;max-height:308px;overflow-y:auto;padding:2px 4px 8px 2px}
+  .cchip{border:1.5px solid var(--line);border-radius:3px;overflow:hidden;cursor:pointer;background:var(--paper);aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative}
+  .cchip img{width:100%;height:100%;object-fit:cover;display:block}
+  .cchip.plain{font-family:Oswald,sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:#9a9481}
+  .cchip.active{border-color:var(--blue);box-shadow:0 0 0 1.5px var(--blue)}
+  .cchip .nm{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);color:#fff;font-size:8.5px;line-height:1.15;padding:2px 3px;opacity:0;transition:.15s}
+  .cchip:hover .nm{opacity:1}
 
   .cart{width:100%;background:var(--blue);color:#fff;border:0;border-radius:0;padding:18px;font-family:Oswald,sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:1px;font-size:16px;cursor:pointer;margin-top:24px}
   .cart:hover{background:var(--ox)}
@@ -163,14 +170,7 @@
 
           <div class="grp">
             <h2>Cover <b id="coverLabel">Plain</b></h2>
-            <div class="opts" id="covers">
-              <button class="opt active" data-cover="Plain">Plain white</button>
-              <button class="opt" data-cover="U.S. Flag">U.S. Flag</button>
-              <button class="opt" data-cover="Going Home">Going Home</button>
-              <button class="opt" data-cover="Praying Hands">Praying Hands</button>
-              <button class="opt" data-cover="Red Roses">Red Roses</button>
-              <button class="opt" data-cover="Three Crosses">Three Crosses</button>
-            </div>
+            <div class="covergrid" id="covers"></div>
           </div>
 
           <div class="grp">
@@ -235,42 +235,77 @@
   var stage = document.getElementById('stage');
   var carapace = document.getElementById('carapace');
   var emblemEl = document.getElementById('emblem');
-  var COVER_TINT = {
-    'Plain':null,
-    'U.S. Flag':'linear-gradient(180deg,#b22234 33%,#fff 33% 66%,#3c3b6e 66%)',
-    'Going Home':'linear-gradient(135deg,#7fa8c9,#dfe8ee)',
-    'Praying Hands':'linear-gradient(135deg,#8a7bb6,#c9bfe0)',
-    'Red Roses':'linear-gradient(135deg,#7a1220,#c34b5a)',
-    'Three Crosses':'linear-gradient(135deg,#6b5a3a,#c9b48a)'
-  };
+  /* Real Wilbert Legacy Series prints (the actual cover options). */
+  var BASE='https://www.wilbert.com/assets/1/14/';
+  var PRINTS=[
+    {n:'U.S. Flag',f:'WLP-AmFlag-L2-750.jpg'},{n:'Autumn Lake',f:'WLP-AutumnLake-L2-750.jpg'},
+    {n:'Bridge 1',f:'WLP-Bridge-1-L2-750.jpg'},{n:'Bridge 2',f:'WLP-Bridge-2-L2-750.jpg'},
+    {n:'Cardinal',f:'WLP-Cardinal-L2-750.jpg'},{n:'Clouds',f:'WLP-Clouds-L2-750.jpg'},
+    {n:'Combine',f:'WLP-Combine-L2-750.jpg'},{n:'Corn',f:'WLP-Corn-L2-750.jpg'},
+    {n:'Country Road',f:'WLP-CountryRoad-L2-750.jpg'},{n:'Crucifix on Bible',f:'WLP-Crucifix-Bible-L2-750.jpg'},
+    {n:'Dock',f:'WLP-Dock-L2-750.jpg'},{n:'EMT',f:'WLP-EMT-L2-750.jpg'},
+    {n:'Farm Field and Tractor',f:'WLP-SunsetFarmFieldTractor-L2-750.jpg'},{n:'Father 1',f:'WLP-Father-1-L2-750.jpg'},
+    {n:'Father 2',f:'WLP-Father-2-L2-750.jpg'},{n:'Firefighter',f:'WLP-Firefighter-L2-750.jpg'},
+    {n:'Fisherman',f:'WLP-Fisherman-L2-750.jpg'},{n:'Fisherman with Dog',f:'WLP-Fisherman-Dog-L2-750.jpg'},
+    {n:'Footprints',f:'WLP-Footprints-L2-750.jpg'},{n:'Footprints with Poem',f:'WLP-Footprints-Poem-L2-750.jpg'},
+    {n:'Going Home',f:'WLP-GoingHome-L2-750.jpg'},{n:'Golf Course',f:'WLP-GolfCourse-L2-750.jpg'},
+    {n:'Golfer',f:'WLP-Golfer-L2-750.jpg'},{n:'Gone Fishin',f:'WLP-GoneFishin-L2-750.jpg'},
+    {n:'Green Field and Barn',f:'WLP-GFieldRBarn-L2-750.jpg'},{n:'Horses',f:'WLP-Horse-L2-750.jpg'},
+    {n:'Irish Blessing',f:'WLP-IrishBlessing-L2-750.jpg'},{n:'Jesus',f:'WLP-Jesus-L2-750.jpg'},
+    {n:'Jesus at Dawn',f:'WLP-Jesus-Dwn-7501.jpg'},{n:'Jewish 1',f:'WLP-Jewish-1-L2-750.jpg'},
+    {n:'Jewish 2',f:'WLP-Jewish-2-L2-750.jpg'},{n:'Motorcycle',f:'WLP-Motorcycle_1-L2-750.jpg'},
+    {n:'Motorcycle 2',f:'WLP-Motorcycle_2-L2-750.jpg'},{n:'Pieta',f:'WLP-Pieta-L2-750.jpg'},
+    {n:'Lighthouse',f:'WLP-Lighthouse-L2-750.jpg'},{n:'Mother 1',f:'WLP-Mother-1-L2-750.jpg'},
+    {n:'Mother 2',f:'WLP-Mother-2-L2-750.jpg'},{n:'Music',f:'WLP-Music-L2-750.jpg'},
+    {n:'Police',f:'WLP-Police-L2-750.jpg'},{n:'Red Barn',f:'WLP-RedBarn-L2-750.jpg'},
+    {n:'Red Roses',f:'WLP-R-Roses-L2-750.jpg'},{n:'Roses on Silk',f:'WLP-Roses_On_Silk-L2-750.jpg'},
+    {n:'Stained Glass Marble Gold',f:'WLP-Stained-Glass-Marble-G-L2-750.jpg'},{n:'Stained Glass Marble White',f:'WLP-Stained-Glass-Marble-W-L2-750.jpg'},
+    {n:'School',f:'WLP-School-L2-750.jpg'},{n:'Sunrise/Sunset 1',f:'WLP-Sunrise-Sunset-L2-750.jpg'},
+    {n:'Sunrise/Sunset 2',f:'WLP-Sunrise-Sunset-3-L2.jpg-750.jpg'},{n:'Three Crosses',f:'WLP-3-Crosses-L2-7501.jpg'},
+    {n:'Tobacco Field',f:'WLP-TobaccoField-750.jpg'},{n:'Tobacco Barn',f:'WLP-TobBarn-L2-750.jpg'},
+    {n:'Tropical Island',f:'WLP-Tropical-Island-L2-750.jpg'},{n:'Whitetail Buck',f:'WLP-WhitetailBuck-L2-750.jpg'},
+    {n:'Our Lady of Guadalupe',f:'WLP-OurLadyOfGuadalupe-Clouds-750.jpg'},{n:'Cross Gold',f:'WLP-Cross-G-L2-750.jpg'},
+    {n:'Cross White',f:'WLP-Cross-S-L2-750.jpg'},{n:'Marble Gold',f:'WLP-Marble-G-L2-750.jpg'},
+    {n:'Marble White',f:'WLP-Marble-W-L2-750.jpg'},{n:'Star of David Gold',f:'WLP-StarOfDavid-G-L2-750.jpg'},
+    {n:'Star of David White',f:'WLP-StarOfDavid-W-L2-750.jpg'}
+  ];
+
   var configurator = {
-    position:'on', cover:'Plain', emblem:'None',
+    position:'on', cover:'Plain', coverSrc:null, emblem:'None',
     setPosition:function(p){ this.position=p; stage.classList.toggle('off', p==='off'); },
-    setCover:function(name){
-      this.cover=name;
+    setCover:function(name, src){
+      this.cover=name; this.coverSrc=src||null;
       if(name && name!=='Plain'){ this.emblem='None'; syncEmblemButtons('None'); emblemEl.style.display='none'; }
-      var tint=COVER_TINT[name];
-      if(!tint){ carapace.className='carapace plain'; carapace.style.background=''; carapace.textContent='Plain'; }
-      else{ carapace.className='carapace'; carapace.style.background=tint; carapace.textContent=name; }
+      if(!src){ carapace.className='carapace plain'; carapace.style.backgroundImage=''; carapace.textContent='Plain'; }
+      else{ carapace.className='carapace'; carapace.style.backgroundImage='url("'+src+'")'; carapace.textContent=''; }
       document.getElementById('coverLabel').textContent=name;
     },
     setEmblem:function(name){
       this.emblem=name;
       document.getElementById('emblemLabel').textContent=name;
       if(name==='None'){ emblemEl.style.display='none'; return; }
-      this.cover='Plain'; syncCoverButtons('Plain');
-      carapace.className='carapace plain'; carapace.style.background=''; carapace.textContent='Plain';
+      this.cover='Plain'; this.coverSrc=null; syncCoverButtons('Plain');
+      carapace.className='carapace plain'; carapace.style.backgroundImage=''; carapace.textContent='Plain';
       document.getElementById('coverLabel').textContent='Plain';
       emblemEl.style.display='flex'; emblemEl.textContent=name.charAt(0);
     }
   };
 
-  function syncCoverButtons(name){ document.querySelectorAll('#covers .opt').forEach(function(b){ b.classList.toggle('active', b.dataset.cover===name); }); }
+  function syncCoverButtons(name){ document.querySelectorAll('#covers .cchip').forEach(function(b){ b.classList.toggle('active', b.dataset.cover===name); }); }
   function syncEmblemButtons(name){ document.querySelectorAll('#emblems .opt').forEach(function(b){ b.classList.toggle('active', b.dataset.emblem===name); }); }
 
-  document.querySelectorAll('#covers .opt').forEach(function(b){
-    b.addEventListener('click', function(){ syncCoverButtons(b.dataset.cover); configurator.setCover(b.dataset.cover); });
-  });
+  (function renderCovers(){
+    var wrap=document.getElementById('covers');
+    var h='<div class="cchip plain active" data-cover="Plain">Plain</div>';
+    PRINTS.forEach(function(p){
+      var url=BASE+p.f;
+      h+='<div class="cchip" data-cover="'+p.n+'" data-src="'+url+'"><img loading="lazy" src="'+url+'" alt="'+p.n+'"><span class="nm">'+p.n+'</span></div>';
+    });
+    wrap.innerHTML=h;
+    wrap.querySelectorAll('.cchip').forEach(function(ch){
+      ch.addEventListener('click', function(){ syncCoverButtons(ch.dataset.cover); configurator.setCover(ch.dataset.cover, ch.dataset.src||null); });
+    });
+  })();
   document.querySelectorAll('#emblems .opt').forEach(function(b){
     b.addEventListener('click', function(){ syncEmblemButtons(b.dataset.emblem); configurator.setEmblem(b.dataset.emblem); });
   });
