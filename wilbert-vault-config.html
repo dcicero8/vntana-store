@@ -64,6 +64,8 @@
   .stage{position:relative;background:var(--cream);border-radius:4px;overflow:hidden;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
   .stage .base{width:100%;height:100%;object-fit:contain;padding:3%}
   .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .stage wilbert-configurator{position:absolute;inset:0;display:block;width:100%;height:100%}
+  .ribbon{z-index:5}
   .carapace{position:absolute;left:20%;top:41%;width:34%;height:12%;transform:rotate(-13deg);border-radius:2px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:Oswald,sans-serif;font-weight:500;color:#fff;font-size:12px;letter-spacing:.03em;text-shadow:0 1px 3px rgba(0,0,0,.5);box-shadow:0 3px 10px rgba(0,0,0,.25);transition:opacity .25s, background .25s;background-size:cover;background-position:center}
   .carapace.plain{background:linear-gradient(135deg,#f3f1ea,#e7e2d4);color:#8a8676;text-shadow:none}
   .emblem{position:absolute;left:31%;top:43%;width:10%;aspect-ratio:1;transform:rotate(-13deg);border-radius:50%;background:#fff center/85% no-repeat;box-shadow:0 3px 10px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.7);transition:opacity .25s}
@@ -149,17 +151,10 @@
         <div>
           <div class="stage" id="stage">
             <div class="ribbon">Interactive 3D</div>
-            <!-- When Neven's configurator/asset is ready, replace this base image with the VNTANA viewer iframe. -->
-            <img class="base" src="assets/wilbert/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault">
-            <div class="carapace plain" id="carapace">Plain</div>
-            <div class="emblem" id="emblem" style="display:none"></div>
-            <div class="viewer-note">Drag to rotate &middot; live 3D coming from the configurator</div>
+            <!-- Real VNTANA 3.0.0 configurator (GLB baked into the bundle). Registered by the module below. -->
+            <wilbert-configurator id="cfg" lid-position="on" cover-fit="cover" emblem-fit="contain"></wilbert-configurator>
           </div>
-          <div class="thumbs">
-            <div class="t active">Hero</div>
-            <div class="t">Cover on</div>
-            <div class="t">Detail</div>
-          </div>
+          <div class="viewer-note" style="position:static;margin-top:10px">Drag to rotate &middot; scroll to zoom &middot; live 3D powered by VNTANA</div>
         </div>
 
         <!-- configurator controls -->
@@ -176,7 +171,7 @@
           <div class="grp">
             <h2>Emblem <b id="emblemLabel">None</b></h2>
             <div class="covergrid" id="emblems"></div>
-            <div class="vnnote" style="text-align:left;margin-top:8px">An emblem replaces the cover print (one or the other).</div>
+            <div class="vnnote" style="text-align:left;margin-top:8px">Cover print and emblem are independent &mdash; you can show either, both, or neither.</div>
           </div>
 
           <div class="grp">
@@ -223,12 +218,11 @@
   document.getElementById('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') tryPw(); });
 
   /* ============ configurator interface ============
-     This stub matches the interface Neven is providing (position / cover / emblem).
-     When the real 3D configurator + asset are ready, replace the stage <img> with the
-     VNTANA viewer iframe and point these setters at the real `configurator` object. */
-  var stage = document.getElementById('stage');
-  var carapace = document.getElementById('carapace');
-  var emblemEl = document.getElementById('emblem');
+     Drives the real VNTANA 3.0.0 <wilbert-configurator> element (registered by the module
+     tag at the bottom of this file). cover and emblem are orthogonal per Neven / the README:
+     setting one never clears the other. Lit preserves any property set before the element
+     upgrades, so wiring clicks before the module finishes loading is safe. */
+  var cfg = document.getElementById('cfg');
   /* Real Wilbert Legacy Series prints (the actual cover options). Local copies in assets/wilbert/. */
   var BASE='assets/wilbert/covers/';
   var EBASE='assets/wilbert/emblems/';
@@ -275,24 +269,12 @@
   ];
 
   var configurator = {
-    position:'on', cover:'Plain', coverSrc:null, emblem:'None',
-    setPosition:function(p){ this.position=p; stage.classList.toggle('off', p==='off'); },
-    setCover:function(name, src){
-      this.cover=name; this.coverSrc=src||null;
-      if(name && name!=='Plain'){ this.emblem='None'; syncEmblemButtons('None'); emblemEl.style.display='none'; }
-      if(!src){ carapace.className='carapace plain'; carapace.style.backgroundImage=''; carapace.textContent='Plain'; }
-      else{ carapace.className='carapace'; carapace.style.backgroundImage='url("'+src+'")'; carapace.textContent=''; }
-      document.getElementById('coverLabel').textContent=name;
-    },
-    setEmblem:function(name, src){
-      this.emblem=name; this.emblemSrc=src||null;
-      document.getElementById('emblemLabel').textContent=name;
-      if(name==='None'){ emblemEl.style.display='none'; emblemEl.style.backgroundImage=''; return; }
-      this.cover='Plain'; this.coverSrc=null; syncCoverButtons('Plain');
-      carapace.className='carapace plain'; carapace.style.backgroundImage=''; carapace.textContent='Plain';
-      document.getElementById('coverLabel').textContent='Plain';
-      emblemEl.style.display='block'; emblemEl.style.backgroundImage= src?'url("'+src+'")':'';
-    }
+    /* lid-position: on seats the lid, off shows it displaced as authored. */
+    setPosition:function(p){ cfg.lidPosition = p; },
+    /* cover: image URL for the Cover_Print mesh; empty string hides the decal. */
+    setCover:function(name, src){ cfg.cover = src || ''; document.getElementById('coverLabel').textContent = name; },
+    /* emblem: image URL for the Emblem mesh; empty string hides the decal. Independent of cover. */
+    setEmblem:function(name, src){ cfg.emblem = src || ''; document.getElementById('emblemLabel').textContent = name; }
   };
 
   function syncCoverButtons(name){ document.querySelectorAll('#covers .cchip').forEach(function(b){ b.classList.toggle('active', b.dataset.cover===name); }); }
@@ -326,5 +308,9 @@
     b.addEventListener('click', function(){ document.querySelectorAll('#lid .opt').forEach(function(x){x.classList.toggle('active',x===b);}); configurator.setPosition(b.dataset.pos); });
   });
 </script>
+
+  <!-- Real VNTANA 3.0.0 configurator bundle (three.js + lit + viewer-module inlined).
+       Side-effect: registers <wilbert-configurator>. GLB is baked into the bundle. -->
+  <script type="module" src="assets/wilbert/configurator/index.js"></script>
 </body>
 </html>
