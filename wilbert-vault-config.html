@@ -150,7 +150,7 @@
           <div class="stage" id="stage">
             <div class="ribbon">Interactive 3D</div>
             <!-- When Neven's configurator/asset is ready, replace this base image with the VNTANA viewer iframe. -->
-            <img class="base" src="https://www.wilbert.com/assets/1/14/DimLarge/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault">
+            <img class="base" src="assets/wilbert/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault">
             <div class="carapace plain" id="carapace">Plain</div>
             <div class="emblem" id="emblem" style="display:none"></div>
             <div class="viewer-note">Drag to rotate &middot; live 3D coming from the configurator</div>
@@ -229,8 +229,9 @@
   var stage = document.getElementById('stage');
   var carapace = document.getElementById('carapace');
   var emblemEl = document.getElementById('emblem');
-  /* Real Wilbert Legacy Series prints (the actual cover options). */
-  var BASE='https://www.wilbert.com/assets/1/14/';
+  /* Real Wilbert Legacy Series prints (the actual cover options). Local copies in assets/wilbert/. */
+  var BASE='assets/wilbert/covers/';
+  var EBASE='assets/wilbert/emblems/';
   var PRINTS=[
     {n:'U.S. Flag',f:'WLP-AmFlag-L2-750.jpg'},{n:'Autumn Lake',f:'WLP-AutumnLake-L2-750.jpg'},
     {n:'Bridge 1',f:'WLP-Bridge-1-L2-750.jpg'},{n:'Bridge 2',f:'WLP-Bridge-2-L2-750.jpg'},
@@ -313,7 +314,7 @@
     var wrap=document.getElementById('emblems');
     var h='<div class="cchip plain active" data-emblem="None">None</div>';
     EMBLEMS.forEach(function(e){
-      var url=BASE+e.f;
+      var url=EBASE+e.f;
       h+='<div class="cchip" data-emblem="'+e.n+'" data-src="'+url+'"><img loading="lazy" src="'+url+'" alt="'+e.n+'"><span class="nm">'+e.n+'</span></div>';
     });
     wrap.innerHTML=h;
