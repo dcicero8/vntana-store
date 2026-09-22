@@ -66,6 +66,17 @@
   .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   .stage wilbert-configurator{position:absolute;inset:0;display:block;width:100%;height:100%}
   .ribbon{z-index:5}
+  /* poster (real product photo) shown first; click Interactive 3D to reveal the live model */
+  .stage .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:4%;background:var(--cream);z-index:3}
+  .enter3d{position:absolute;z-index:4;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;border:0;cursor:pointer;background:rgba(0,91,148,.94);color:#fff;padding:13px 20px;border-radius:3px;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+  .enter3d:hover{background:var(--ox)}
+  .enter3d .ico{width:26px;height:26px;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
+  .enter3d .lbl{font-family:Oswald,sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:.08em;font-size:14px;line-height:1}
+  .enter3d .sub{font-size:10.5px;font-weight:600;letter-spacing:.03em;opacity:.85;margin-left:2px}
+  .stagebar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .stagebar .vnote{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9a9481}
+  .stagebar .lidrow{display:flex;gap:8px}
+  .stagebar .opt{font-size:12px;padding:8px 13px}
   .carapace{position:absolute;left:20%;top:41%;width:34%;height:12%;transform:rotate(-13deg);border-radius:2px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:Oswald,sans-serif;font-weight:500;color:#fff;font-size:12px;letter-spacing:.03em;text-shadow:0 1px 3px rgba(0,0,0,.5);box-shadow:0 3px 10px rgba(0,0,0,.25);transition:opacity .25s, background .25s;background-size:cover;background-position:center}
   .carapace.plain{background:linear-gradient(135deg,#f3f1ea,#e7e2d4);color:#8a8676;text-shadow:none}
   .emblem{position:absolute;left:31%;top:43%;width:10%;aspect-ratio:1;transform:rotate(-13deg);border-radius:50%;background:#fff center/85% no-repeat;box-shadow:0 3px 10px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.7);transition:opacity .25s}
@@ -150,11 +161,21 @@
         <!-- media / 3D stage -->
         <div>
           <div class="stage" id="stage">
-            <div class="ribbon">Interactive 3D</div>
-            <!-- Real VNTANA 3.0.0 configurator (GLB baked into the bundle). Registered by the module below. -->
-            <wilbert-configurator id="cfg" lid-position="off" cover-fit="cover" emblem-fit="contain"></wilbert-configurator>
+            <!-- Real VNTANA 3.0.0 configurator (GLB baked into the bundle). Renders behind the poster. -->
+            <wilbert-configurator id="cfg" lid-position="off" cover-fit="fill" emblem-fit="contain"></wilbert-configurator>
+            <!-- Product photo shown first; click to enter the live 3D. -->
+            <img class="poster" id="poster" src="assets/wilbert/BV-W-Ven-PlainLiner750.jpg" alt="White Venetian burial vault">
+            <button class="enter3d" id="enter3d" type="button">
+              <span class="ico">&#9654;</span><span class="lbl">Interactive&nbsp;3D</span><span class="sub">Click to explore</span>
+            </button>
           </div>
-          <div class="viewer-note" style="position:static;margin-top:10px">Drag to rotate &middot; scroll to zoom &middot; live 3D powered by VNTANA</div>
+          <div class="stagebar" id="stagebar" style="display:none">
+            <div class="vnote">Drag to rotate &middot; scroll to zoom</div>
+            <div class="lidrow opts" id="lid">
+              <button class="opt" data-pos="on">Cover on</button>
+              <button class="opt active" data-pos="off">Cover off</button>
+            </div>
+          </div>
         </div>
 
         <!-- configurator controls -->
@@ -171,15 +192,7 @@
           <div class="grp">
             <h2>Emblem <b id="emblemLabel">None</b></h2>
             <div class="covergrid" id="emblems"></div>
-            <div class="vnnote" style="text-align:left;margin-top:8px">Cover print and emblem are independent &mdash; you can show either, both, or neither.</div>
-          </div>
-
-          <div class="grp">
-            <h2>Cover position</h2>
-            <div class="lidrow opts" id="lid">
-              <button class="opt" data-pos="on">Cover on</button>
-              <button class="opt active" data-pos="off">Cover off (hero)</button>
-            </div>
+            <div class="vnnote" style="text-align:left;margin-top:8px">Choose a cover print <b>or</b> an emblem &mdash; not both.</div>
           </div>
 
           <button class="cart" type="button">Add to My Plan</button>
@@ -268,10 +281,19 @@
   var configurator = {
     /* lid-position: on seats the lid, off shows it displaced as authored. */
     setPosition:function(p){ cfg.lidPosition = p; },
-    /* cover: image URL for the Cover_Print mesh; empty string hides the decal. */
-    setCover:function(name, src){ cfg.cover = src || ''; document.getElementById('coverLabel').textContent = name; },
-    /* emblem: image URL for the Emblem mesh; empty string hides the decal. Independent of cover. */
-    setEmblem:function(name, src){ cfg.emblem = src || ''; document.getElementById('emblemLabel').textContent = name; }
+    /* cover: image URL for the Cover_Print mesh. Cover and emblem are mutually exclusive
+       in this demo, so applying a cover clears any emblem. */
+    setCover:function(name, src){
+      cfg.cover = src || '';
+      document.getElementById('coverLabel').textContent = name;
+      if(src){ cfg.emblem=''; document.getElementById('emblemLabel').textContent='None'; syncEmblemButtons('None'); }
+    },
+    /* emblem: image URL for the Emblem mesh. Applying an emblem clears any cover print. */
+    setEmblem:function(name, src){
+      cfg.emblem = src || '';
+      document.getElementById('emblemLabel').textContent = name;
+      if(src){ cfg.cover=''; document.getElementById('coverLabel').textContent='Plain'; syncCoverButtons('Plain'); }
+    }
   };
 
   function syncCoverButtons(name){ document.querySelectorAll('#covers .cchip').forEach(function(b){ b.classList.toggle('active', b.dataset.cover===name); }); }
@@ -303,6 +325,15 @@
   })();
   document.querySelectorAll('#lid .opt').forEach(function(b){
     b.addEventListener('click', function(){ document.querySelectorAll('#lid .opt').forEach(function(x){x.classList.toggle('active',x===b);}); configurator.setPosition(b.dataset.pos); });
+  });
+
+  /* Poster -> live 3D. The configurator renders behind the poster from load, so revealing is instant. */
+  document.getElementById('enter3d').addEventListener('click', function(){
+    document.getElementById('poster').style.display='none';
+    this.style.display='none';
+    document.getElementById('stagebar').style.display='flex';
+    /* nudge the renderer in case it sized while covered */
+    window.dispatchEvent(new Event('resize'));
   });
 </script>
 
