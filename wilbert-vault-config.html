@@ -344,14 +344,19 @@
      initial camera on the vntana-viewer inside its shadow DOM. We apply it once, right after
      the model's first frame, then step back so the user's own rotate/zoom is preserved
      (the viewer keeps the camera across cover/emblem/lid reloads on its own). */
-  var CAM_ROT='-24deg 25deg 0deg', CAM_DIST='1.9r';
+  /* Pulled from the authored embed view (embed.vntana.com, productUuid 1663b85c... vaultdemo/wilbert). */
+  var CAM={
+    'camera-rotation':'-0.38672700145951727rad 0.7252520134596132rad 0rad',
+    'camera-distance':'2.5517548080222427r',
+    'camera-target':'0.0864328970010166r -0.022183923568980413r -0.14704529419947254r',
+    'field-of-view':'0.6303545972893357rad'
+  };
   (function heroCamera(){
     var sr=cfg.shadowRoot, v=sr&&sr.querySelector('vntana-viewer');
     if(!v){ return setTimeout(heroCamera, 150); }
     var applied=false;
     var apply=function(){ if(applied) return; applied=true;
-      v.setAttribute('camera-rotation', CAM_ROT);
-      v.setAttribute('camera-distance', CAM_DIST);
+      for(var k in CAM){ v.setAttribute(k, CAM[k]); }
       v.removeEventListener('updates-loaded', apply);
     };
     v.addEventListener('updates-loaded', apply);
