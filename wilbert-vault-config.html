@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>White Venetian Configurator — Wilbert</title>
+<title>Burial Vault Configurator — Wilbert</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -109,6 +109,14 @@
   .cchip .nm{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);color:#fff;font-size:8.5px;line-height:1.15;padding:2px 3px;opacity:0;transition:.15s}
   .cchip:hover .nm{opacity:1}
 
+  /* color swatches (placeholder for the base/accent color control) */
+  .swatches{display:flex;gap:12px;flex-wrap:wrap}
+  .swatch{display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;cursor:pointer;padding:0}
+  .swatch .dot{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);box-shadow:inset 0 0 0 2px #fff}
+  .swatch.active .dot{border-color:var(--blue);box-shadow:inset 0 0 0 2px #fff,0 0 0 2px var(--blue)}
+  .swatch .lbl{font-size:12px;font-weight:600;color:#3d4a52}
+  .swatch.active .lbl{color:var(--blue)}
+
   .cart{width:100%;background:var(--blue);color:#fff;border:0;border-radius:0;padding:18px;font-family:Oswald,sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:1px;font-size:16px;cursor:pointer;margin-top:24px}
   .cart:hover{background:var(--ox)}
   .send{width:100%;background:transparent;border:1px solid var(--blue);color:var(--blue);border-radius:0;padding:16px;font-family:Oswald,sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:1px;font-size:15px;cursor:pointer;margin-top:12px}
@@ -155,7 +163,7 @@
     </header>
 
     <div class="wrap">
-      <div class="crumbs"><a>Burial</a>&nbsp; /&nbsp; <a>Burial Vaults</a>&nbsp; /&nbsp; <span>White Venetian</span></div>
+      <div class="crumbs"><a>Burial</a>&nbsp; /&nbsp; <a>Burial Vaults</a>&nbsp; /&nbsp; <span>Burial Vault</span></div>
 
       <div class="pdp">
         <!-- media / 3D stage -->
@@ -180,9 +188,15 @@
 
         <!-- configurator controls -->
         <div class="buy">
-          <h1>White Venetian&reg;<br>Burial Vault</h1>
-          <div class="tag">Basic Protection. Provides dependable protection and practical value while helping families meet cemetery requirements and create dignified memorials. Configure the cover and personalization, then send it to your Wilbert funeral professional.</div>
+          <h1>Burial Vault</h1>
+          <div class="tag">Explore the vault in 3D. Choose the color, cover, and personalization, then add it to your preferences and share it with your Wilbert funeral professional.</div>
           <div class="price">Estimated pricing at your funeral home <small>MSRP VARIES</small></div>
+
+          <div class="grp">
+            <h2>Color <b id="colorLabel">White</b></h2>
+            <div class="swatches" id="colors"></div>
+            <div class="vnnote" style="text-align:left;margin-top:8px">Base color plus accent (the raised texture). Preview UI &mdash; wiring in progress.</div>
+          </div>
 
           <div class="grp">
             <h2>Cover <b id="coverLabel">Plain</b></h2>
@@ -195,7 +209,7 @@
             <div class="vnnote" style="text-align:left;margin-top:8px">Choose a cover print <b>or</b> an emblem &mdash; not both.</div>
           </div>
 
-          <button class="cart" type="button">Add to My Plan</button>
+          <button class="cart" type="button">Add to my preferences</button>
           <button class="send" type="button">Send to a Funeral Home</button>
           <div class="vnnote">Real-time 3D personalization powered by VNTANA</div>
         </div>
@@ -291,8 +305,26 @@
       cfg.emblem = src || '';
       document.getElementById('emblemLabel').textContent = name;
       if(src){ cfg.cover=''; document.getElementById('coverLabel').textContent='Plain'; syncCoverButtons('Plain'); }
-    }
+    },
+    /* color: base + accent vault color. STUB for the demo. Neven: point this at the accent /
+       base color control when the bundle exposes it (e.g. cfg.color = hex, or a material setter).
+       For now it just tracks the selection + label so the UI placement is visible. */
+    setColor:function(name, hex){ this.color=name; document.getElementById('colorLabel').textContent=name; /* cfg.color = hex;  <- Neven wires here */ }
   };
+
+  /* Placeholder color set for the demo (White / Blue). Extend when the real colorways land. */
+  var COLORS=[{n:'White',hex:'#f2f2ef'},{n:'Blue',hex:'#1c4fa0'}];
+  function syncColorButtons(name){ document.querySelectorAll('#colors .swatch').forEach(function(b){ b.classList.toggle('active', b.dataset.color===name); }); }
+  (function renderColors(){
+    var wrap=document.getElementById('colors'); var h='';
+    COLORS.forEach(function(c,i){
+      h+='<button class="swatch'+(i===0?' active':'')+'" data-color="'+c.n+'" data-hex="'+c.hex+'"><span class="dot" style="background:'+c.hex+'"></span><span class="lbl">'+c.n+'</span></button>';
+    });
+    wrap.innerHTML=h;
+    wrap.querySelectorAll('.swatch').forEach(function(b){
+      b.addEventListener('click', function(){ syncColorButtons(b.dataset.color); configurator.setColor(b.dataset.color, b.dataset.hex); });
+    });
+  })();
 
   function syncCoverButtons(name){ document.querySelectorAll('#covers .cchip').forEach(function(b){ b.classList.toggle('active', b.dataset.cover===name); }); }
   function syncEmblemButtons(name){ document.querySelectorAll('#emblems .cchip').forEach(function(b){ b.classList.toggle('active', b.dataset.emblem===name); }); }
