@@ -60,10 +60,15 @@ td .mono{font-family:ui-monospace,Menlo,monospace;font-size:13px}
 .btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--blue)}
 
 /* reference images */
-.refs{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
-.refs figure{margin:0;width:220px}
+.refs{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px}
+.refs figure{margin:0;width:420px;max-width:100%}
 .refs img{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff;display:block}
-.refs figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.refs figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* full catalog page */
+.catalog{margin-top:8px}
+.catalog img{display:block;width:100%;max-width:820px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.catalog figcaption{font-size:13px;color:var(--muted);margin-top:6px}
 
 /* spec block */
 .spec{white-space:pre-wrap;font-size:14px;color:#28323c;background:#fbfcfd;border:1px solid var(--line);border-radius:8px;padding:14px}
