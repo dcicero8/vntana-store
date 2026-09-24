@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taco 3D Asset Production Brief</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <span class="tag">VNTANA &times; TACO</span>
+    <span>3D Asset Production Brief</span>
+    <span class="sub">Prepared for the 3D Team</span>
+  </div>
+</div>
+
+<div class="head">
+  <div class="wrap">
+    <div class="crumbs">Production Brief</div>
+    <h1>Taco Comfort Solutions — 3D Asset Build</h1>
+    <p>This is the working brief for the first Taco production run. Section 1 is the delivery standard every asset must meet. Section 2 is the first set of SKUs, grouped into 12 product families. Each family has its own page with the reference model, the source CAD, the catalog specs, and a step by step build and QA checklist.</p>
+    <p style="margin-top:12px">
+      <span class="pill">32 SKUs</span>
+      <span class="pill">12 families</span>
+      <span class="pill">glTF / GLB primary deliverable</span>
+    </p>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- SECTION 1 -->
+<section>
+  <h2><span class="n">1</span>Rules of Delivery</h2>
+  <p class="lead">Every asset, every family. If a rule cannot be met on a given part, flag it in your QA notes rather than guessing. This section is the acceptance standard: assets that miss these are returned.</p>
+
+  <div class="card">
+    <h3>What you deliver (per asset)</h3>
+    <ul class="rules">
+      <li><b>GLB</b> (glTF binary, PBR metal/roughness, textures embedded). This is the primary deliverable.</li>
+      <li><b>Packed Blender file</b> (.blend) with all textures packed in.</li>
+      <li><b>Parts manifest</b> (CSV): one row per serviceable part, with the real part name.</li>
+      <li><b>4K texture maps</b> (source resolution, before embedding).</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Geometry</h3>
+    <ul class="rules">
+      <li><b>One mesh per serviceable part</b>, placed at the scene root. No empty wrappers, no nested parent hierarchy around parts.</li>
+      <li><b>No mega-part.</b> Do not merge the whole product into a single mesh.</li>
+      <li><b>Keep all internal parts.</b> Do not delete internals just because they are hidden in the assembled view.</li>
+      <li><b>High-poly is the primary deliverable</b> and must stay smooth at 4K. Do not pre-decimate.</li>
+      <li><b>Nested shells</b> (a part inside a housing) need at least <b>2mm clearance</b> so they do not poke through after optimization.</li>
+      <li><b>Flag artifacts, do not reproduce them.</b> If the source CAD has a defect, note it; do not model the defect faithfully.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Naming</h3>
+    <ul class="rules">
+      <li><b>Real part names</b> on every mesh. Use the replacement-parts naming where available.</li>
+      <li>For the first run, <b>group the obvious hardware</b> (screws, bolts, washers) into a single named group per fastener type. We will revisit finer renaming later. Build it logically now.</li>
+    </ul>
+    <div class="note"><b>Note on part names:</b> STEP AP203 export strips component names, so circulators arrive as unnamed solids. Where you cannot get a real name from CAD, name from the catalog / replacement-parts sheet and flag it.</div>
+  </div>
+
+  <div class="card">
+    <h3>Origin, scale, orientation</h3>
+    <ul class="rules">
+      <li><b>Upright and grounded.</b> Origin at <b>bottom-center</b> of the product.</li>
+      <li><b>Real-world scale in meters.</b></li>
+      <li>No animations, curves, constraints, or empties in the delivered file.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Materials &amp; UVs</h3>
+    <ul class="rules">
+      <li><b>glTF PBR metal/roughness</b>, textures embedded in the GLB.</li>
+      <li><b>One material per physical material.</b> Do not split one physical material across several, or merge two real materials into one.</li>
+      <li><b>Single 0–1 UV space per material</b>, with seams hidden on non-visible faces.</li>
+      <li><b>Faceplates and labels are textures</b>, not modeled geometry. Confirm the version/label artwork before baking it in.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Render / template setup</h3>
+    <ul class="rules">
+      <li>Blender template with <b>6 orthographic cameras</b> (CAM_Front, CAM_Back, CAM_Left, CAM_Right, CAM_Top, CAM_Bottom) plus CAM_Detail_01… for close-ups.</li>
+      <li>Packed <b>neutral HDRI</b>, no extra lights. AgX view transform. Blender 5.1.x.</li>
+      <li>Render budget: 2048&times;2048, 256 samples, single GPU, 26GB, 600s cap.</li>
+    </ul>
+  </div>
+
+  <div class="callout">If a Taco redesign changes a product, it is a <b>full new delivery</b>, not a patch to the old file.</div>
+</section>
+
+<!-- SECTION 2 -->
+<section>
+  <h2><span class="n">2</span>First SKU Set — the 12 Families</h2>
+  <p class="lead">32 SKUs, grouped into 12 product families. Within a family the variants differ mostly by connection type (flange, union, press, threaded) and material (cast iron vs stainless), so the geometry is shared and only the end fittings change. Build one family at a time. Click a family to open its build page.</p>
+
+  <div class="grid">
+
+    <a class="fam" href="007e.html" style="--famc:#c8102e">
+      <div class="name">007e</div>
+      <div class="meta">Cast iron &amp; stainless circulator · 4 variants</div>
+      <div class="cat">Catalog p.8</div>
+    </a>
+
+    <a class="fam" href="0015e3.html" style="--famc:#d4700f">
+      <div class="name">0015e3</div>
+      <div class="meta">High-efficiency circulator · 4 variants</div>
+      <div class="cat">Catalog p.7</div>
+    </a>
+
+    <a class="fam" href="0018e.html" style="--famc:#b7791f">
+      <div class="name">0018e</div>
+      <div class="meta">High-efficiency circulator · 4 variants</div>
+      <div class="cat">Catalog p.6</div>
+    </a>
+
+    <a class="fam" href="0026e.html" style="--famc:#1f8a4c">
+      <div class="name">0026e</div>
+      <div class="meta">ECM circulator · 2 variants</div>
+      <div class="cat">Catalog p.10</div>
+    </a>
+
+    <a class="fam" href="0034e.html" style="--famc:#178b7a">
+      <div class="name">0034e</div>
+      <div class="meta">ECM circulator · 2 variants</div>
+      <div class="cat">Catalog p.11</div>
+    </a>
+
+    <a class="fam" href="0034eplus.html" style="--famc:#1f6feb">
+      <div class="name">0034e+</div>
+      <div class="meta">ECM circulator, digital display · 2 variants</div>
+      <div class="cat">Catalog p.12</div>
+    </a>
+
+    <a class="fam" href="vt2218.html" style="--famc:#3b4fc9">
+      <div class="name">VT2218</div>
+      <div class="meta">High-head circulator, digital display · 2 variants</div>
+      <div class="cat">Catalog p.9</div>
+    </a>
+
+    <a class="fam" href="49-075.html" style="--famc:#7a3fc9">
+      <div class="name">49-075</div>
+      <div class="meta">Air &amp; Dirt Separator, 3/4" · 3 variants</div>
+      <div class="cat">Catalog p.25</div>
+    </a>
+
+    <a class="fam" href="49-100.html" style="--famc:#a23bb0">
+      <div class="name">49-100</div>
+      <div class="meta">Air &amp; Dirt Separator, 1" · 3 variants</div>
+      <div class="cat">Catalog p.25</div>
+    </a>
+
+    <a class="fam" href="49-125.html" style="--famc:#c02e7a">
+      <div class="name">49-125</div>
+      <div class="meta">Air &amp; Dirt Separator, 1-1/4" · 3 variants</div>
+      <div class="cat">Catalog p.25</div>
+    </a>
+
+    <a class="fam" href="49-150.html" style="--famc:#c8102e">
+      <div class="name">49-150</div>
+      <div class="meta">Air &amp; Dirt Separator, 1-1/2" · 2 variants</div>
+      <div class="cat">Catalog p.25</div>
+    </a>
+
+    <a class="fam" href="49-200.html" style="--famc:#8a5a2b">
+      <div class="name">49-200</div>
+      <div class="meta">Air &amp; Dirt Separator, 2" · 1 variant</div>
+      <div class="cat">Catalog p.25</div>
+    </a>
+
+  </div>
+</section>
+
+<footer>VNTANA &times; Taco Comfort Solutions · Internal production brief · Built September 2026</footer>
+
+</div>
+</body>
+</html>
