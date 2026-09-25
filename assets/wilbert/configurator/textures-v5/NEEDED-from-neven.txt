@@ -1,0 +1,16 @@
+STATUS: the 8 files below are PLACEHOLDERS (flat/speckled solid colors) generated
+to unblock the demo. Replace each with Neven's real color map when it arrives, same
+filename. The real maps carry the true concrete + metallic detail; these approximate
+the color only.
+
+WHY placeholders were needed: this static site serves nginx try_files, so a missing
+texture path returns the index HTML (200 text/html), not a 404. The component fetched
+that HTML, failed to decode it as an image, threw InvalidStateError, and the scene
+assembly blanked the 3D canvas on any non-white selection. Real image files fix that.
+
+Files (fixed names the 1.1.0 build builds as <texture-root>/<name>):
+  black-body-base.jpg    navy-body-base.jpg     silver-accent-base.png    pink-accent-base.png
+  black-body-cover.jpg   navy-body-cover.jpg    silver-accent-cover.png   pink-accent-cover.png
+
+white base = the model's own state (no file). texture-root on the page =
+assets/wilbert/configurator/textures.
