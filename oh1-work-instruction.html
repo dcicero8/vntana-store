@@ -75,6 +75,18 @@
   .detail h2{font-size:1.05rem;font-weight:900;margin:4px 0 10px}
   .detail ol{margin:0;padding-left:18px}
   .detail li{font-size:.85rem;color:#33404f;margin-bottom:7px;line-height:1.45}
+  /* sub-step checklist: done / active / upcoming */
+  ol.substeps{list-style:none;padding-left:0;margin:2px 0 4px;counter-reset:ss}
+  ol.substeps .substep{counter-increment:ss;position:relative;padding:9px 10px 9px 34px;margin:0 0 4px;border-radius:8px;cursor:pointer;transition:.12s;border:1px solid transparent}
+  ol.substeps .substep::before{content:counter(ss);position:absolute;left:8px;top:8px;width:18px;height:18px;border-radius:50%;font-family:var(--mono);font-size:.66rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:#e6ecf4;color:var(--muted)}
+  ol.substeps .substep.todo{color:#8a97a8}
+  ol.substeps .substep.done{color:#7c8aa0}
+  ol.substeps .substep.done::before{content:"✓";background:var(--blue);color:#fff}
+  ol.substeps .substep.active{background:#eef5fb;border-color:#cfe3fb;color:#1e2a38;font-weight:600}
+  ol.substeps .substep.active::before{background:var(--blue);color:#fff}
+  ol.substeps .substep:hover{background:#f2f7fc}
+  .tag{display:inline-block;margin-left:7px;font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#eef1f5;border-radius:4px;padding:1px 6px;vertical-align:1px}
+  .tag.tool{color:#92400e;background:#fef3c7}
   .callout{border-radius:8px;padding:9px 12px;font-size:.78rem;line-height:1.45;margin:10px 0}
   .callout.warn{background:var(--warnbg);border:1px solid #fde68a;color:#78350f}
   .callout.note{background:var(--notebg);border:1px solid #a5f3fc;color:#155e75}
@@ -302,51 +314,79 @@
       hasMap(pn) ? `(<span class="partref" data-part="${pn}">${pn}</span>)` : full);
   }
 
-  // ---- Steps 1–9 (disassembly). targets = node-name patterns to highlight. ----
+  // ---- Steps 1–9 (disassembly). Each step is a sequence of sub-steps that play in order.
+  //  kind: 'remove' (has parts+move; the part slides off and STAYS removed so the next part is reachable),
+  //        'rig'   (highlight a part but don't remove it — e.g. attach a sling to the eyebolt),
+  //        'tool'  (a tool that isn't in the CAD yet — pail, hoist, shaft wrench: text-only for now),
+  //        'manual'(no geometry — lockout, valves, flush),
+  //        'note'  (fastener removal etc. that has no clean separate geometry — text-only).
+  //  move = world-space offset the part travels when removed (driver end = -X, wet end = +X, up = +Y). ----
   const STEPS = [
     { n:1, title:"Preparation", sub:"Lock out, isolate, drain",
-      targets:[],
-      body:["Lock out power supply to the motor.","Shut off the valves controlling flow to and from the pump.","Flush the pump of all corrosive or toxic liquid, if required.","Remove all auxiliary tubing and piping."],
-      note:"Make sure all replacement parts are available before you disassemble the pump for overhaul." },
+      note:"Make sure all replacement parts are available before you disassemble the pump for overhaul.",
+      subs:[
+        {t:"Lock out power supply to the motor.", kind:"manual"},
+        {t:"Shut off the valves controlling flow to and from the pump.", kind:"manual"},
+        {t:"Flush the pump of all corrosive or toxic liquid, if required.", kind:"manual"},
+        {t:"Remove all auxiliary tubing and piping.", kind:"manual"},
+      ]},
     { n:2, title:"Remove Coupling", sub:"Coupling guard, spacer, hub",
-      targets:["coupling"],
-      body:["Remove the coupling guard hex nuts and bolts.","Remove the driver-side end plate and both coupling guard halves.","Pull the coupling hubs back and remove the spacer, then the pump-side coupling.","Install the pump sling."],
-      note:"Scribe the shaft at the coupling hub for proper positioning of the hub during reassembly, then remove the hub." },
+      note:"Scribe the shaft at the coupling hub for proper positioning of the hub during reassembly, then remove the hub.",
+      subs:[
+        {t:"Remove the coupling guard hex nuts and bolts.", kind:"note"},
+        {t:"Remove the driver-side end plate and both coupling guard halves.", kind:"note"},
+        {t:"Pull the coupling hubs back and remove the spacer, then the pump-side coupling.", kind:"remove", parts:["coupling"], move:[-1.3,0,0]},
+        {t:"Install the pump sling.", kind:"tool"},
+      ]},
     { n:3, title:"Drain Oil", sub:"Oiler + oil-drain plug (408)",
-      targets:["oiler","408 Pipe Plug Hex"],
-      body:["Position a pail under the bearing frame.","Remove the oiler top, then the oiler bottom cup.","Remove the hex-head pipe plug (3/8 NPTF) oil drain (408) and drain the oil."],
-      note:"In hot applications, disconnect the cooling water source and remove the pipe/nipple to drain the water jackets before continuing." },
+      note:"In hot applications, disconnect the cooling water source and remove the pipe/nipple to drain the water jackets before continuing.",
+      subs:[
+        {t:"Position a pail under the bearing frame.", kind:"tool"},
+        {t:"Remove the oiler top, then the oiler bottom cup.", kind:"remove", parts:["oiler"], move:[0,1.0,-0.4]},
+        {t:"Remove the hex-head pipe plug (3/8 NPTF) oil drain (408) and drain the oil.", kind:"remove", parts:["408 pipe plug hex"], move:[0,-0.6,0]},
+      ]},
     { n:4, title:"Set Up Sling", sub:"Eyebolt (132), frame (228A)",
-      targets:["EYE BOLT 132"],
-      body:["Move the hoist trolley into position.","Place a sling from the hoist through the eyebolt (132). On ST units, place the sling through the frame (228A) above the shaft (122)."],
-      note:"" },
+      subs:[
+        {t:"Move the hoist trolley into position.", kind:"tool"},
+        {t:"Place a sling from the hoist through the eyebolt (132). On ST units, place the sling through the frame (228A) above the shaft (122).", kind:"rig", parts:["eye bolt 132"]},
+      ]},
     { n:5, title:"Remove Frame Foot Bolts", sub:"Frame foot (241) + dowel bolt (370F)",
-      targets:["Frame Foot","370F"],
-      body:["Remove the frame foot hex bolt / dowel bolt (370F) securing the frame foot (241)."],
-      note:"" },
+      subs:[
+        {t:"Remove the frame foot hex bolt / dowel bolt (370F).", kind:"note"},
+        {t:"Remove the frame foot (241).", kind:"remove", parts:["frame foot"], move:[0,-1.2,0]},
+      ]},
     { n:6, title:"Remove Frame / Adapter-to-Casing Bolts", sub:"Bolts (370), adapter (108), casing (100)",
-      targets:["ADAPTER","Case, Goulds"],
-      body:["Remove the bolts (370) holding the frame (228A) or frame adapter (108) to the casing (100)."],
-      note:"" },
+      subs:[
+        {t:"Remove the bolts (370) holding the frame (228A) or frame adapter (108) to the casing (100).", kind:"highlight", parts:["adapter"]},
+      ]},
     { n:7, title:"Slide Back the Pull-Out Assembly", sub:"Jacking bolts (418)",
-      targets:["ADAPTER","Frame Foot"],
-      body:["Slide the back pull-out assembly from the casing using the jacking bolts (418) provided.","Tilt the pull-out assembly to drain any remaining oil, then install the foot block."],
-      warn:"Never use heat to disassemble the pump — trapped liquid can expand and cause an explosion." },
+      warn:"Never use heat to disassemble the pump — trapped liquid can expand and cause an explosion.",
+      subs:[
+        {t:"Slide the back pull-out assembly from the casing using the jacking bolts (418) provided.", kind:"remove", parts:["adapter","frame foot"], move:[-1.7,0,0]},
+        {t:"Tilt the pull-out assembly to drain any remaining oil, then install the foot block.", kind:"tool"},
+      ]},
     { n:8, title:"Remove Casing Gasket", sub:"Case gasket (351)",
-      targets:["Case, Goulds"],
-      body:["Remove the casing gasket (351) from the casing / adapter joint face."],
-      note:"" },
+      subs:[
+        {t:"Remove the casing gasket (351) from the casing / adapter joint face.", kind:"remove", parts:["1082532"], move:[0.5,0,0]},
+      ]},
     { n:9, title:"Unscrew and Remove Impeller", sub:"Impeller (101), key (400), O-ring (412A)",
-      targets:["360 D","KEY"],
-      body:["Install the shaft wrench.","Unscrew the impeller (101) from the shaft (122) — threads are right-handed.","Remove the impeller, then the key (400).","Remove the O-ring (412A) that seals between the impeller and shaft/sleeve."],
-      warn:"Do not damage the OD vane tip, and never use heat to unscrew the impeller." },
+      warn:"Do not damage the OD vane tip, and never use heat to unscrew the impeller.",
+      subs:[
+        {t:"Install the shaft wrench.", kind:"tool"},
+        {t:"Unscrew the impeller (101) from the shaft (122) — threads are right-handed.", kind:"remove", parts:["360 d"], move:[1.2,0,0]},
+        {t:"Remove the impeller, then the key (400).", kind:"remove", parts:["key"], move:[1.2,0.3,0]},
+        {t:"Remove the O-ring (412A) that seals between the impeller and shaft/sleeve.", kind:"note"},
+      ]},
   ];
+  // Flatten to a global ordered list of sub-steps for navigation + cumulative removal.
+  const SUBS = [];
+  STEPS.forEach((s,si)=> s.subs.forEach((sub,ssi)=> SUBS.push(Object.assign({si, ssi, n:s.n, stepTitle:s.title, first:ssi===0}, sub)) ));
 
   // ---- viewer glue (parts-explorer pattern) ----
   // The asset is the COMPLETE installation (pump + baseplate + floor + discharge piping).
   // Treat the installation context as always-dimmed so the pump is the subject.
   const CONTEXT = ["floor","base plate","vertical piping","complete discharge","discharge pipe","assembley","spindle","valve","bolt with nuts_discharge"];
-  let leaves=[], pumpLeaves=[], contextUuids=[], uuidPath={}, casingUuids=new Set(), ready=false, current=0;
+  let leaves=[], pumpLeaves=[], contextUuids=[], uuidPath={}, casingUuids=new Set(), ready=false, cur=0;
   function isContext(path){ return CONTEXT.some(c=>path.includes(c)); }
   function buildLeaves(tries){
     const sg = viewer.sceneGraph;
@@ -368,7 +408,7 @@
     // they're visual noise in the walk-through anyway, so stash them off-screen in procedure mode.
     FASTENER_UUIDS = leaves.filter(l=>FASTENER_RE.test(l.path) && !FASTENER_EXCLUDE.test(l.path)).map(l=>l.uuid);
     window.__fasteners = FASTENER_UUIDS.length;
-    if(mode==="procedure"){ stashFasteners(true); goStep(current); }  // re-apply highlight + camera + animation once leaves are ready
+    if(mode==="procedure"){ stashFasteners(true); cacheHomes(); goSub(cur); }  // re-apply highlight + camera + animation once leaves are ready
     else stashFasteners(false);
   }
 
@@ -403,45 +443,49 @@
     renderNow();
   }
 
-  // ===== Phase 2: client-side disassembly animation (no baked glTF anims) =====
-  // Per-step world-space direction the part is removed (driver end = -X, wet end = +X, up = +Y).
-  const STEP_MOVE = {
-    2:[-1.3,0,0],    // coupling off the driver end
-    3:[0,1.0,-0.4],  // oiler lifts up/out
-    4:[0,1.2,0],     // eyebolt up
-    5:[0,-1.2,0],    // frame foot down
-    6:[-1.3,0,0],    // adapter pulls off the casing (bolts removed)
-    7:[-1.7,0,0],    // back pull-out assembly slides out the driver end
-    8:[0.5,0,0],     // casing gasket lifts off the face
-    9:[1.2,0,0],     // impeller unscrews off the shaft end
-  };
+  // ===== client-side sequential removal (no baked glTF anims) =====
+  // Each 'remove' sub-step slides its part off along `move` and it STAYS removed, so parts come off in
+  // order and the next one is reachable (per Dan: never let them "remove" a part that's physically blocked).
   const V3 = () => new (viewer.scene && viewer.scene.position ? viewer.scene.position.constructor : Object)();
-  let moved=[], animRAF=null;
-  function resetMoved(){ moved.forEach(m=>{ try{ m.obj.position.copy(m.home); }catch(_){} }); moved=[]; }
   function renderNow(){ try{ viewer.renderScene&&viewer.renderScene(); }catch(_){}; try{ viewer.render&&viewer.render(); }catch(_){} }
-  function animateStep(n){
-    if(animRAF) cancelAnimationFrame(animRAF);
-    resetMoved();                                   // previous step's parts snap home
-    const off = STEP_MOVE[n];
-    if(!ready || !off || (!off[0]&&!off[1]&&!off[2])){ renderNow(); return; }
-    // parts that move = this step's targets, minus the casing (it stays bolted to the piping)
-    const uuids = uuidsMatching(STEPS[current].targets).filter(u=>!casingUuids.has(u));
-    const anims=[];
-    uuids.forEach(u=>{
-      const o = viewer.scene && viewer.scene.getObjectByProperty ? viewer.scene.getObjectByProperty("uuid",u) : null;
-      if(!o || !o.position) return;
-      const home = o.position.clone();
-      const wp = new home.constructor(); o.getWorldPosition(wp); wp.x+=off[0]; wp.y+=off[1]; wp.z+=off[2];
-      const target = o.parent ? o.parent.worldToLocal(wp) : wp;
-      anims.push({obj:o, home, target});
+  let animRAF=null;
+  const homeCache = new Map();                     // uuid -> home local position, captured before any removal
+
+  function subObjs(sub){                            // scene objects for a sub-step's parts (never the casing)
+    if(!ready || !sub || !sub.parts) return [];
+    return uuidsMatching(sub.parts).filter(u=>!casingUuids.has(u))
+      .map(u=> (viewer.scene&&viewer.scene.getObjectByProperty)? viewer.scene.getObjectByProperty("uuid",u):null )
+      .filter(o=>o && o.position);
+  }
+  function cacheHomes(){                            // snapshot home positions of every removable part once
+    SUBS.forEach(sub=>{ if(sub.kind==="remove") subObjs(sub).forEach(o=>{ if(!homeCache.has(o.uuid)) homeCache.set(o.uuid, o.position.clone()); }); });
+  }
+  function removedTarget(o, move){                  // removed resting position = home world-pos + move, back to local
+    const home = homeCache.get(o.uuid) || o.position.clone();
+    const wp = new home.constructor(); o.getWorldPosition(wp); wp.x+=move[0]; wp.y+=move[1]; wp.z+=move[2];
+    return o.parent ? o.parent.worldToLocal(wp) : wp;
+  }
+  function applyRemoval(k){                          // snap: every 'remove' part removed if its global index < k, else home
+    if(!ready) return;
+    SUBS.forEach((sub,gi)=>{ if(sub.kind!=="remove") return;
+      subObjs(sub).forEach(o=>{
+        const home = homeCache.get(o.uuid) || o.position.clone();
+        o.position.copy(gi<k ? removedTarget(o, sub.move) : home);
+      });
     });
-    moved = anims.map(a=>({obj:a.obj, home:a.home.clone()}));
-    const t0=performance.now(), dur=4400;
+    renderNow();
+  }
+  function animateRemoval(sub, cb){                  // slide this sub-step's part(s) off, then continue
+    if(animRAF) cancelAnimationFrame(animRAF);
+    const objs = subObjs(sub);
+    if(!objs.length){ cb&&cb(); return; }
+    const anims = objs.map(o=>({o, home:(homeCache.get(o.uuid)||o.position.clone()).clone(), target:removedTarget(o, sub.move)}));
+    const t0=performance.now(), dur=1500;
     (function tick(){
       const t=Math.min(1,(performance.now()-t0)/dur), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-      anims.forEach(a=>a.obj.position.lerpVectors(a.home,a.target,e));
+      anims.forEach(a=>a.o.position.lerpVectors(a.home,a.target,e));
       renderNow();
-      if(t<1) animRAF=requestAnimationFrame(tick);
+      if(t<1) animRAF=requestAnimationFrame(tick); else cb&&cb();
     })();
   }
   function uuidsMatching(patterns){
@@ -457,41 +501,58 @@
       contextUuids.forEach(u=>viewer.setEffect(u,"dim"));         // installation context always dimmed
       const hit = new Set(uuidsMatching(patterns));
       if(hit.size){
-        hit.forEach(u=>viewer.setEffect(u,"glow","outline"));      // this step's parts pop
+        hit.forEach(u=>viewer.setEffect(u,"glow","outline"));      // this sub-step's part pops
         pumpLeaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); });
       }
     }catch(e){}
   }
 
   function renderSteps(){
+    const curStep = SUBS[cur].si;
     $("steplist").innerHTML = STEPS.map((s,i)=>
-      `<li class="steprow${i===current?' active':''}" data-i="${i}">
+      `<li class="steprow${i===curStep?' active':''}" data-i="${i}">
          <span class="num">${s.n}</span>
          <span class="st">${s.title}<span class="sub">${s.sub}</span></span>
        </li>`).join("");
     $("steplist").querySelectorAll(".steprow").forEach(el=>
-      el.addEventListener("click",()=>goStep(+el.dataset.i)));
+      el.addEventListener("click",()=>{ const si=+el.dataset.i; goSub(SUBS.findIndex(x=>x.si===si)); }));
   }
   function renderDetail(){
-    const s = STEPS[current];
+    const c = SUBS[cur], s = STEPS[c.si];
+    const subsHtml = s.subs.map((sub,ssi)=>{
+      const gi = SUBS.findIndex(x=>x.si===c.si && x.ssi===ssi);
+      const state = gi<cur ? "done" : (gi===cur ? "active" : "todo");
+      const tag = sub.kind==="tool" ? `<span class="tag tool">tool</span>`
+                : sub.kind==="manual" ? `<span class="tag">manual</span>` : "";
+      return `<li class="substep ${state}" data-gi="${gi}">${linkify(sub.t)}${tag}</li>`;
+    }).join("");
     $("detail").innerHTML =
-      `<div class="eyebrow">Step ${s.n} of ${STEPS.length}</div>
+      `<div class="eyebrow">Step ${s.n} of ${STEPS.length} &middot; sub-step ${c.ssi+1} of ${s.subs.length}</div>
        <h2>${s.title}</h2>
-       <ol>${s.body.map(b=>`<li>${linkify(b)}</li>`).join("")}</ol>
+       <ol class="substeps">${subsHtml}</ol>
        ${s.warn?`<div class="callout warn"><b>Warning</b>${linkify(s.warn)}</div>`:""}
        ${s.note?`<div class="callout note"><b>Note</b>${linkify(s.note)}</div>`:""}`;
+    $("detail").querySelectorAll(".substep").forEach(el=> el.addEventListener("click",()=>goSub(+el.dataset.gi)));
     $("counter").textContent = `Step ${s.n} / ${STEPS.length}`;
-    $("prev").disabled = current===0;
-    $("next").disabled = current===STEPS.length-1;
+    $("prev").disabled = cur===0;
+    $("next").disabled = cur===SUBS.length-1;
   }
-  function goStep(i){
-    current = Math.max(0, Math.min(STEPS.length-1, i));
-    document.querySelectorAll(".steprow").forEach((el,idx)=>el.classList.toggle("active",idx===current));
-    renderDetail();
-    highlight(STEPS[current].targets);
-    frameStep(STEPS[current].n);        // fly the camera onto this step's part
-    animateStep(STEPS[current].n);      // slide the part off the assembly
+  function goSub(k){
+    cur = Math.max(0, Math.min(SUBS.length-1, k));
+    applyRemoval(cur);                               // snap cumulative removal state to this point
+    const c = SUBS[cur];
+    if(c.parts && (c.kind==="remove"||c.kind==="rig"||c.kind==="highlight")){ highlight(c.parts); framePart(c.parts); }
+    else { clearFx(); if(ready){ contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); } frameStep(c.n); }
+    renderSteps(); renderDetail(); renderNow();
   }
+  // Next: if leaving a 'remove' sub-step, play its removal, then advance so the part stays gone.
+  function nextSub(){
+    if(cur>=SUBS.length-1) return;
+    const c = SUBS[cur];
+    if(c.kind==="remove" && ready){ animateRemoval(c, ()=>goSub(cur+1)); }
+    else goSub(cur+1);
+  }
+  function prevSub(){ if(cur>0) goSub(cur-1); }
 
   // ===== two modes: Procedure (walk-through) vs Parts Explorer (catalog) =====
   let mode = "procedure";
@@ -501,16 +562,16 @@
     $("mode-procedure").classList.toggle("hide", m!=="procedure");
     $("mode-parts").classList.toggle("hide", m!=="parts");
     $("stepnav").style.display = m==="procedure" ? "flex" : "none";
-    if(m==="procedure"){ $("hint").textContent="The highlighted part(s) are what this step acts on. Drag to orbit."; stashFasteners(true); goStep(current); }
-    else { $("hint").textContent="Click any part in the model to inspect it."; stashFasteners(false); resetMoved(); renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
+    if(m==="procedure"){ $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; stashFasteners(true); goSub(cur); }
+    else { $("hint").textContent="Click any part in the model to inspect it."; stashFasteners(false); applyRemoval(0); renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
   }
   document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 
   // controls
-  $("prev").addEventListener("click",()=>goStep(current-1));
-  $("next").addEventListener("click",()=>goStep(current+1));
+  $("prev").addEventListener("click",prevSub);
+  $("next").addEventListener("click",nextSub);
   $("explode").addEventListener("input",e=>{ try{ viewer.setExplodedStrength(parseFloat(e.target.value)); }catch(_){} });
-  $("reset").addEventListener("click",()=>{ applyView(); resetMoved(); renderNow(); $("explode").value=0; try{viewer.setExplodedStrength(0);}catch(_){} });
+  $("reset").addEventListener("click",()=>{ applyView(); applyRemoval(0); renderNow(); $("explode").value=0; try{viewer.setExplodedStrength(0);}catch(_){} });
   $("partsearch").addEventListener("input",e=>renderBom(e.target.value));
 
   // --- procedure: clicking a (NNN) part reference in the step text highlights it, staying in the step ---
@@ -571,7 +632,7 @@
     function init(){
       if(inited || !viewer.sceneGraph) return;
       inited=true; ready=true; buildLeaves(150); $("loading").classList.add("hidden");
-      setTimeout(()=>goStep(0), 300);
+      setTimeout(()=>goSub(0), 300);
       // apply the framed opening view, re-applying a few times to beat the load auto-frame
       let n=0; (function frame(){ applyView(); if(n++<6) setTimeout(frame,150); })();
     }
