@@ -236,14 +236,15 @@
 <script>
   /* ============ password gate ============ */
   /* Change this to whatever you want to share with Wilbert. */
-  var PASSWORD = "burialvault2026";
+  /* Accept the current password plus the old one, in case anyone saved it. */
+  var PASSWORDS = ["burialvault2026", "venetian2026"];
   var KEY = "wilbertVaultConfigUnlocked";
   var gate = document.getElementById('gate');
   function unlock(){ try{ sessionStorage.setItem(KEY,'1'); }catch(e){}; gate.style.display='none'; document.body.classList.remove('locked'); }
   try{ if(sessionStorage.getItem(KEY)==='1'){ unlock(); } }catch(e){}
   function tryPw(){
     var v=document.getElementById('pw').value.trim();
-    if(v.toLowerCase()===PASSWORD.toLowerCase()){ unlock(); }
+    if(PASSWORDS.some(function(p){return v.toLowerCase()===p.toLowerCase();})){ unlock(); }
     else{ document.getElementById('err').textContent='Incorrect password. Please try again.'; }
   }
   document.getElementById('unlock').addEventListener('click', tryPw);
