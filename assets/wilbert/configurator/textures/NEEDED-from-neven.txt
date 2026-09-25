@@ -1,0 +1,18 @@
+The wilbert-configurator 1.1.0 build needs these 8 color texture files served here.
+They are NOT shipped in the tgz (build/ only). Get them from Neven and drop them in
+this folder (assets/wilbert/configurator/textures/). Filenames are fixed by the build:
+
+  black-body-base.jpg
+  black-body-cover.jpg
+  navy-body-base.jpg
+  navy-body-cover.jpg
+  silver-accent-base.png
+  silver-accent-cover.png
+  pink-accent-base.png
+  pink-accent-cover.png
+
+Until they are present:
+  - base-color="white"  works (native GLB state, loads no texture)
+  - navy / black / silver / pink  degrade to the baked look (console.warn, no throw)
+
+The page sets texture-root="assets/wilbert/configurator/textures" on <wilbert-configurator>.

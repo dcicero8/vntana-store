@@ -170,7 +170,7 @@
         <div>
           <div class="stage" id="stage">
             <!-- Real VNTANA 3.0.0 configurator (GLB baked into the bundle). Renders behind the poster. -->
-            <wilbert-configurator id="cfg" lid-position="off" cover-fit="fill" emblem-fit="contain"></wilbert-configurator>
+            <wilbert-configurator id="cfg" lid-position="off" base-color="white" accent-color="silver" cover-fit="fill" emblem-fit="contain" texture-root="assets/wilbert/configurator/textures"></wilbert-configurator>
             <!-- Product photo shown first; click to enter the live 3D. -->
             <img class="poster" id="poster" src="assets/wilbert/BV-W-Ven-PlainLiner750.jpg?v=2" alt="White Venetian burial vault">
             <button class="enter3d" id="enter3d" type="button">
@@ -193,9 +193,14 @@
           <div class="price">Estimated pricing at your funeral home <small>MSRP VARIES</small></div>
 
           <div class="grp">
-            <h2>Color <b id="colorLabel">White</b></h2>
-            <div class="swatches" id="colors"></div>
-            <div class="vnnote" style="text-align:left;margin-top:8px">Base color plus accent (the raised texture). Preview UI &mdash; wiring in progress.</div>
+            <h2>Base color <b id="baseLabel">White</b></h2>
+            <div class="swatches" id="bases"></div>
+          </div>
+
+          <div class="grp">
+            <h2>Accent <b id="accentLabel">Silver</b></h2>
+            <div class="swatches" id="accents"></div>
+            <div class="vnnote" style="text-align:left;margin-top:8px">The accent is the raised trim. Base and accent are independent, so any base pairs with any accent.</div>
           </div>
 
           <div class="grp">
@@ -306,23 +311,39 @@
       document.getElementById('emblemLabel').textContent = name;
       if(src){ cfg.cover=''; document.getElementById('coverLabel').textContent='Plain'; syncCoverButtons('Plain'); }
     },
-    /* color: base + accent vault color. STUB for the demo. Neven: point this at the accent /
-       base color control when the bundle exposes it (e.g. cfg.color = hex, or a material setter).
-       For now it just tracks the selection + label so the UI placement is visible. */
-    setColor:function(name, hex){ this.color=name; document.getElementById('colorLabel').textContent=name; /* cfg.color = hex;  <- Neven wires here */ }
+    /* base-color: white | navy | black. Swaps the Base_Concrete + Cover_Concrete maps
+       (white = the model's own state, no texture load). Real 1.1.0 property. */
+    setBase:function(val, label){ cfg.baseColor = val; document.getElementById('baseLabel').textContent = label; },
+    /* accent-color: silver | pink. Swaps the Base_Accent + Cover_Accent maps. Real 1.1.0 property. */
+    setAccent:function(val, label){ cfg.accentColor = val; document.getElementById('accentLabel').textContent = label; }
   };
 
-  /* Placeholder color set for the demo (White / Blue). Extend when the real colorways land. */
-  var COLORS=[{n:'White',hex:'#f2f2ef'},{n:'Blue',hex:'#1c4fa0'},{n:'Pink',hex:'#d97a94'}];
-  function syncColorButtons(name){ document.querySelectorAll('#colors .swatch').forEach(function(b){ b.classList.toggle('active', b.dataset.color===name); }); }
-  (function renderColors(){
-    var wrap=document.getElementById('colors'); var h='';
-    COLORS.forEach(function(c,i){
-      h+='<button class="swatch'+(i===0?' active':'')+'" data-color="'+c.n+'" data-hex="'+c.hex+'"><span class="dot" style="background:'+c.hex+'"></span><span class="lbl">'+c.n+'</span></button>';
+  /* Real 1.1.0 colorways. value = the base-color/accent-color attribute the component reads;
+     hex = swatch dot only. Base and accent are independent (all pairings valid). */
+  var BASES=[{v:'white',n:'White',hex:'#f2f2ef'},{v:'navy',n:'Navy',hex:'#1c2c4f'},{v:'black',n:'Black',hex:'#1a1a1a'}];
+  var ACCENTS=[{v:'silver',n:'Silver',hex:'#c9ccd1'},{v:'pink',n:'Pink',hex:'#d97a94'}];
+
+  function syncBaseButtons(v){ document.querySelectorAll('#bases .swatch').forEach(function(b){ b.classList.toggle('active', b.dataset.val===v); }); }
+  function syncAccentButtons(v){ document.querySelectorAll('#accents .swatch').forEach(function(b){ b.classList.toggle('active', b.dataset.val===v); }); }
+
+  (function renderBases(){
+    var wrap=document.getElementById('bases'), h='';
+    BASES.forEach(function(c,i){
+      h+='<button class="swatch'+(i===0?' active':'')+'" data-val="'+c.v+'"><span class="dot" style="background:'+c.hex+'"></span><span class="lbl">'+c.n+'</span></button>';
     });
     wrap.innerHTML=h;
     wrap.querySelectorAll('.swatch').forEach(function(b){
-      b.addEventListener('click', function(){ syncColorButtons(b.dataset.color); configurator.setColor(b.dataset.color, b.dataset.hex); });
+      b.addEventListener('click', function(){ syncBaseButtons(b.dataset.val); configurator.setBase(b.dataset.val, b.querySelector('.lbl').textContent); });
+    });
+  })();
+  (function renderAccents(){
+    var wrap=document.getElementById('accents'), h='';
+    ACCENTS.forEach(function(c,i){
+      h+='<button class="swatch'+(i===0?' active':'')+'" data-val="'+c.v+'"><span class="dot" style="background:'+c.hex+'"></span><span class="lbl">'+c.n+'</span></button>';
+    });
+    wrap.innerHTML=h;
+    wrap.querySelectorAll('.swatch').forEach(function(b){
+      b.addEventListener('click', function(){ syncAccentButtons(b.dataset.val); configurator.setAccent(b.dataset.val, b.querySelector('.lbl').textContent); });
     });
   })();
 
