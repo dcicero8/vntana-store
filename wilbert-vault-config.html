@@ -296,6 +296,10 @@
     {n:'U.S. Coast Guard',f:'emblem-coast-guard.png'}
   ];
 
+  /* Re-run the pink-lid override several times after a color change, to catch the scene reload
+     whenever it settles (the override itself is idempotent and reads cfg.accentColor). */
+  function schedulePinkLid(){ [120,700,1600,3000].forEach(function(ms){ setTimeout(function(){ if(window.__applyPinkLid) window.__applyPinkLid(); }, ms); }); }
+
   var configurator = {
     /* lid-position: on seats the lid, off shows it displaced as authored. */
     setPosition:function(p){ cfg.lidPosition = p; },
@@ -314,9 +318,9 @@
     },
     /* base-color: white | navy | black. Swaps the Base_Concrete + Cover_Concrete maps
        (white = the model's own state, no texture load). Real 1.1.0 property. */
-    setBase:function(val, label){ cfg.baseColor = val; document.getElementById('baseLabel').textContent = label; },
+    setBase:function(val, label){ cfg.baseColor = val; document.getElementById('baseLabel').textContent = label; schedulePinkLid(); },
     /* accent-color: silver | pink. Swaps the Base_Accent + Cover_Accent maps. Real 1.1.0 property. */
-    setAccent:function(val, label){ cfg.accentColor = val; document.getElementById('accentLabel').textContent = label; }
+    setAccent:function(val, label){ cfg.accentColor = val; document.getElementById('accentLabel').textContent = label; schedulePinkLid(); }
   };
 
   /* Real 1.1.0 colorways. value = the base-color/accent-color attribute the component reads;
