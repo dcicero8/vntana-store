@@ -407,6 +407,10 @@
     // loose fasteners render black under the viewer's IBL (small dense threaded geometry);
     // they're visual noise in the walk-through anyway, so stash them off-screen in procedure mode.
     FASTENER_UUIDS = leaves.filter(l=>FASTENER_RE.test(l.path) && !FASTENER_EXCLUDE.test(l.path)).map(l=>l.uuid);
+    // never stash a part that a sub-step explicitly removes (e.g. the 408 oil-drain plug) — it needs to
+    // stay in place so its removal can be shown.
+    const removalTargets = new Set(); SUBS.forEach(sub=>{ if(sub.kind==="remove") uuidsMatching(sub.parts).forEach(u=>removalTargets.add(u)); });
+    FASTENER_UUIDS = FASTENER_UUIDS.filter(u=>!removalTargets.has(u));
     window.__fasteners = FASTENER_UUIDS.length;
     if(mode==="procedure"){ stashFasteners(true); cacheHomes(); goSub(cur); }  // re-apply highlight + camera + animation once leaves are ready
     else stashFasteners(false);
