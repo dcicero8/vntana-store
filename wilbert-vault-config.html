@@ -428,33 +428,20 @@
   })();
 
   /* ============ pink lid (Cameo Rose) ============
-     Erin's White+Pink asset colors the LID's base concrete pink, not the accent (her lid accent is
-     ~97% transparent). Our base/accent split can't express "white body + pink lid", so when the pink
-     accent is selected we override the Cover_Concrete map with her pink-lid texture; any other accent
-     restores the original (white) lid map. Original captured ONCE and pink texture built ONCE, so the
-     white lid map is never overwritten. Re-applied on every scene reload (updates-loaded). */
+     Erin's White+Pink asset colors the LID's base concrete pink, not the accent. Our base/accent split
+     can't express "white body + pink lid", so when the pink accent is selected we TINT the Cover_Concrete
+     material rose (a color multiplier over its existing map); any other accent sets the tint back to white.
+     Color-tint (not texture swap) is robust across scene reloads and never corrupts the base map. */
   (function pinkLid(){
-    var img=new Image(); img.crossOrigin='anonymous';
-    img.src='assets/wilbert/configurator/textures-v6/pink-lid-concrete.jpg';
-    var origCover=null, pinkTex=null;   /* module-level, captured/built once */
+    var PINK=[1.0, 0.80, 0.82], WHITE=[1,1,1];   /* rose multiplier; tweak to taste */
     function apply(){
       var v=cfg.shadowRoot && cfg.shadowRoot.querySelector('vntana-viewer');
       if(!v||!v.scene) return;
-      var wantPink=(cfg.accentColor==='pink');
+      var c=(cfg.accentColor==='pink')?PINK:WHITE;
       v.scene.traverse(function(o){
         if(!(o.isMesh && /Cover_Concrete/.test(o.name))) return;
-        var m=o.material; if(!m||!m.map) return;
-        if(wantPink){
-          if(m.map!==pinkTex){                 /* about to override a real base lid map */
-            origCover=m.map;                     /* remember it (guaranteed not our pink texture) */
-            if(!pinkTex && img.complete && img.naturalWidth){
-              pinkTex=origCover.clone(); pinkTex.image=img; pinkTex.needsUpdate=true;
-            }
-            if(pinkTex){ m.map=pinkTex; m.needsUpdate=true; }
-          }
-        } else {
-          if(m.map===pinkTex && origCover){ m.map=origCover; m.needsUpdate=true; }  /* undo only our override */
-        }
+        var m=o.material; if(!m||!m.color) return;
+        m.color.setRGB(c[0],c[1],c[2]); m.needsUpdate=true;
       });
       v.render&&v.render();
     }
@@ -462,7 +449,6 @@
       var v=cfg.shadowRoot && cfg.shadowRoot.querySelector('vntana-viewer');
       if(!v){ return setTimeout(hook,150); }
       v.addEventListener('updates-loaded', function(){ setTimeout(apply,60); });
-      img.addEventListener('load', apply);
       setTimeout(apply, 2500);
     })();
     window.__applyPinkLid=apply;
