@@ -362,7 +362,7 @@
     { n:7, title:"Slide Back the Pull-Out Assembly", sub:"Jacking bolts (418)",
       warn:"Never use heat to disassemble the pump — trapped liquid can expand and cause an explosion.",
       subs:[
-        {t:"Slide the back pull-out assembly from the casing using the jacking bolts (418) provided.", kind:"remove", parts:["adapter","frame foot"], move:[-1.7,0,0]},
+        {t:"Slide the back pull-out assembly from the casing using the jacking bolts (418) provided.", kind:"remove", parts:["adapter"], move:[-1.7,0,0]},
         {t:"Tilt the pull-out assembly to drain any remaining oil, then install the foot block.", kind:"tool"},
       ]},
     { n:8, title:"Remove Casing Gasket", sub:"Case gasket (351)",
@@ -464,10 +464,11 @@
   function cacheHomes(){                            // snapshot home positions of every removable part once
     SUBS.forEach(sub=>{ if(sub.kind==="remove") subObjs(sub).forEach(o=>{ if(!homeCache.has(o.uuid)) homeCache.set(o.uuid, o.position.clone()); }); });
   }
-  function removedTarget(o, move){                  // removed resting position = home world-pos + move, back to local
+  function removedTarget(o, move){                  // removed resting position, computed ONLY from HOME (never current)
     const home = homeCache.get(o.uuid) || o.position.clone();
-    const wp = new home.constructor(); o.getWorldPosition(wp); wp.x+=move[0]; wp.y+=move[1]; wp.z+=move[2];
-    return o.parent ? o.parent.worldToLocal(wp) : wp;
+    const wp = home.clone(); if(o.parent) o.parent.localToWorld(wp);   // home position in world space
+    wp.x+=move[0]; wp.y+=move[1]; wp.z+=move[2];
+    return o.parent ? o.parent.worldToLocal(wp) : wp;                  // back to parent-local
   }
   function applyRemoval(k){                          // snap: every 'remove' part removed if its global index < k, else home
     if(!ready) return;
@@ -542,6 +543,7 @@
     $("next").disabled = cur===SUBS.length-1;
   }
   function goSub(k){
+    if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }   // stop any in-flight removal animation
     cur = Math.max(0, Math.min(SUBS.length-1, k));
     applyRemoval(cur);                               // snap cumulative removal state to this point
     const c = SUBS[cur];
