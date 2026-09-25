@@ -397,16 +397,24 @@
      initial camera on the vntana-viewer inside its shadow DOM. We apply it once, right after
      the model's first frame, then step back so the user's own rotate/zoom is preserved
      (the viewer keeps the camera across cover/emblem/lid reloads on its own). */
-  /* Camera pulled from the authored embed view. Lighting: the asset's exposure 1.4 blew out a specular
-     hotspot on the glossy cover print / stainless lid, so we keep exposure 0.95 and rotate the
-     environment to move the glare off the visible faces (reverted from the asset-matched 1.4). */
+  /* Camera pulled from the authored embed view. Lighting/environment = the Wilbert workspace "Default"
+     viewer preset (preset c29e44ac, per Erin): Studio.hdr, exposure 1.4, light rig @0, subtle bloom.
+     VIEW props are set as PROPERTIES (not attributes) so environmentSrc actually loads Studio.hdr; the
+     earlier blow-out happened because setting it as an attribute never loaded the env, so 1.4 hit the
+     brighter default environment. */
   var CAM={
     'camera-rotation':'-0.38672700145951727rad 0.7252520134596132rad 0rad',
     'camera-distance':'2.5517548080222427r',
     'camera-target':'0.0864328970010166r -0.022183923568980413r -0.14704529419947254r',
-    'field-of-view':'0.6303545972893357rad',
-    'exposure':'0.95',
-    'environment-rotation':'0deg 130deg 0deg'
+    'field-of-view':'0.6303545972893357rad'
+  };
+  var VIEW={
+    environmentSrc:'https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio.hdr',
+    exposure:1.4,
+    lightRigIntensity:0,
+    lightRig:'directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m',
+    bloomStrength:0.15, bloomRadius:5, bloomThreshold:0.9,
+    environmentRotation:'0deg 0deg 0deg', background:'#ffffff'
   };
   (function heroCamera(){
     var sr=cfg.shadowRoot, v=sr&&sr.querySelector('vntana-viewer');
@@ -414,6 +422,7 @@
     var applied=false;
     var apply=function(){ if(applied) return; applied=true;
       for(var k in CAM){ v.setAttribute(k, CAM[k]); }
+      for(var p in VIEW){ try{ v[p]=VIEW[p]; }catch(e){} }
       v.removeEventListener('updates-loaded', apply);
     };
     v.addEventListener('updates-loaded', apply);
