@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>49-150: Taco 3D Production</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <span class="tag">VNTANA &times; TACO</span>
+    <span>3D Asset Production Brief</span>
+    <span class="sub">Prepared for the 3D Team</span>
+  </div>
+</div>
+
+<div class="head">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Production Brief</a> / Family 49-150</div>
+    <h1>49-150: 4900 Series Air Separator, 1-1/2"</h1>
+    <p>Taco 4900 Series air separator, 1-1/2". One separator body; the variants differ only by the inlet/outlet connection type. Build the body once and change only the end connections.</p>
+    <p style="margin-top:12px">
+      <span class="pill">2 variants</span>
+      <span class="pill">Catalog p.25</span>
+      <span class="pill">1-1/2"</span>
+    </p>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- STEP 1 -->
+<section>
+  <h2><span class="n">1</span>The Reference Model</h2>
+  <p class="lead">This is our current VNTANA asset for the lead variant. Use it as the geometry, scale, and material reference for your rebuild. Below it is the source CAD download and the full variant list.</p>
+
+  <div class="card">
+    <div class="viewer">
+      <iframe src="https://embed.vntana.com/v2?productUuid=0e0d6b2f-8bde-4c15-b2be-892d38db7a95&clientSlug=products&organizationSlug=taco" allow="xr-spatial-tracking; fullscreen" loading="lazy"></iframe>
+    </div>
+
+    <h3>Source CAD &amp; downloads</h3>
+    <p>All source files (STEP, GLB, USDZ, FBX) for this family live in the shared VNTANA collection. Use <b>Download All</b> there, or pull the per-variant STEP.</p>
+    <p style="margin-top:10px">
+      <a class="btn" href="https://embed.vntana.com/v2/assets/b27cef46-c9de-444b-aab7-b49ee6d47f99?shareLink=d080ced5-1e36-495c-bb35-4dc93bf1e0e1" target="_blank" rel="noopener">Open source CAD collection &#8599;</a>
+    </p>
+    <div class="note"><b>STEP naming:</b> AP203 export drops the component names, so parts arrive as unnamed solids. Name parts from the catalog and replacement-parts sheet and flag anything you are unsure of.</div>
+
+    <h3>Variants in this family</h3>
+    <table>
+      <thead><tr><th>SKU</th><th>Size</th><th>Connection</th><th>VNTANA reference</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>49-150T</b></td><td>1-1/2"</td><td>Threaded (NPT)</td>
+          <td><a class="btn ghost" href="https://embed.vntana.com/v2?productUuid=0e0d6b2f-8bde-4c15-b2be-892d38db7a95&clientSlug=products&organizationSlug=taco" target="_blank" rel="noopener">View 3D</a></td>
+        </tr>
+        <tr>
+          <td><b>49-150C</b></td><td>1-1/2"</td><td>Sweat (solder)</td>
+          <td><a class="btn ghost" href="https://embed.vntana.com/v2?productUuid=0c2671ec-4e6e-4a5d-b15c-977f4e8e4054&clientSlug=products&organizationSlug=taco" target="_blank" rel="noopener">View 3D</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout">The <b>T / C / P</b> suffixes are the same separator with different end connections (NPT, sweat, press). Model the body once; swap only the inlet and outlet connections.</div>
+  </div>
+</section>
+
+<!-- STEP 2 -->
+<section>
+  <h2><span class="n">2</span>Specs &amp; Reference</h2>
+  <p class="lead">Catalog specifications (page 25) and the reference photography. Match the physical proportions and finishes to these, not to your own interpretation.</p>
+
+  <div class="card">
+    <h3>Catalog page (p.25)</h3>
+    <div class="catalog">
+      <figure style="margin:0">
+        <img src="refs/catalog-separator-p25.png" alt="Taco 49-150 catalog page 25">
+        <figcaption>Taco Wholesale Catalog, page 25. Product photo, features, and variant table. This is the source spec: match proportions, finishes, and artwork to this page.</figcaption>
+      </figure>
+    </div>
+
+    <h3>Notes</h3>
+    <div class="spec">Taco 4900 Series air separator, 1-1/2".
+Removes entrained air (and, on the magnetic dirt models, ferrous particles) from closed-loop hydronic systems.
+Connection codes: T = NPT (threaded), C = Sweat (solder), P = Press connect.
+Includes the Pall-ring internals, vent assembly with protective vent plate, and the 1/2" expansion-tank tapping.
+
+Confirm from the catalog page:
+  - Body dimensions for 1-1/2" and the tapping location
+  - Vent assembly and blow-down valve geometry
+  - Connection geometry per code (NPT vs sweat vs press)
+  - Internal Pall-ring / separator element (keep it, it is a serviceable internal)</div>
+    <div class="note"><b>Before baking labels:</b> the faceplate and any printed labels are textures, not geometry. Confirm the current artwork version with VNTANA before locking the texture.</div>
+  </div>
+</section>
+
+<!-- STEP 3 -->
+<section>
+  <h2><span class="n">3</span>Upload, QA &amp; Approval</h2>
+  <p class="lead">When the family is built, self-QA against this checklist first, then upload to the VNTANA platform as a Draft and notify VNTANA for review. Do not mark anything final. VNTANA does the final approval.</p>
+
+  <div class="card">
+    <h3>Pre-delivery QA (check every item before uploading)</h3>
+    <ul class="check">
+      <li>All 4 deliverables present per variant: GLB, packed .blend, parts manifest CSV, 4K maps.</li>
+      <li>One mesh per serviceable part at scene root. No mega-part, no empty wrappers.</li>
+      <li>All internal parts kept. Nested shells have 2mm clearance.</li>
+      <li>Every mesh has a real part name (or a flagged catalog name). Fasteners grouped logically.</li>
+      <li>Upright, grounded, origin bottom-center, real-world meters.</li>
+      <li>glTF PBR metal/roughness, textures embedded, one material per physical material.</li>
+      <li>Single 0 to 1 UV per material, seams hidden.</li>
+      <li>Faceplate / labels / screens are textures, artwork version confirmed.</li>
+      <li>6 ortho cameras + detail cams present. Neutral HDRI packed, no extra lights, AgX.</li>
+      <li>Renders smooth at 4K. Source artifacts flagged in notes, not reproduced.</li>
+      <li>All variants share the same body geometry; only the noted differences change.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Upload to VNTANA platform</h3>
+    <ul class="rules">
+      <li>Upload with the <b>Preserve Meshes and UVs</b> pipeline (do not let the platform re-mesh).</li>
+      <li>Use the Taco <b>project preset</b>: Pivot None, Scaling None, obstructed-geometry removal OFF.</li>
+      <li>Save as <b>Draft</b>. Do not publish.</li>
+      <li>Fill the parts manifest so the platform part list matches your named meshes.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Approval flow</h3>
+    <ul class="rules">
+      <li><b>Step 1: 3D Team self-QA:</b> pass the checklist above.</li>
+      <li><b>Step 2: Upload as Draft</b> and notify VNTANA that 49-150 is ready for review.</li>
+      <li><b>Step 3: VNTANA review:</b> we check geometry, naming, scale, materials, and the render set. Feedback comes back on this family thread.</li>
+      <li><b>Step 4: Revise or approve.</b> Once VNTANA approves, VNTANA sets it Live. The 3D Team never publishes.</li>
+    </ul>
+  </div>
+</section>
+
+<footer><a href="index.html">&#8592; Back to all families</a> &middot; VNTANA &times; Taco Comfort Solutions</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>0018e: Taco 3D Production</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <span class="tag">VNTANA &times; TACO</span>
+    <span>3D Asset Production Brief</span>
+    <span class="sub">Prepared for the 3D Team</span>
+  </div>
+</div>
+
+<div class="head">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Production Brief</a> / Family 0018e</div>
+    <h1>0018e: High-Efficiency ECM Circulator</h1>
+    <p>Wet-rotor ECM circulator. One shared pump body; the four variants differ only by connection type and body material. Build the body once, then produce the four fitting and material variants from it.</p>
+    <p style="margin-top:12px">
+      <span class="pill">4 variants</span>
+      <span class="pill">Catalog p.6</span>
+      <span class="pill">Cast iron + stainless</span>
+    </p>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- STEP 1 -->
+<section>
+  <h2><span class="n">1</span>The Reference Model</h2>
+  <p class="lead">This is our current VNTANA asset for the lead variant. Use it as the geometry, scale, and material reference for your rebuild. Below it is the source CAD download and the full variant list.</p>
+
+  <div class="card">
+    <div class="viewer">
+      <iframe src="https://embed.vntana.com/v2?productUuid=120a0c33-d08d-405d-8920-7dba7ed26594&clientSlug=products&organizationSlug=taco" allow="xr-spatial-tracking; fullscreen" loading="lazy"></iframe>
+    </div>
+
+    <h3>Source CAD &amp; downloads</h3>
+    <p>All source files (STEP, GLB, USDZ, FBX) for this family live in the shared VNTANA collection. Use <b>Download All</b> there, or pull the per-variant STEP.</p>
+    <p style="margin-top:10px">
+      <a class="btn" href="https://embed.vntana.com/v2/assets/b27cef46-c9de-444b-aab7-b49ee6d47f99?shareLink=d080ced5-1e36-495c-bb35-4dc93bf1e0e1" target="_blank" rel="noopener">Open source CAD collection &#8599;</a>
+    </p>
+    <div class="note"><b>STEP naming:</b> AP203 export drops the component names, so parts arrive as unnamed solids. Name parts from the catalog and replacement-parts sheet and flag anything you are unsure of.</div>
+
+    <h3>Variants in this family</h3>
+    <table>
+      <thead><tr><th>SKU</th><th>Body</th><th>Connection</th><th>VNTANA reference</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>0018e-2F2</b></td><td>Cast iron</td><td>2-bolt flange</td>
+          <td><a class="btn ghost" href="https://embed.vntana.com/v2?productUuid=120a0c33-d08d-405d-8920-7dba7ed26594&clientSlug=products&organizationSlug=taco" target="_blank" rel="noopener">View 3D</a></td>
+        </tr>
+        <tr>
+          <td><b>0018e-2F4</b></td><td>Cast iron</td><td>Universal 2-way flange</td>
+          <td><a class="btn ghost" href="https://embed.vntana.com/v2?productUuid=2dd87513-b6a8-4b46-96b3-c1084b5ed6ff&clientSlug=products&organizationSlug=taco" target="_blank" rel="noopener">View 3D</a></td>
+        </tr>
+        <tr>
+          <td><b>0018e-SF4</b></td><td>Stainless</td><td>Universal flange</td>
+          <td><a class="btn ghost" href="https://embed.vntana.com/v2?productUuid=4324bb76-ef21-4bd9-a343-77a17200d5e6&clientSlug=products&organizationSlug=taco" target="_blank" rel="noopener">View 3D</a></td>
+        </tr>
+        <tr>
+          <td><b>0018e-SU</b></td><td>Stainless</td><td>Union</td>
+          <td><a class="btn ghost" href="https://embed.vntana.com/v2?productUuid=c9e3bb1f-50b1-4786-9545-52fec24ad8a3&clientSlug=products&organizationSlug=taco" target="_blank" rel="noopener">View 3D</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout">The <b>2F2 / 2F4 / SF4 / SU</b> suffixes are connection and material variants of one pump. Model the shared body once; swap only the end fittings and the body material between variants.</div>
+  </div>
+</section>
+
+<!-- STEP 2 -->
+<section>
+  <h2><span class="n">2</span>Specs &amp; Reference</h2>
+  <p class="lead">Catalog specifications (page 6) and the reference photography. Match the physical proportions and finishes to these, not to your own interpretation.</p>
+
+  <div class="card">
+    <h3>Reference image</h3>
+    <div class="refs">
+      <figure>
+        <img src="refs/0018e-SU-3.png" alt="0018e-SU: stainless steel, union connection (reference render)">
+        <figcaption>0018e-SU: stainless steel, union connection (reference render)</figcaption>
+      </figure>
+    </div>
+
+    <h3>Catalog page (p.6)</h3>
+    <div class="catalog">
+      <figure style="margin:0">
+        <img src="refs/catalog-0018e-p6.png" alt="Taco 0018e catalog page 6">
+        <figcaption>Taco Wholesale Catalog, page 6. Product photo, features, and variant table. This is the source spec: match proportions, finishes, and artwork to this page.</figcaption>
+      </figure>
+    </div>
+
+    <h3>Notes</h3>
+    <div class="spec">Taco 0018e high-efficiency ECM wet-rotor circulator.
+Body: cast iron (2F2 / 2F4) or stainless steel (SF4 / SU).
+Connection: 2-bolt flange, universal flange, or union depending on variant.
+Includes the ECM motor housing, terminal box, and mode-select faceplate.
+
+Confirm from the catalog page:
+  - Overall flange-to-flange dimension per connection type
+  - Faceplate / label artwork and version (deliver as texture, not geometry)
+  - Terminal box orientation
+  - Motor housing finish (painted cast iron vs bare stainless)</div>
+    <div class="note"><b>Before baking labels:</b> the faceplate and any printed labels are textures, not geometry. Confirm the current artwork version with VNTANA before locking the texture.</div>
+  </div>
+</section>
+
+<!-- STEP 3 -->
+<section>
+  <h2><span class="n">3</span>Upload, QA &amp; Approval</h2>
+  <p class="lead">When the family is built, self-QA against this checklist first, then upload to the VNTANA platform as a Draft and notify VNTANA for review. Do not mark anything final. VNTANA does the final approval.</p>
+
+  <div class="card">
+    <h3>Pre-delivery QA (check every item before uploading)</h3>
+    <ul class="check">
+      <li>All 4 deliverables present per variant: GLB, packed .blend, parts manifest CSV, 4K maps.</li>
+      <li>One mesh per serviceable part at scene root. No mega-part, no empty wrappers.</li>
+      <li>All internal parts kept. Nested shells have 2mm clearance.</li>
+      <li>Every mesh has a real part name (or a flagged catalog name). Fasteners grouped logically.</li>
+      <li>Upright, grounded, origin bottom-center, real-world meters.</li>
+      <li>glTF PBR metal/roughness, textures embedded, one material per physical material.</li>
+      <li>Single 0 to 1 UV per material, seams hidden.</li>
+      <li>Faceplate / labels / screens are textures, artwork version confirmed.</li>
+      <li>6 ortho cameras + detail cams present. Neutral HDRI packed, no extra lights, AgX.</li>
+      <li>Renders smooth at 4K. Source artifacts flagged in notes, not reproduced.</li>
+      <li>All variants share the same body geometry; only the noted differences change.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Upload to VNTANA platform</h3>
+    <ul class="rules">
+      <li>Upload with the <b>Preserve Meshes and UVs</b> pipeline (do not let the platform re-mesh).</li>
+      <li>Use the Taco <b>project preset</b>: Pivot None, Scaling None, obstructed-geometry removal OFF.</li>
+      <li>Save as <b>Draft</b>. Do not publish.</li>
+      <li>Fill the parts manifest so the platform part list matches your named meshes.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Approval flow</h3>
+    <ul class="rules">
+      <li><b>Step 1: 3D Team self-QA:</b> pass the checklist above.</li>
+      <li><b>Step 2: Upload as Draft</b> and notify VNTANA that 0018e is ready for review.</li>
+      <li><b>Step 3: VNTANA review:</b> we check geometry, naming, scale, materials, and the render set. Feedback comes back on this family thread.</li>
+      <li><b>Step 4: Revise or approve.</b> Once VNTANA approves, VNTANA sets it Live. The 3D Team never publishes.</li>
+    </ul>
+  </div>
+</section>
+
+<footer><a href="index.html">&#8592; Back to all families</a> &middot; VNTANA &times; Taco Comfort Solutions</footer>
+
+</div>
+</body>
+</html>
