@@ -193,14 +193,8 @@
           <div class="price">Estimated pricing at your funeral home <small>MSRP VARIES</small></div>
 
           <div class="grp">
-            <h2>Base color <b id="baseLabel">White</b></h2>
-            <div class="swatches" id="bases"></div>
-          </div>
-
-          <div class="grp">
-            <h2>Accent <b id="accentLabel">Silver</b></h2>
-            <div class="swatches" id="accents"></div>
-            <div class="vnnote" style="text-align:left;margin-top:8px">The accent is the raised trim. Base and accent are independent, so any base pairs with any accent.</div>
+            <h2>Color <b id="colorLabel">White</b></h2>
+            <div class="swatches" id="colorways"></div>
           </div>
 
           <div class="grp">
@@ -311,39 +305,32 @@
       document.getElementById('emblemLabel').textContent = name;
       if(src){ cfg.cover=''; document.getElementById('coverLabel').textContent='Plain'; syncCoverButtons('Plain'); }
     },
-    /* base-color: white | navy | black. Swaps the Base_Concrete + Cover_Concrete maps
-       (white = the model's own state, no texture load). Real 1.1.0 property. */
-    setBase:function(val, label){ cfg.baseColor = val; document.getElementById('baseLabel').textContent = label; },
-    /* accent-color: silver | pink. Swaps the Base_Accent + Cover_Accent maps. Real 1.1.0 property. */
-    setAccent:function(val, label){ cfg.accentColor = val; document.getElementById('accentLabel').textContent = label; }
+    /* colorway: ONE selection sets both base-color and accent-color under the hood.
+       Each colorway maps to the finished product look; the customer picks the product,
+       not a base and an accent separately. */
+    setColorway:function(cw){ cfg.baseColor = cw.base; cfg.accentColor = cw.accent; document.getElementById('colorLabel').textContent = cw.n; }
   };
 
-  /* Real 1.1.0 colorways. value = the base-color/accent-color attribute the component reads;
-     hex = swatch dot only. Base and accent are independent (all pairings valid). */
-  var BASES=[{v:'white',n:'White',hex:'#f2f2ef'},{v:'navy',n:'Navy',hex:'#1c2c4f'},{v:'black',n:'Black',hex:'#1a1a1a'}];
-  var ACCENTS=[{v:'silver',n:'Silver',hex:'#c9ccd1'},{v:'pink',n:'Pink',hex:'#d97a94'}];
+  /* Named colorways = the real Wilbert finished looks. base/accent are the component's
+     base-color / accent-color props; b/a are the two swatch-dot tones. Edit this list to
+     add or rename colorways. */
+  var COLORWAYS=[
+    {n:'White',        base:'white', accent:'silver', b:'#f2f2ef', a:'#c9ccd1'},
+    {n:'Cameo Rose',   base:'white', accent:'pink',   b:'#f2f2ef', a:'#d97a94'},
+    {n:'Veteran Navy', base:'navy',  accent:'silver', b:'#1c2c4f', a:'#c9ccd1'},
+    {n:'Stainless',    base:'black', accent:'silver', b:'#1a1a1a', a:'#c9ccd1'}
+  ];
 
-  function syncBaseButtons(v){ document.querySelectorAll('#bases .swatch').forEach(function(b){ b.classList.toggle('active', b.dataset.val===v); }); }
-  function syncAccentButtons(v){ document.querySelectorAll('#accents .swatch').forEach(function(b){ b.classList.toggle('active', b.dataset.val===v); }); }
+  function syncColorwayButtons(name){ document.querySelectorAll('#colorways .swatch').forEach(function(b){ b.classList.toggle('active', b.dataset.name===name); }); }
 
-  (function renderBases(){
-    var wrap=document.getElementById('bases'), h='';
-    BASES.forEach(function(c,i){
-      h+='<button class="swatch'+(i===0?' active':'')+'" data-val="'+c.v+'"><span class="dot" style="background:'+c.hex+'"></span><span class="lbl">'+c.n+'</span></button>';
+  (function renderColorways(){
+    var wrap=document.getElementById('colorways'), h='';
+    COLORWAYS.forEach(function(c,i){
+      h+='<button class="swatch'+(i===0?' active':'')+'" data-name="'+c.n+'"><span class="dot" style="background:linear-gradient(135deg,'+c.b+' 50%,'+c.a+' 50%)"></span><span class="lbl">'+c.n+'</span></button>';
     });
     wrap.innerHTML=h;
     wrap.querySelectorAll('.swatch').forEach(function(b){
-      b.addEventListener('click', function(){ syncBaseButtons(b.dataset.val); configurator.setBase(b.dataset.val, b.querySelector('.lbl').textContent); });
-    });
-  })();
-  (function renderAccents(){
-    var wrap=document.getElementById('accents'), h='';
-    ACCENTS.forEach(function(c,i){
-      h+='<button class="swatch'+(i===0?' active':'')+'" data-val="'+c.v+'"><span class="dot" style="background:'+c.hex+'"></span><span class="lbl">'+c.n+'</span></button>';
-    });
-    wrap.innerHTML=h;
-    wrap.querySelectorAll('.swatch').forEach(function(b){
-      b.addEventListener('click', function(){ syncAccentButtons(b.dataset.val); configurator.setAccent(b.dataset.val, b.querySelector('.lbl').textContent); });
+      b.addEventListener('click', function(){ var cw=COLORWAYS.find(function(x){return x.n===b.dataset.name;}); syncColorwayButtons(cw.n); configurator.setColorway(cw); });
     });
   })();
 
