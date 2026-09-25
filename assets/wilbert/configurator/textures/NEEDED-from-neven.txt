@@ -1,18 +1,16 @@
-The wilbert-configurator 1.1.0 build needs these 8 color texture files served here.
-They are NOT shipped in the tgz (build/ only). Get them from Neven and drop them in
-this folder (assets/wilbert/configurator/textures/). Filenames are fixed by the build:
+STATUS: the 8 files below are PLACEHOLDERS (flat/speckled solid colors) generated
+to unblock the demo. Replace each with Neven's real color map when it arrives, same
+filename. The real maps carry the true concrete + metallic detail; these approximate
+the color only.
 
-  black-body-base.jpg
-  black-body-cover.jpg
-  navy-body-base.jpg
-  navy-body-cover.jpg
-  silver-accent-base.png
-  silver-accent-cover.png
-  pink-accent-base.png
-  pink-accent-cover.png
+WHY placeholders were needed: this static site serves nginx try_files, so a missing
+texture path returns the index HTML (200 text/html), not a 404. The component fetched
+that HTML, failed to decode it as an image, threw InvalidStateError, and the scene
+assembly blanked the 3D canvas on any non-white selection. Real image files fix that.
 
-Until they are present:
-  - base-color="white"  works (native GLB state, loads no texture)
-  - navy / black / silver / pink  degrade to the baked look (console.warn, no throw)
+Files (fixed names the 1.1.0 build builds as <texture-root>/<name>):
+  black-body-base.jpg    navy-body-base.jpg     silver-accent-base.png    pink-accent-base.png
+  black-body-cover.jpg   navy-body-cover.jpg    silver-accent-cover.png   pink-accent-cover.png
 
-The page sets texture-root="assets/wilbert/configurator/textures" on <wilbert-configurator>.
+white base = the model's own state (no file). texture-root on the page =
+assets/wilbert/configurator/textures.
