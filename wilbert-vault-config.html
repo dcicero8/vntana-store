@@ -393,17 +393,23 @@
      initial camera on the vntana-viewer inside its shadow DOM. We apply it once, right after
      the model's first frame, then step back so the user's own rotate/zoom is preserved
      (the viewer keeps the camera across cover/emblem/lid reloads on its own). */
-  /* Camera pulled from the authored embed view (embed.vntana.com, productUuid 1663b85c... vaultdemo/wilbert).
-     Lighting: the viewer's default Studio.hdr at exposure 1.4 threw a blown-out specular hotspot on the
-     glossy cover print; dropping exposure to 0.95 and rotating the environment moves that glare off the
-     cover face and evens out the lighting. (Studio.hdr is the only env map available on that host.) */
+  /* Camera pulled from the authored embed view. Lighting/environment matched to the authored
+     vaultdemo asset's viewerSettings (product API, wilbert/vaultdemo): Studio.hdr, exposure 1.4,
+     the 4-light directional rig at intensity 0 (HDR-driven), subtle bloom, white background, so the
+     materials render the same way they do in Erin's asset. */
   var CAM={
     'camera-rotation':'-0.38672700145951727rad 0.7252520134596132rad 0rad',
     'camera-distance':'2.5517548080222427r',
     'camera-target':'0.0864328970010166r -0.022183923568980413r -0.14704529419947254r',
     'field-of-view':'0.6303545972893357rad',
-    'exposure':'0.95',
-    'environment-rotation':'0deg 130deg 0deg'
+    'environment-src':'https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio.hdr',
+    'exposure':'1.4',
+    'light-rig-intensity':'0',
+    'light-rig':'directional position 0r 1.05r 0r direction 0.37788859497245025m -0.6253020730046984m -0.6827865898549665m; directional position 0r 1.05r 0r direction -0.544306629479127m -0.625302032486377m -0.5592205837355044m; directional position 0r 1.05r 0r direction -0.024428939559004506m 0.6049951951138368m 0.7958542836482022m; directional position 0r 1.05r 0r direction 0m 1m 0m',
+    'bloom-strength':'0.15',
+    'bloom-radius':'5',
+    'bloom-threshold':'0.9',
+    'background':'#ffffff'
   };
   (function heroCamera(){
     var sr=cfg.shadowRoot, v=sr&&sr.querySelector('vntana-viewer');
