@@ -238,9 +238,9 @@
     y:[0.00662, 0.23682,  0.01005, -0.29069],
     z:[0.00012,-0.00008,  0.09696, -0.00508],
   };
-  function framePart(patterns){
+  function framePart(patterns, all){
     if(!ready) return;
-    const uuids = uuidsMatching(patterns);
+    const uuids = all ? allUuidsMatching(patterns) : uuidsMatching(patterns);
     if(!uuids.length) return;
     let min=[Infinity,Infinity,Infinity], max=[-Infinity,-Infinity,-Infinity], cnt=0;
     uuids.forEach(u=>{
@@ -325,10 +325,10 @@
     { n:1, title:"Preparation", sub:"Lock out, isolate, drain",
       note:"Make sure all replacement parts are available before you disassemble the pump for overhaul.",
       subs:[
-        {t:"Lock out power supply to the motor.", kind:"manual"},
-        {t:"Shut off the valves controlling flow to and from the pump.", kind:"manual"},
-        {t:"Flush the pump of all corrosive or toxic liquid, if required.", kind:"manual"},
-        {t:"Remove all auxiliary tubing and piping.", kind:"manual"},
+        {t:"Lock out power supply to the motor.", kind:"context", parts:["motor"]},
+        {t:"Shut off the valves controlling flow to and from the pump.", kind:"context", parts:["discharge valve","spindle"]},
+        {t:"Flush the pump of all corrosive or toxic liquid, if required.", kind:"context", parts:["case, goulds","casing socket"]},
+        {t:"Remove all auxiliary tubing and piping.", kind:"context", parts:["discharge pipe","vertical piping"]},
       ]},
     { n:2, title:"Remove Coupling", sub:"Coupling guard, spacer, hub",
       note:"Scribe the shaft at the coupling hub for proper positioning of the hub during reassembly, then remove the hub.",
@@ -498,6 +498,21 @@
     const pl = patterns.map(s=>s.toLowerCase());
     return pumpLeaves.filter(l=>pl.some(p=>l.path.includes(p))).map(l=>l.uuid);
   }
+  function allUuidsMatching(patterns){                 // search ALL leaves incl. installation context
+    if(!patterns || !patterns.length) return [];
+    const pl = patterns.map(s=>s.toLowerCase());
+    return leaves.filter(l=>pl.some(p=>l.path.includes(p))).map(l=>l.uuid);
+  }
+  // highlight parts that live in the installation context (motor, valves, piping) for the prep step
+  function highlightContext(patterns){
+    clearFx();
+    if(!ready) return;
+    try{
+      const hit = new Set(allUuidsMatching(patterns));
+      if(hit.size){ hit.forEach(u=>viewer.setEffect(u,"glow","outline")); }
+      leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); });
+    }catch(e){}
+  }
   function clearFx(){ try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(e){} }
   function highlight(patterns){
     clearFx();
@@ -547,7 +562,8 @@
     cur = Math.max(0, Math.min(SUBS.length-1, k));
     applyRemoval(cur);                               // snap cumulative removal state to this point
     const c = SUBS[cur];
-    if(c.parts && (c.kind==="remove"||c.kind==="rig"||c.kind==="highlight")){ highlight(c.parts); framePart(c.parts); }
+    if(c.kind==="context" && c.parts){ highlightContext(c.parts); framePart(c.parts, true); }
+    else if(c.parts && (c.kind==="remove"||c.kind==="rig"||c.kind==="highlight")){ highlight(c.parts); framePart(c.parts); }
     else { clearFx(); if(ready){ contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); } frameStep(c.n); }
     renderSteps(); renderDetail(); renderNow();
   }
