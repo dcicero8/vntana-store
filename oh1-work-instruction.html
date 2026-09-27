@@ -433,17 +433,27 @@
       const underMatched = matchedPaths.some(mp => l.path===mp || l.path.startsWith(mp+" / "));
       if(isMatched || (underMatched && !HW_SEG.test(seg))) keepSet.add(l.uuid);   // matched node, or its own non-hardware primitives
     });
-    const tag = new Set(leaves.filter(l=>FASTENER_RE.test(l.path) && !FASTENER_EXCLUDE.test(l.path)).map(l=>l.uuid));
+    // Stash a part if: (a) its own name is clearly hardware (stud/screw/nut/bolt/dowel/pin/plug, at ANY length —
+    // some studs are 30cm), or (b) it's material-named (satin/polished steel = a modeled fastener here) AND rod-like
+    // (thin), or (c) it's just small (<5cm). Material-named THICK parts (e.g. the shaft) are spared.
+    const HW_NAME = /\bstud\b|stud[_ ]|screw|washer|\bnut\b|nut[_ ]|jam nut|cap nut|\bbolt\b|bolt[_ ]|dowel|\bpin\b|pin[_ ]|\bplug\b|plug[_ ]/i;
+    const MAT_NAME = /satin finish stainless steel|polished steel/i;
+    const tag = new Set();
     leaves.forEach(l=>{
-      if(tag.has(l.uuid) || keepSet.has(l.uuid)) return;
-      const o=viewer.scene.getObjectByProperty("uuid",l.uuid); if(!o||!o.geometry) return;
-      if(o.geometry.computeBoundingBox) o.geometry.computeBoundingBox();
-      const bb=o.geometry.boundingBox; if(!bb) return;
-      const b=bb.clone(); b.applyMatrix4(o.matrixWorld);
-      const dim=Math.max(b.max.x-b.min.x, b.max.y-b.min.y, b.max.z-b.min.z);
-      if(dim < 0.05) tag.add(l.uuid);          // ~5cm: small metallic hardware
+      if(keepSet.has(l.uuid)) return;
+      const seg=l.path.split(" / ").pop();
+      const nameHW = HW_NAME.test(seg) || (FASTENER_RE.test(l.path) && !FASTENER_EXCLUDE.test(l.path));
+      let small=false, rod=false;
+      const o=viewer.scene.getObjectByProperty("uuid",l.uuid);
+      if(o&&o.geometry){ if(o.geometry.computeBoundingBox) o.geometry.computeBoundingBox(); const bb=o.geometry.boundingBox;
+        if(bb){ const b=bb.clone(); b.applyMatrix4(o.matrixWorld);
+          const d=[b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z].sort((x,y)=>y-x);
+          small = d[0]<0.05;                         // <5cm overall
+          rod   = MAT_NAME.test(seg) && d[1]<0.03;   // long + thin = a stud named by material
+        }
+      }
+      if(nameHW || small || rod) tag.add(l.uuid);
     });
-    keepSet.forEach(u=>tag.delete(u));
     FASTENER_UUIDS = [...tag];
     window.__fasteners = FASTENER_UUIDS.length;
     if(mode==="procedure"){ stashFasteners(true); cacheHomes(); goSub(cur); }  // re-apply highlight + camera + animation once leaves are ready
