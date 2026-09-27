@@ -421,7 +421,7 @@
 
   // Which leaves are loose fasteners (bolts/studs/screws/nuts/pipe plugs) vs real pump parts.
   const FASTENER_RE = /bolt|stud|screw|washer|hex nut|hex cap|hex head|hex bolt|eye bolt|pipe plug|threaded rod|\bnut\b|370-|370f|370b|370_|355 hex|250b|250n/i;
-  const FASTENER_EXCLUDE = /casing socket|discharge|base plate|baseplate/i;
+  const FASTENER_EXCLUDE = /casing socket/i;   // stash ALL loose fasteners incl. discharge/base-plate bolts (they render black); keep the casing socket (a real part)
   let FASTENER_UUIDS = [], fastenerStash = new Map();
   // Hide by translating off-screen — the one runtime mutation the viewer's render pass honors
   // (same object.position mechanism the Phase 2 animation uses), unlike material/visibility edits.
