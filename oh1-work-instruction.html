@@ -189,7 +189,7 @@
         <button id="next" class="primary">Next ›</button>
       </span>
       <div class="spacer"></div>
-      <label>Explode <input type="range" id="explode" min="0" max="1" step="0.01" value="0"></label>
+      <label id="explodeCtl" style="display:none">Explode <input type="range" id="explode" min="0" max="1" step="0.01" value="0"></label>
       <button id="reset">Reset view</button>
     </div>
   </div>
@@ -696,7 +696,9 @@
     $("mode-procedure").classList.toggle("hide", m!=="procedure");
     $("mode-parts").classList.toggle("hide", m!=="parts");
     $("stepnav").style.display = m==="procedure" ? "flex" : "none";
-    if(m==="procedure"){ $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; stashFasteners(true); goSub(cur); }
+    // Explode belongs in Parts Explorer only — in the guided walk-through it un-hides the stashed hardware and confuses people.
+    $("explodeCtl").style.display = m==="procedure" ? "none" : "";
+    if(m==="procedure"){ try{ $("explode").value=0; viewer.setExplodedStrength(0); }catch(_){}; $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; stashFasteners(true); goSub(cur); }
     else { $("hint").textContent="Click any part in the model to inspect it."; stashFasteners(false); applyRemoval(0); for(const k in toolMeshes){ if(toolMeshes[k]) toolMeshes[k].visible=false; } renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
   }
   document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
