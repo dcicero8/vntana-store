@@ -422,12 +422,30 @@
   // Which leaves are loose fasteners (bolts/studs/screws/nuts/pipe plugs) vs real pump parts.
   const FASTENER_RE = /bolt|stud|screw|washer|hex nut|hex cap|hex head|hex bolt|eye bolt|pipe plug|threaded rod|\bnut\b|370-|370f|370b|370_|355 hex|250b|250n/i;
   const FASTENER_EXCLUDE = /casing socket/i;   // stash ALL loose fasteners incl. discharge/base-plate bolts (they render black); keep the casing socket (a real part)
-  let FASTENER_UUIDS = [], ghostOn = true;
-  // GHOST the loose fasteners (they render black under IBL): apply the viewer's "dim" effect (0.2 opacity)
-  // so they read as faint ghosts rather than harsh black. Re-applied after every effect change (clearEffect
-  // wipes it), so ghostFasteners() is called at the end of the highlight paths and the no-highlight branch.
-  function ghostFasteners(){ if(!ghostOn || !ready) return; try{ FASTENER_UUIDS.forEach(u=>viewer.setEffect(u,"dim")); }catch(_){} }
-  function stashFasteners(hide){ ghostOn = hide; if(!ready) return; if(hide) ghostFasteners(); renderNow(); }
+  let FASTENER_UUIDS = [], fastenerStash = new Map();
+  function ghostFasteners(){}   // no-op: dimming a near-black part still reads as dark specks; we hide instead
+  // Hide the loose fasteners by translating off-screen (the render pass honors object.position, not material/
+  // visibility edits). Dan confirmed these can simply disappear in the walk-through.
+  function stashFasteners(hide){
+    if(!ready) return;
+    try{
+      if(hide){
+        FASTENER_UUIDS.forEach(u=>{
+          if(fastenerStash.has(u)) return;
+          const o = viewer.scene && viewer.scene.getObjectByProperty ? viewer.scene.getObjectByProperty("uuid",u) : null;
+          if(!o || !o.position) return;
+          const home = o.position.clone();
+          const wp = new home.constructor(); o.getWorldPosition(wp); wp.y += 100;   // 100m up, well out of frame
+          o.position.copy(o.parent ? o.parent.worldToLocal(wp) : wp);
+          fastenerStash.set(u, home);
+        });
+      } else {
+        fastenerStash.forEach((home,u)=>{ const o=viewer.scene&&viewer.scene.getObjectByProperty?viewer.scene.getObjectByProperty("uuid",u):null; if(o&&o.position) o.position.copy(home); });
+        fastenerStash.clear();
+      }
+    }catch(_){}
+    renderNow();
+  }
 
   // ===== client-side sequential removal (no baked glTF anims) =====
   // Each 'remove' sub-step slides its part off along `move` and it STAYS removed, so parts come off in
