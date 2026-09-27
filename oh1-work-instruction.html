@@ -449,7 +449,7 @@
         if(bb){ const b=bb.clone(); b.applyMatrix4(o.matrixWorld);
           const d=[b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z].sort((x,y)=>y-x);
           small = d[0]<0.05;                         // <5cm overall
-          rod   = MAT_NAME.test(seg) && d[1]<0.03;   // long + thin = a stud named by material
+          rod   = MAT_NAME.test(seg) && d[0]<0.5;    // material-named node (always a fastener here); spare only huge parts
         }
       }
       if(nameHW || small || rod) tag.add(l.uuid);
