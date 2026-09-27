@@ -97,6 +97,7 @@
   .callout{border-radius:8px;padding:9px 12px;font-size:.78rem;line-height:1.45;margin:10px 0}
   .callout.warn{background:var(--warnbg);border:1px solid #fde68a;color:#78350f}
   .callout.note{background:var(--notebg);border:1px solid #a5f3fc;color:#155e75}
+  .callout.done{background:#dcfce7;border:1px solid #86efac;color:#166534}
   .callout b{text-transform:uppercase;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:2px}
   /* clickable part cross-references (Cortona-style) */
   .partref{color:var(--blue);font-weight:600;cursor:pointer;border-bottom:1px dotted var(--sky);text-decoration:none}
@@ -417,12 +418,21 @@
     // Loose hardware (bolts/studs/nuts/pins) renders black under the IBL. Name-matching misses a lot of it
     // (underscore-joined CAD names, material-named nodes), so we ALSO stash any SMALL part — that reliably
     // catches the black hardware. Keep every part any sub-step references (targets/highlights/context) + the casing.
-    // keep step-referenced parts by their OWN name (last path segment), so hardware nested UNDER a kept
-    // parent (studs under the adapter/casing/valve) is still eligible to be stashed.
-    const keepSet = new Set();
+    // Keep step-referenced parts. Match a node by its OWN name (last path segment), then keep that node AND
+    // its geometry-primitive descendants (e.g. the eyebolt split into .001/.002) — but NOT hardware nested
+    // under it (studs/nuts under the adapter/casing), which stays eligible to be stashed.
+    const HW_SEG = /stud|screw|washer|\bnut\b|nut[_ ]|bolt|dowel|\bpin\b|pin[_ ]|plug|satin finish stainless|polished steel/i;
+    const matchedPaths = [];
     SUBS.forEach(sub=>{ if(!sub.parts) return; const pl=sub.parts.map(s=>s.toLowerCase());
-      leaves.forEach(l=>{ const seg=l.path.split(" / ").pop(); if(pl.some(p=>seg.includes(p))) keepSet.add(l.uuid); }); });
-    casingUuids.forEach(u=>keepSet.add(u));
+      leaves.forEach(l=>{ const seg=l.path.split(" / ").pop(); if(pl.some(p=>seg.includes(p))) matchedPaths.push(l.path); }); });
+    leaves.forEach(l=>{ if(casingUuids.has(l.uuid)) matchedPaths.push(l.path); });
+    const keepSet = new Set();
+    leaves.forEach(l=>{
+      const seg = l.path.split(" / ").pop();
+      const isMatched = matchedPaths.includes(l.path);
+      const underMatched = matchedPaths.some(mp => l.path===mp || l.path.startsWith(mp+" / "));
+      if(isMatched || (underMatched && !HW_SEG.test(seg))) keepSet.add(l.uuid);   // matched node, or its own non-hardware primitives
+    });
     const tag = new Set(leaves.filter(l=>FASTENER_RE.test(l.path) && !FASTENER_EXCLUDE.test(l.path)).map(l=>l.uuid));
     leaves.forEach(l=>{
       if(tag.has(l.uuid) || keepSet.has(l.uuid)) return;
@@ -631,6 +641,7 @@
           ${showTorque ? torqueDiagram() : ""}
           ${s.warn?`<div class="callout warn"><b>Warning</b>${linkify(s.warn)}</div>`:""}
           ${s.note?`<div class="callout note"><b>Note</b>${linkify(s.note)}</div>`:""}
+          ${cur===SUBS.length-1?`<div class="callout done"><b>✓ Disassembly complete</b>The back pull-out assembly is fully disassembled through impeller removal. Reverse the sequence to reassemble.</div>`:""}
         </div>`;
       }
       return `<li class="steprow${active?' active':''}" data-i="${i}">
