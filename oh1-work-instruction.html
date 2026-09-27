@@ -462,17 +462,19 @@
     });
     renderNow();
   }
+  let animating=false;
   function animateRemoval(sub, cb){                  // slide this sub-step's part(s) off, then continue
-    if(animRAF) cancelAnimationFrame(animRAF);
+    if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }
     const objs = subObjs(sub);
-    if(!objs.length){ cb&&cb(); return; }
+    if(!objs.length){ animating=false; cb&&cb(); return; }
     const anims = objs.map(o=>({o, home:(homeCache.get(o.uuid)||o.position.clone()).clone(), target:removedTarget(o, sub.move)}));
-    const t0=performance.now(), dur=1500;
+    const t0=performance.now(), dur=1100;
+    animating=true;
     (function tick(){
       const t=Math.min(1,(performance.now()-t0)/dur), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
       anims.forEach(a=>a.o.position.lerpVectors(a.home,a.target,e));
       renderNow();
-      if(t<1) animRAF=requestAnimationFrame(tick); else cb&&cb();
+      if(t<1){ animRAF=requestAnimationFrame(tick); } else { animRAF=null; animating=false; cb&&cb(); }
     })();
   }
   // ===== placeholder tools (NOT in the CAD) — generic boxes, per Dan "POC tools can be generic" =====
@@ -596,6 +598,7 @@
   }
   function goSub(k){
     if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }   // stop any in-flight removal animation
+    animating=false;
     cur = Math.max(0, Math.min(SUBS.length-1, k));
     applyRemoval(cur);                               // snap cumulative removal state to this point
     const c = SUBS[cur];
@@ -609,6 +612,7 @@
   // Next: if leaving a 'remove' sub-step, play its removal, then advance so the part stays gone.
   function nextSub(){
     if(cur>=SUBS.length-1) return;
+    if(animating){ goSub(cur+1); return; }           // re-click during a removal: skip to the end, don't restart
     const c = SUBS[cur];
     if(c.kind==="remove" && ready){ animateRemoval(c, ()=>goSub(cur+1)); }
     else goSub(cur+1);
