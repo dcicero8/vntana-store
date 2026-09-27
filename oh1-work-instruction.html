@@ -417,7 +417,11 @@
     // Loose hardware (bolts/studs/nuts/pins) renders black under the IBL. Name-matching misses a lot of it
     // (underscore-joined CAD names, material-named nodes), so we ALSO stash any SMALL part — that reliably
     // catches the black hardware. Keep every part any sub-step references (targets/highlights/context) + the casing.
-    const keepSet = new Set(); SUBS.forEach(sub=>{ if(sub.parts) allUuidsMatching(sub.parts).forEach(u=>keepSet.add(u)); });
+    // keep step-referenced parts by their OWN name (last path segment), so hardware nested UNDER a kept
+    // parent (studs under the adapter/casing/valve) is still eligible to be stashed.
+    const keepSet = new Set();
+    SUBS.forEach(sub=>{ if(!sub.parts) return; const pl=sub.parts.map(s=>s.toLowerCase());
+      leaves.forEach(l=>{ const seg=l.path.split(" / ").pop(); if(pl.some(p=>seg.includes(p))) keepSet.add(l.uuid); }); });
     casingUuids.forEach(u=>keepSet.add(u));
     const tag = new Set(leaves.filter(l=>FASTENER_RE.test(l.path) && !FASTENER_EXCLUDE.test(l.path)).map(l=>l.uuid));
     leaves.forEach(l=>{
