@@ -62,13 +62,16 @@
 
   /* steps */
   .steplist{list-style:none;margin:0;padding:6px 0}
-  .steprow{display:flex;gap:12px;padding:11px 20px;cursor:pointer;border-left:3px solid transparent;transition:.12s}
-  .steprow:hover{background:#f7f9fc}
+  .steprow{border-left:3px solid transparent;transition:.12s}
   .steprow.active{background:#eef5fb;border-left-color:var(--blue)}
-  .steprow .num{font-family:var(--mono);font-weight:600;color:var(--blue);min-width:22px}
-  .steprow .st{font-size:.86rem;font-weight:600;line-height:1.3}
-  .steprow.active .st{color:var(--blue-dark)}
-  .steprow .sub{display:block;font-weight:400;color:var(--muted);font-size:.76rem;margin-top:2px}
+  .stephead{display:flex;gap:12px;padding:11px 20px;cursor:pointer}
+  .stephead:hover{background:#f7f9fc}
+  .steprow.active .stephead:hover{background:transparent}
+  .stephead .num{font-family:var(--mono);font-weight:600;color:var(--blue);min-width:22px}
+  .stephead .st{font-size:.86rem;font-weight:600;line-height:1.3}
+  .steprow.active .stephead .st{color:var(--blue-dark)}
+  .stephead .sub{display:block;font-weight:400;color:var(--muted);font-size:.76rem;margin-top:2px}
+  .stepbody{padding:0 18px 14px 33px}   /* sub-steps nested under the active step */
 
   .detail{border-top:1px solid var(--line);padding:16px 22px 30px;background:#fbfcfe}
   .detail .eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:700}
@@ -573,31 +576,41 @@
   }
 
   function renderSteps(){
-    const curStep = SUBS[cur].si;
-    $("steplist").innerHTML = STEPS.map((s,i)=>
-      `<li class="steprow${i===curStep?' active':''}" data-i="${i}">
-         <span class="num">${s.n}</span>
-         <span class="st">${s.title}<span class="sub">${s.sub}</span></span>
-       </li>`).join("");
-    $("steplist").querySelectorAll(".steprow").forEach(el=>
-      el.addEventListener("click",()=>{ const si=+el.dataset.i; goSub(SUBS.findIndex(x=>x.si===si)); }));
+    const c = SUBS[cur], curStep = c.si;
+    $("steplist").innerHTML = STEPS.map((s,i)=>{
+      const active = i===curStep;
+      let body = "";
+      if(active){
+        const subsHtml = s.subs.map((sub,ssi)=>{
+          const gi = SUBS.findIndex(x=>x.si===i && x.ssi===ssi);
+          const state = gi<cur ? "done" : (gi===cur ? "active" : "todo");
+          const tag = sub.kind==="tool" ? `<span class="tag tool">tool</span>`
+                    : sub.kind==="manual" ? `<span class="tag">manual</span>` : "";
+          return `<li class="substep ${state}" data-gi="${gi}">${linkify(sub.t)}${tag}</li>`;
+        }).join("");
+        body = `<div class="stepbody">
+          <ol class="substeps">${subsHtml}</ol>
+          ${s.warn?`<div class="callout warn"><b>Warning</b>${linkify(s.warn)}</div>`:""}
+          ${s.note?`<div class="callout note"><b>Note</b>${linkify(s.note)}</div>`:""}
+        </div>`;
+      }
+      return `<li class="steprow${active?' active':''}" data-i="${i}">
+         <div class="stephead"><span class="num">${s.n}</span>
+           <span class="st">${s.title}<span class="sub">${s.sub}</span></span></div>
+         ${body}
+       </li>`;
+    }).join("");
+    $("steplist").querySelectorAll(".stephead").forEach(el=>
+      el.addEventListener("click",()=>{ const si=+el.closest(".steprow").dataset.i; goSub(SUBS.findIndex(x=>x.si===si)); }));
+    $("steplist").querySelectorAll(".substep").forEach(el=>
+      el.addEventListener("click",e=>{ e.stopPropagation(); goSub(+el.dataset.gi); }));
+    // keep the active step (and its expanded sub-steps) in view
+    const act = $("steplist").querySelector(".steprow.active");
+    if(act && act.scrollIntoView) try{ act.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
   }
   function renderDetail(){
-    const c = SUBS[cur], s = STEPS[c.si];
-    const subsHtml = s.subs.map((sub,ssi)=>{
-      const gi = SUBS.findIndex(x=>x.si===c.si && x.ssi===ssi);
-      const state = gi<cur ? "done" : (gi===cur ? "active" : "todo");
-      const tag = sub.kind==="tool" ? `<span class="tag tool">tool</span>`
-                : sub.kind==="manual" ? `<span class="tag">manual</span>` : "";
-      return `<li class="substep ${state}" data-gi="${gi}">${linkify(sub.t)}${tag}</li>`;
-    }).join("");
-    $("detail").innerHTML =
-      `<div class="eyebrow">Step ${s.n} of ${STEPS.length} &middot; sub-step ${c.ssi+1} of ${s.subs.length}</div>
-       <h2>${s.title}</h2>
-       <ol class="substeps">${subsHtml}</ol>
-       ${s.warn?`<div class="callout warn"><b>Warning</b>${linkify(s.warn)}</div>`:""}
-       ${s.note?`<div class="callout note"><b>Note</b>${linkify(s.note)}</div>`:""}`;
-    $("detail").querySelectorAll(".substep").forEach(el=> el.addEventListener("click",()=>goSub(+el.dataset.gi)));
+    const s = STEPS[SUBS[cur].si];
+    $("detail").innerHTML = "";                       // sub-steps now nest inline under the active step
     $("counter").textContent = `Step ${s.n} / ${STEPS.length}`;
     $("prev").disabled = cur===0;
     $("next").disabled = cur===SUBS.length-1;
