@@ -493,6 +493,51 @@
       if(t<1) animRAF=requestAnimationFrame(tick); else cb&&cb();
     })();
   }
+  // ===== placeholder tools (NOT in the CAD) — generic boxes, per Dan "POC tools can be generic" =====
+  // Built from a reference mesh's classes since THREE isn't global; positioned off a CAD part's bbox.
+  let toolMeshes = {};
+  function refMesh(){ let r=null; viewer.scene.traverse(o=>{ if(!r&&o.isMesh&&o.geometry&&o.geometry.attributes.position) r=o; }); return r; }
+  function makeBox(w,h,d,hex){
+    const ref=refMesh(); if(!ref) return null;
+    const hx=w/2,hy=h/2,hz=d/2;
+    const q=[[hx,-hy,-hz],[hx,hy,-hz],[hx,hy,hz],[hx,-hy,hz],[-hx,-hy,hz],[-hx,hy,hz],[-hx,hy,-hz],[-hx,-hy,-hz],
+             [-hx,hy,-hz],[-hx,hy,hz],[hx,hy,hz],[hx,hy,-hz],[-hx,-hy,hz],[-hx,-hy,-hz],[hx,-hy,-hz],[hx,-hy,hz],
+             [-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz],[hx,-hy,-hz],[-hx,-hy,-hz],[-hx,hy,-hz],[hx,hy,-hz]];
+    const pos=[]; for(let f=0;f<6;f++){const b=f*4; [0,1,2,0,2,3].forEach(k=>pos.push(...q[b+k]));}  // 36 verts, no index
+    const geo=new ref.geometry.constructor();
+    geo.setAttribute('position', new ref.geometry.attributes.position.constructor(new Float32Array(pos),3));
+    try{ geo.computeVertexNormals(); }catch(_){}
+    const mat=ref.material.clone();
+    try{ if(mat.color&&mat.color.setHex) mat.color.setHex(hex); mat.metalness=0.15; mat.roughness=0.85;
+         ["map","normalMap","roughnessMap","metalnessMap","aoMap","emissiveMap"].forEach(k=>{ if(k in mat) mat[k]=null; }); mat.needsUpdate=true; }catch(_){}
+    const m=new ref.constructor(geo,mat); m.visible=false; viewer.scene.add(m); return m;
+  }
+  function partBBox(patterns, all){                    // world-space {c:center, s:size} of a CAD part
+    const uu=(all?allUuidsMatching(patterns):uuidsMatching(patterns)).filter(u=>!casingUuids.has(u));
+    let min=[1e9,1e9,1e9],max=[-1e9,-1e9,-1e9],cnt=0;
+    uu.forEach(u=>{ const o=viewer.scene.getObjectByProperty('uuid',u); if(!o||!o.traverse)return;
+      o.traverse(m=>{ if(m.isMesh&&m.geometry){ m.geometry.computeBoundingBox(); const b=m.geometry.boundingBox.clone(); b.applyMatrix4(m.matrixWorld);
+        if(b.max.y>10)return; min=[Math.min(min[0],b.min.x),Math.min(min[1],b.min.y),Math.min(min[2],b.min.z)];
+        max=[Math.max(max[0],b.max.x),Math.max(max[1],b.max.y),Math.max(max[2],b.max.z)]; cnt++; } }); });
+    if(!cnt) return null;
+    return {c:[(min[0]+max[0])/2,(min[1]+max[1])/2,(min[2]+max[2])/2], s:[max[0]-min[0],max[1]-min[1],max[2]-min[2]], min, max};
+  }
+  // tool registry: which sub-step text triggers it, the box size/color, and where it sits (anchor bbox + offset)
+  const TOOLS = {
+    pail:  {match:/pail/i,        size:[0.30,0.32,0.30], hex:0x9aa3ab, anchor:["408 pipe plug hex"], place:(bb)=>[bb.c[0], bb.min[1]-0.20, bb.c[2]]},
+    hoist: {match:/hoist/i,       size:[0.9,0.10,0.10],  hex:0xf2b134, anchor:["eye bolt 132"],      place:(bb)=>[bb.c[0], bb.max[1]+0.55, bb.c[2]]},
+    wrench:{match:/shaft wrench/i,size:[0.45,0.05,0.05], hex:0x5b6675, anchor:["360 d"],             place:(bb)=>[bb.max[0]+0.22, bb.c[1], bb.c[2]]},
+  };
+  function ensureTools(){ if(!ready) return; for(const k in TOOLS){ if(!toolMeshes[k]){ const t=TOOLS[k]; toolMeshes[k]=makeBox(t.size[0],t.size[1],t.size[2],t.hex); } } }
+  function showTool(sub){
+    ensureTools();
+    for(const k in toolMeshes){ if(toolMeshes[k]) toolMeshes[k].visible=false; }
+    if(!sub || sub.kind!=="tool") { renderNow(); return; }
+    for(const k in TOOLS){ const t=TOOLS[k];
+      if(t.match.test(sub.t)){ const m=toolMeshes[k]; const bb=partBBox(t.anchor, true); if(m&&bb){ const p=t.place(bb); m.position.set(p[0],p[1],p[2]); m.visible=true; } }
+    }
+    renderNow();
+  }
   function uuidsMatching(patterns){
     if(!patterns || !patterns.length) return [];
     const pl = patterns.map(s=>s.toLowerCase());
@@ -565,6 +610,7 @@
     if(c.kind==="context" && c.parts){ highlightContext(c.parts); framePart(c.parts, true); }
     else if(c.parts && (c.kind==="remove"||c.kind==="rig"||c.kind==="highlight")){ highlight(c.parts); framePart(c.parts); }
     else { clearFx(); if(ready){ contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); } frameStep(c.n); }
+    showTool(c);                                     // placeholder tool for this sub-step (pail/hoist/wrench), if any
     renderSteps(); renderDetail(); renderNow();
   }
   // Next: if leaving a 'remove' sub-step, play its removal, then advance so the part stays gone.
@@ -585,7 +631,7 @@
     $("mode-parts").classList.toggle("hide", m!=="parts");
     $("stepnav").style.display = m==="procedure" ? "flex" : "none";
     if(m==="procedure"){ $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; stashFasteners(true); goSub(cur); }
-    else { $("hint").textContent="Click any part in the model to inspect it."; stashFasteners(false); applyRemoval(0); renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
+    else { $("hint").textContent="Click any part in the model to inspect it."; stashFasteners(false); applyRemoval(0); for(const k in toolMeshes){ if(toolMeshes[k]) toolMeshes[k].visible=false; } renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
   }
   document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 
