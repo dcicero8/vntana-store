@@ -90,6 +90,10 @@
   ol.substeps .substep:hover{background:#f2f7fc}
   .tag{display:inline-block;margin-left:7px;font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#eef1f5;border-radius:4px;padding:1px 6px;vertical-align:1px}
   .tag.tool{color:#92400e;background:#fef3c7}
+  .tag.safety{color:#9f1239;background:#ffe4e6}
+  .tag.seq{color:#0a3d8f;background:#dbeafe}
+  .torque{display:flex;flex-direction:column;align-items:center;margin:4px 0 8px;padding:8px;background:#f8fafc;border:1px solid var(--line);border-radius:10px}
+  .torque-cap{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:2px}
   .callout{border-radius:8px;padding:9px 12px;font-size:.78rem;line-height:1.45;margin:10px 0}
   .callout.warn{background:var(--warnbg);border:1px solid #fde68a;color:#78350f}
   .callout.note{background:var(--notebg);border:1px solid #a5f3fc;color:#155e75}
@@ -359,8 +363,10 @@
         {t:"Remove the frame foot (241).", kind:"remove", parts:["frame foot"], move:[0,-1.2,0]},
       ]},
     { n:6, title:"Remove Frame / Adapter-to-Casing Bolts", sub:"Bolts (370), adapter (108), casing (100)",
+      warn:"Loosen the bolt circle in a criss-cross (star) sequence, never around the rim — going around the rim warps the mating faces and ruins the seal.",
       subs:[
-        {t:"Remove the bolts (370) holding the frame (228A) or frame adapter (108) to the casing (100).", kind:"highlight", parts:["adapter"]},
+        {t:"Loosen the 16 adapter-to-casing bolts (370) in the criss-cross sequence shown, so the joint releases evenly and doesn't warp.", kind:"torque", parts:["adapter"]},
+        {t:"Remove the bolts (370) and free the frame (228A) / adapter (108) from the casing (100).", kind:"highlight", parts:["adapter"]},
       ]},
     { n:7, title:"Slide Back the Pull-Out Assembly", sub:"Jacking bolts (418)",
       warn:"Never use heat to disassemble the pump — trapped liquid can expand and cause an explosion.",
@@ -375,6 +381,7 @@
     { n:9, title:"Unscrew and Remove Impeller", sub:"Impeller (101), key (400), O-ring (412A)",
       warn:"Do not damage the OD vane tip, and never use heat to unscrew the impeller.",
       subs:[
+        {t:"Check for and remove any impeller set screw first. A hidden set screw will damage the shaft if the impeller is forced.", kind:"setscrew", parts:["360 d"]},
         {t:"Install the shaft wrench.", kind:"tool"},
         {t:"Unscrew the impeller (101) from the shaft (122) — threads are right-handed.", kind:"remove", parts:["360 d"], move:[1.2,0,0]},
         {t:"Remove the impeller, then the key (400).", kind:"remove", parts:["key"], move:[1.2,0.3,0]},
@@ -574,6 +581,21 @@
     }catch(e){}
   }
 
+  // criss-cross (star) loosening/tightening order for a bolt circle — the POC visual Dan asked for
+  function torqueDiagram(){
+    const N=8, order=[1,5,3,7,2,6,4,8];   // representative star sequence (the real flange has 16)
+    const cx=90,cy=90,R=60,r=13; let dots="";
+    for(let i=0;i<N;i++){ const a=-Math.PI/2 + i*2*Math.PI/N, x=cx+R*Math.cos(a), y=cy+R*Math.sin(a);
+      const first = order[i]===1;
+      dots+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${first?'#1f6feb':'#eef5fb'}" stroke="#1f6feb" stroke-width="2"/>`+
+            `<text x="${x.toFixed(1)}" y="${(y+4.5).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="${first?'#fff':'#0a3d8f'}">${order[i]}</text>`; }
+    return `<div class="torque"><div class="torque-cap">Criss-cross loosening order</div>
+      <svg viewBox="0 0 180 180" width="150" height="150">
+        <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="3 4"/>
+        <circle cx="${cx}" cy="${cy}" r="24" fill="#f1f5f9" stroke="#cbd5e1"/>
+        ${dots}
+      </svg></div>`;
+  }
   function renderSteps(){
     const c = SUBS[cur], curStep = c.si;
     $("steplist").innerHTML = STEPS.map((s,i)=>{
@@ -584,11 +606,15 @@
           const gi = SUBS.findIndex(x=>x.si===i && x.ssi===ssi);
           const state = gi<cur ? "done" : (gi===cur ? "active" : "todo");
           const tag = sub.kind==="tool" ? `<span class="tag tool">tool</span>`
-                    : sub.kind==="manual" ? `<span class="tag">manual</span>` : "";
+                    : sub.kind==="manual" ? `<span class="tag">manual</span>`
+                    : sub.kind==="setscrew" ? `<span class="tag safety">set screw</span>`
+                    : sub.kind==="torque" ? `<span class="tag seq">sequence</span>` : "";
           return `<li class="substep ${state}" data-gi="${gi}">${linkify(sub.t)}${tag}</li>`;
         }).join("");
+        const showTorque = SUBS[cur].kind==="torque" && SUBS[cur].si===i;   // star diagram only while on the torque sub-step
         body = `<div class="stepbody">
           <ol class="substeps">${subsHtml}</ol>
+          ${showTorque ? torqueDiagram() : ""}
           ${s.warn?`<div class="callout warn"><b>Warning</b>${linkify(s.warn)}</div>`:""}
           ${s.note?`<div class="callout note"><b>Note</b>${linkify(s.note)}</div>`:""}
         </div>`;
@@ -621,7 +647,7 @@
     applyRemoval(cur);                               // snap cumulative removal state to this point
     const c = SUBS[cur];
     if(c.kind==="context" && c.parts){ highlightContext(c.parts); framePart(c.parts, true); }
-    else if(c.parts && (c.kind==="remove"||c.kind==="rig"||c.kind==="highlight")){ highlight(c.parts); framePart(c.parts); }
+    else if(c.parts && (c.kind==="remove"||c.kind==="rig"||c.kind==="highlight"||c.kind==="torque"||c.kind==="setscrew")){ highlight(c.parts); framePart(c.parts); }
     else { clearFx(); if(ready){ contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); } frameStep(c.n); }
     ghostFasteners();                                // keep loose fasteners faded (not black) whatever the branch
     showTool(c);                                     // placeholder tool for this sub-step (pail/hoist/wrench), if any
