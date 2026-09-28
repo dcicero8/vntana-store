@@ -79,7 +79,7 @@
   <div class="wrap">
     <div class="crumbs">Delivery Dashboard</div>
     <h1>Taco Comfort Solutions: 3D Asset Delivery</h1>
-    <p>Track the first production run: 32 SKUs across 12 families, plus the shared "repeatable" materials that get approved once and reused across every asset. Check items off as they move through the pipeline. Full build spec and per-family pages are in the <a href="rules.html">Delivery Rules &amp; Families</a>.</p>
+    <p>Two things to work through here: the shared repeatable materials to build and sign off once, and the side-by-side variant review to lock each family's parent. Per-SKU delivery tracking lives in the delivery Excel. Full build spec and per-family pages are in the <a href="rules.html">Delivery Rules &amp; Families</a>.</p>
   </div>
 </div>
 
@@ -100,33 +100,17 @@
   </div>
 </section>
 
-<!-- SECTION 2: DELIVERY TRACKER -->
+<!-- SECTION 2: VARIANT REVIEW -->
 <section>
-  <h2><span class="n">2</span>Delivery Tracker</h2>
-  <p class="lead">The 12 families of the first SKU set. Check each milestone as it is completed. A family counts as done when it is Approved.</p>
+  <h2><span class="n">2</span>Variant Review</h2>
+  <p class="lead">Before the 3D team starts a family, we lock its parent and note how each variant really differs. Open the side-by-side view to compare every variant's live 3D, then record what you find in the shared Google Doc.</p>
 
   <div class="card">
-    <div class="progress-wrap">
-      <span class="progress-num" id="pnum">0 / 12 families approved</span>
-      <div class="bar"><span id="pbar"></span></div>
-      <button class="reset-tracker" id="resetTrack">Reset tracker</button>
-    </div>
-
-    <table class="track">
-      <thead>
-        <tr>
-          <th class="rowbar"></th>
-          <th>Family</th>
-          <th class="hidesm">Type</th>
-          <th class="ck">Modeled</th>
-          <th class="ck">Uploaded</th>
-          <th class="ck">VNTANA&nbsp;QA</th>
-          <th class="ck">Approved</th>
-        </tr>
-      </thead>
-      <tbody id="trackBody"></tbody>
-    </table>
-    <div class="savednote">Progress is saved in this browser. Milestones: Modeled &rarr; Uploaded to VNTANA (Draft) &rarr; VNTANA QA review &rarr; Approved &amp; set Live.</div>
+    <p style="margin:0 0 14px">
+      <a class="btn" href="variant-review.html">Open side-by-side variant review &rarr;</a>
+      <a class="btn ghost" href="https://docs.google.com/document/d/104R6bNDQsAJvO1rmBFqWJDAiuBtUcaR8HoERli_PY58/edit" target="_blank" rel="noopener" style="margin-left:8px">Variant differences Google Doc &#8599;</a>
+    </p>
+    <div class="note">The Google Doc is the shareable record of parent selection and per-variant differences (faceplate, arrow knob, connection, physical vs label-only). Confirm the shared-flange assumptions with Ken before locking a family.</div>
   </div>
 </section>
 
@@ -149,57 +133,8 @@
   document.getElementById('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') tryPw(); });
 })();
 
-/* ============ delivery tracker ============ */
-var FAMILIES = [
-  {id:'007e',      name:'007e',        page:'007e.html',      type:'Cast iron & stainless circulator', v:'4 variants'},
-  {id:'0015e3',    name:'0015e3',      page:'0015e3.html',    type:'High-efficiency circulator',        v:'4 variants'},
-  {id:'0018e',     name:'0018e',       page:'0018e.html',     type:'High-efficiency circulator',        v:'4 variants'},
-  {id:'0026e',     name:'0026e',       page:'0026e.html',     type:'ECM circulator',                    v:'2 variants'},
-  {id:'0034e',     name:'0034e',       page:'0034e.html',     type:'ECM circulator',                    v:'2 variants'},
-  {id:'0034eplus', name:'0034ePlus',   page:'0034eplus.html', type:'ECM circulator, digital display',   v:'2 variants'},
-  {id:'vt2218',    name:'VT2218',      page:'vt2218.html',    type:'High-head, digital display',        v:'2 variants'},
-  {id:'49-075',    name:'49-075',      page:'49-075.html',    type:'Air separator, 3/4"',               v:'3 variants'},
-  {id:'49-100',    name:'49-100',      page:'49-100.html',    type:'Air separator, 1"',                 v:'3 variants'},
-  {id:'49-125',    name:'49-125',      page:'49-125.html',    type:'Air separator, 1-1/4"',             v:'3 variants'},
-  {id:'49-150',    name:'49-150',      page:'49-150.html',    type:'Air separator, 1-1/2"',             v:'2 variants'},
-  {id:'49-200',    name:'49-200',      page:'49-200.html',    type:'Air separator, 2"',                 v:'1 variant'}
-];
-var MILESTONES = ['modeled','uploaded','qa','approved'];
-
 function lsGet(k){ try{ return localStorage.getItem(k)==='1'; }catch(e){ return false; } }
 function lsSet(k,v){ try{ localStorage.setItem(k, v?'1':'0'); }catch(e){} }
-
-function renderTracker(){
-  var body=document.getElementById('trackBody'); var html='';
-  FAMILIES.forEach(function(f){
-    var approved = lsGet('taco-track-'+f.id+'-approved');
-    html += '<tr data-id="'+f.id+'" class="'+(approved?'done':'')+'">'+
-      '<td class="rowbar" style="background:'+(approved?'var(--green)':'transparent')+'"></td>'+
-      '<td class="fam"><a href="'+f.page+'">'+f.name+'</a><span class="v">'+f.v+'</span></td>'+
-      '<td class="hidesm" style="color:var(--muted);font-size:13px">'+f.type+'</td>';
-    MILESTONES.forEach(function(m){
-      html += '<td class="ck"><input type="checkbox" class="big" data-fam="'+f.id+'" data-ms="'+m+'" '+(lsGet('taco-track-'+f.id+'-'+m)?'checked':'')+'></td>';
-    });
-    html += '</tr>';
-  });
-  body.innerHTML=html;
-  body.querySelectorAll('input[type=checkbox]').forEach(function(cb){
-    cb.addEventListener('change',function(){
-      lsSet('taco-track-'+cb.dataset.fam+'-'+cb.dataset.ms, cb.checked);
-      renderTracker(); updateProgress();
-    });
-  });
-}
-function updateProgress(){
-  var done = FAMILIES.filter(function(f){ return lsGet('taco-track-'+f.id+'-approved'); }).length;
-  document.getElementById('pnum').textContent = done+' / '+FAMILIES.length+' families approved';
-  document.getElementById('pbar').style.width = Math.round(100*done/FAMILIES.length)+'%';
-}
-document.getElementById('resetTrack').addEventListener('click',function(){
-  if(!confirm('Reset all delivery-tracker checkboxes?')) return;
-  FAMILIES.forEach(function(f){ MILESTONES.forEach(function(m){ lsSet('taco-track-'+f.id+'-'+m,false); }); });
-  renderTracker(); updateProgress();
-});
 
 /* ============ repeatable materials ============ */
 /* Named from the catalog "Materials of Construction" (Wholesale Catalog p.15) + the visible finishes. */
@@ -231,7 +166,7 @@ function renderMaterials(){
   });
 }
 
-renderTracker(); updateProgress(); renderMaterials();
+renderMaterials();
 </script>
 </body>
 </html>
