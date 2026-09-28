@@ -137,6 +137,15 @@ Confirm from the catalog page:
   <p class="lead">When the family is built, self-QA against this checklist first, then upload to the VNTANA platform as a Draft and notify VNTANA for review. Do not mark anything final. VNTANA does the final approval.</p>
 
   <div class="card">
+    <h3>Shared render toolkit</h3>
+    <p>Use VNTANA’s shared toolkit so cameras, lighting, and the render environment are identical on every asset.</p>
+    <ul class="rules">
+      <li><a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">Sample Blender file</a> (cameras + render settings). Match its camera names and setup.</li>
+      <li><a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">Neutral environment map (HDRI)</a>. Pack it into your file.</li>
+    </ul>
+  </div>
+
+  <div class="card">
     <h3>Pre-delivery QA (check every item before uploading)</h3>
     <ul class="check">
       <li>All 4 deliverables present per variant: GLB, packed .blend, parts manifest CSV, 4K maps.</li>
@@ -160,6 +169,7 @@ Confirm from the catalog page:
       <li>Set <b>Pivot: None</b> and turn <b>Draco OFF</b>. Keep it a straight conversion, nothing else happening.</li>
       <li>Save as <b>Draft</b>. Do not publish.</li>
       <li>Fill the parts manifest so the platform part list matches your named meshes.</li>
+      <li>Upload the finished <b>GLB, packed Blender file, and parts manifest as a new version of the original platform asset</b> (the same asset the Platform link points to), not as a brand-new asset.</li>
     </ul>
   </div>
 
