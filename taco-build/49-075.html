@@ -41,12 +41,13 @@
       <iframe src="https://embed.vntana.com/v2?productUuid=06bcda8d-2a88-46d0-8f7b-ef1097b53781&clientSlug=products&organizationSlug=taco" allow="xr-spatial-tracking; fullscreen" loading="lazy"></iframe>
     </div>
 
-    <h3>Source CAD &amp; downloads</h3>
-    <p>All source files (STEP, GLB, USDZ, FBX) for this family live in the shared VNTANA collection. Use <b>Download All</b> there, or pull the per-variant STEP.</p>
+    <h3>Your source file: the Optimized GLB</h3>
+    <p>Work from the <b>Optimized GLB</b> in the shared VNTANA collection, not the STEP. VNTANA has already converted each CAD (Convert Only, Pivot None, Draco off), so the GLB is a clean, straight conversion of the source geometry.</p>
+    <p><b>Your scope on the GLB:</b> open it in Blender, UV map, minor mesh cleanup, then create and apply the materials. That is the whole job. Do <b>not</b> rebuild or re-model from the STEP.</p>
     <p style="margin-top:10px">
       <a class="btn" href="https://embed.vntana.com/v2/assets/b27cef46-c9de-444b-aab7-b49ee6d47f99?shareLink=d080ced5-1e36-495c-bb35-4dc93bf1e0e1" target="_blank" rel="noopener">Open source CAD collection &#8599;</a>
     </p>
-    <div class="note"><b>STEP naming:</b> AP203 export drops the component names, so parts arrive as unnamed solids. Name parts from the catalog and replacement-parts sheet and flag anything you are unsure of.</div>
+    <div class="note"><b>Part naming:</b> the conversion drops component names, so parts arrive as unnamed solids. Name parts from the catalog and replacement-parts sheet and flag anything you are unsure of.</div>
 
     <h3>Variants in this family</h3>
     <table>
@@ -67,6 +68,7 @@
       </tbody>
     </table>
     <div class="callout">The <b>T / C / P</b> suffixes are the same separator with different end connections (NPT, sweat, press). Model the body once; swap only the inlet and outlet connections.</div>
+    <div class="note"><b>Parent variant:</b> the model shown at the top of this page is the parent for this family. Build it once, then produce the other variants by swapping only the connection fitting and the body material. If a variant CAD shows a different faceplate or arrow knob, ignore it and carry the parent's faceplate across the whole family. Flag any real physical difference to VNTANA before finalizing.</div>
   </div>
 </section>
 
@@ -137,8 +139,8 @@ Confirm from the catalog page:
   <div class="card">
     <h3>Upload to VNTANA platform</h3>
     <ul class="rules">
-      <li>Upload with the <b>Preserve Meshes and UVs</b> pipeline (do not let the platform re-mesh).</li>
-      <li>Use the Taco <b>project preset</b>: Pivot None, Scaling None, obstructed-geometry removal OFF.</li>
+      <li>Upload with <b>Convert Only</b> so the platform does not re-mesh, decimate, or optimize your finished geometry.</li>
+      <li>Set <b>Pivot: None</b> and turn <b>Draco OFF</b>. Keep it a straight conversion, nothing else happening.</li>
       <li>Save as <b>Draft</b>. Do not publish.</li>
       <li>Fill the parts manifest so the platform part list matches your named meshes.</li>
     </ul>

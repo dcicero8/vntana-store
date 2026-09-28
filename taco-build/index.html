@@ -85,9 +85,24 @@
 
 <div class="wrap">
 
-<!-- SECTION 1: DELIVERY TRACKER -->
+<!-- SECTION 1: REPEATABLE MATERIALS -->
 <section>
-  <h2><span class="n">1</span>Delivery Tracker</h2>
+  <h2><span class="n">1</span>Repeatable Materials</h2>
+  <p class="lead">Build these first. They are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. Get each one built and signed off once, then reuse the exact same material everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
+  <p class="lead"><b>Not a complete list.</b> These are only the materials that repeat and that the catalog names. Individual assets will have additional, non-repeated materials that are not shown here. Build those per asset and flag anything you are unsure of.</p>
+
+  <div class="card">
+    <table class="mats">
+      <thead><tr><th>Material</th><th>Used on</th><th class="ck">Signed off</th></tr></thead>
+      <tbody id="matBody"></tbody>
+    </table>
+    <div class="savednote">Sign-off is saved in this browser. Once a material is approved, apply the exact same material across every asset that uses it.</div>
+  </div>
+</section>
+
+<!-- SECTION 2: DELIVERY TRACKER -->
+<section>
+  <h2><span class="n">2</span>Delivery Tracker</h2>
   <p class="lead">The 12 families of the first SKU set. Check each milestone as it is completed. A family counts as done when it is Approved.</p>
 
   <div class="card">
@@ -112,20 +127,6 @@
       <tbody id="trackBody"></tbody>
     </table>
     <div class="savednote">Progress is saved in this browser. Milestones: Modeled &rarr; Uploaded to VNTANA (Draft) &rarr; VNTANA QA review &rarr; Approved &amp; set Live.</div>
-  </div>
-</section>
-
-<!-- SECTION 2: REPEATABLE MATERIALS -->
-<section>
-  <h2><span class="n">2</span>Repeatable Materials</h2>
-  <p class="lead">These are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. Get each one built and signed off once, then reuse it everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
-
-  <div class="card">
-    <table class="mats">
-      <thead><tr><th>Material</th><th>Used on</th><th class="ck">Signed off</th></tr></thead>
-      <tbody id="matBody"></tbody>
-    </table>
-    <div class="savednote">Sign-off is saved in this browser. Once a material is approved, apply the exact same material across every asset that uses it.</div>
   </div>
 </section>
 
