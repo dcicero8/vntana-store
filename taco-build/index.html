@@ -118,7 +118,7 @@
 <!-- SECTION 2: REPEATABLE MATERIALS -->
 <section>
   <h2><span class="n">2</span>Repeatable Materials</h2>
-  <p class="lead">These are the shared materials that repeat across the assets. Get each one built and signed off once, then reuse it everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
+  <p class="lead">These are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. Get each one built and signed off once, then reuse it everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
 
   <div class="card">
     <table class="mats">
@@ -201,17 +201,18 @@ document.getElementById('resetTrack').addEventListener('click',function(){
 });
 
 /* ============ repeatable materials ============ */
+/* Named from the catalog "Materials of Construction" (Wholesale Catalog p.15) + the visible finishes. */
 var MATERIALS = [
-  {id:'castiron',  name:'Cast iron, painted',        sw:'#3c3f43', used:'Circulator bodies (2F2, 2F4, F2)'},
-  {id:'stainless', name:'Stainless steel',           sw:'#c7ccd1', used:'Stainless circulator bodies (SF4, SU, SF2)'},
-  {id:'tacogreen', name:'Taco green ECM housing',    sw:'#5a7d5a', used:'ECM motor housing / cover on all e-series circulators'},
-  {id:'blackplastic',name:'Black plastic',           sw:'#1d1f22', used:'Terminal box, end caps, knobs'},
-  {id:'display',   name:'Digital display (glass + emissive)', sw:'#0b1f3a', used:'0034ePlus, VT2218'},
-  {id:'faceplate', name:'Faceplate / label artwork', sw:'#e8e8e8', used:'Mode-select faceplate, wordmarks, badges (as texture)'},
-  {id:'sepbody',   name:'Air-separator steel body',  sw:'#8a8f96', used:'49-075 / 100 / 125 / 150 / 200'},
-  {id:'copper',    name:'Copper, press-connect',     sw:'#b5744a', used:'Press variants (49-xxxP)'},
-  {id:'bronze',    name:'Brass / bronze, sweat',     sw:'#b08d57', used:'Sweat / solder variants (49-xxxC)'},
-  {id:'steelnpt',  name:'Threaded steel (NPT)',      sw:'#6f757c', used:'Threaded variants (49-xxxT)'}
+  {id:'castiron',    name:'Cast iron (casing, HVAC)',       sw:'#3c3f43', used:'Circulator casings, cast-iron variants (2F2 / 2F4 / F2)'},
+  {id:'stainless304',name:'304 Stainless steel (casing, DHW)',sw:'#c7ccd1', used:'Stainless circulator casings (SF4 / SU / SF2)'},
+  {id:'pesgf30',     name:'PES GF-30 (glass-filled polymer)',sw:'#5b6b5b', used:'Impeller (101)'},
+  {id:'ansi420',     name:'ANSI 420 stainless',             sw:'#9aa0a6', used:'Shaft (122)'},
+  {id:'carbon',      name:'Carbon sleeve',                  sw:'#26272a', used:'Bearing'},
+  {id:'ecmhousing',  name:'ECM motor housing (Taco green)', sw:'#5a7d5a', used:'Motor cover on all e-series circulators'},
+  {id:'display',     name:'Digital display (glass + emissive)', sw:'#0b1f3a', used:'0034ePlus, VT2218'},
+  {id:'faceplate',   name:'Faceplate / label artwork',      sw:'#e8e8e8', used:'Mode-select faceplate, wordmarks, badges (texture)'},
+  {id:'sepbody',     name:'Separator steel body',           sw:'#8a8f96', used:'4900 Series separators (49-075 / 100 / 125 / 150 / 200)'},
+  {id:'fittings',    name:'Connection fittings (NPT / sweat / press)', sw:'#b5744a', used:'Threaded steel (T), bronze sweat (C), copper press (P)'}
 ];
 function renderMaterials(){
   var body=document.getElementById('matBody'); var html='';
