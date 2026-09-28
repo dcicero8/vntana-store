@@ -61,7 +61,7 @@ td .mono{font-family:ui-monospace,Menlo,monospace;font-size:13px}
 
 /* reference images */
 .refs{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px}
-.refs figure{margin:0;width:420px;max-width:100%}
+.refs figure{margin:0;width:820px;max-width:100%}
 .refs img{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff;display:block}
 .refs figcaption{font-size:13px;color:var(--muted);margin-top:6px}
 
