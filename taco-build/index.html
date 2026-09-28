@@ -93,10 +93,13 @@
 
   <div class="card">
     <table class="mats">
-      <thead><tr><th>Material</th><th>Used on</th><th class="ck">Signed off</th></tr></thead>
+      <thead><tr><th>Material</th><th>Used on</th></tr></thead>
       <tbody id="matBody"></tbody>
     </table>
-    <div class="savednote">Sign-off is saved in this browser. Once a material is approved, apply the exact same material across every asset that uses it.</div>
+    <p style="margin:14px 0 0">
+      <a class="btn" href="https://docs.google.com/spreadsheets/d/1HmLPInm7Wwwb5K764rdSMiMJFj-4VOMWzAZV92_rCfw/edit" target="_blank" rel="noopener">Open the delivery tracker &amp; material sign-off sheet &#8599;</a>
+    </p>
+    <div class="savednote">Per-SKU delivery status and material sign-off are managed in the shared Google Sheet, not on this page. This list is the reference; sign each material off once in the sheet, then reuse it everywhere it applies.</div>
   </div>
 </section>
 
@@ -153,17 +156,12 @@ var MATERIALS = [
 function renderMaterials(){
   var body=document.getElementById('matBody'); var html='';
   MATERIALS.forEach(function(m){
-    var ok = lsGet('taco-mat-'+m.id);
-    html += '<tr class="'+(ok?'ok':'')+'">'+
+    html += '<tr>'+
       '<td class="mname"><span class="swatch" style="background:'+m.sw+'"></span>'+m.name+'</td>'+
       '<td class="used">'+m.used+'</td>'+
-      '<td class="ck"><input type="checkbox" class="big" data-mat="'+m.id+'" '+(ok?'checked':'')+'></td>'+
     '</tr>';
   });
   body.innerHTML=html;
-  body.querySelectorAll('input[type=checkbox]').forEach(function(cb){
-    cb.addEventListener('change',function(){ lsSet('taco-mat-'+cb.dataset.mat, cb.checked); renderMaterials(); });
-  });
 }
 
 renderMaterials();
