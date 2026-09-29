@@ -63,19 +63,22 @@
   </div>
 </div>
 <script>
-  var ORG = "DCicero", WS = "configurators";
-  var API = "https://api.vntana.com";
-  var UUIDS = {
-    "tarm|graphite":   "f4415050-3ac4-4204-9db7-36a0f22f0871",
-    "tarm|blue":       "3a26f367-9792-4f55-8166-be88737b794c",
-    "tarm|burgundy":   "50383110-60b7-41a3-882f-9d53255d7a9d",
-    "loop|graphite":   "f74f2c16-b003-4692-808a-b3e04fabe6dc",
-    "loop|blue":       "0fd1bf3e-d875-443b-9a28-9a499e21128d",
-    "loop|burgundy":   "1afb7ff4-0d8b-439c-b322-a1ea3821f0c0",
-    "armless|graphite":"45205d94-55b0-475d-9368-9bd1fa5bf7a8",
-    "armless|blue":    "75e3df77-dcd9-4327-9723-0273515b6240",
-    "armless|burgundy":"68f5ab26-b443-4e75-964b-17da12833583"
+  // v2 assets served directly from this site (assets/chair/), whole-model swap.
+  // Same 9 combos also exist as Live Public products in DCicero/configurators if we switch
+  // to VNTANA-hosted later (replace-in-place keeps these SKUs); UUIDs kept below for that.
+  var SRC = {
+    "tarm|graphite":   "assets/chair/chair_tarm_graphite_v2.glb",
+    "tarm|blue":       "assets/chair/chair_tarm_blue_v2.glb",
+    "tarm|burgundy":   "assets/chair/chair_tarm_burgundy_v2.glb",
+    "loop|graphite":   "assets/chair/chair_loop_graphite_v2.glb",
+    "loop|blue":       "assets/chair/chair_loop_blue_v2.glb",
+    "loop|burgundy":   "assets/chair/chair_loop_burgundy_v2.glb",
+    "armless|graphite":"assets/chair/chair_armless_graphite_v2.glb",
+    "armless|blue":    "assets/chair/chair_armless_blue_v2.glb",
+    "armless|burgundy":"assets/chair/chair_armless_burgundy_v2.glb"
   };
+  // VNTANA product UUIDs for the same combos (for the versioned/hosted path):
+  // tarm: f4415050 / 3a26f367 / 50383110 · loop: f74f2c16 / 0fd1bf3e / 1afb7ff4 · armless: 45205d94 / 75e3df77 / 68f5ab26
   var ARMS = [
     { id:"tarm",    name:"T-Arm",   d:"Height-adjustable pads" },
     { id:"loop",    name:"Loop",    d:"Closed-loop fixed arms" },
@@ -91,19 +94,7 @@
   var arm = "tarm", fab = "graphite";
   var urlCache = {};
 
-  function urlFor(uuid){
-    if (urlCache[uuid]) return Promise.resolve(urlCache[uuid]);
-    return fetch(API + "/products/" + uuid + "/organizations/" + ORG + "/clients/" + WS)
-      .then(function(r){ return r.json(); })
-      .then(function(p){
-        var models = ((p.response || {}).asset || {}).models || [];
-        var glb = null;
-        for (var i = 0; i < models.length; i++){ if (models[i].conversionFormat === "GLB") glb = models[i]; }
-        if (!glb) throw new Error("no glb");
-        urlCache[uuid] = API + "/assets/products/" + uuid + "/organizations/" + ORG + "/clients/" + WS + "/" + glb.modelBlobId;
-        return urlCache[uuid];
-      });
-  }
+  function urlFor(key){ return Promise.resolve(SRC[key]); }
 
   function renderSummary(){
     var a = ARMS.filter(function(x){ return x.id === arm; })[0];
@@ -116,11 +107,11 @@
   function apply(){
     renderSummary();
     ld.classList.remove("hidden"); ldmsg.textContent = "Loading configuration…";
-    urlFor(UUIDS[arm + "|" + fab]).then(function(url){
+    urlFor(arm + "|" + fab).then(function(url){
       viewer.src = url;
       setTimeout(function(){ ld.classList.add("hidden"); }, 900);
     }).catch(function(){
-      ldmsg.textContent = "Could not load this configuration. (Are the chair products Live Public?)";
+      ldmsg.textContent = "Could not load this configuration.";
     });
   }
 
@@ -144,7 +135,7 @@
   apply();
   // warm the other combos so swaps are instant
   setTimeout(function(){
-    Object.keys(UUIDS).forEach(function(k){ urlFor(UUIDS[k]).then(function(u){ fetch(u, {mode:"cors"}).catch(function(){}); }).catch(function(){}); });
+    Object.keys(SRC).forEach(function(k){ fetch(SRC[k]).catch(function(){}); });
   }, 2500);
 </script>
 </body>
