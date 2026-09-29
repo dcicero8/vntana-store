@@ -1,135 +1,87 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>Taco Variant Review</title>
-<link rel="stylesheet" href="style.css">
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Taco Variant Review</title><link rel="stylesheet" href="style.css">
 <style>
   #gate{position:fixed;inset:0;z-index:1000;background:var(--brand2);display:flex;align-items:center;justify-content:center;padding:24px}
   #gate .card{background:#fff;max-width:400px;width:100%;padding:40px 34px;text-align:center;border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
   #gate .tag{font-weight:800;color:var(--brand2);letter-spacing:.03em;margin-bottom:6px}
-  #gate h1{font-size:20px;margin:0 0 6px}
-  #gate p{font-size:13px;color:var(--muted);margin:0 0 20px}
+  #gate h1{font-size:20px;margin:0 0 6px}#gate p{font-size:13px;color:var(--muted);margin:0 0 20px}
   #gate input{width:100%;padding:14px 16px;font-size:16px;border:1px solid var(--line);border-radius:8px;outline:none;font-family:inherit}
   #gate input:focus{border-color:var(--blue)}
   #gate button{margin-top:14px;width:100%;background:var(--brand2);color:#fff;border:0;padding:15px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer}
-  #gate button:hover{background:var(--brand)}
-  #gate .err{color:var(--brand);font-size:13px;font-weight:600;margin-top:12px;min-height:16px}
-  body.locked{overflow:hidden}
-  body.locked .site{filter:blur(7px);pointer-events:none;user-select:none}
-
+  #gate button:hover{background:var(--brand)}#gate .err{color:var(--brand);font-size:13px;font-weight:600;margin-top:12px;min-height:16px}
+  body.locked{overflow:hidden}body.locked .site{filter:blur(7px);pointer-events:none;user-select:none}
   .famtabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
   .famtabs button{font-family:inherit;font-size:13px;font-weight:700;color:var(--brand2);background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 15px;cursor:pointer}
-  .famtabs button:hover{background:#f0f4f8}
-  .famtabs button.active{background:var(--brand2);color:#fff;border-color:var(--brand2)}
-  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 0;font-size:12px;color:var(--muted);align-items:center}
-  .legend .badge{margin:0}
+  .famtabs button:hover{background:#f0f4f8}.famtabs button.active{background:var(--brand2);color:#fff;border-color:var(--brand2)}
+  .famtabs button.flagged{border-color:#e0a3a3}.famtabs button.flagged::after{content:"\25CF";color:#c0392b;margin-left:6px;font-size:9px;vertical-align:2px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 0;font-size:12px;color:var(--muted);align-items:center}.legend .badge{margin:0}
   .vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:14px}
   .vcard{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .vcard.flag{border-color:#e0a3a3;box-shadow:0 0 0 1px #e0a3a3}
   .vcard .vhead{padding:11px 14px;border-bottom:1px solid var(--line)}
-  .vcard .vsku{font-weight:800;font-size:15px;color:var(--brand2)}
-  .vcard .vmeta{font-size:12px;color:var(--muted);margin-top:2px}
+  .vcard .vsku{font-weight:800;font-size:15px;color:var(--brand2)}.vcard .vmeta{font-size:12px;color:var(--muted);margin-top:2px}
   .badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:2px 7px;margin-left:6px;vertical-align:1px}
-  .badge.parent{background:#e4ecf4;color:#1f3a5f}
-  .badge.mat{background:#fdecdd;color:#9a5712}
-  .badge.con{background:#e2f1ec;color:#1b6a50}
-  .badge.both{background:#efe6f7;color:#66399e}
-  .badge.trim{background:#eceff2;color:#54616e}
+  .badge.parent{background:#e4ecf4;color:#1f3a5f}.badge.mat{background:#fdecdd;color:#9a5712}.badge.con{background:#e2f1ec;color:#1b6a50}
+  .badge.both{background:#efe6f7;color:#66399e}.badge.trim{background:#eceff2;color:#54616e}.badge.confirm{background:#fbe2e2;color:#c0392b}
+  .vflag{margin-top:7px;font-size:11.5px;color:#a5281b;background:#fdf0ef;border:1px solid #f2cfcb;border-radius:6px;padding:6px 8px;line-height:1.4}
   .vcard iframe{width:100%;height:340px;border:0;display:block;background:#f6f8fa}
-  .vcard .vfoot{padding:9px 14px;border-top:1px solid var(--line);font-size:12px}
-  .vcard .vfoot a{font-weight:700}
-  .docbtn{display:inline-block;background:var(--green,#2e7d46);color:#fff;font-weight:700;font-size:14px;text-decoration:none;padding:12px 18px;border-radius:8px;margin-top:4px}
-  .docbtn:hover{filter:brightness(1.07)}
-</style>
-</head>
+  .vcard .vfoot{padding:9px 14px;border-top:1px solid var(--line);font-size:12px}.vcard .vfoot a{font-weight:700}
+  .docbtn{display:inline-block;background:var(--green,#2e7d46);color:#fff;font-weight:700;font-size:14px;text-decoration:none;padding:12px 18px;border-radius:8px;margin-top:4px}.docbtn:hover{filter:brightness(1.07)}
+</style></head>
 <body class="locked">
-
-<div id="gate">
-  <div class="card">
-    <div class="tag">VNTANA &times; TACO</div>
-    <h1>Variant Review</h1>
-    <p>This workspace is private. Enter the password to continue.</p>
-    <input id="pw" type="password" placeholder="Password" autocomplete="off">
-    <button id="unlock">Unlock</button>
-    <div class="err" id="err"></div>
-  </div>
-</div>
-
+<div id="gate"><div class="card"><div class="tag">VNTANA &times; TACO</div><h1>Variant Review</h1>
+<p>This workspace is private. Enter the password to continue.</p>
+<input id="pw" type="password" placeholder="Password" autocomplete="off"><button id="unlock">Unlock</button><div class="err" id="err"></div></div></div>
 <div class="site">
-<div class="top">
-  <div class="wrap">
-    <span class="tag">VNTANA &times; TACO</span>
-    <span>Variant Review</span>
-    <span class="sub">Side-by-side QA</span>
-  </div>
+<div class="top"><div class="wrap"><span class="tag">VNTANA &times; TACO</span><span>Variant Review</span><span class="sub">Side-by-side QA</span></div></div>
+<div class="head"><div class="wrap">
+  <div class="crumbs"><a href="index.html">Delivery Dashboard</a> / Variant Review</div>
+  <h1>Side-by-side variant review</h1>
+  <p>Each variant is badged by how it differs from the parent: <b>Material change</b> (same model, different material), <b>Connection change</b> (different end fitting), or both. A red <b>Confirm base</b> badge marks an outlier VNTANA found on a model check that needs Taco/Ken sign-off, <b>these are not blockers: start modeling, we confirm the flagged ones separately.</b></p>
+  <p style="margin-top:12px"><a class="docbtn" href="https://docs.google.com/document/d/104R6bNDQsAJvO1rmBFqWJDAiuBtUcaR8HoERli_PY58/edit" target="_blank" rel="noopener">Record differences in the shared Google Doc &#8599;</a></p>
+  <div class="legend"><span>Badges:</span>
+    <span class="badge parent">Parent</span><span class="badge mat">Material change</span><span class="badge con">Connection change</span>
+    <span class="badge both">Material + connection</span><span class="badge trim">Trim change</span><span class="badge confirm">&#9888; Confirm base</span></div>
+</div></div>
+<div class="wrap"><div class="famtabs" id="famtabs"></div><div class="vgrid" id="vgrid"></div></div>
 </div>
-
-<div class="head">
-  <div class="wrap">
-    <div class="crumbs"><a href="index.html">Delivery Dashboard</a> / Variant Review</div>
-    <h1>Side-by-side variant review</h1>
-    <p>Pick a family, then spin each variant to compare them directly. Each variant is badged by how it differs from the parent: a <b>Material change</b> is the same model in a different material (build once, swap material), a <b>Connection change</b> swaps only the end fitting. Confirm the badge against the CAD and record anything unexpected in the shared Google Doc.</p>
-    <p style="margin-top:12px"><a class="docbtn" href="https://docs.google.com/document/d/104R6bNDQsAJvO1rmBFqWJDAiuBtUcaR8HoERli_PY58/edit" target="_blank" rel="noopener">Record differences in the shared Google Doc &#8599;</a></p>
-    <div class="legend">
-      <span>Badges:</span>
-      <span class="badge parent">Parent</span>
-      <span class="badge mat">Material change</span>
-      <span class="badge con">Connection change</span>
-      <span class="badge both">Material + connection</span>
-      <span class="badge trim">Trim change</span>
-    </div>
-  </div>
-</div>
-
-<div class="wrap">
-  <div class="famtabs" id="famtabs"></div>
-  <div class="vgrid" id="vgrid"></div>
-</div>
-
-</div>
-
 <script>
-var FAMILIES = [{"id": "007e", "label": "007e", "variants": [{"sku": "007e-2F2", "body": "Cast iron", "conn": "2-bolt flange", "uuid": "481ea24b-1a4b-4d47-a618-1a0e016f67cd", "blabel": "Parent", "bcls": "parent"}, {"sku": "007e3-2F4", "body": "Cast iron", "conn": "Universal 2-way flange", "uuid": "1a9a71f9-326a-4b5d-90d2-def0511f2bb4", "blabel": "Connection change", "bcls": "con"}, {"sku": "007e-SF4", "body": "304 Stainless", "conn": "Universal flange", "uuid": "9b13dcf7-8d4f-403b-914a-de0f5e13b435", "blabel": "Material + connection", "bcls": "both"}, {"sku": "007e3-SU", "body": "304 Stainless", "conn": "Union", "uuid": "6e7cebbc-745d-4149-8fd8-9652e4ddfefc", "blabel": "Material + connection", "bcls": "both"}]}, {"id": "0015e3", "label": "0015e3", "variants": [{"sku": "0015e3-2F2", "body": "Cast iron", "conn": "2-bolt flange", "uuid": "09024aa6-0fbd-44f9-87fc-f337866b9506", "blabel": "Parent", "bcls": "parent"}, {"sku": "0015e3-2F4", "body": "Cast iron", "conn": "Universal 2-way flange", "uuid": "95b8f43e-23ee-4728-95b0-dc2b7464cb72", "blabel": "Connection change", "bcls": "con"}, {"sku": "0015e3-SF4", "body": "304 Stainless", "conn": "Universal flange", "uuid": "3ffea03a-7326-479d-83e0-51e1b1990262", "blabel": "Material + connection", "bcls": "both"}, {"sku": "0015e3-SU", "body": "304 Stainless", "conn": "Union", "uuid": "f8af4faa-e5e5-4ab9-9f14-d3bccd421d68", "blabel": "Material + connection", "bcls": "both"}]}, {"id": "0018e", "label": "0018e", "variants": [{"sku": "0018e-2F2", "body": "Cast iron", "conn": "2-bolt flange", "uuid": "120a0c33-d08d-405d-8920-7dba7ed26594", "blabel": "Parent", "bcls": "parent"}, {"sku": "0018e-2F4", "body": "Cast iron", "conn": "Universal 2-way flange", "uuid": "2dd87513-b6a8-4b46-96b3-c1084b5ed6ff", "blabel": "Connection change", "bcls": "con"}, {"sku": "0018e-SF4", "body": "304 Stainless", "conn": "Universal flange", "uuid": "4324bb76-ef21-4bd9-a343-77a17200d5e6", "blabel": "Material + connection", "bcls": "both"}, {"sku": "0018e-SU", "body": "304 Stainless", "conn": "Union", "uuid": "c9e3bb1f-50b1-4786-9545-52fec24ad8a3", "blabel": "Material + connection", "bcls": "both"}]}, {"id": "0026e", "label": "0026e", "variants": [{"sku": "0026e-F2", "body": "Cast iron", "conn": "Flanged", "uuid": "3ec1dd03-014b-45e1-89bd-592c2ac7cba4", "blabel": "Parent", "bcls": "parent"}, {"sku": "0026e-SF2", "body": "304 Stainless", "conn": "Flanged", "uuid": "9ac39c8b-9d95-49af-b0f4-1181bcec326b", "blabel": "Material change", "bcls": "mat"}]}, {"id": "0034e", "label": "0034e", "variants": [{"sku": "0034e-F2", "body": "Cast iron", "conn": "Flanged", "uuid": "4de6f9db-3eed-4bea-ba11-ed0d77bafadf", "blabel": "Parent", "bcls": "parent"}, {"sku": "0034e-SF2", "body": "304 Stainless", "conn": "Flanged", "uuid": "4d5e5be4-6013-4305-98d8-31f8b18fcffe", "blabel": "Material change", "bcls": "mat"}]}, {"id": "0034ePlus", "label": "0034ePlus", "variants": [{"sku": "003eP-F2", "body": "Cast iron", "conn": "Flanged", "uuid": "8ca9149b-15e6-4c55-b646-8f708b9da22d", "blabel": "Parent", "bcls": "parent"}, {"sku": "003eP-SF2", "body": "304 Stainless", "conn": "Flanged", "uuid": "ec8ed53c-4734-4637-8b8e-ab914a02b858", "blabel": "Material change", "bcls": "mat"}]}, {"id": "VT2218", "label": "VT2218", "variants": [{"sku": "VT2218-HY1-4C1A00", "body": "Cast iron", "conn": "Flanged", "uuid": "998f6622-12da-4173-b9f1-39bc94236ad4", "blabel": "Parent", "bcls": "parent"}, {"sku": "VT2218-HY2-FC1A00", "body": "Cast iron", "conn": "Flanged", "uuid": "9bf9f0ad-075c-40fb-afa0-9bd675c2353d", "blabel": "Trim change (confirm)", "bcls": "trim"}]}, {"id": "49-075", "label": "49-075", "variants": [{"sku": "49-075T", "body": "Bronze 3/4\"", "conn": "NPT (threaded)", "uuid": "06bcda8d-2a88-46d0-8f7b-ef1097b53781", "blabel": "Parent", "bcls": "parent"}, {"sku": "49-075C", "body": "Bronze 3/4\"", "conn": "Sweat (solder)", "uuid": "b60bb2e9-5663-4c15-93b8-f19940267e28", "blabel": "Connection change", "bcls": "con"}, {"sku": "49-075P", "body": "Bronze 3/4\"", "conn": "Press", "uuid": "5cc83f75-cea8-4914-a13d-abebae66d8d9", "blabel": "Connection change", "bcls": "con"}]}, {"id": "49-100", "label": "49-100", "variants": [{"sku": "49-100T", "body": "Bronze 1\"", "conn": "NPT (threaded)", "uuid": "4109e150-6011-40c9-9a00-c716bc36ba42", "blabel": "Parent", "bcls": "parent"}, {"sku": "49-100C", "body": "Bronze 1\"", "conn": "Sweat (solder)", "uuid": "56fe66a1-197a-4466-a12a-06ce0104e22b", "blabel": "Connection change", "bcls": "con"}, {"sku": "49-100P", "body": "Bronze 1\"", "conn": "Press", "uuid": "7c71436a-5247-4d03-b54b-322f59530420", "blabel": "Connection change", "bcls": "con"}]}, {"id": "49-125", "label": "49-125", "variants": [{"sku": "49-125T", "body": "Bronze 1-1/4\"", "conn": "NPT (threaded)", "uuid": "763e4ef0-b417-4f37-995a-77fe256da9df", "blabel": "Parent", "bcls": "parent"}, {"sku": "49-125C", "body": "Bronze 1-1/4\"", "conn": "Sweat (solder)", "uuid": "84fd9d93-98ac-4ce1-8231-b040ff8d81cf", "blabel": "Connection change", "bcls": "con"}, {"sku": "49-125P", "body": "Bronze 1-1/4\"", "conn": "Press", "uuid": "e55b5bad-70ee-45f2-ac5c-b833924aa4b6", "blabel": "Connection change", "bcls": "con"}]}, {"id": "49-150", "label": "49-150", "variants": [{"sku": "49-150T", "body": "Bronze 1-1/2\"", "conn": "NPT (threaded)", "uuid": "0e0d6b2f-8bde-4c15-b2be-892d38db7a95", "blabel": "Parent", "bcls": "parent"}, {"sku": "49-150C", "body": "Bronze 1-1/2\"", "conn": "Sweat (solder)", "uuid": "0c2671ec-4e6e-4a5d-b15c-977f4e8e4054", "blabel": "Connection change", "bcls": "con"}]}, {"id": "49-200", "label": "49-200", "variants": [{"sku": "49-200T", "body": "Bronze 2\"", "conn": "NPT (threaded)", "uuid": "97c89ce1-f20d-4b6e-a631-18ce05069985", "blabel": "Parent", "bcls": "parent"}]}];
-var EMBED = function(u){ return "https://embed.vntana.com/v2?productUuid="+u+"&clientSlug=products&organizationSlug=taco"; };
-var PLAT = function(u){ return "https://platform.vntana.com/taco/products/products/details/"+u; };
-
+var FAMILIES = [{"id": "007e", "label": "007e", "variants": [{"sku": "007e-2F2", "body": "Cast iron", "conn": "2-bolt flange", "uuid": "481ea24b-1a4b-4d47-a618-1a0e016f67cd", "blabel": "Parent", "bcls": "parent", "flag": "Cover here is smooth, but 2F4 / SF4 / SU all have a raised knob/screw on the cover. Confirm the correct cover with Taco (Ken) before finalizing the base. Model meanwhile."}, {"sku": "007e3-2F4", "body": "Cast iron", "conn": "Universal 2-way flange", "uuid": "1a9a71f9-326a-4b5d-90d2-def0511f2bb4", "blabel": "Connection change", "bcls": "con", "flag": ""}, {"sku": "007e-SF4", "body": "304 Stainless", "conn": "Universal flange", "uuid": "9b13dcf7-8d4f-403b-914a-de0f5e13b435", "blabel": "Material + connection", "bcls": "both", "flag": ""}, {"sku": "007e3-SU", "body": "304 Stainless", "conn": "Union", "uuid": "6e7cebbc-745d-4149-8fd8-9652e4ddfefc", "blabel": "Material + connection", "bcls": "both", "flag": ""}]}, {"id": "0015e3", "label": "0015e3", "variants": [{"sku": "0015e3-2F2", "body": "Cast iron", "conn": "2-bolt flange", "uuid": "09024aa6-0fbd-44f9-87fc-f337866b9506", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "0015e3-2F4", "body": "Cast iron", "conn": "Universal 2-way flange", "uuid": "95b8f43e-23ee-4728-95b0-dc2b7464cb72", "blabel": "Connection change", "bcls": "con", "flag": ""}, {"sku": "0015e3-SF4", "body": "304 Stainless", "conn": "Universal flange", "uuid": "3ffea03a-7326-479d-83e0-51e1b1990262", "blabel": "Material + connection", "bcls": "both", "flag": ""}, {"sku": "0015e3-SU", "body": "304 Stainless", "conn": "Union", "uuid": "f8af4faa-e5e5-4ab9-9f14-d3bccd421d68", "blabel": "Material + connection", "bcls": "both", "flag": ""}]}, {"id": "0018e", "label": "0018e", "variants": [{"sku": "0018e-2F2", "body": "Cast iron", "conn": "2-bolt flange", "uuid": "120a0c33-d08d-405d-8920-7dba7ed26594", "blabel": "Parent", "bcls": "parent", "flag": "Cover/interface appears to differ from 2F4 / SF4 / SU (the digital-display siblings). Confirm which cover is correct. Model meanwhile."}, {"sku": "0018e-2F4", "body": "Cast iron", "conn": "Universal 2-way flange", "uuid": "2dd87513-b6a8-4b46-96b3-c1084b5ed6ff", "blabel": "Connection change", "bcls": "con", "flag": ""}, {"sku": "0018e-SF4", "body": "304 Stainless", "conn": "Universal flange", "uuid": "4324bb76-ef21-4bd9-a343-77a17200d5e6", "blabel": "Material + connection", "bcls": "both", "flag": ""}, {"sku": "0018e-SU", "body": "304 Stainless", "conn": "Union", "uuid": "c9e3bb1f-50b1-4786-9545-52fec24ad8a3", "blabel": "Material + connection", "bcls": "both", "flag": ""}]}, {"id": "0026e", "label": "0026e", "variants": [{"sku": "0026e-F2", "body": "Cast iron", "conn": "Flanged", "uuid": "3ec1dd03-014b-45e1-89bd-592c2ac7cba4", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "0026e-SF2", "body": "304 Stainless", "conn": "Flanged", "uuid": "9ac39c8b-9d95-49af-b0f4-1181bcec326b", "blabel": "Material change", "bcls": "mat", "flag": ""}]}, {"id": "0034e", "label": "0034e", "variants": [{"sku": "0034e-F2", "body": "Cast iron", "conn": "Flanged", "uuid": "4de6f9db-3eed-4bea-ba11-ed0d77bafadf", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "0034e-SF2", "body": "304 Stainless", "conn": "Flanged", "uuid": "4d5e5be4-6013-4305-98d8-31f8b18fcffe", "blabel": "Material change", "bcls": "mat", "flag": ""}]}, {"id": "0034ePlus", "label": "0034ePlus", "variants": [{"sku": "003eP-F2", "body": "Cast iron", "conn": "Flanged", "uuid": "8ca9149b-15e6-4c55-b646-8f708b9da22d", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "003eP-SF2", "body": "304 Stainless", "conn": "Flanged", "uuid": "ec8ed53c-4734-4637-8b8e-ab914a02b858", "blabel": "Material change", "bcls": "mat", "flag": ""}]}, {"id": "VT2218", "label": "VT2218", "variants": [{"sku": "VT2218-HY1-4C1A00", "body": "Cast iron", "conn": "Flanged", "uuid": "998f6622-12da-4173-b9f1-39bc94236ad4", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "VT2218-HY2-FC1A00", "body": "Cast iron", "conn": "Flanged", "uuid": "9bf9f0ad-075c-40fb-afa0-9bd675c2353d", "blabel": "Trim change (confirm)", "bcls": "trim", "flag": ""}]}, {"id": "49-075", "label": "49-075", "variants": [{"sku": "49-075T", "body": "Bronze 3/4\"", "conn": "NPT (threaded)", "uuid": "06bcda8d-2a88-46d0-8f7b-ef1097b53781", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "49-075C", "body": "Bronze 3/4\"", "conn": "Sweat (solder)", "uuid": "b60bb2e9-5663-4c15-93b8-f19940267e28", "blabel": "Connection change", "bcls": "con", "flag": ""}, {"sku": "49-075P", "body": "Bronze 3/4\"", "conn": "Press", "uuid": "5cc83f75-cea8-4914-a13d-abebae66d8d9", "blabel": "Connection change", "bcls": "con", "flag": ""}]}, {"id": "49-100", "label": "49-100", "variants": [{"sku": "49-100T", "body": "Bronze 1\"", "conn": "NPT (threaded)", "uuid": "4109e150-6011-40c9-9a00-c716bc36ba42", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "49-100C", "body": "Bronze 1\"", "conn": "Sweat (solder)", "uuid": "56fe66a1-197a-4466-a12a-06ce0104e22b", "blabel": "Connection change", "bcls": "con", "flag": ""}, {"sku": "49-100P", "body": "Bronze 1\"", "conn": "Press", "uuid": "7c71436a-5247-4d03-b54b-322f59530420", "blabel": "Connection change", "bcls": "con", "flag": ""}]}, {"id": "49-125", "label": "49-125", "variants": [{"sku": "49-125T", "body": "Bronze 1-1/4\"", "conn": "NPT (threaded)", "uuid": "763e4ef0-b417-4f37-995a-77fe256da9df", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "49-125C", "body": "Bronze 1-1/4\"", "conn": "Sweat (solder)", "uuid": "84fd9d93-98ac-4ce1-8231-b040ff8d81cf", "blabel": "Connection change", "bcls": "con", "flag": ""}, {"sku": "49-125P", "body": "Bronze 1-1/4\"", "conn": "Press", "uuid": "e55b5bad-70ee-45f2-ac5c-b833924aa4b6", "blabel": "Connection change", "bcls": "con", "flag": ""}]}, {"id": "49-150", "label": "49-150", "variants": [{"sku": "49-150T", "body": "Bronze 1-1/2\"", "conn": "NPT (threaded)", "uuid": "0e0d6b2f-8bde-4c15-b2be-892d38db7a95", "blabel": "Parent", "bcls": "parent", "flag": ""}, {"sku": "49-150C", "body": "Bronze 1-1/2\"", "conn": "Sweat (solder)", "uuid": "0c2671ec-4e6e-4a5d-b15c-977f4e8e4054", "blabel": "Connection change", "bcls": "con", "flag": ""}]}, {"id": "49-200", "label": "49-200", "variants": [{"sku": "49-200T", "body": "Bronze 2\"", "conn": "NPT (threaded)", "uuid": "97c89ce1-f20d-4b6e-a631-18ce05069985", "blabel": "Parent", "bcls": "parent", "flag": ""}]}];
+var EMBED=function(u){return "https://embed.vntana.com/v2?productUuid="+u+"&clientSlug=products&organizationSlug=taco";};
+var PLAT=function(u){return "https://platform.vntana.com/taco/products/products/details/"+u;};
+function famFlagged(f){return f.variants.some(function(v){return v.flag;});}
 function renderFamily(id){
-  var fam = FAMILIES.filter(function(f){return f.id===id;})[0];
-  document.querySelectorAll('#famtabs button').forEach(function(b){ b.classList.toggle('active', b.dataset.id===id); });
-  var g = document.getElementById('vgrid'); g.innerHTML='';
+  var fam=FAMILIES.filter(function(f){return f.id===id;})[0];
+  document.querySelectorAll('#famtabs button').forEach(function(b){b.classList.toggle('active',b.dataset.id===id);});
+  var g=document.getElementById('vgrid');g.innerHTML='';
   fam.variants.forEach(function(v){
-    var badge = '<span class="badge '+v.bcls+'">'+v.blabel+'</span>';
-    var card = document.createElement('div'); card.className='vcard';
-    card.innerHTML =
-      '<div class="vhead"><span class="vsku">'+v.sku+'</span>'+badge+
-        '<div class="vmeta">'+v.body+' &middot; '+v.conn+'</div></div>'+
+    var badge='<span class="badge '+v.bcls+'">'+v.blabel+'</span>';
+    if(v.flag) badge+='<span class="badge confirm">&#9888; Confirm base</span>';
+    var flagnote=v.flag?'<div class="vflag"><b>Confirm with Taco/Ken:</b> '+v.flag+'</div>':'';
+    var card=document.createElement('div');card.className='vcard'+(v.flag?' flag':'');
+    card.innerHTML='<div class="vhead"><span class="vsku">'+v.sku+'</span>'+badge+
+      '<div class="vmeta">'+v.body+' &middot; '+v.conn+'</div>'+flagnote+'</div>'+
       '<iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(v.uuid)+'"></iframe>'+
       '<div class="vfoot"><a href="'+PLAT(v.uuid)+'" target="_blank" rel="noopener">Open in platform &#8599;</a></div>';
     g.appendChild(card);
   });
 }
 function buildTabs(){
-  var t = document.getElementById('famtabs');
+  var t=document.getElementById('famtabs');
   FAMILIES.forEach(function(f){
-    var b=document.createElement('button'); b.textContent=f.label; b.dataset.id=f.id;
-    b.addEventListener('click',function(){ renderFamily(f.id); });
-    t.appendChild(b);
+    var b=document.createElement('button');b.textContent=f.label;b.dataset.id=f.id;
+    if(famFlagged(f)) b.classList.add('flagged');
+    b.addEventListener('click',function(){renderFamily(f.id);});t.appendChild(b);
   });
   renderFamily(FAMILIES[0].id);
 }
-
-(function(){
-  var PASSWORD="taco2027", KEY="tacoDashUnlocked";
-  var gate=document.getElementById('gate');
-  function unlock(){ try{sessionStorage.setItem(KEY,'1');}catch(e){} gate.style.display='none'; document.body.classList.remove('locked'); buildTabs(); }
-  try{ if(sessionStorage.getItem(KEY)==='1'){ unlock(); return; } }catch(e){}
-  function tryPw(){ var v=document.getElementById('pw').value.trim();
-    if(v.toLowerCase()===PASSWORD){ unlock(); } else { document.getElementById('err').textContent='Incorrect password. Please try again.'; } }
+(function(){var PASSWORD="taco2027",KEY="tacoDashUnlocked";var gate=document.getElementById('gate');
+  function unlock(){try{sessionStorage.setItem(KEY,'1');}catch(e){}gate.style.display='none';document.body.classList.remove('locked');buildTabs();}
+  try{if(sessionStorage.getItem(KEY)==='1'){unlock();return;}}catch(e){}
+  function tryPw(){var v=document.getElementById('pw').value.trim();if(v.toLowerCase()===PASSWORD){unlock();}else{document.getElementById('err').textContent='Incorrect password. Please try again.';}}
   document.getElementById('unlock').addEventListener('click',tryPw);
-  document.getElementById('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') tryPw(); });
+  document.getElementById('pw').addEventListener('keydown',function(e){if(e.key==='Enter')tryPw();});
 })();
-</script>
-</body>
-</html>
+</script></body></html>
