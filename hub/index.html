@@ -83,6 +83,11 @@
       <td class="d">2026-09-08</td>
       <td class="u"><code>1586828a-514f-431a-96b0-eea1ad8be054</code> (loaded via @vntana/viewer public bundle, environment-src studio.hdr)</td>
       <td class="n">Client-side animation via three.js position tween proves Phase 2 with no Blender/pipeline authoring. Camera framing uses a world-to-r affine fit from the step cameras. Black-fastener finding written up for Neven (Google Doc).</td></tr><tr class="keep">
+      <td><a href="/chair-configurator.html" target="_blank">chair-configurator.html</a><div class="grp">Example Files</div></td>
+      <td>Task-chair configurator (whole-model swap): two option groups, Armrest Style (T-Arm / Loop / Armless) x Upholstery (Graphite / Ocean Blue / Burgundy) = 9 complete AR-ready GLBs. Loop arms and armless variants modeled in Blender from the example-files chair (1510001_asm.stp, e0d5beb0); fabrics recolor seat membrane + lumbar + headrest. Direct viewer with served-GLB src swap + background prefetch so switches are instant.</td>
+      <td class="s">Live</td>
+      <td class="u">All in <code>DCicero / configurators</code>: tarm graphite <code>f4415050</code>, blue <code>3a26f367</code>, burgundy <code>50383110</code>; loop graphite <code>f74f2c16</code>, blue <code>0fd1bf3e</code>, burgundy <code>1afb7ff4</code>; armless graphite <code>45205d94</code>, blue <code>75e3df77</code>, burgundy <code>68f5ab26</code>. Source GLBs in Downloads/chair_configurator_v2/.</td>
+      <td class="n">Products uploaded as DRAFT: Derek must publish all 9 Live Public for the page to load. Also delete the 9 empty no-asset chair_* drafts (first upload attempt) and chair_sign_test in the same workspace.</td></tr><tr class="keep">
       <td><a href="/robot-configurator.html" target="_blank">robot-configurator.html</a><div class="grp">Configurators</div></td>
       <td><b>PROPER part-swap configurator (v3).</b> Base arm loads ONCE + stays resident; selecting a tool swaps only the end-of-arm GLB (mounted on the wrist flange), camera holds the user's view. @vntana/viewer@3.0.0 configurator mode ($loadScene/assemble), tools $preloaded, Neven's absolute-units camera pin. Embedded in imts.html (/custom/imts) + full-screen link. Replaced the old whole-model viewer.src swap.</td>
       <td class="d">2026-08-27</td>

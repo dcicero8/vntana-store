@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Chair Configurator — VNTANA Demo</title>
+<script src="https://viewer-build.vntana.com/v1.0.4/viewer.min.js"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#0d6efd}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f6f7f9;color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 2rem}
+  header{background:#fff;border-bottom:1px solid var(--line);height:60px;display:flex;align-items:center}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;width:100%}
+  header .brand{font-weight:800;letter-spacing:.02em}
+  header .powered{font-size:.58rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#9aa0a8}
+  .stage{display:grid;grid-template-columns:1.15fr .85fr;gap:2.2rem;padding:2.2rem 0}
+  @media(max-width:860px){.stage{grid-template-columns:1fr}}
+  .viewer-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .viewer-box{position:relative;aspect-ratio:1/1;background:#f2f3f5}
+  vntana-viewer{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .ld{position:absolute;inset:0;display:flex;flex-direction:column;gap:.8rem;align-items:center;justify-content:center;background:rgba(242,243,245,.92);z-index:5;transition:opacity .3s}
+  .ld.hidden{opacity:0;pointer-events:none}
+  .ld .spin{width:38px;height:38px;border-radius:50%;border:4px solid #dfe2e6;border-top-color:var(--accent);animation:sp 1s linear infinite}
+  .ld p{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#9aa0a8;text-align:center;padding:0 1rem}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .viewer-foot{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;border-top:1px solid var(--line);font-size:.7rem;color:var(--muted)}
+  .live{display:inline-flex;align-items:center;gap:.4rem;font-weight:700;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:#3a7d44}
+  .live::before{content:'';width:7px;height:7px;border-radius:50%;background:#3fae4f;box-shadow:0 0 6px rgba(63,174,79,.7)}
+  h1{font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+  .sub{color:var(--muted);margin-top:.3rem;font-size:.9rem}
+  .grp{margin-top:1.6rem}
+  .grp .lab{font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a8;margin-bottom:.6rem}
+  .chips{display:flex;gap:.5rem;flex-wrap:wrap}
+  .chip{font-family:inherit;text-align:left;background:#fff;border:1px solid var(--line);border-radius:8px;padding:.65rem .9rem;cursor:pointer;font-size:.82rem;font-weight:700;color:#374151;min-width:120px}
+  .chip .d{display:block;font-weight:400;font-size:.68rem;color:#9aa0a8;margin-top:.15rem}
+  .chip:hover{border-color:#b9bdc4}
+  .chip.on{border-color:var(--accent);background:#eef4ff;color:var(--accent)}
+  .chip.on .d{color:#5c8fdd}
+  .sw{display:inline-block;width:15px;height:15px;border-radius:4px;margin-right:.45rem;vertical-align:-2px;border:1px solid rgba(0,0,0,.15)}
+  .summary{margin-top:1.8rem;background:#fff;border:1px solid var(--line);border-radius:8px;padding:1rem 1.2rem;font-size:.84rem;line-height:1.55;color:#3b4148}
+  .summary b{color:var(--ink)}
+  .note{margin-top:.9rem;font-size:.72rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">ErgoTask Pro Series</div><div class="powered">3D powered by VNTANA</div></div></header>
+<div class="wrap stage">
+  <div class="viewer-card">
+    <div class="viewer-box">
+      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.35"></vntana-viewer>
+      <div class="ld" id="ld"><div class="spin"></div><p id="ldmsg">Loading interactive 3D&hellip;</p></div>
+    </div>
+    <div class="viewer-foot"><span class="live">Live 3D</span><span>Drag to rotate &middot; scroll to zoom</span></div>
+  </div>
+  <div>
+    <h1>Build your task chair</h1>
+    <div class="sub">Every combination is a complete, AR-ready 3D configuration served from the VNTANA platform.</div>
+    <div class="grp"><div class="lab">Armrest style</div><div class="chips" id="armChips"></div></div>
+    <div class="grp"><div class="lab">Upholstery</div><div class="chips" id="fabChips"></div></div>
+    <div class="summary" id="summary"></div>
+    <div class="note">Whole-model swap: each selection loads a distinct optimized GLB, so every configuration stays AR-ready with baked, correct geometry.</div>
+  </div>
+</div>
+<script>
+  var ORG = "DCicero", WS = "configurators";
+  var API = "https://api.vntana.com";
+  var UUIDS = {
+    "tarm|graphite":   "f4415050-3ac4-4204-9db7-36a0f22f0871",
+    "tarm|blue":       "3a26f367-9792-4f55-8166-be88737b794c",
+    "tarm|burgundy":   "50383110-60b7-41a3-882f-9d53255d7a9d",
+    "loop|graphite":   "f74f2c16-b003-4692-808a-b3e04fabe6dc",
+    "loop|blue":       "0fd1bf3e-d875-443b-9a28-9a499e21128d",
+    "loop|burgundy":   "1afb7ff4-0d8b-439c-b322-a1ea3821f0c0",
+    "armless|graphite":"45205d94-55b0-475d-9368-9bd1fa5bf7a8",
+    "armless|blue":    "75e3df77-dcd9-4327-9723-0273515b6240",
+    "armless|burgundy":"68f5ab26-b443-4e75-964b-17da12833583"
+  };
+  var ARMS = [
+    { id:"tarm",    name:"T-Arm",   d:"Height-adjustable pads" },
+    { id:"loop",    name:"Loop",    d:"Closed-loop fixed arms" },
+    { id:"armless", name:"Armless", d:"Minimal, stool-friendly" }
+  ];
+  var FABRICS = [
+    { id:"graphite", name:"Graphite",   d:"Charcoal weave", c:"#3a3a3d" },
+    { id:"blue",     name:"Ocean Blue", d:"Deep blue weave", c:"#2c5b93" },
+    { id:"burgundy", name:"Burgundy",   d:"Wine red weave",  c:"#7a2230" }
+  ];
+  var viewer = document.getElementById("viewer");
+  var ld = document.getElementById("ld"), ldmsg = document.getElementById("ldmsg");
+  var arm = "tarm", fab = "graphite";
+  var urlCache = {};
+
+  function urlFor(uuid){
+    if (urlCache[uuid]) return Promise.resolve(urlCache[uuid]);
+    return fetch(API + "/products/" + uuid + "/organizations/" + ORG + "/clients/" + WS)
+      .then(function(r){ return r.json(); })
+      .then(function(p){
+        var models = ((p.response || {}).asset || {}).models || [];
+        var glb = null;
+        for (var i = 0; i < models.length; i++){ if (models[i].conversionFormat === "GLB") glb = models[i]; }
+        if (!glb) throw new Error("no glb");
+        urlCache[uuid] = API + "/assets/products/" + uuid + "/organizations/" + ORG + "/clients/" + WS + "/" + glb.modelBlobId;
+        return urlCache[uuid];
+      });
+  }
+
+  function renderSummary(){
+    var a = ARMS.filter(function(x){ return x.id === arm; })[0];
+    var f = FABRICS.filter(function(x){ return x.id === fab; })[0];
+    document.getElementById("summary").innerHTML =
+      "<b>Current build:</b> " + a.name + " armrests, " + f.name + " upholstery." +
+      "<br>High-back mesh frame, contoured lumbar support, adjustable headrest, 5-star base with dual-wheel casters.";
+  }
+
+  function apply(){
+    renderSummary();
+    ld.classList.remove("hidden"); ldmsg.textContent = "Loading configuration…";
+    urlFor(UUIDS[arm + "|" + fab]).then(function(url){
+      viewer.src = url;
+      setTimeout(function(){ ld.classList.add("hidden"); }, 900);
+    }).catch(function(){
+      ldmsg.textContent = "Could not load this configuration. (Are the chair products Live Public?)";
+    });
+  }
+
+  function buildChips(list, holder, get, set){
+    list.forEach(function(o){
+      var b = document.createElement("button");
+      b.className = "chip"; b.dataset.id = o.id;
+      b.innerHTML = (o.c ? '<span class="sw" style="background:' + o.c + '"></span>' : "") + o.name + '<span class="d">' + o.d + "</span>";
+      b.addEventListener("click", function(){
+        if (get() === o.id) return;
+        set(o.id);
+        Array.prototype.forEach.call(holder.children, function(ch){ ch.classList.toggle("on", ch.dataset.id === o.id); });
+        apply();
+      });
+      holder.appendChild(b);
+    });
+    Array.prototype.forEach.call(holder.children, function(ch){ ch.classList.toggle("on", ch.dataset.id === get()); });
+  }
+  buildChips(ARMS, document.getElementById("armChips"), function(){ return arm; }, function(v){ arm = v; });
+  buildChips(FABRICS, document.getElementById("fabChips"), function(){ return fab; }, function(v){ fab = v; });
+  apply();
+  // warm the other combos so swaps are instant
+  setTimeout(function(){
+    Object.keys(UUIDS).forEach(function(k){ urlFor(UUIDS[k]).then(function(u){ fetch(u, {mode:"cors"}).catch(function(){}); }).catch(function(){}); });
+  }, 2500);
+</script>
+</body>
+</html>
