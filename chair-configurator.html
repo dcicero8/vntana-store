@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Task Chair Configurator — VNTANA Demo</title>
-<script src="https://viewer-build.vntana.com/v1.0.4/viewer.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#0d6efd}
@@ -48,53 +48,73 @@
 <div class="wrap stage">
   <div class="viewer-card">
     <div class="viewer-box">
-      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.35"></vntana-viewer>
+      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.35" src="assets/chair/combined_chair_v2.glb?c=3"></vntana-viewer>
       <div class="ld" id="ld"><div class="spin"></div><p id="ldmsg">Loading interactive 3D&hellip;</p></div>
     </div>
     <div class="viewer-foot"><span class="live">Live 3D</span><span>Drag to rotate &middot; scroll to zoom</span></div>
   </div>
   <div>
     <h1>Build your task chair</h1>
-    <div class="sub">Every combination is a complete, AR-ready 3D configuration served from the VNTANA platform.</div>
+    <div class="sub">One live model. Armrests and upholstery update instantly, no reloads.</div>
     <div class="grp"><div class="lab">Armrest style</div><div class="chips" id="armChips"></div></div>
     <div class="grp"><div class="lab">Upholstery</div><div class="chips" id="fabChips"></div></div>
     <div class="summary" id="summary"></div>
-    <div class="note">Whole-model swap: each selection loads a distinct optimized GLB, so every configuration stays AR-ready with baked, correct geometry.</div>
+    <div class="note">Single-asset configurator: one GLB carries every armrest option; the upholstery is re-tinted and the unused arms are moved out of frame in real time.</div>
   </div>
 </div>
 <script>
-  // v2 assets served directly from this site (assets/chair/), whole-model swap.
-  // Same 9 combos also exist as Live Public products in DCicero/configurators if we switch
-  // to VNTANA-hosted later (replace-in-place keeps these SKUs); UUIDs kept below for that.
-  var SRC = {
-    "tarm|graphite":   "assets/chair/chair_tarm_graphite_v2.glb?c=2",
-    "tarm|blue":       "assets/chair/chair_tarm_blue_v2.glb?c=2",
-    "tarm|burgundy":   "assets/chair/chair_tarm_burgundy_v2.glb?c=2",
-    "loop|graphite":   "assets/chair/chair_loop_graphite_v2.glb?c=2",
-    "loop|blue":       "assets/chair/chair_loop_blue_v2.glb?c=2",
-    "loop|burgundy":   "assets/chair/chair_loop_burgundy_v2.glb?c=2",
-    "armless|graphite":"assets/chair/chair_armless_graphite_v2.glb?c=2",
-    "armless|blue":    "assets/chair/chair_armless_blue_v2.glb?c=2",
-    "armless|burgundy":"assets/chair/chair_armless_burgundy_v2.glb?c=2"
-  };
-  // VNTANA product UUIDs for the same combos (for the versioned/hosted path):
-  // tarm: f4415050 / 3a26f367 / 50383110 · loop: f74f2c16 / 0fd1bf3e / 1afb7ff4 · armless: 45205d94 / 75e3df77 / 68f5ab26
+  var viewer = document.getElementById("viewer");
+  var ld = document.getElementById("ld"), ldmsg = document.getElementById("ldmsg");
+  var arm = "tarm", fab = "graphite";
+
   var ARMS = [
     { id:"tarm",    name:"T-Arm",   d:"Height-adjustable pads" },
     { id:"loop",    name:"Loop",    d:"Closed-loop fixed arms" },
     { id:"armless", name:"Armless", d:"Minimal, stool-friendly" }
   ];
   var FABRICS = [
-    { id:"graphite", name:"Graphite",   d:"Charcoal weave", c:"#3a3a3d" },
-    { id:"blue",     name:"Ocean Blue", d:"Deep blue weave", c:"#2c5b93" },
-    { id:"burgundy", name:"Burgundy",   d:"Wine red weave",  c:"#7a2230" }
+    { id:"graphite", name:"Graphite",   d:"Charcoal weave", c:"#3a3a3d", rgb:[26,26,28] },
+    { id:"blue",     name:"Ocean Blue", d:"Deep blue weave", c:"#2c5b93", rgb:[20,56,122] },
+    { id:"burgundy", name:"Burgundy",   d:"Wine red weave",  c:"#7a2230", rgb:[77,10,18] }
   ];
-  var viewer = document.getElementById("viewer");
-  var ld = document.getElementById("ld"), ldmsg = document.getElementById("ldmsg");
-  var arm = "tarm", fab = "graphite";
-  var urlCache = {};
 
-  function urlFor(key){ return Promise.resolve(SRC[key]); }
+  var armNodes = [];      // { node, home:Vector3, kind:'tarm'|'loop' }
+  var uphMeshes = [];     // meshes whose material is the upholstery
+  var STASH = 100000;     // move unused arms far off-screen (position is honored by the render pass)
+
+  function collect(){
+    if (!viewer.scene || !viewer.scene.traverse) return false;
+    armNodes = []; uphMeshes = [];
+    viewer.scene.traverse(function(o){
+      if (o.name && o.name.indexOf("ARM_TARM") > -1) armNodes.push({ node:o, home:o.position.clone(), kind:"tarm" });
+      else if (o.name && o.name.indexOf("ARM_LOOP") > -1) armNodes.push({ node:o, home:o.position.clone(), kind:"loop" });
+      if (o.isMesh && o.material){
+        var mats = Array.isArray(o.material) ? o.material : [o.material];
+        for (var i=0;i<mats.length;i++){ if (mats[i] && mats[i].name && /phol/i.test(mats[i].name)){ uphMeshes.push({ mesh:o, mat:mats[i] }); break; } }
+      }
+    });
+    return armNodes.length > 0;
+  }
+
+  function applyArm(){
+    armNodes.forEach(function(a){
+      if (a.kind === arm) a.node.position.copy(a.home);
+      else a.node.position.set(a.home.x, a.home.y + STASH, a.home.z);
+    });
+  }
+  function applyColor(){
+    var f = FABRICS.filter(function(x){ return x.id === fab; })[0];
+    var r = f.rgb;
+    uphMeshes.forEach(function(u){
+      if (u.mat.color && u.mat.color.setRGB){ u.mat.color.setRGB(r[0]/255, r[1]/255, r[2]/255); u.mat.needsUpdate = true; }
+    });
+  }
+  function renderNow(){ try{ viewer.renderScene && viewer.renderScene(); }catch(e){} try{ viewer.render && viewer.render(); }catch(e){} }
+
+  function apply(){
+    renderSummary();
+    if (armNodes.length){ applyArm(); applyColor(); renderNow(); }
+  }
 
   function renderSummary(){
     var a = ARMS.filter(function(x){ return x.id === arm; })[0];
@@ -102,17 +122,6 @@
     document.getElementById("summary").innerHTML =
       "<b>Current build:</b> " + a.name + " armrests, " + f.name + " upholstery." +
       "<br>High-back mesh frame, contoured lumbar support, adjustable headrest, 5-star base with dual-wheel casters.";
-  }
-
-  function apply(){
-    renderSummary();
-    ld.classList.remove("hidden"); ldmsg.textContent = "Loading configuration…";
-    urlFor(arm + "|" + fab).then(function(url){
-      viewer.src = url;
-      setTimeout(function(){ ld.classList.add("hidden"); }, 900);
-    }).catch(function(){
-      ldmsg.textContent = "Could not load this configuration.";
-    });
   }
 
   function buildChips(list, holder, get, set){
@@ -132,11 +141,21 @@
   }
   buildChips(ARMS, document.getElementById("armChips"), function(){ return arm; }, function(v){ arm = v; });
   buildChips(FABRICS, document.getElementById("fabChips"), function(){ return fab; }, function(v){ fab = v; });
-  apply();
-  // warm the other combos so swaps are instant
-  setTimeout(function(){
-    Object.keys(SRC).forEach(function(k){ fetch(SRC[k]).catch(function(){}); });
-  }, 2500);
+  renderSummary();
+
+  // Wait for the model's scene graph to populate, then take over.
+  var tries = 0;
+  var poll = setInterval(function(){
+    tries++;
+    if (collect()){
+      clearInterval(poll);
+      apply();
+      ld.classList.add("hidden");
+    } else if (tries > 120){       // ~24s safety
+      clearInterval(poll);
+      ldmsg.textContent = "Could not read the 3D scene.";
+    }
+  }, 200);
 </script>
 </body>
 </html>
