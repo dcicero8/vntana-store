@@ -493,6 +493,25 @@
          ["map","normalMap","roughnessMap","metalnessMap","aoMap","emissiveMap"].forEach(k=>{ if(k in mat) mat[k]=null; }); mat.needsUpdate=true; }catch(_){}
     const m=new ref.constructor(geo,mat); m.visible=false; viewer.scene.add(m); return m;
   }
+  // a tapered bucket (frustum, wider at the top) so the drain pail reads as a pail, not a box
+  function makePail(rBot,rTop,h,hex){
+    const ref=refMesh(); if(!ref) return null;
+    const N=22, hy=h/2, pos=[];
+    const ring=(r,y)=>Array.from({length:N+1},(_,i)=>{const a=i/N*2*Math.PI;return [r*Math.cos(a),y,r*Math.sin(a)];});
+    const bot=ring(rBot,-hy), top=ring(rTop,hy);
+    for(let i=0;i<N;i++){
+      const b0=bot[i],b1=bot[i+1],t0=top[i],t1=top[i+1];
+      pos.push(...b0,...t0,...t1, ...b0,...t1,...b1);   // tapered side
+      pos.push(0,-hy,0, ...b1, ...b0);                  // bottom cap
+    }
+    const geo=new ref.geometry.constructor();
+    geo.setAttribute('position', new ref.geometry.attributes.position.constructor(new Float32Array(pos),3));
+    try{ geo.computeVertexNormals(); }catch(_){}
+    const mat=ref.material.clone();
+    try{ if(mat.color&&mat.color.setHex) mat.color.setHex(hex); mat.metalness=0.05; mat.roughness=0.92;
+         ["map","normalMap","roughnessMap","metalnessMap","aoMap","emissiveMap"].forEach(k=>{ if(k in mat) mat[k]=null; }); mat.needsUpdate=true; }catch(_){}
+    const m=new ref.constructor(geo,mat); m.visible=false; viewer.scene.add(m); return m;
+  }
   function partBBox(patterns, all){                    // world-space {c:center, s:size} of a CAD part
     const uu=(all?allUuidsMatching(patterns):uuidsMatching(patterns)).filter(u=>!casingUuids.has(u));
     let min=[1e9,1e9,1e9],max=[-1e9,-1e9,-1e9],cnt=0;
@@ -505,11 +524,12 @@
   }
   // tool registry: which sub-step text triggers it, the box size/color, and where it sits (anchor bbox + offset)
   const TOOLS = {
-    pail:  {match:/pail/i,        size:[0.30,0.32,0.30], hex:0x9aa3ab, anchor:["408 pipe plug hex"], place:(bb)=>[bb.c[0], bb.min[1]-0.20, bb.c[2]]},
+    pail:  {match:/pail/i, shape:"pail", pail:[0.15,0.21,0.40], hex:0x333333, anchor:["408 pipe plug hex"], place:(bb)=>[bb.c[0], bb.min[1]-0.40, bb.c[2]]},
     hoist: {match:/hoist/i,       size:[0.9,0.10,0.10],  hex:0xf2b134, anchor:["eye bolt 132"],      place:(bb)=>[bb.c[0], bb.max[1]+0.55, bb.c[2]]},
     wrench:{match:/shaft wrench/i,size:[0.45,0.05,0.05], hex:0x5b6675, anchor:["360 d"],             place:(bb)=>[bb.max[0]+0.22, bb.c[1], bb.c[2]]},
   };
-  function ensureTools(){ if(!ready) return; for(const k in TOOLS){ if(!toolMeshes[k]){ const t=TOOLS[k]; toolMeshes[k]=makeBox(t.size[0],t.size[1],t.size[2],t.hex); } } }
+  function ensureTools(){ if(!ready) return; for(const k in TOOLS){ if(!toolMeshes[k]){ const t=TOOLS[k];
+    toolMeshes[k] = t.shape==="pail" ? makePail(t.pail[0],t.pail[1],t.pail[2],t.hex) : makeBox(t.size[0],t.size[1],t.size[2],t.hex); } } }
   function showTool(sub){
     ensureTools();
     for(const k in toolMeshes){ if(toolMeshes[k]) toolMeshes[k].visible=false; }
@@ -631,7 +651,7 @@
     renderSteps(); renderDetail(); renderNow();
   }
   function goSub(k){
-    started=true;                                    // any navigation begins the walk-through
+    if(!started){ started=true; $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; }  // begin the walk-through
     if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }   // stop any in-flight removal animation
     animating=false;
     cur = Math.max(0, Math.min(SUBS.length-1, k));
