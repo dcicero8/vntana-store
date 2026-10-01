@@ -79,9 +79,9 @@
   .detail ol{margin:0;padding-left:18px}
   .detail li{font-size:.85rem;color:#33404f;margin-bottom:7px;line-height:1.45}
   /* sub-step checklist: done / active / upcoming */
-  ol.substeps{list-style:none;padding-left:0;margin:2px 0 4px;counter-reset:ss}
-  ol.substeps .substep{counter-increment:ss;position:relative;padding:9px 10px 9px 34px;margin:0 0 4px;border-radius:8px;cursor:pointer;transition:.12s;border:1px solid transparent}
-  ol.substeps .substep::before{content:counter(ss);position:absolute;left:8px;top:8px;width:18px;height:18px;border-radius:50%;font-family:var(--mono);font-size:.66rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:#e6ecf4;color:var(--muted)}
+  ol.substeps{list-style:none;padding-left:0;margin:2px 0 4px}
+  ol.substeps .substep{position:relative;padding:9px 10px 9px 44px;margin:0 0 4px;border-radius:8px;cursor:pointer;transition:.12s;border:1px solid transparent}
+  ol.substeps .substep::before{content:attr(data-num);position:absolute;left:6px;top:7px;min-width:30px;height:19px;padding:0 4px;border-radius:10px;font-family:var(--mono);font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:#e6ecf4;color:var(--muted)}
   ol.substeps .substep.todo{color:#8a97a8}
   ol.substeps .substep.done{color:#7c8aa0}
   ol.substeps .substep.done::before{content:"✓";background:var(--blue);color:#fff}
@@ -99,6 +99,9 @@
   .callout.note{background:var(--notebg);border:1px solid #a5f3fc;color:#155e75}
   .callout.done{background:#dcfce7;border:1px solid #86efac;color:#166534}
   .callout b{text-transform:uppercase;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:2px}
+  .ackbtn{margin-top:8px;display:inline-block;font:inherit;font-size:.72rem;font-weight:700;color:#fff;background:var(--warn);border:none;border-radius:7px;padding:7px 12px;cursor:pointer}
+  .ackbtn:hover{background:#92400e}
+  .ackdone{margin-top:8px;font-size:.72rem;font-weight:700;color:#166534}
   /* clickable part cross-references (Cortona-style) */
   .partref{color:var(--blue);font-weight:600;cursor:pointer;border-bottom:1px dotted var(--sky);text-decoration:none}
   .partref:hover{background:#eef5fb}
@@ -398,6 +401,9 @@
   // Treat the installation context as always-dimmed so the pump is the subject.
   const CONTEXT = ["floor","base plate","vertical piping","complete discharge","discharge pipe","assembley","spindle","valve","bolt with nuts_discharge"];
   let leaves=[], pumpLeaves=[], contextUuids=[], uuidPath={}, casingUuids=new Set(), ready=false, cur=0;
+  let started=false;                 // on load the model is shown fully (un-ghosted); starts on first step interaction
+  const ackWarn = new Set();         // step indices whose safety warning has been accepted (gates progression)
+  const warnBlocked = () => { const si=SUBS[cur].si; return STEPS[si].warn && !ackWarn.has(si); };
   function isContext(path){ return CONTEXT.some(c=>path.includes(c)); }
   function buildLeaves(tries){
     const sg = viewer.sceneGraph;
@@ -416,7 +422,7 @@
     casingUuids = new Set(leaves.filter(l=>l.path.includes("case, goulds")||l.path.includes("casing socket")).map(l=>l.uuid));
     window.__leaves = leaves;
     // (Black hardware is now stripped from the source model, so the runtime fastener-hiding is gone.)
-    if(mode==="procedure"){ cacheHomes(); goSub(cur); }  // re-apply highlight + camera + animation once leaves are ready
+    if(mode==="procedure"){ cacheHomes(); if(started) goSub(cur); else applyUnstarted(); }  // re-apply once leaves are ready
   }
 
 
@@ -563,7 +569,7 @@
       </svg></div>`;
   }
   function renderSteps(){
-    const c = SUBS[cur], curStep = c.si;
+    const curStep = started ? SUBS[cur].si : -1;       // nothing active until the user starts
     $("steplist").innerHTML = STEPS.map((s,i)=>{
       const active = i===curStep;
       let body = "";
@@ -571,17 +577,21 @@
         const subsHtml = s.subs.map((sub,ssi)=>{
           const gi = SUBS.findIndex(x=>x.si===i && x.ssi===ssi);
           const state = gi<cur ? "done" : (gi===cur ? "active" : "todo");
+          const num = `${s.num||s.n}.${ssi+1}`;        // decimal numbering to match the hard-copy procedure (5.1, 5.2…)
           const tag = sub.kind==="tool" ? `<span class="tag tool">tool</span>`
                     : sub.kind==="manual" ? `<span class="tag">manual</span>`
                     : sub.kind==="setscrew" ? `<span class="tag safety">set screw</span>`
                     : sub.kind==="torque" ? `<span class="tag seq">sequence</span>` : "";
-          return `<li class="substep ${state}" data-gi="${gi}">${linkify(sub.t)}${tag}</li>`;
+          return `<li class="substep ${state}" data-gi="${gi}" data-num="${num}">${linkify(sub.t)}${tag}</li>`;
         }).join("");
         const showTorque = SUBS[cur].kind==="torque" && SUBS[cur].si===i;   // star diagram only while on the torque sub-step
+        const warnAck = ackWarn.has(i)
+          ? `<div class="ackdone">✓ Warning acknowledged</div>`
+          : `<button class="ackbtn" data-ack="${i}">I have read this warning — proceed</button>`;
         body = `<div class="stepbody">
           <ol class="substeps">${subsHtml}</ol>
           ${showTorque ? torqueDiagram() : ""}
-          ${s.warn?`<div class="callout warn"><b>Warning</b>${linkify(s.warn)}</div>`:""}
+          ${s.warn?`<div class="callout warn"><b>Warning — must acknowledge to continue</b>${linkify(s.warn)}${warnAck}</div>`:""}
           ${s.note?`<div class="callout note"><b>Note</b>${linkify(s.note)}</div>`:""}
           ${cur===SUBS.length-1?`<div class="callout done"><b>✓ Disassembly complete</b>The back pull-out assembly is fully disassembled through impeller removal. Reverse the sequence to reassemble.</div>`:""}
         </div>`;
@@ -596,18 +606,32 @@
       el.addEventListener("click",()=>{ const si=+el.closest(".steprow").dataset.i; goSub(SUBS.findIndex(x=>x.si===si)); }));
     $("steplist").querySelectorAll(".substep").forEach(el=>
       el.addEventListener("click",e=>{ e.stopPropagation(); goSub(+el.dataset.gi); }));
+    $("steplist").querySelectorAll(".ackbtn").forEach(el=>
+      el.addEventListener("click",e=>{ e.stopPropagation(); ackWarn.add(+el.dataset.ack); renderSteps(); renderDetail(); }));
     // keep the active step (and its expanded sub-steps) in view
     const act = $("steplist").querySelector(".steprow.active");
     if(act && act.scrollIntoView) try{ act.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
   }
   function renderDetail(){
-    const s = STEPS[SUBS[cur].si];
+    const s = STEPS[SUBS[cur].si], ssi = SUBS[cur].ssi;
     $("detail").innerHTML = "";                       // sub-steps now nest inline under the active step
-    $("counter").textContent = `Step ${s.n} / ${STEPS.length}`;
-    $("prev").disabled = cur===0;
-    $("next").disabled = cur===SUBS.length-1;
+    $("counter").textContent = started ? `Step ${s.num||s.n}.${ssi+1} / ${STEPS.length}` : "Press Next to begin";
+    $("prev").disabled = !started || cur===0;
+    // Next is blocked at the end, and on any step with an un-acknowledged safety warning (must-accept gate)
+    $("next").disabled = started && (cur===SUBS.length-1 || warnBlocked());
+  }
+  // Unstarted state: full model shown (nothing dimmed/ghosted) until the user clicks into the first step.
+  function applyUnstarted(){
+    started=false; cur=0;
+    clearFx();                                       // no glow, no dim — the whole pump reads normally
+    applyRemoval(0);                                 // every part at home
+    for(const k in toolMeshes){ if(toolMeshes[k]) toolMeshes[k].visible=false; }
+    applyView();                                     // framed opening view
+    $("hint").textContent = "Press Next to begin the guided procedure.";
+    renderSteps(); renderDetail(); renderNow();
   }
   function goSub(k){
+    started=true;                                    // any navigation begins the walk-through
     if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }   // stop any in-flight removal animation
     animating=false;
     cur = Math.max(0, Math.min(SUBS.length-1, k));
@@ -621,6 +645,8 @@
   }
   // Next: if leaving a 'remove' sub-step, play its removal, then advance so the part stays gone.
   function nextSub(){
+    if(!started){ goSub(0); return; }                // first Next press starts the procedure at step 1.1
+    if(warnBlocked()) return;                         // safety warning on this step not yet acknowledged
     if(cur>=SUBS.length-1) return;
     if(animating){ goSub(cur+1); return; }           // re-click during a removal: skip to the end, don't restart
     const c = SUBS[cur];
@@ -639,7 +665,7 @@
     $("stepnav").style.display = m==="procedure" ? "flex" : "none";
     // Explode belongs in Parts Explorer only — in the guided walk-through it un-hides the stashed hardware and confuses people.
     $("explodeCtl").style.display = m==="procedure" ? "none" : "";
-    if(m==="procedure"){ try{ $("explode").value=0; viewer.setExplodedStrength(0); }catch(_){}; $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; goSub(cur); }
+    if(m==="procedure"){ try{ $("explode").value=0; viewer.setExplodedStrength(0); }catch(_){}; if(started){ $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; goSub(cur); } else applyUnstarted(); }
     else { $("hint").textContent="Click any part in the model to inspect it."; applyRemoval(0); for(const k in toolMeshes){ if(toolMeshes[k]) toolMeshes[k].visible=false; } renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
   }
   document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
@@ -709,7 +735,7 @@
     function init(){
       if(inited || !viewer.sceneGraph) return;
       inited=true; ready=true; buildLeaves(150); $("loading").classList.add("hidden");
-      setTimeout(()=>goSub(0), 300);
+      setTimeout(applyUnstarted, 300);               // load fully lit; the procedure begins on first interaction
       // apply the framed opening view, re-applying a few times to beat the load auto-frame
       let n=0; (function frame(){ applyView(); if(n++<6) setTimeout(frame,150); })();
     }
