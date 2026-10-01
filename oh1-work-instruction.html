@@ -527,7 +527,6 @@
   // tool registry: which sub-step text triggers it, the box size/color, and where it sits (anchor bbox + offset)
   const TOOLS = {
     pail:  {match:/pail/i, shape:"pail", pail:[0.15,0.21,0.40], hex:0x333333, anchor:["408 pipe plug hex"], place:(bb)=>[bb.c[0], bb.min[1]-0.40, bb.c[2]]},
-    hoist: {match:/hoist/i,       size:[0.9,0.10,0.10],  hex:0xf2b134, anchor:["eye bolt 132"],      place:(bb)=>[bb.c[0], bb.max[1]+0.55, bb.c[2]]},
     wrench:{match:/shaft wrench/i,size:[0.45,0.05,0.05], hex:0x5b6675, anchor:["360 d"],             place:(bb)=>[bb.max[0]+0.22, bb.c[1], bb.c[2]]},
   };
   function ensureTools(){ if(!ready) return; for(const k in TOOLS){ if(!toolMeshes[k]){ const t=TOOLS[k];
