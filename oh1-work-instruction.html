@@ -415,78 +415,10 @@
     uuidPath = {}; leaves.forEach(l=>uuidPath[l.uuid]=l.path);
     casingUuids = new Set(leaves.filter(l=>l.path.includes("case, goulds")||l.path.includes("casing socket")).map(l=>l.uuid));
     window.__leaves = leaves;
-    // Loose hardware (bolts/studs/nuts/pins) renders black under the IBL. Name-matching misses a lot of it
-    // (underscore-joined CAD names, material-named nodes), so we ALSO stash any SMALL part — that reliably
-    // catches the black hardware. Keep every part any sub-step references (targets/highlights/context) + the casing.
-    // Keep step-referenced parts. Match a node by its OWN name (last path segment), then keep that node AND
-    // its geometry-primitive descendants (e.g. the eyebolt split into .001/.002) — but NOT hardware nested
-    // under it (studs/nuts under the adapter/casing), which stays eligible to be stashed.
-    const HW_SEG = /stud|screw|washer|\bnut\b|nut[_ ]|bolt|dowel|\bpin\b|pin[_ ]|plug|satin finish stainless|polished steel/i;
-    const matchedPaths = [];
-    SUBS.forEach(sub=>{ if(!sub.parts) return; const pl=sub.parts.map(s=>s.toLowerCase());
-      leaves.forEach(l=>{ const seg=l.path.split(" / ").pop(); if(pl.some(p=>seg.includes(p))) matchedPaths.push(l.path); }); });
-    leaves.forEach(l=>{ if(casingUuids.has(l.uuid)) matchedPaths.push(l.path); });
-    const keepSet = new Set();
-    leaves.forEach(l=>{
-      const seg = l.path.split(" / ").pop();
-      const isMatched = matchedPaths.includes(l.path);
-      const underMatched = matchedPaths.some(mp => l.path===mp || l.path.startsWith(mp+" / "));
-      if(isMatched || (underMatched && !HW_SEG.test(seg))) keepSet.add(l.uuid);   // matched node, or its own non-hardware primitives
-    });
-    // Stash a part if: (a) its own name is clearly hardware (stud/screw/nut/bolt/dowel/pin/plug, at ANY length —
-    // some studs are 30cm), or (b) it's material-named (satin/polished steel = a modeled fastener here) AND rod-like
-    // (thin), or (c) it's just small (<5cm). Material-named THICK parts (e.g. the shaft) are spared.
-    const HW_NAME = /\bstud\b|stud[_ ]|screw|washer|\bnut\b|nut[_ ]|jam nut|cap nut|\bbolt\b|bolt[_ ]|dowel|\bpin\b|pin[_ ]|\bplug\b|plug[_ ]/i;
-    const MAT_NAME = /satin finish stainless steel|polished steel/i;
-    const tag = new Set();
-    leaves.forEach(l=>{
-      if(keepSet.has(l.uuid)) return;
-      const seg=l.path.split(" / ").pop();
-      const nameHW = HW_NAME.test(seg) || (FASTENER_RE.test(l.path) && !FASTENER_EXCLUDE.test(l.path));
-      let small=false, rod=false;
-      const o=viewer.scene.getObjectByProperty("uuid",l.uuid);
-      if(o&&o.geometry){ if(o.geometry.computeBoundingBox) o.geometry.computeBoundingBox(); const bb=o.geometry.boundingBox;
-        if(bb){ const b=bb.clone(); b.applyMatrix4(o.matrixWorld);
-          const d=[b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z].sort((x,y)=>y-x);
-          small = d[0]<0.05;                         // <5cm overall
-          rod   = MAT_NAME.test(seg) && d[0]<0.5;    // material-named node (always a fastener here); spare only huge parts
-        }
-      }
-      if(nameHW || small || rod) tag.add(l.uuid);
-    });
-    FASTENER_UUIDS = [...tag];
-    window.__fasteners = FASTENER_UUIDS.length;
-    if(mode==="procedure"){ stashFasteners(true); cacheHomes(); goSub(cur); }  // re-apply highlight + camera + animation once leaves are ready
-    else stashFasteners(false);
+    // (Black hardware is now stripped from the source model, so the runtime fastener-hiding is gone.)
+    if(mode==="procedure"){ cacheHomes(); goSub(cur); }  // re-apply highlight + camera + animation once leaves are ready
   }
 
-  // Which leaves are loose fasteners (bolts/studs/screws/nuts/pipe plugs) vs real pump parts.
-  const FASTENER_RE = /bolt|stud|screw|washer|hex nut|hex cap|hex head|hex bolt|eye bolt|pipe plug|threaded rod|\bnut\b|370-|370f|370b|370_|355 hex|250b|250n/i;
-  const FASTENER_EXCLUDE = /casing socket/i;   // stash ALL loose fasteners incl. discharge/base-plate bolts (they render black); keep the casing socket (a real part)
-  let FASTENER_UUIDS = [], fastenerStash = new Map();
-  function ghostFasteners(){}   // no-op: dimming a near-black part still reads as dark specks; we hide instead
-  // Hide the loose fasteners by translating off-screen (the render pass honors object.position, not material/
-  // visibility edits). Dan confirmed these can simply disappear in the walk-through.
-  function stashFasteners(hide){
-    if(!ready) return;
-    try{
-      if(hide){
-        FASTENER_UUIDS.forEach(u=>{
-          if(fastenerStash.has(u)) return;
-          const o = viewer.scene && viewer.scene.getObjectByProperty ? viewer.scene.getObjectByProperty("uuid",u) : null;
-          if(!o || !o.position) return;
-          const home = o.position.clone();
-          const wp = new home.constructor(); o.getWorldPosition(wp); wp.y += 100;   // 100m up, well out of frame
-          o.position.copy(o.parent ? o.parent.worldToLocal(wp) : wp);
-          fastenerStash.set(u, home);
-        });
-      } else {
-        fastenerStash.forEach((home,u)=>{ const o=viewer.scene&&viewer.scene.getObjectByProperty?viewer.scene.getObjectByProperty("uuid",u):null; if(o&&o.position) o.position.copy(home); });
-        fastenerStash.clear();
-      }
-    }catch(_){}
-    renderNow();
-  }
 
   // ===== client-side sequential removal (no baked glTF anims) =====
   // Each 'remove' sub-step slides its part off along `move` and it STAYS removed, so parts come off in
@@ -684,7 +616,6 @@
     if(c.kind==="context" && c.parts){ highlightContext(c.parts); framePart(c.parts, true); }
     else if(c.parts && (c.kind==="remove"||c.kind==="rig"||c.kind==="highlight"||c.kind==="torque"||c.kind==="setscrew")){ highlight(c.parts); framePart(c.parts); }
     else { clearFx(); if(ready){ contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); } frameStep(c.n); }
-    ghostFasteners();                                // keep loose fasteners faded (not black) whatever the branch
     showTool(c);                                     // placeholder tool for this sub-step (pail/hoist/wrench), if any
     renderSteps(); renderDetail(); renderNow();
   }
@@ -708,8 +639,8 @@
     $("stepnav").style.display = m==="procedure" ? "flex" : "none";
     // Explode belongs in Parts Explorer only — in the guided walk-through it un-hides the stashed hardware and confuses people.
     $("explodeCtl").style.display = m==="procedure" ? "none" : "";
-    if(m==="procedure"){ try{ $("explode").value=0; viewer.setExplodedStrength(0); }catch(_){}; $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; stashFasteners(true); goSub(cur); }
-    else { $("hint").textContent="Click any part in the model to inspect it."; stashFasteners(false); applyRemoval(0); for(const k in toolMeshes){ if(toolMeshes[k]) toolMeshes[k].visible=false; } renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
+    if(m==="procedure"){ try{ $("explode").value=0; viewer.setExplodedStrength(0); }catch(_){}; $("hint").textContent="The highlighted part is what this sub-step acts on. Drag to orbit."; goSub(cur); }
+    else { $("hint").textContent="Click any part in the model to inspect it."; applyRemoval(0); for(const k in toolMeshes){ if(toolMeshes[k]) toolMeshes[k].visible=false; } renderNow(); clearFx(); if(ready) contextUuids.forEach(u=>{try{viewer.setEffect(u,"dim");}catch(_){}}); }
   }
   document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 
