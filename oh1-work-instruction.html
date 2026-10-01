@@ -116,6 +116,7 @@
   .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);min-height:420px;display:flex;flex-direction:column}
   vntana-viewer{width:100%;flex:1;display:block}
   vntana-viewer::part(default-progress-bar){display:none}
+  vntana-exploded-view{display:none!important}   /* hide the viewer's native floating Explode control; we drive explode from our own slider */
   .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa2b2;font-size:.9rem}
   .loading.hidden{display:none}
   .controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;border-top:1px solid var(--line)}
