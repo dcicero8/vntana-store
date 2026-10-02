@@ -122,6 +122,8 @@
   <h2><span class="n">3</span>Rules of Delivery</h2>
   <p class="lead">Every asset, every family. If a rule cannot be met on a given part, flag it in your QA notes rather than guessing. This section is the acceptance standard: assets that miss these are returned.</p>
 
+  <div class="callout" style="background:#eef5ff;border-color:#bcd6f5;color:#14315c"><b>Latest from Taco (Oct 2):</b> the image angle reference guide is confirmed, see <b>Render / template setup</b> below. The 007e-family <b>faceplate is being redesigned</b> across multiple departments (target end of October), so faceplate artwork is on hold. Engineering is checking whether <b>SolidWorks source files</b> are available (update expected Thursday). Contacts: <b>Ken</b> owns materials / art direction; <b>Jess &amp; Jai</b> own angles / render outputs.</div>
+
   <div class="card">
     <h3>What you deliver (per asset)</h3>
     <ul class="rules">
@@ -169,17 +171,36 @@
       <li><b>One material per physical material.</b> Do not split one physical material across several, or merge two real materials into one.</li>
       <li><b>Single 0 to 1 UV space per material</b>, with seams hidden on non-visible faces.</li>
       <li><b>Faceplates and labels are textures</b>, not modeled geometry. Confirm the version/label artwork before baking it in.</li>
+      <li><b>Side-of-casing label is a texture too.</b> The green casing side is laser-etched; some fields (MN / PN / JO / DC) are machine-generated at assembly and appear as <code>XXXXXX</code> placeholders. Use the <a href="refs/Taco-Side-Label-Layout.pdf" target="_blank" rel="noopener">side label layout (PDF)</a> for placement and keep the X-string fields as shown.</li>
     </ul>
+    <div class="note"><b>Faceplate on hold.</b> Taco is redesigning the 007e-family faceplate across multiple departments (target end of October). Do not bake faceplate artwork yet; model the surface so a texture can drop in later. Ken owns materials / art direction; Jess &amp; Jai own angles / render outputs.</div>
   </div>
 
   <div class="card">
     <h3>Render / template setup</h3>
-    <ul class="rules">
-      <li>Blender template with <b>6 orthographic cameras</b> (CAM_Front, CAM_Back, CAM_Left, CAM_Right, CAM_Top, CAM_Bottom) plus CAM_Detail_01… for close-ups.</li>
+    <p class="lead" style="margin-top:0">Taco sent a confirmed <b>image angle reference guide</b> (Oct 2). The first <b>8 angles</b> are the standard set and must be produced for <b>every</b> product. Match these camera framings, names, and the export formats exactly. <a href="refs/Taco-Image-Reference-Guide.pdf" target="_blank" rel="noopener">Open the reference guide (PDF)</a>.</p>
+    <table class="track" style="margin-top:4px">
+      <thead><tr><th>IMG</th><th>Angle</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>01</td><td>FRONT-TOP-LEFT</td><td><b>Hero</b> (3/4 front-top-left), same on every SKU</td></tr>
+        <tr><td>02</td><td>FRONT</td><td></td></tr>
+        <tr><td>03</td><td>FRONT-TOP-RIGHT</td><td></td></tr>
+        <tr><td>04</td><td>LEFT</td><td></td></tr>
+        <tr><td>05</td><td>BACK</td><td></td></tr>
+        <tr><td>06</td><td>RIGHT</td><td></td></tr>
+        <tr><td>07</td><td>TOP-DOWN</td><td></td></tr>
+        <tr><td>08</td><td>BOTTOM</td><td></td></tr>
+        <tr><td>09</td><td>FACEPLATE-DETAIL-STATUS-OFF</td><td><b>Optional</b>, per-product (status lights off / feature detail). Not auto-produced; Taco will call these out per SKU.</td></tr>
+      </tbody>
+    </table>
+    <ul class="rules" style="margin-top:12px">
+      <li><b>File naming:</b> <code>TACO-RES_&lt;SKU&gt;_IMG-01_FRONT-TOP-LEFT_HERO</code> (IMG number + angle label; the hero tag sits on 01).</li>
+      <li><b>Export each shot three ways:</b> JPG 300-DPI 3000&times;3000, JPG 150-DPI 1500&times;1500, and EPS vector.</li>
       <li>Packed <b>neutral HDRI</b>, no extra lights. AgX view transform. Blender 5.1.x.</li>
-      <li>Render budget: 2048&times;2048, 256 samples, single GPU, 26GB, 600s cap.</li>
+      <li>Render budget: 256 samples, single GPU, 26GB, 600s cap.</li>
     </ul>
-    <div class="note"><b>Shared render toolkit</b> (Taco 3D toolkit workspace): download the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">sample Blender file</a> (cameras + render settings, match the camera names) and the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">neutral HDRI</a> (pack it into your file). Same links are on each family page.</div>
+    <div class="note"><b>EPS vector output on the angle shots is still being confirmed.</b> Photoreal 3D renders are raster; the vector/EPS requirement is clear for the side label artwork (above) but is being verified for the product angle renders. Build the two JPG outputs now, and hold on EPS for the angle shots until we confirm.</div>
+    <div class="note"><b>Shared render toolkit</b> (Taco 3D toolkit workspace): download the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">sample Blender file</a> and the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">neutral HDRI</a> (pack it into your file). The toolkit cameras are being updated to this 8-angle set; until that lands, build cameras to match the guide above. Same links are on each family page.</div>
   </div>
 
   <div class="callout">If a Taco redesign changes a product, it is a <b>full new delivery</b>, not a patch to the old file.</div>
