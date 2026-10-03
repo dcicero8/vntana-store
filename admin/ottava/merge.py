@@ -57,7 +57,7 @@ for it in layout['items']:
         mn,mx=ext(o); report.append(f"trolley {fmt(mn,mx)} top(central)={top:.3f}")
     else:
         p=list(it['pos'])
-        if p[1]=='top': p[1]=top
+        if isinstance(p[1],str) and p[1].startswith('top'): p[1]=top+float(p[1][3:] or 0)
         o.location=g2b(p); o.location.z = p[1]-mn.z+0.002
         bpy.context.view_layer.update(); mn2,mx2=ext(o)
         report.append(f"{it['name']:22s} pre={pre}  ->  {fmt(mn2,mx2)}")
@@ -81,7 +81,7 @@ for img in bpy.data.images:
     if max(img.size)>2048: img.scale(2048,2048)
 report.append(f"images: {len(bpy.data.images)} {[ (i.name,i.size[0],i.file_format) for i in bpy.data.images][:40]}")
 report.append(f"materials: {[m.name for m in bpy.data.materials]}  objects: {len(bpy.data.objects)}")
-glb=os.path.join(OUT,'ottava-back-table-v1.glb')
+glb=os.path.join(OUT,'ottava-back-table-v2.glb')
 bpy.ops.export_scene.gltf(filepath=glb, export_format='GLB', export_apply=True, export_draco_mesh_compression_enable=False,
     export_image_format='JPEG', export_jpeg_quality=85, export_animations=False, export_skins=False, export_yup=True)
 report.append(f"exported {glb} {os.path.getsize(glb)/1e6:.1f} MB")

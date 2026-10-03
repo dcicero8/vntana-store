@@ -1,5 +1,5 @@
 {
- "_doc": "positions are glTF space (x, y, z), Y-up, relative to the trolley file origin; y='top' means rest on trolley top. rot = Blender euler degrees XYZ applied after import.",
+ "_doc": "glTF space (x, y, z) relative to the trolley file origin; y='top' or 'top+0.036' rests on the tabletop (+offset). Usable flat top measured from the trolley mesh: x[-0.33,0.41] z[-0.69,0.77] (Blender y = -glTF z). rot = Blender euler deg; center = recenter geometry to its xy bbox center / min z.",
  "items": [
   {
    "file": "instrumentTrolley.glb",
@@ -16,7 +16,7 @@
    "pos": [
     0.25,
     "top",
-    -0.496
+    -0.575
    ]
   },
   {
@@ -25,7 +25,7 @@
    "pos": [
     0.179,
     "top",
-    -0.496
+    -0.575
    ]
   },
   {
@@ -34,7 +34,7 @@
    "pos": [
     0.11,
     "top",
-    -0.496
+    -0.575
    ]
   },
   {
@@ -43,7 +43,7 @@
    "pos": [
     0.04,
     "top",
-    -0.496
+    -0.575
    ]
   },
   {
@@ -52,7 +52,7 @@
    "pos": [
     -0.032,
     "top",
-    -0.495
+    -0.575
    ]
   },
   {
@@ -61,7 +61,7 @@
    "pos": [
     -0.105,
     "top",
-    -0.5
+    -0.575
    ]
   },
   {
@@ -70,7 +70,7 @@
    "pos": [
     -0.182,
     "top",
-    -0.5
+    -0.535
    ]
   },
   {
@@ -79,7 +79,7 @@
    "pos": [
     -0.252,
     "top",
-    -0.505
+    -0.575
    ]
   },
   {
@@ -88,7 +88,7 @@
    "pos": [
     -0.083,
     "top",
-    0.117
+    0.047
    ]
   },
   {
@@ -97,26 +97,8 @@
    "pos": [
     -0.211,
     "top",
-    0.114
+    0.044
    ]
-  },
-  {
-   "file": "returnPad.glb",
-   "name": "returnPad",
-   "pos": [
-    -0.3,
-    "top",
-    0.428
-   ],
-   "delete": [
-    "returnPad_cord_plugged"
-   ],
-   "rot": [
-    -90,
-    0,
-    0
-   ],
-   "center": true
   },
   {
    "file": "trocar_8mm_std_full_assembly.glb",
@@ -124,7 +106,7 @@
    "pos": [
     0.074,
     "top",
-    0.297
+    0.207
    ],
    "rot": [
     0,
@@ -138,7 +120,7 @@
    "pos": [
     0.074,
     "top",
-    0.224
+    0.134
    ],
    "rot": [
     0,
@@ -152,7 +134,7 @@
    "pos": [
     0.072,
     "top",
-    0.153
+    0.063
    ],
    "rot": [
     0,
@@ -166,7 +148,7 @@
    "pos": [
     0.072,
     "top",
-    0.082
+    -0.008
    ],
    "rot": [
     0,
@@ -180,7 +162,7 @@
    "pos": [
     0.101,
     "top",
-    0.013
+    -0.077
    ],
    "rot": [
     0,
@@ -192,41 +174,14 @@
    "file": "downsizer_12mm_std.glb",
    "name": "downsizer_12mm_std",
    "pos": [
-    0.33,
+    0.36,
     "top",
-    0.013
+    0.6
    ],
    "rot": [
-    0,
     -90,
+    0,
     0
-   ]
-  },
-  {
-   "file": "drape_SterileFoldedPacked.glb",
-   "name": "drape_1",
-   "pos": [
-    0.219,
-    "top",
-    0.58
-   ]
-  },
-  {
-   "file": "drape_SterileFoldedPacked.glb",
-   "name": "drape_2",
-   "pos": [
-    0.043,
-    "top",
-    0.58
-   ]
-  },
-  {
-   "file": "insufflatorTube_coiled_strapped.glb",
-   "name": "insufflationTubing",
-   "pos": [
-    -0.28,
-    "top",
-    0.75
    ],
    "center": true
   },
@@ -234,12 +189,42 @@
    "file": "webbLiteEndo_30.glb",
    "name": "webbLiteEndo_30",
    "pos": [
-    0.42,
+    0.36,
     "top",
-    0.3
+    0.18
    ],
-   "center": true,
-   "keep_y_from_min": 0.62
+   "keep_y_from_min": 0.62,
+   "center": true
+  },
+  {
+   "file": "drape_SterileFoldedPacked.glb",
+   "name": "drape_1",
+   "pos": [
+    -0.2,
+    "top",
+    0.46
+   ],
+   "center": true
+  },
+  {
+   "file": "drape_SterileFoldedPacked.glb",
+   "name": "drape_2",
+   "pos": [
+    -0.2,
+    "top+0.036",
+    0.46
+   ],
+   "center": true
+  },
+  {
+   "file": "insufflatorTube_coiled_strapped.glb",
+   "name": "insufflationTubing",
+   "pos": [
+    0.13,
+    "top",
+    0.475
+   ],
+   "center": true
   }
  ]
 }

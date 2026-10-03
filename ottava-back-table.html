@@ -230,8 +230,8 @@
   // Order and placement are illustrative for the PoC (Sean: "placement and order aren't paramount").
   const GROUPS=[
     {title:"Sterile drapes", items:[
-      {node:"drape_1", name:"Sterile drape pack 1", zone:"Front center, right", desc:"Sterile robotic arm drape, still folded in its pack. Lay it flat so the pack can be opened without dragging across other items."},
-      {node:"drape_2", name:"Sterile drape pack 2", zone:"Front center, left", desc:"Second arm drape pack, placed beside the first so both are reachable when the arms are draped."},
+      {node:"drape_1", name:"Sterile drape pack 1", zone:"Front left", desc:"Sterile robotic arm drape, still folded in its pack. Lay it flat so the pack can be opened without dragging across other items."},
+      {node:"drape_2", name:"Sterile drape pack 2", zone:"Front left, stacked on pack 1", desc:"Second arm drape pack, stacked squarely on the first so both are reachable when the arms are draped."},
     ]},
     {title:"Access", items:[
       {node:"trocar_8mm_std", name:"8 mm standard trocar", zone:"Center row, rear", desc:"Standard-length 8 mm trocar assembly: cannula, obturator, seal and tip cap. Tip pointing away from the sterile field edge."},
@@ -239,11 +239,11 @@
       {node:"trocar_12mm_std", name:"12 mm standard trocar", zone:"Center row", desc:"12 mm trocar for the larger-diameter instruments and specimen retrieval. Lies in line with the 8 mm trocars."},
       {node:"trocar_15mm", name:"15 mm trocar", zone:"Center row", desc:"15 mm sleeve with its obturator seated. Used where a stapler or larger device will pass."},
       {node:"obturator_15mm", name:"15 mm obturator", zone:"Center row, front", desc:"Spare 15 mm obturator, kept beside the 15 mm trocar."},
-      {node:"downsizer_12mm_std", name:"12 mm downsizer", zone:"Center row, right", desc:"Reducer that lets a smaller instrument pass through the 12 mm port without losing insufflation."},
+      {node:"downsizer_12mm_std", name:"12 mm downsizer", zone:"Right edge, front", desc:"Reducer that lets a smaller instrument pass through the 12 mm port without losing insufflation."},
     ]},
     {title:"Visualization and insufflation", items:[
       {node:"webbLiteEndo_30", name:"30° endoscope", zone:"Right edge", desc:"Angled endoscope with its light cable. Lies along the right edge, lens toward the rear, so the shaft is never under another item."},
-      {node:"insufflationTubing", name:"Insufflation tubing", zone:"Front left", desc:"Coiled, strapped insufflation tubing. Stays coiled until the first trocar is in and the line is handed off."},
+      {node:"insufflationTubing", name:"Insufflation tubing", zone:"Front center", desc:"Coiled, strapped insufflation tubing. Stays coiled until the first trocar is in and the line is handed off."},
     ]},
     {title:"Instruments", items:[
       {node:"mHook", name:"Monopolar hook", zone:"Rear rack, position 1", desc:"Monopolar energy hook. First instrument in the rack, far left, handle toward the rear."},
@@ -255,10 +255,9 @@
       {node:"largeNeedleDriver", name:"Large needle driver", zone:"Rear rack, position 7", desc:"Standard needle driver for suturing. Seventh rack position."},
       {node:"xL_needleDriver", name:"Extra-large needle driver", zone:"Rear rack, position 8", desc:"Extra-large needle driver for heavier suture. Last rack position, far right."},
     ]},
-    {title:"Energy and accessories", items:[
+    {title:"Energy", items:[
       {node:"monopolarCable_coil", name:"Monopolar cable", zone:"Left, middle", desc:"Coiled monopolar cable. Left of the instrument row, ready to connect to the hook and scissors."},
       {node:"bipolarCable_coil", name:"Bipolar cable", zone:"Left, middle", desc:"Coiled bipolar cable, beside the monopolar cable, for the Maryland and fenestrated forceps."},
-      {node:"returnPad", name:"Patient return pad", zone:"Left, front", desc:"Return electrode with its coiled cord. Last item on the table; it goes to the patient before any monopolar energy is used."},
     ]},
   ];
   const ITEMS=[]; GROUPS.forEach((g,gi)=>g.items.forEach((it,ii)=>ITEMS.push(Object.assign({gi,ii},it))));
