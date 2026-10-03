@@ -1,0 +1,245 @@
+{
+ "_doc": "positions are glTF space (x, y, z), Y-up, relative to the trolley file origin; y='top' means rest on trolley top. rot = Blender euler degrees XYZ applied after import.",
+ "items": [
+  {
+   "file": "instrumentTrolley.glb",
+   "name": "instrumentTrolley",
+   "pos": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "file": "xL_needleDriver.glb",
+   "name": "xL_needleDriver",
+   "pos": [
+    0.25,
+    "top",
+    -0.496
+   ]
+  },
+  {
+   "file": "largeNeedleDriver.glb",
+   "name": "largeNeedleDriver",
+   "pos": [
+    0.179,
+    "top",
+    -0.496
+   ]
+  },
+  {
+   "file": "highForceGrasper.glb",
+   "name": "highForceGrasper",
+   "pos": [
+    0.11,
+    "top",
+    -0.496
+   ]
+  },
+  {
+   "file": "cadiereForceps.glb",
+   "name": "cadiereForceps",
+   "pos": [
+    0.04,
+    "top",
+    -0.496
+   ]
+  },
+  {
+   "file": "bFenestratedForceps.glb",
+   "name": "bFenestratedForceps",
+   "pos": [
+    -0.032,
+    "top",
+    -0.495
+   ]
+  },
+  {
+   "file": "bMarylandForceps.glb",
+   "name": "bMarylandForceps",
+   "pos": [
+    -0.105,
+    "top",
+    -0.5
+   ]
+  },
+  {
+   "file": "mCurvedScissors.glb",
+   "name": "mCurvedScissors",
+   "pos": [
+    -0.182,
+    "top",
+    -0.5
+   ]
+  },
+  {
+   "file": "mHook.glb",
+   "name": "mHook",
+   "pos": [
+    -0.252,
+    "top",
+    -0.505
+   ]
+  },
+  {
+   "file": "bipolarCable_coil.glb",
+   "name": "bipolarCable_coil",
+   "pos": [
+    -0.083,
+    "top",
+    0.117
+   ]
+  },
+  {
+   "file": "monopolarCable_coil.glb",
+   "name": "monopolarCable_coil",
+   "pos": [
+    -0.211,
+    "top",
+    0.114
+   ]
+  },
+  {
+   "file": "returnPad.glb",
+   "name": "returnPad",
+   "pos": [
+    -0.3,
+    "top",
+    0.428
+   ],
+   "delete": [
+    "returnPad_cord_plugged"
+   ],
+   "rot": [
+    -90,
+    0,
+    0
+   ],
+   "center": true
+  },
+  {
+   "file": "trocar_8mm_std_full_assembly.glb",
+   "name": "trocar_8mm_std",
+   "pos": [
+    0.074,
+    "top",
+    0.297
+   ],
+   "rot": [
+    0,
+    -90,
+    0
+   ]
+  },
+  {
+   "file": "trocar_8mm_long_full_assembly.glb",
+   "name": "trocar_8mm_long",
+   "pos": [
+    0.074,
+    "top",
+    0.224
+   ],
+   "rot": [
+    0,
+    -90,
+    0
+   ]
+  },
+  {
+   "file": "trocar_12mm_std_full_assembly.glb",
+   "name": "trocar_12mm_std",
+   "pos": [
+    0.072,
+    "top",
+    0.153
+   ],
+   "rot": [
+    0,
+    -90,
+    0
+   ]
+  },
+  {
+   "file": "trocar_15mm_assembly.glb",
+   "name": "trocar_15mm",
+   "pos": [
+    0.072,
+    "top",
+    0.082
+   ],
+   "rot": [
+    0,
+    -90,
+    0
+   ]
+  },
+  {
+   "file": "obturator_15mm.glb",
+   "name": "obturator_15mm",
+   "pos": [
+    0.101,
+    "top",
+    0.013
+   ],
+   "rot": [
+    0,
+    -90,
+    0
+   ]
+  },
+  {
+   "file": "downsizer_12mm_std.glb",
+   "name": "downsizer_12mm_std",
+   "pos": [
+    0.33,
+    "top",
+    0.013
+   ],
+   "rot": [
+    0,
+    -90,
+    0
+   ]
+  },
+  {
+   "file": "drape_SterileFoldedPacked.glb",
+   "name": "drape_1",
+   "pos": [
+    0.219,
+    "top",
+    0.58
+   ]
+  },
+  {
+   "file": "drape_SterileFoldedPacked.glb",
+   "name": "drape_2",
+   "pos": [
+    0.043,
+    "top",
+    0.58
+   ]
+  },
+  {
+   "file": "insufflatorTube_coiled_strapped.glb",
+   "name": "insufflationTubing",
+   "pos": [
+    -0.28,
+    "top",
+    0.75
+   ],
+   "center": true
+  },
+  {
+   "file": "webbLiteEndo_30.glb",
+   "name": "webbLiteEndo_30",
+   "pos": [
+    0.42,
+    "top",
+    0.3
+   ],
+   "center": true,
+   "keep_y_from_min": 0.62
+  }
+ ]
+}

@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>OTTAVA Back Table Setup</title>
+<meta name="robots" content="noindex,nofollow">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#d51900; --red-dark:#a81400; --ink:#1a1f2b; --muted:#5c6473; --line:#e5e8ef; --bg:#f4f6f9; --card:#fff;
+    --ok:#166534; --okbg:#dcfce7; --bad:#9f1239; --badbg:#ffe4e6; --note:#0e7490; --notebg:#ecfeff;
+    --font:'Roboto',Arial,sans-serif; --mono:'Roboto Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+  button{font:inherit}
+
+  header.top{height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:12px;position:sticky;top:0;z-index:20}
+  header.top .wm{font-weight:900;letter-spacing:-.01em;font-size:1.02rem;color:var(--ink)}
+  header.top .wm span{color:var(--red)}
+  header.top .sub{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  header.top .modes{margin-left:auto;display:flex;gap:6px}
+  .mode{padding:8px 14px;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:9px}
+  .mode.active{color:#fff;background:var(--red);border-color:var(--red)}
+
+  main{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 56px)}
+  .panel{background:var(--card);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column}
+  .stage{position:relative;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef1f6 78%);display:flex;flex-direction:column;min-height:0}
+  vntana-viewer{width:100%;flex:1;display:block;min-height:0}
+  vntana-viewer::part(default-progress-bar){display:none}
+  vntana-exploded-view{display:none!important}
+  .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa2b2;font-size:.9rem;pointer-events:none}
+  .loading.hidden{display:none}
+  @media(max-width:900px){
+    main{grid-template-columns:1fr;grid-template-rows:52vh 1fr;height:calc(100vh - 56px)}
+    .panel{border-right:none;border-top:1px solid var(--line);order:2}
+    .stage{order:1}
+    header.top .sub{display:none}
+    .intro{align-items:flex-start;overflow:auto;padding:10px}
+    .intro .card{padding:14px 16px}
+    .intro h1{font-size:1.15rem}
+    .intro p,.intro ul{font-size:.82rem}
+    .controls{gap:6px;padding:8px 10px}
+    .controls .btn.small{padding:6px 9px;font-size:.74rem}
+    .controls .counter{min-width:44px}
+  }
+
+  /* intro overlay */
+  .intro{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(244,246,249,.72);backdrop-filter:blur(2px);z-index:5}
+  .intro.hidden{display:none}
+  .intro .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px;max-width:520px;box-shadow:0 10px 40px rgba(0,0,0,.08)}
+  .intro .eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-weight:700}
+  .intro h1{font-size:1.4rem;font-weight:900;margin:4px 0 8px;letter-spacing:-.02em}
+  .intro p{font-size:.9rem;line-height:1.5;color:#33404f;margin:0 0 10px}
+  .intro ul{margin:0 0 14px;padding-left:18px;font-size:.88rem;line-height:1.5;color:#33404f}
+  .intro .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{padding:11px 16px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;font-size:.86rem;color:var(--ink)}
+  .btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+  .btn.primary:hover{background:var(--red-dark)}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn.small{padding:7px 11px;font-size:.78rem}
+
+  /* stage controls */
+  .controls{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.92);border-top:1px solid var(--line);flex-wrap:wrap}
+  .controls .counter{font-family:var(--mono);font-size:.76rem;color:var(--muted);min-width:70px;text-align:center}
+  .controls .spacer{flex:1}
+  .hint{position:absolute;top:10px;left:12px;right:12px;font-size:.74rem;color:var(--muted);pointer-events:none}
+
+  /* learn panel */
+  .meta{padding:16px 20px 10px;border-bottom:1px solid var(--line)}
+  .meta h2{font-size:1.05rem;font-weight:900;margin:0 0 4px;letter-spacing:-.01em}
+  .meta p{font-size:.8rem;color:var(--muted);margin:0;line-height:1.45}
+  .groups{list-style:none;margin:0;padding:6px 0 24px}
+  .grp{padding:12px 20px 4px;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .item{display:flex;gap:10px;align-items:flex-start;padding:9px 16px 9px 20px;cursor:pointer;border-left:3px solid transparent}
+  .item:hover{background:#f7f9fc}
+  .item .n{font-family:var(--mono);font-size:.68rem;font-weight:700;min-width:24px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#e6ecf4;color:var(--muted);padding:0 6px}
+  .item .t{font-size:.86rem;font-weight:600;line-height:1.3}
+  .item .t small{display:block;font-weight:400;color:var(--muted);font-size:.74rem;margin-top:1px}
+  .item.todo .t{color:#8a97a8}
+  .item.done .n{background:var(--ok);color:#fff}
+  .item.done .n::before{content:"✓"}
+  .item.done .n span{display:none}
+  .item.active{background:#fff1ef;border-left-color:var(--red)}
+  .item.active .n{background:var(--red);color:#fff}
+  .detail{border-top:1px solid var(--line);padding:14px 20px 20px;background:#fbfcfe;position:sticky;bottom:0}
+  .detail .eyebrow{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-weight:700}
+  .detail h3{font-size:1.02rem;font-weight:900;margin:3px 0 6px}
+  .detail p{font-size:.84rem;line-height:1.5;color:#33404f;margin:0 0 6px}
+  .detail .zone{display:inline-block;font-size:.72rem;font-weight:700;color:#0a3d8f;background:#dbeafe;border-radius:6px;padding:2px 8px;margin-bottom:8px}
+  .callout{border-radius:8px;padding:10px 12px;font-size:.78rem;line-height:1.5;margin:8px 0 0}
+  .callout.note{background:var(--notebg);border:1px solid #a5f3fc;color:#155e75}
+  .callout.done{background:var(--okbg);border:1px solid #86efac;color:var(--ok)}
+
+  /* quiz panel */
+  .quiz{padding:16px 20px 30px}
+  .qbar{display:flex;gap:12px;font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:12px;flex-wrap:wrap}
+  .qbar b{color:var(--ink)}
+  .qprompt{font-size:1.05rem;font-weight:900;margin:0 0 4px}
+  .qsub{font-size:.8rem;color:var(--muted);margin:0 0 12px;line-height:1.45}
+  .opts{display:grid;gap:8px}
+  .opt{text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;font-size:.9rem;font-weight:600}
+  .opt:hover{background:#f7f9fc}
+  .opt.correct{background:var(--okbg);border-color:#86efac;color:var(--ok)}
+  .opt.wrong{background:var(--badbg);border-color:#fda4af;color:var(--bad)}
+  .opt:disabled{cursor:default}
+  .feedback{margin-top:12px;border-radius:10px;padding:12px 14px;font-size:.84rem;line-height:1.5}
+  .feedback.ok{background:var(--okbg);border:1px solid #86efac;color:var(--ok)}
+  .feedback.bad{background:var(--badbg);border:1px solid #fda4af;color:var(--bad)}
+  .feedback b{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+  .qactions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .placed{margin-top:18px;font-size:.74rem;color:var(--muted)}
+  .placed ol{margin:4px 0 0;padding-left:18px;columns:2;column-gap:16px}
+  .placed li{margin-bottom:2px}
+  .summary h3{font-size:1.3rem;font-weight:900;margin:0 0 4px}
+  .summary .big{font-size:2.4rem;font-weight:900;letter-spacing:-.03em;color:var(--red);margin:6px 0}
+  .summary table{width:100%;border-collapse:collapse;font-size:.8rem;margin:10px 0}
+  .summary td{padding:5px 0;border-bottom:1px solid var(--line)}
+  .summary td:last-child{text-align:right;font-family:var(--mono)}
+  .misses{margin-top:12px}
+  .misses h4{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  .misses ul{margin:0;padding-left:18px;font-size:.82rem;line-height:1.5}
+  .hide{display:none!important}
+  /* access gate (soft, client-side: keeps the pre-launch page off casual eyes, not a security control) */
+  .gate{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px}
+  .gate.hidden{display:none}
+  .gate .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;max-width:380px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.08)}
+  .gate .eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-weight:700}
+  .gate h1{font-size:1.2rem;font-weight:900;margin:4px 0 6px}
+  .gate p{font-size:.84rem;color:var(--muted);margin:0 0 14px;line-height:1.45}
+  .gate input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:1rem;margin-bottom:10px}
+  .gate .err{font-size:.78rem;color:var(--bad);min-height:1.2em;margin:0 0 8px}
+  .gate .btn{width:100%}
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <form class="card" id="gateForm" autocomplete="off">
+    <div class="eyebrow">Restricted preview</div>
+    <h1>OTTAVA back table training</h1>
+    <p>This proof of concept is for J&amp;J and VNTANA review only. Enter the access code to continue.</p>
+    <input type="password" id="gatePw" placeholder="Access code" autofocus>
+    <p class="err" id="gateErr"></p>
+    <button class="btn primary" type="submit">Enter</button>
+  </form>
+</div>
+<header class="top">
+  <div class="wm">OTTAVA <span>Back Table</span></div>
+  <div class="sub">Training module · Proof of concept</div>
+  <div class="modes">
+    <button class="mode active" data-mode="learn">Learn</button>
+    <button class="mode" data-mode="quiz">Quiz</button>
+  </div>
+</header>
+
+<main>
+  <div class="panel">
+    <!-- LEARN -->
+    <div id="learnPanel">
+      <div class="meta">
+        <h2>Back table setup, step by step</h2>
+        <p>Each step places one item on the back table in the order it is used. Placed items stay on the table. Tap any step to jump to it.</p>
+      </div>
+      <ol class="groups" id="groups"></ol>
+      <div class="detail" id="detail"></div>
+    </div>
+    <!-- QUIZ -->
+    <div id="quizPanel" class="quiz hide"></div>
+  </div>
+
+  <div class="stage">
+    <div class="loading" id="loading">Loading interactive 3D…</div>
+    <vntana-viewer id="viewer" loading="eager" picking="true" environment-src="assets/env/studio.hdr" min-camera-distance="0.05m" max-camera-distance="6r" dim-opacity="0.25">
+      <vntana-exploded-view></vntana-exploded-view>
+    </vntana-viewer>
+    <div class="hint" id="hint"></div>
+    <div class="intro" id="intro">
+      <div class="card">
+        <div class="eyebrow">Educational experience</div>
+        <h1>OTTAVA back table setup</h1>
+        <p>This module teaches the back table setup for an OTTAVA procedure: which items go on the table, in what order, and where each one sits.</p>
+        <ul>
+          <li><b>Learn.</b> Watch each item move onto the table in sequence, with a note on where it goes and why.</li>
+          <li><b>Quiz.</b> Build the table from memory. Choose what comes next, then watch it land. You get a score at the end.</li>
+        </ul>
+        <p style="font-size:.76rem;color:var(--muted)">Drag to orbit, pinch or scroll to zoom. The sequence and placement in this proof of concept are illustrative.</p>
+        <div class="btns">
+          <button class="btn primary" id="startLearn">Start learning</button>
+          <button class="btn" id="startQuiz">Go straight to the quiz</button>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <span id="stepnav" style="display:flex;gap:10px;align-items:center">
+        <button class="btn small" id="prev">‹ Back</button>
+        <span class="counter" id="counter">0 / 0</span>
+        <button class="btn small primary" id="next">Next ›</button>
+      </span>
+      <div class="spacer"></div>
+      <button class="btn small" id="overview">Table view</button>
+      <button class="btn small" id="restart">Restart</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  const BASE="https://api.vntana.com", ORG="DCicero", WS="jj-demo";
+  const UUID="75b563ef-48ef-416f-8f1d-3789b2fb91ec";
+  const $=id=>document.getElementById(id);
+  const viewer=$("viewer");
+
+  // ---- access gate: SHA-256 of the normalized code (lowercase, no spaces); remembered for this browser session ----
+  const GATE_HASH="2d2188374e911d0ea42ab533118bf7ebccc7dd48a53ed1caa7ad270fb2381488";
+  async function sha256(str){ const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+  function unlock(){ $("gate").classList.add("hidden"); }
+  try{ if(sessionStorage.getItem("ottava_gate")===GATE_HASH) unlock(); }catch(_){}
+  $("gateForm").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const code=($("gatePw").value||"").toLowerCase().replace(/\s+/g,"");
+    const h=await sha256(code);
+    if(h===GATE_HASH){ try{ sessionStorage.setItem("ottava_gate",h); }catch(_){}; unlock(); }
+    else { $("gateErr").textContent="That code is not right. Check with the person who sent you the link."; $("gatePw").select(); }
+  });
+
+  // ---- the sequence: one item per step, grouped. node = mesh name in the GLB (exact). ----
+  // Order and placement are illustrative for the PoC (Sean: "placement and order aren't paramount").
+  const GROUPS=[
+    {title:"Sterile drapes", items:[
+      {node:"drape_1", name:"Sterile drape pack 1", zone:"Front center, right", desc:"Sterile robotic arm drape, still folded in its pack. Lay it flat so the pack can be opened without dragging across other items."},
+      {node:"drape_2", name:"Sterile drape pack 2", zone:"Front center, left", desc:"Second arm drape pack, placed beside the first so both are reachable when the arms are draped."},
+    ]},
+    {title:"Access", items:[
+      {node:"trocar_8mm_std", name:"8 mm standard trocar", zone:"Center row, rear", desc:"Standard-length 8 mm trocar assembly: cannula, obturator, seal and tip cap. Tip pointing away from the sterile field edge."},
+      {node:"trocar_8mm_long", name:"8 mm long trocar", zone:"Center row", desc:"Long 8 mm trocar for deeper access. Keep it next to the standard so the lengths are easy to compare."},
+      {node:"trocar_12mm_std", name:"12 mm standard trocar", zone:"Center row", desc:"12 mm trocar for the larger-diameter instruments and specimen retrieval. Lies in line with the 8 mm trocars."},
+      {node:"trocar_15mm", name:"15 mm trocar", zone:"Center row", desc:"15 mm sleeve with its obturator seated. Used where a stapler or larger device will pass."},
+      {node:"obturator_15mm", name:"15 mm obturator", zone:"Center row, front", desc:"Spare 15 mm obturator, kept beside the 15 mm trocar."},
+      {node:"downsizer_12mm_std", name:"12 mm downsizer", zone:"Center row, right", desc:"Reducer that lets a smaller instrument pass through the 12 mm port without losing insufflation."},
+    ]},
+    {title:"Visualization and insufflation", items:[
+      {node:"webbLiteEndo_30", name:"30° endoscope", zone:"Right edge", desc:"Angled endoscope with its light cable. Lies along the right edge, lens toward the rear, so the shaft is never under another item."},
+      {node:"insufflationTubing", name:"Insufflation tubing", zone:"Front left", desc:"Coiled, strapped insufflation tubing. Stays coiled until the first trocar is in and the line is handed off."},
+    ]},
+    {title:"Instruments", items:[
+      {node:"mHook", name:"Monopolar hook", zone:"Rear rack, position 1", desc:"Monopolar energy hook. First instrument in the rack, far left, handle toward the rear."},
+      {node:"mCurvedScissors", name:"Monopolar curved scissors", zone:"Rear rack, position 2", desc:"Curved scissors with the tip sheath in place. Second rack position."},
+      {node:"bMarylandForceps", name:"Bipolar Maryland forceps", zone:"Rear rack, position 3", desc:"Fine bipolar dissector. Third rack position."},
+      {node:"bFenestratedForceps", name:"Bipolar fenestrated forceps", zone:"Rear rack, position 4", desc:"Bipolar grasper with fenestrated jaws. Fourth rack position."},
+      {node:"cadiereForceps", name:"Cadiere forceps", zone:"Rear rack, position 5", desc:"Non-energy atraumatic grasper. Fifth rack position."},
+      {node:"highForceGrasper", name:"High-force grasper", zone:"Rear rack, position 6", desc:"Heavy-duty grasper for thick tissue. Sixth rack position."},
+      {node:"largeNeedleDriver", name:"Large needle driver", zone:"Rear rack, position 7", desc:"Standard needle driver for suturing. Seventh rack position."},
+      {node:"xL_needleDriver", name:"Extra-large needle driver", zone:"Rear rack, position 8", desc:"Extra-large needle driver for heavier suture. Last rack position, far right."},
+    ]},
+    {title:"Energy and accessories", items:[
+      {node:"monopolarCable_coil", name:"Monopolar cable", zone:"Left, middle", desc:"Coiled monopolar cable. Left of the instrument row, ready to connect to the hook and scissors."},
+      {node:"bipolarCable_coil", name:"Bipolar cable", zone:"Left, middle", desc:"Coiled bipolar cable, beside the monopolar cable, for the Maryland and fenestrated forceps."},
+      {node:"returnPad", name:"Patient return pad", zone:"Left, front", desc:"Return electrode with its coiled cord. Last item on the table; it goes to the patient before any monopolar energy is used."},
+    ]},
+  ];
+  const ITEMS=[]; GROUPS.forEach((g,gi)=>g.items.forEach((it,ii)=>ITEMS.push(Object.assign({gi,ii},it))));
+  const N=ITEMS.length;
+  const STAGING=[0,0.28,0.45];           // where an item starts its slide-in, relative to its home (meters, world)
+  const STASH_Y=60;                      // unplaced items wait far above the scene (materials/visibility don't stick in this viewer; position does)
+
+  // ---- viewer glue (OH1 pattern: npm bundle exposes viewer.scene + viewer.sceneGraph) ----
+  let ready=false, leaves=[], nodeUuid={}, mode="learn", started=false, cur=0;
+  const homeCache=new Map();
+  function renderNow(){ try{ viewer.renderScene&&viewer.renderScene(); }catch(_){}; try{ viewer.render&&viewer.render(); }catch(_){} }
+  function obj(u){ return (viewer.scene&&viewer.scene.getObjectByProperty)?viewer.scene.getObjectByProperty("uuid",u):null; }
+  function itemObj(i){ const u=nodeUuid[ITEMS[i].node]; return u?obj(u):null; }
+  function buildLeaves(tries){
+    const sg=viewer.sceneGraph, found=[];
+    if(sg)(function walk(n,path){ const p=n.name?(path?path+" / "+n.name:n.name):path;
+      if(n.type==="primitive"||n.type==="mesh") found.push({uuid:n.uuid, path:(p||"").toLowerCase(), name:(n.name||"").toLowerCase()});
+      (n.children||[]).forEach(c=>walk(c,p)); })(sg,"");
+    if(!found.length){ if(tries>0) setTimeout(()=>buildLeaves(tries-1),400); return; }
+    leaves=found; nodeUuid={};
+    ITEMS.forEach(it=>{ const key=it.node.toLowerCase();
+      let hit=leaves.find(l=>l.name===key) || leaves.find(l=>l.path.split(" / ").includes(key)) || leaves.find(l=>l.path.includes(key));
+      if(hit) nodeUuid[it.node]=hit.uuid; else console.warn("[ottava] node not found:", it.node); });
+    // mesh under a named node? walk down to the object that actually has a position (the named node itself is fine)
+    ITEMS.forEach((it,i)=>{ const o=itemObj(i); if(o&&!homeCache.has(o.uuid)) homeCache.set(o.uuid,o.position.clone()); });
+    window.__leaves=leaves;
+    const tl=leaves.find(l=>l.name==="instrumenttrolley"); if(tl) nodeUuid.__table=tl.uuid;
+    ready=true;
+    if(started) applyState(cur, mode==="quiz"); else applyState(N, false);
+  }
+  function home(o){ return homeCache.get(o.uuid)||o.position.clone(); }
+  function worldOffset(o, d){ const wp=home(o).clone(); if(o.parent) o.parent.localToWorld(wp); wp.x+=d[0]; wp.y+=d[1]; wp.z+=d[2]; return o.parent?o.parent.worldToLocal(wp):wp; }
+  // k = number of items placed (items[0..k-1] at home, the rest stashed)
+  function applyState(k){
+    if(!ready) return;
+    ITEMS.forEach((it,i)=>{ const o=itemObj(i); if(!o) return; o.position.copy(i<k ? home(o) : worldOffset(o,[0,STASH_Y,0])); });
+    renderNow();
+  }
+  let animRAF=null, animating=false;
+  function animatePlace(i, cb){
+    if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }
+    const o=itemObj(i); if(!o){ cb&&cb(); return; }
+    const from=worldOffset(o,STAGING), to=home(o).clone(), t0=performance.now(), dur=900;
+    animating=true;
+    (function tick(){ const t=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-t,3);
+      o.position.lerpVectors(from,to,e); renderNow();
+      if(t<1) animRAF=requestAnimationFrame(tick); else { animRAF=null; animating=false; cb&&cb(); } })();
+  }
+  // effects
+  function clearFx(){ try{ ["glow","outline","dim","highlight"].forEach(e=>viewer.clearEffect(e)); }catch(_){} }
+  function spotlight(i){ clearFx(); if(!ready) return; const u=nodeUuid[ITEMS[i].node]; try{ if(u) viewer.setEffect(u,"highlight","outline"); }catch(_){} }
+  function ghost(i){ clearFx(); if(!ready) return; const u=nodeUuid[ITEMS[i].node]; try{ if(u) viewer.setEffect(u,"dim"); }catch(_){} }
+
+  // ---- camera: target in meters (bundle evaluates cameraTarget with "m" units), distance in r ----
+  const OVERVIEW={rotation:"-0.72rad 0.55rad 0rad", distance:"2.0r", fov:"0.8rad", fallback:"0.05m 0.29m 0m"};
+  function bbox(o){ let min=[1e9,1e9,1e9],max=[-1e9,-1e9,-1e9],n=0;
+    o.traverse(m=>{ if(m.isMesh&&m.geometry){ m.geometry.computeBoundingBox(); const b=m.geometry.boundingBox.clone(); b.applyMatrix4(m.matrixWorld);
+      if(b.max.y>STASH_Y/2) return; min=[Math.min(min[0],b.min.x),Math.min(min[1],b.min.y),Math.min(min[2],b.min.z)]; max=[Math.max(max[0],b.max.x),Math.max(max[1],b.max.y),Math.max(max[2],b.max.z)]; n++; } });
+    if(!n) return null; return {c:[(min[0]+max[0])/2,(min[1]+max[1])/2,(min[2]+max[2])/2], s:[max[0]-min[0],max[1]-min[1],max[2]-min[2]]}; }
+  function setCam(rot,dist,target){ try{ viewer.setCameraRotation(rot); viewer.setFieldOfView(OVERVIEW.fov); viewer.setCameraDistance(dist); if(target) viewer.setCameraTarget(target); }catch(e){ console.warn(e); } renderNow(); }
+  function frameOverview(){ setCam(OVERVIEW.rotation, OVERVIEW.distance, overviewTarget()); }
+  function overviewTarget(){ const t=nodeUuid.__table?obj(nodeUuid.__table):null; if(t){ const b=bbox(t); if(b) return `${b.c[0].toFixed(3)}m ${(b.c[1]+b.s[1]/2-0.05).toFixed(3)}m ${b.c[2].toFixed(3)}m`; } return OVERVIEW.fallback; }
+  function frameItem(i){
+    const o=itemObj(i); if(!o) return frameOverview();
+    // frame the item at its HOME position even if it is currently stashed
+    const saved=o.position.clone(); o.position.copy(home(o)); o.updateMatrixWorld(true);
+    const b=bbox(o); o.position.copy(saved); o.updateMatrixWorld(true);
+    if(!b) return frameOverview();
+    const dim=Math.max(b.s[0],b.s[1],b.s[2]);
+    const dist=Math.max(1.3, Math.min(1.9, dim*2.5));   // keep enough table in frame to read WHERE the item sits
+    setCam("-0.95rad 0.55rad 0rad", `${dist.toFixed(3)}r`, `${b.c[0].toFixed(3)}m ${b.c[1].toFixed(3)}m ${b.c[2].toFixed(3)}m`);
+  }
+
+  // ===== LEARN mode =====
+  function renderGroups(){
+    $("groups").innerHTML=GROUPS.map((g,gi)=>`<li class="grp">${g.title}</li>`+g.items.map((it,ii)=>{
+      const i=ITEMS.findIndex(x=>x.gi===gi&&x.ii===ii);
+      const st=!started?"todo":(i<cur?"done":(i===cur?"active":"todo"));
+      return `<li class="item ${st}" data-i="${i}"><span class="n"><span>${i+1}</span></span><span class="t">${it.name}<small>${it.zone}</small></span></li>`; }).join("")).join("");
+    $("groups").querySelectorAll(".item").forEach(el=>el.addEventListener("click",()=>goStep(+el.dataset.i)));
+    const act=$("groups").querySelector(".item.active"); if(act&&act.scrollIntoView) try{ act.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
+  }
+  function renderDetail(){
+    if(!started){ $("detail").innerHTML=`<div class="eyebrow">Ready</div><h3>Press Next to place the first item</h3><p>The table starts empty. Each Next places one item and keeps it there.</p>`; $("counter").textContent=`0 / ${N}`; $("prev").disabled=true; $("next").disabled=false; return; }
+    const it=ITEMS[cur], g=GROUPS[it.gi];
+    $("detail").innerHTML=`<div class="eyebrow">Step ${cur+1} of ${N} · ${g.title}</div><h3>${it.name}</h3><span class="zone">${it.zone}</span><p>${it.desc}</p>
+      ${cur===N-1?`<div class="callout done"><b>✓ Table complete.</b> Every item is placed. Switch to Quiz to try it from memory.</div>`:""}`;
+    $("counter").textContent=`${cur+1} / ${N}`; $("prev").disabled=cur===0; $("next").disabled=cur===N-1;
+  }
+  function goStep(k, animate){
+    if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; } animating=false;
+    started=true; cur=Math.max(0,Math.min(N-1,k));
+    applyState(cur);                      // everything before this step is on the table
+    spotlight(cur); frameItem(cur);
+    $("hint").textContent=`Placing: ${ITEMS[cur].name}. Drag to orbit.`;
+    renderGroups(); renderDetail();
+    if(animate!==false) animatePlace(cur, ()=>{}); else { const o=itemObj(cur); if(o){ o.position.copy(home(o)); renderNow(); } }
+  }
+  function next(){ if(mode!=="learn") return; if(!started){ goStep(0); return; } if(cur<N-1) goStep(cur+1); }
+  function prev(){ if(mode!=="learn") return; if(cur>0) goStep(cur-1,false); }
+
+  // ===== QUIZ mode =====
+  const Q={k:0, score:0, hints:0, misses:[], answered:false, t0:0, timer:null, opts:[]};
+  function fmtTime(ms){ const s=Math.round(ms/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }
+  function startQuiz(){
+    mode="quiz"; started=true; Object.assign(Q,{k:0,score:0,hints:0,misses:[],answered:false,t0:performance.now(),opts:[]});
+    if(Q.timer) clearInterval(Q.timer); Q.timer=setInterval(()=>{ const e=$("qtime"); if(e) e.textContent=fmtTime(performance.now()-Q.t0); },1000);
+    applyState(0); clearFx(); frameOverview(); askQuestion();
+  }
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function askQuestion(){
+    if(Q.k>=N){ finishQuiz(); return; }
+    Q.answered=false;
+    const correct=ITEMS[Q.k];
+    const pool=shuffle(ITEMS.filter((it,i)=>i!==Q.k)).slice(0,3);
+    Q.opts=shuffle([correct,...pool]);
+    $("quizPanel").innerHTML=`
+      <div class="qbar"><span>Question <b>${Q.k+1}</b> / ${N}</span><span>Score <b id="qscore">${Q.score}</b></span><span>Time <b id="qtime">${fmtTime(performance.now()-Q.t0)}</b></span><span>Hints <b>${Q.hints}</b></span></div>
+      <h3 class="qprompt">What goes on the table next?</h3>
+      <p class="qsub">${Q.k===0?"The table is empty. Pick the first item.":`${Q.k} item${Q.k>1?"s":""} placed so far. Pick item ${Q.k+1}.`}</p>
+      <div class="opts">${Q.opts.map((o,j)=>`<button class="opt" data-j="${j}">${o.name}</button>`).join("")}</div>
+      <div class="qactions"><button class="btn small" id="hintBtn">Show where it goes</button></div>
+      <div id="feedback"></div>
+      <div class="placed"><b>On the table:</b>${Q.k?`<ol>${ITEMS.slice(0,Q.k).map(it=>`<li>${it.name}</li>`).join("")}</ol>`:" nothing yet"}</div>`;
+    $("quizPanel").querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>answer(+b.dataset.j)));
+    $("hintBtn").addEventListener("click",()=>{ if(Q.answered) return; Q.hints++; const o=itemObj(Q.k); if(o){ o.position.copy(home(o)); } ghost(Q.k); frameItem(Q.k); $("hint").textContent="Hint: the ghosted item shows where the next item goes."; $("hintBtn").disabled=true; });
+    $("hint").textContent="Pick the next item from the list."; $("counter").textContent=`${Q.k} / ${N}`;
+  }
+  function answer(j){
+    if(Q.answered) return; Q.answered=true;
+    const pick=Q.opts[j], correct=ITEMS[Q.k], ok=pick.node===correct.node;
+    $("quizPanel").querySelectorAll(".opt").forEach((b,jj)=>{ b.disabled=true; if(Q.opts[jj].node===correct.node) b.classList.add("correct"); else if(jj===j&&!ok) b.classList.add("wrong"); });
+    if(ok) Q.score++; else Q.misses.push({q:Q.k+1, correct:correct.name, picked:pick.name});
+    $("qscore").textContent=Q.score;
+    $("feedback").innerHTML=`<div class="feedback ${ok?"ok":"bad"}"><b>${ok?"Correct":"Not quite"}</b>${ok?"":`It is the <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none">${correct.name}</b>. `}${correct.zone}. ${correct.desc}</div>
+      <div class="qactions"><button class="btn small primary" id="qnext">${Q.k===N-1?"See results":"Next question ›"}</button></div>`;
+    $("qnext").addEventListener("click",()=>{ Q.k++; askQuestion(); });
+    spotlight(Q.k); frameItem(Q.k); animatePlace(Q.k, ()=>{});
+    $("hint").textContent=`${correct.name}: ${correct.zone}.`;
+  }
+  function finishQuiz(){
+    if(Q.timer){ clearInterval(Q.timer); Q.timer=null; }
+    const ms=performance.now()-Q.t0, pct=Math.round(100*Q.score/N);
+    applyState(N); clearFx(); frameOverview(); $("counter").textContent=`${N} / ${N}`; $("hint").textContent="Quiz complete.";
+    $("quizPanel").innerHTML=`<div class="summary"><div class="eyebrow" style="font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-weight:700">Results</div>
+      <h3>${pct>=90?"Table ready.":pct>=70?"Almost there.":"Keep practicing."}</h3>
+      <div class="big">${Q.score} / ${N}</div>
+      <table><tr><td>Accuracy</td><td>${pct}%</td></tr><tr><td>Time</td><td>${fmtTime(ms)}</td></tr><tr><td>Hints used</td><td>${Q.hints}</td></tr><tr><td>Misses</td><td>${Q.misses.length}</td></tr></table>
+      ${Q.misses.length?`<div class="misses"><h4>Review these</h4><ul>${Q.misses.map(m=>`<li>Q${m.q}: ${m.correct} <span style="color:var(--muted)">(you picked ${m.picked})</span></li>`).join("")}</ul></div>`:`<p style="font-size:.84rem;color:var(--ok)">No misses. Every item in the right order.</p>`}
+      <div class="qactions" style="margin-top:16px"><button class="btn primary" id="again">Try again</button><button class="btn" id="review">Review in Learn</button></div></div>`;
+    $("again").addEventListener("click",startQuiz);
+    $("review").addEventListener("click",()=>{ setMode("learn"); goStep(0); });
+  }
+
+  // ===== modes / controls =====
+  function setMode(m){
+    mode=m;
+    document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===m));
+    $("learnPanel").classList.toggle("hide",m!=="learn"); $("quizPanel").classList.toggle("hide",m!=="quiz");
+    $("stepnav").style.display=m==="learn"?"flex":"none";
+    $("intro").classList.add("hidden");
+    if(m==="quiz") startQuiz();
+    else { if(Q.timer){ clearInterval(Q.timer); Q.timer=null; } if(!started){ applyState(0); clearFx(); frameOverview(); } else goStep(Math.min(cur,N-1),false); renderGroups(); renderDetail(); }
+  }
+  document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+  $("startLearn").addEventListener("click",()=>{ $("intro").classList.add("hidden"); setMode("learn"); goStep(0); });
+  $("startQuiz").addEventListener("click",()=>setMode("quiz"));
+  $("next").addEventListener("click",next); $("prev").addEventListener("click",prev);
+  $("overview").addEventListener("click",()=>{ clearFx(); frameOverview(); });
+  $("restart").addEventListener("click",()=>{ if(mode==="quiz") startQuiz(); else { started=false; cur=0; applyState(0); clearFx(); frameOverview(); renderGroups(); renderDetail(); $("intro").classList.remove("hidden"); } });
+  document.addEventListener("keydown",e=>{ if(mode!=="learn") return; if(e.key==="ArrowRight") next(); if(e.key==="ArrowLeft") prev(); });
+  renderGroups(); renderDetail();
+
+  // ---- load the asset (Live Public, no auth) ----
+  fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json()).then(p=>{
+    const models=(p.response.asset||{}).models||[];
+    const glb=models.find(m=>(m.conversionFormat??m.type)==="GLB")||models[0];
+    let inited=false;
+    function init(){
+      if(inited||!viewer.sceneGraph) return; inited=true;
+      buildLeaves(150); $("loading").classList.add("hidden");
+      let n=0; (function frame(){ if(ready&&!started){ applyState(N); frameOverview(); } if(n++<16) setTimeout(frame,250); })();
+      ["scene-loaded","updates-loaded"].forEach(ev=>viewer.addEventListener(ev,()=>{ if(ready&&!started){ applyState(N); frameOverview(); } }));
+    }
+    viewer.addEventListener("load",init,{once:true});
+    viewer.src=`${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${glb.modelBlobId}`;
+    let polls=0; const t=setInterval(()=>{ if(inited||polls++>60){ clearInterval(t); } else if(viewer.sceneGraph){ init(); clearInterval(t); } },500);
+  }).catch(e=>{ $("loading").textContent="Could not load the model."; console.error(e); });
+</script>
+</body>
+</html>
