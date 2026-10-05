@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kohler Digital Twin</title>
+<meta name="description" content="A sink assembled live from parts stored in VNTANA: the compatibility rule and the finish library are read from asset attributes, nothing is pre-baked.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f5f3; --panel:#ffffff; --ink:#111; --muted:#6b6b6b; --line:#e4e4e0;
+    --accent:#1f4fd8; --accent-ink:#fff; --chip:#f0f0ed; --chip-on:#111; --chip-off:#c9c9c4; --ok:#1a7f4b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --bg:#141414; --panel:#1d1d1d; --ink:#f2f2f2; --muted:#a3a3a3; --line:#2c2c2c; --chip:#262626; --chip-on:#f2f2f2; --chip-off:#4a4a4a; }
+  }
+  :root[data-theme="dark"]{ --bg:#141414; --panel:#1d1d1d; --ink:#f2f2f2; --muted:#a3a3a3; --line:#2c2c2c; --chip:#262626; --chip-on:#f2f2f2; --chip-off:#4a4a4a; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.45}
+  header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:18px 24px 10px;flex-wrap:wrap}
+  header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+  header .sub{color:var(--muted);font-size:13px}
+  header .sub a{color:inherit}
+  main{display:grid;grid-template-columns:300px 1fr 340px;gap:16px;padding:0 24px 24px;min-height:calc(100vh - 70px)}
+  @media (max-width:1100px){ main{grid-template-columns:1fr;} }
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .panel h2{margin:0 0 10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .group{margin-bottom:18px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+  .chip .sw{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.15);display:inline-block}
+  .chip[aria-pressed="true"]{background:var(--chip-on);color:var(--bg);border-color:var(--chip-on)}
+  .chip:disabled{color:var(--chip-off);border-style:dashed;cursor:not-allowed;background:transparent}
+  .chip:disabled .sw{opacity:.3}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .stage{position:relative;min-height:520px;border-radius:14px;overflow:hidden;background:var(--panel);border:1px solid var(--line)}
+  vntana-viewer{width:100%;height:100%;min-height:520px;display:block;--progress-bar-color:transparent}
+  .overlay{position:absolute;inset:0;display:grid;place-items:center;background:color-mix(in srgb,var(--panel) 80%,transparent);font-size:14px;color:var(--muted);pointer-events:none;transition:opacity .25s}
+  .overlay.hidden{opacity:0}
+  .caption{position:absolute;left:14px;bottom:12px;font-size:12.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+  dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:13px}
+  dt{color:var(--muted)} dd{margin:0;font-variant-numeric:tabular-nums}
+  .rule{border-left:3px solid var(--accent);padding:8px 12px;background:var(--chip);border-radius:0 8px 8px 0;font-size:13.5px;margin:10px 0 4px}
+  .rule code{font-size:12.5px}
+  button.action{margin-top:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 12px;font:inherit;font-size:13px;cursor:pointer}
+  button.action:hover{border-color:var(--ink)}
+  .ok{color:var(--ok);font-size:12.5px;margin-left:8px}
+  .assets{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6}
+  .assets code{font-size:11.5px}
+  .err{color:#b00020;font-size:13px;margin-top:8px;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <h1>Kohler Digital Twin</h1>
+  <div class="sub">One sink, assembled live from parts in <a href="https://platform.vntana.com/DCicero/kolher-usd/products/" target="_blank" rel="noopener">DCicero / Kolher USD</a>. Rules and finishes are read from asset attributes.</div>
+</header>
+
+<main>
+  <section class="panel" id="controls">
+    <div class="group">
+      <h2>Sink</h2>
+      <div class="chips" id="sinks"></div>
+    </div>
+    <div class="group">
+      <h2>Faucet</h2>
+      <div class="chips" id="faucets"></div>
+      <div class="hint" id="faucetHint"></div>
+    </div>
+    <div class="group">
+      <h2>Finish</h2>
+      <div class="chips" id="finishes"></div>
+      <div class="hint">Finish values come from the material library asset, applied to the faucet and its shared handle.</div>
+    </div>
+    <div class="err" id="err"></div>
+  </section>
+
+  <section class="stage">
+    <vntana-viewer id="viewer" loading="eager" environment-src="assets/env/studio.hdr" enable-auto-rotate shadow-intensity="0.35"></vntana-viewer>
+    <div class="overlay" id="overlay">Loading parts from VNTANA…</div>
+    <div class="caption" id="caption"></div>
+  </section>
+
+  <aside class="panel" id="info">
+    <h2>Why this combination exists</h2>
+    <div class="rule" id="rule"></div>
+    <button class="action" id="refresh">Re-read rules from VNTANA</button><span class="ok" id="refreshOk"></span>
+    <div class="hint">Edit <code>acceptsFaucets</code> on a sink in the platform, then press this. The faucet options change without touching a file.</div>
+
+    <h2 style="margin-top:20px">Sink</h2>
+    <dl id="sinkMeta"></dl>
+    <h2 style="margin-top:16px">Faucet</h2>
+    <dl id="faucetMeta"></dl>
+    <h2 style="margin-top:16px">Shared handle</h2>
+    <dl id="handleMeta"></dl>
+    <div class="assets" id="assets"></div>
+  </aside>
+</main>
+
+<script type="module" src="vendor/viewer-v3/dist/index.js"></script>
+<script type="module">
+  import { $configuratorMode, $loadScene, $preload } from './vendor/viewer-v3/dist/core.js';
+
+  // ---- Products in DCicero / Kolher USD. Every other fact on this page is read from their attributes. ----
+  const BASE = "https://api.vntana.com", ORG = "DCicero", WS = "kolher-usd";
+  const UUID = {
+    library: "62ccf1eb-dabc-46e7-ac4c-9b4a7eb52f47",
+    handle:  "18ed7aba-1b53-4f14-bcfd-e9598f72792f",
+    faucets: { "K-401":"7372e088-56b7-4d82-9083-7c10d3f58bf6", "K-402":"5de85b17-b375-4736-8181-265d9bcbf310",
+               "K-403":"552cb121-b332-4882-adbf-0100942b5e53", "K-404":"e6da3e19-e5f2-4bda-aab5-c1a2e8d040f6" },
+    sinks:   { "K-1234":"ef300aac-4154-46e0-8612-0a25a3cefc0e", "K-5678":"516cb34f-6c1f-4361-b53b-9776d604f4e4" },
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const viewer = $("viewer"), overlay = $("overlay"), err = $("err");
+  const log = (...a) => console.debug("[twin]", ...a);
+
+  // ---- Platform reads -------------------------------------------------------------------
+  const products = {};          // uuid -> { name, attrs, glb }
+  async function fetchProduct(uuid){
+    const p = await fetch(`${BASE}/products/${uuid}/organizations/${ORG}/clients/${WS}`).then(r => r.json());
+    const r = p.response; if (!r) throw new Error(`product ${uuid} not readable (published?)`);
+    const attrs = Object.fromEntries((r.attributes || []).map(a => [a.key, a.value]));
+    const models = (r.asset || {}).models || [];
+    const glb = models.find(m => (m.conversionFormat ?? m.type) === "GLB");
+    products[uuid] = { name: r.name, attrs, glb: glb ? `${BASE}/assets/products/${uuid}/organizations/${ORG}/clients/${WS}/${glb.modelBlobId}` : null };
+    return products[uuid];
+  }
+  async function fetchAll(){
+    const all = [UUID.library, UUID.handle, ...Object.values(UUID.faucets), ...Object.values(UUID.sinks)];
+    await Promise.all(all.map(fetchProduct));
+  }
+  const attrsOf = (uuid) => (products[uuid] || {}).attrs || {};
+  const list = (s) => (s || "").split(",").map(x => x.trim()).filter(Boolean);
+  const vec = (s, d) => { const v = list(s).map(Number); return v.length === 3 && v.every(Number.isFinite) ? v : d; };
+  function finishDef(name){   // "r,g,b;metallic;roughness" on the library asset
+    const raw = attrsOf(UUID.library)[`finish_${name}`]; if (!raw) return null;
+    const [rgb, metal, rough] = raw.split(";"); const [r,g,b] = rgb.split(",").map(Number);
+    return { r, g, b, metal: Number(metal), rough: Number(rough) };
+  }
+
+  // ---- Selection state -------------------------------------------------------------------
+  const state = { sink: "K-5678", faucet: "K-404", finish: "MatteBlack" };
+  const acceptsFor = (sinkKey) => list(attrsOf(UUID.sinks[sinkKey]).acceptsFaucets);
+  const finishesFor = (faucetKey) => list(attrsOf(UUID.faucets[faucetKey]).finishes);
+
+  // ---- Chips -----------------------------------------------------------------------------
+  function chip(label, pressed, onClick, { disabled=false, title="", swatch=null } = {}){
+    const b = document.createElement("button"); b.className = "chip"; b.type = "button";
+    b.setAttribute("aria-pressed", pressed ? "true" : "false"); b.disabled = disabled; if (title) b.title = title;
+    if (swatch){ const s = document.createElement("span"); s.className = "sw"; s.style.background = swatch; b.appendChild(s); }
+    b.appendChild(document.createTextNode(label)); b.addEventListener("click", onClick); return b;
+  }
+  function renderChips(){
+    const sinks = $("sinks"); sinks.replaceChildren();
+    for (const key of Object.keys(UUID.sinks)){
+      const a = attrsOf(UUID.sinks[key]);
+      sinks.appendChild(chip(`${key} · ${a.material || "sink"}`, state.sink === key, () => select({ sink: key })));
+    }
+    const ok = acceptsFor(state.sink);
+    const faucets = $("faucets"); faucets.replaceChildren();
+    for (const key of Object.keys(UUID.faucets)){
+      const allowed = ok.includes(key); const a = attrsOf(UUID.faucets[key]);
+      faucets.appendChild(chip(`${key} · ${a.spoutHeightM ? Math.round(a.spoutHeightM*100) + " cm" : "faucet"}`, state.faucet === key,
+        () => select({ faucet: key }), { disabled: !allowed, title: allowed ? "" : `Not in ${state.sink}'s acceptsFaucets attribute` }));
+    }
+    $("faucetHint").textContent = `${state.sink} accepts ${ok.join(", ")}. Greyed faucets are not listed on this sink.`;
+    const fins = $("finishes"); fins.replaceChildren();
+    for (const f of finishesFor(state.faucet)){
+      const d = finishDef(f); const sw = d ? `rgb(${Math.round(d.r*255)},${Math.round(d.g*255)},${Math.round(d.b*255)})` : null;
+      fins.appendChild(chip(f.replace(/([a-z])([A-Z])/g, "$1 $2"), state.finish === f, () => select({ finish: f }), { swatch: sw }));
+    }
+  }
+  function dl(el, pairs){ el.replaceChildren(); for (const [k,v] of pairs){ if (v == null || v === "") continue; const dt = document.createElement("dt"); dt.textContent = k; const dd = document.createElement("dd"); dd.textContent = v; el.append(dt, dd); } }
+  function renderInfo(){
+    const s = attrsOf(UUID.sinks[state.sink]), f = attrsOf(UUID.faucets[state.faucet]), h = attrsOf(UUID.handle);
+    $("rule").innerHTML = `Sink <b>${state.sink}</b> lists <code>acceptsFaucets = ${s.acceptsFaucets || "?"}</code> in VNTANA. Faucet <b>${state.faucet}</b> comes in <code>${f.finishes || "?"}</code>. The handle is one shared part, used in <code>${h.usedIn || "?"}</code>.`;
+    dl($("sinkMeta"), [["Part", s.partNumber], ["Windchill", s.windchillNumber], ["Revision", s.revision], ["Material", s.material], ["Mass", s.massKg ? `${s.massKg} kg` : null], ["Hole spacing", s.holeSpacingIn ? `${s.holeSpacingIn} in` : null], ["Vendor", s.vendor]]);
+    dl($("faucetMeta"), [["Part", f.partNumber], ["Windchill", f.windchillNumber], ["Revision", f.revision], ["Material", f.material], ["Mass", f.massKg ? `${f.massKg} kg` : null], ["Spout height", f.spoutHeightM ? `${f.spoutHeightM} m` : null], ["Vendor", f.vendor]]);
+    dl($("handleMeta"), [["Part", h.partNumber], ["Windchill", h.windchillNumber], ["Revision", h.revision], ["Material", h.material], ["Used in", h.usedIn]]);
+    $("assets").innerHTML = `Loaded from VNTANA: sink <code>${UUID.sinks[state.sink].slice(0,8)}</code>, faucet <code>${UUID.faucets[state.faucet].slice(0,8)}</code>, handle <code>${UUID.handle.slice(0,8)}</code>, finishes from library <code>${UUID.library.slice(0,8)}</code>.`;
+    $("caption").textContent = `${state.sink} + ${state.faucet} in ${state.finish.replace(/([a-z])([A-Z])/g, "$1 $2")}`;
+  }
+
+  // ---- Composition in the viewer (three separate GLBs assembled at runtime) -------------------
+  viewer[$configuratorMode] = true;
+  const sc = () => viewer.scene;
+  let current = { sink:null, faucet:null, handle:null }, established = false;
+  const zeroRoot = (scene) => scene.children.forEach(ch => { ch.position.set(0,0,0); ch.quaternion.identity(); ch.scale.set(1,1,1); });   // undo the platform's recenter on the root node only
+  function applyFinish(){
+    const fin = finishDef(state.finish) || { r:.8,g:.8,b:.8,metal:0,rough:.5 };
+    const white = finishDef("CeramicWhite") || { r:.96,g:.96,b:.94,metal:0,rough:.25 };
+    const paint = (scene, d) => scene && scene.traverse(o => {
+      if (!o.isMesh) return;
+      if (!o.material || !o.userData.ownMat){ o.material = (o.material && o.material.clone) ? o.material.clone() : o.material; o.userData.ownMat = true; }
+      const m = o.material; if (!m) return;
+      if (m.color && m.color.setRGB) m.color.setRGB(d.r, d.g, d.b);
+      if ("metalness" in m) m.metalness = d.metal; if ("roughness" in m) m.roughness = d.rough; m.needsUpdate = true;
+    });
+    paint(current.sink && current.sink.scene, white);
+    paint(current.faucet && current.faucet.scene, fin);
+    paint(current.handle && current.handle.scene, fin);
+    const s = sc(); s && s.queueUpdate && s.queueUpdate();
+  }
+  const assemble = (models) => {
+    const s = sc(); if (!models.sink) return false;
+    // sink is the base; swap it if the sink product changed
+    if (current.sink && current.sink.model !== models.sink){ if (current.sink.scene.parent) current.sink.scene.parent.remove(current.sink.scene); current.sink = null; current.faucet = null; current.handle = null; established = false; }
+    if (!current.sink){ const sinkScene = models.sink.scene; zeroRoot(sinkScene); current.sink = { model: models.sink, scene: sinkScene }; }
+    const sinkScene = current.sink.scene;
+    // faucet mounted at the sink's faucetMount attribute
+    if (current.faucet && current.faucet.model !== models.faucet){ if (current.faucet.scene.parent) current.faucet.scene.parent.remove(current.faucet.scene); current.faucet = null; current.handle = null; }
+    if (models.faucet && !current.faucet){
+      const f = models.faucet.scene; zeroRoot(f); sinkScene.add(f);
+      f.position.set(...vec(attrsOf(UUID.sinks[state.sink]).faucetMount, [0, .2, -.22]));
+      current.faucet = { model: models.faucet, scene: f };
+    }
+    // shared handle mounted at the faucet's handleOffset attribute
+    if (models.handle && current.faucet && !current.handle){
+      const h = models.handle.scene; zeroRoot(h); current.faucet.scene.add(h);
+      h.position.set(...vec(attrsOf(UUID.faucets[state.faucet]).handleOffset, [.06, .02, 0]));
+      current.handle = { model: models.handle, scene: h };
+    }
+    if (!established){
+      sinkScene.traverse(o => s.trackNode(o)); s.model = models.sink;
+      if (sinkScene.parent !== s.content) s.content.add(sinkScene);
+      s.queueMeshGeometryUpdate && s.queueMeshGeometryUpdate(); s.queueUpdate && s.queueUpdate();
+      s.dispatchEvent({ type: "content-change" }); established = true;
+    } else {
+      sinkScene.traverse(o => s.trackNode(o));
+      s.queueMeshGeometryUpdate && s.queueMeshGeometryUpdate(); s.queueUpdate && s.queueUpdate();
+    }
+    applyFinish();
+    return true;
+  };
+
+  // camera: pin to absolute units after the first frame so swaps hold the view (Neven's pattern)
+  let framed = false;
+  function pinCameraAbsolute(){
+    try {
+      viewer.cameraRotation = viewer.getCameraRotation(); viewer.fieldOfView = viewer.getFieldOfView();
+      viewer.cameraDistance = viewer.evaluate("cameraDistance", viewer.getCameraDistance(), "m") + "m";
+      const [x,y,z] = viewer.evaluate("cameraTarget", viewer.getCameraTarget(), "m"); viewer.cameraTarget = `${x}m ${y}m ${z}m`;
+    } catch(e){ log("pin skipped", e); }
+  }
+  viewer.addEventListener("scene-loaded", () => { if (framed) pinCameraAbsolute(); });
+  viewer.addEventListener("updates-loaded", () => { framed = true; });
+
+  async function compose(){
+    const model = { sink: products[UUID.sinks[state.sink]].glb, faucet: products[UUID.faucets[state.faucet]].glb, handle: products[UUID.handle].glb };
+    return viewer[$loadScene]({ model }, assemble);
+  }
+  async function warm(){
+    for (const key of Object.keys(UUID.faucets)){
+      try { viewer[$preload]({ model: { sink: products[UUID.sinks[state.sink]].glb, faucet: products[UUID.faucets[key]].glb, handle: products[UUID.handle].glb } }); } catch(e){ log("preload", key, e); }
+    }
+  }
+
+  let busy = false, pending = null;
+  async function select(patch){
+    Object.assign(state, patch);
+    // keep the selection legal against the rules read from VNTANA
+    const ok = acceptsFor(state.sink); if (!ok.includes(state.faucet)) state.faucet = ok[0];
+    const fins = finishesFor(state.faucet); if (!fins.includes(state.finish)) state.finish = fins[0];
+    renderChips(); renderInfo(); err.textContent = "";
+    if (busy){ pending = true; return; }          // a click mid-load is kept, not dropped
+    busy = true;
+    do {
+      pending = false;
+      try { await compose(); overlay.classList.add("hidden"); }
+      catch(e){ overlay.textContent = "Could not load from VNTANA."; err.textContent = String(e && e.message || e); log(e); }
+    } while (pending);
+    busy = false;
+  }
+
+  $("refresh").addEventListener("click", async () => {
+    $("refreshOk").textContent = "reading…";
+    try { await fetchAll(); renderChips(); renderInfo(); applyFinish(); $("refreshOk").textContent = "updated from VNTANA"; }
+    catch(e){ $("refreshOk").textContent = ""; err.textContent = String(e && e.message || e); }
+    setTimeout(() => $("refreshOk").textContent = "", 4000);
+  });
+
+  (async () => {
+    try { await fetchAll(); await select({}); warm(); }
+    catch(e){ overlay.textContent = "Could not read the workspace."; err.textContent = String(e && e.message || e); log(e); }
+  })();
+</script>
+</body>
+</html>
