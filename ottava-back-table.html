@@ -341,11 +341,15 @@
     const act=$("groups").querySelector(".item.active"); if(act&&act.scrollIntoView) try{ act.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
   }
   function renderDetail(){
+    $("next").textContent="Next ›";
     if(!started){ $("detail").innerHTML=`<div class="eyebrow">Ready</div><h3>Press Next to place the first item</h3><p>The table starts empty. Each Next places one item and keeps it there.</p>`; $("counter").textContent=`0 / ${N}`; $("prev").disabled=true; $("next").disabled=false; return; }
     const it=ITEMS[cur], g=GROUPS[it.gi];
     $("detail").innerHTML=`<div class="eyebrow">Step ${cur+1} of ${N} · ${g.title}</div><h3>${it.name}</h3><span class="zone">${it.zone}</span><p>${it.desc}</p>
-      ${cur===N-1?`<div class="callout done"><b>✓ Table complete.</b> Every item is placed. Switch to Quiz to try it from memory.</div>`:""}`;
-    $("counter").textContent=`${cur+1} / ${N}`; $("prev").disabled=cur===0; $("next").disabled=cur===N-1;
+      ${cur===N-1?`<div class="callout done"><b>✓ Table complete.</b> Every item is placed. Ready to try it from memory?
+        <div class="qactions" style="margin-top:10px"><button class="btn small primary" id="toQuiz">Start the quiz</button><button class="btn small" id="reviewAgain">Watch it again</button></div></div>`:""}`;
+    if(cur===N-1){ $("toQuiz").addEventListener("click",()=>setMode("quiz")); $("reviewAgain").addEventListener("click",()=>goStep(0)); }
+    $("counter").textContent=`${cur+1} / ${N}`; $("prev").disabled=cur===0; $("next").disabled=false;
+    $("next").textContent = cur===N-1 ? "Start quiz ›" : "Next ›";
   }
   function goStep(k, animate){
     if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; } animating=false;
@@ -356,7 +360,7 @@
     renderGroups(); renderDetail();
     if(animate!==false) animatePlace(cur, ()=>{}); else { const o=itemObj(cur); if(o){ o.position.copy(home(o)); renderNow(); } }
   }
-  function next(){ if(mode!=="learn") return; if(!started){ goStep(0); return; } if(cur<N-1) goStep(cur+1); }
+  function next(){ if(mode!=="learn") return; if(!started){ goStep(0); return; } if(cur<N-1) goStep(cur+1); else setMode("quiz"); }
   function prev(){ if(mode!=="learn") return; if(cur>0) goStep(cur-1,false); }
 
   // ===== QUIZ mode =====
