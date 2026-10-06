@@ -59,7 +59,10 @@
   @keyframes sp{to{transform:rotate(360deg)}}
   .foot{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.6rem .9rem;border-top:1px solid var(--line);font-size:.72rem;color:var(--muted);flex-wrap:wrap}
   .foot .ctl{display:flex;align-items:center;gap:.6rem}
-  .foot input[type=range]{width:150px;accent-color:var(--blue)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .seg button{border:0;background:#fff;font-size:.72rem;font-weight:800;color:var(--muted);padding:.4rem .9rem;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.on{background:var(--blue);color:#fff}
   .linkbtn{border:1px solid var(--line);background:#fff;border-radius:5px;padding:.35rem .6rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--ink)}
   .linkbtn:hover{border-color:var(--blue);color:var(--blue)}
   .hint{min-height:1.1em}
@@ -215,7 +218,7 @@
     </div>
     <div class="foot">
       <span class="hint" id="hint">Drag to orbit · scroll to zoom · click a part</span>
-      <span class="ctl" id="openCtl" style="display:none">Open up <input type="range" id="openUp" min="0" max="1" step="0.01" value="0"></span>
+      <span class="seg" id="viewSeg" style="display:none"><button data-v="out" class="on">Outside</button><button data-v="in">Inside</button></span>
       <button class="linkbtn" id="resetBtn">Reset view</button>
     </div>
    </div>
@@ -256,7 +259,7 @@
    <section class="panel" id="p-parts">
     <div class="eyebrow">Replacement Parts · 1" 2000BM1-FP</div>
     <h1>Repair kits &amp; parts</h1>
-    <p class="lede">The model is opened up the way a technician sees it: cover off, check modules out. Click any labeled part to see what it does and which kit replaces it, or pick a kit to light up everything inside it.</p>
+    <p class="lede">Click any labeled part to see what it does and which kit replaces it. Switch to <b>Inside</b> to see the serviceable internals with the cover off, or pick a kit to light up exactly what is in the box.</p>
     <div class="partcard" id="partcard"></div>
     <div class="kits" id="kits"></div>
     <input class="search" id="search" placeholder="Search parts">
@@ -415,7 +418,8 @@ const BOM=[
   {n:"13",name:"Close nipple",lbl:"Close nipple",qty:2,parts:G.nipples,at:"Nipple_Outlet",
    what:"Threaded nipple joining each shutoff to the body, sealed with thread tape.",when:"Reused. Re-tape if the joint is disturbed."},
 ];
-const BASE_LABELS=["2","4","5","6","7","8","11","12","9"];   // shown when the model is opened up
+const OUT_LABELS=["2","8","9","11","12"];      // assembled: parts you can see from outside
+const IN_LABELS=["2","4","5","6","7"];         // opened up: the serviceable internals only
 const kitBadge=k=>k==="rt"?`<span class="badge rt">RT</span>`:`<span class="badge ck">CK4</span>`;
 $("kits").innerHTML=KITS.map(k=>`<div class="kit" data-k="${k.id}"><div class="top"><span class="nm">${k.name}</span><span class="code">Ordering code ${k.code}</span></div>
   <div class="desc"><b>${k.title}.</b> ${k.desc}</div><div class="inc">${k.inc.map(x=>`<span>${x}</span>`).join("")}</div>
@@ -511,9 +515,9 @@ function cacheObjects(){
 }
 const P0={}; // pose targets: name -> [dx,dy,dz] at full open (1.0)
 function setOff(names,v){ names.forEach(n=>P0[n]=v); }
-setOff([...G.cover,...G.bolts,"TestCock_3","TestCock_3_Port"],[0,0.105,0]);
-setOff(G.oring,[0,0.088,0]);
-setOff(G.retainer,[0,0.068,0]);
+setOff([...G.cover,...G.bolts,"TestCock_3","TestCock_3_Port"],[0,0.088,0]);
+setOff(G.oring,[0,0.074,0]);
+setOff(G.retainer,[0,0.062,0]);
 const SPREAD={Seat:-0.016,SeatORing:-0.010,Disc:-0.003,Spring:0.004,Cage:0.011};
 // stage thresholds: cover lifts over 0-0.33, checks + retainer lift over 0.33-0.66, check parts fan out over 0.66-1
 function poseVec(nm,t){
@@ -551,7 +555,6 @@ function tween(toPose,toSpin,ms,done){
   (function tick(){ const t=Math.min(1,(performance.now()-t0)/ms), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
     poseT=p0+(toPose-p0)*e; spinA=s0+(toSpin-s0)*e; applyPose();
     if(t<1) anim=requestAnimationFrame(tick); else { anim=null; done&&done(); } })();
-  $("openUp").value=toPose;
 }
 
 /* camera presets (viewer r-units are bounds-relative) */
@@ -561,6 +564,7 @@ const CAMS={
   top:{rotation:"-0.25rad 0.95rad 0rad",distance:"1.6r",target:"0r 0r 0r"},
   open:{rotation:"-0.3rad 0.72rad 0rad",distance:"2.95r",target:"0r 0.38r 0r"},
   inlet:{rotation:"-0.45rad 0.45rad 0rad",distance:"1.7r",target:"-0.45r 0r 0r"},
+  inside:{rotation:"-0.3rad 0.6rad 0rad",distance:"2.6r",target:"0r 0.42r 0r"},
   checks:{rotation:"-0.12rad 0.5rad 0rad",distance:"2.25r",target:"0r 0.32r 0r"},
 };
 function cam(k){ const c=CAMS[k]||CAMS.hero;
@@ -574,7 +578,7 @@ function setTab(t){
   tab=t;
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
-  $("openCtl").style.display=t==="parts"?"":"none";
+  $("viewSeg").style.display=t==="parts"?"":"none";
   if(t!=="product") setMode("3d");
   try{ const sp=new URLSearchParams(location.search); if(t==="product") sp.delete("tab"); else sp.set("tab",t);
        const qs=sp.toString(); history.replaceState(null,"",location.pathname+(qs?"?"+qs:"")); }catch(_){}
@@ -586,7 +590,7 @@ function applyTabState(){
   $("partcard").classList.remove("show");
   if(tab==="product"){ clearFx(); tween(0,0,700); cam("hero"); $("hint").textContent="Drag to orbit · tap a feature to see it on the model"; }
   selKit=null; selRow=null;
-  if(tab==="parts"){ clearFx(); tween(0.66,0,900); cam("open"); $("hint").textContent="Hover a part to name it · click for details"; showCoach(); }
+  if(tab==="parts"){ clearFx(); setView("out"); $("hint").textContent="Hover a part to name it · click for details"; showCoach(); }
   else hideCoach();
   if(tab==="service"){ goStep(cur<0?-1:cur,true); }
 }
@@ -619,7 +623,10 @@ function selectRow(n){
   $("partcard").classList.add("show");
   $("pcX").onclick=()=>{ $("partcard").classList.remove("show"); selRow=null; clearFx(); document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.remove("sel")); };
   try{ $("partcard").scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
-  tween(Math.max(r.open||0, r.sub?1:0, tab==="parts"?0.66:0),0,700); highlight(r.parts); cam(r.sub?"checks":(r.open?"open":"hero"));
+  const inside="4567".includes(r.n[0])&&r.n.length<=2;          // cover O-ring, retainer, checks and their pieces
+  if(tab==="parts") markView(inside?"in":"out");
+  if(inside){ tween(r.sub?1:0.66,0,700); cam(r.sub?"checks":"inside"); } else { tween(0,0,700); cam("hero"); }
+  highlight(r.parts);
   $("hint").textContent=r.name;
 }
 $("bom").addEventListener("click",e=>{ const tr=e.target.closest("tr"); if(tr) selectRow(tr.dataset.n); });
@@ -630,10 +637,18 @@ function selectKit(id){
   document.querySelectorAll(".kit").forEach(x=>x.classList.toggle("on",x.dataset.k===id));
   document.querySelectorAll("#bom tr").forEach(tr=>{ const r=BOM.find(b=>b.n===tr.dataset.n); tr.classList.toggle("sel",!!(r&&(r.kits||[]).includes(id))); });
   $("partcard").classList.remove("show");
-  tween(1,0,900); highlight(k.parts); cam("checks"); $("hint").textContent=`${k.name}: every labeled part is in the kit`;
+  markView("in"); tween(1,0,900); highlight(k.parts); cam("checks"); $("hint").textContent=`${k.name}: every labeled part is in the kit`;
 }
 $("kits").addEventListener("click",e=>{ const k=e.target.closest(".kit"); if(k) selectKit(k.dataset.k); });
-$("openUp").addEventListener("input",e=>{ if(anim) cancelAnimationFrame(anim); poseT=+e.target.value; applyPose(); });
+let pview="out";
+function markView(v){ pview=v; document.querySelectorAll("#viewSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); }
+function setView(v,keepSel){
+  pview=v; document.querySelectorAll("#viewSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(!keepSel){ selKit=null; selRow=null; clearFx(); $("partcard").classList.remove("show");
+    document.querySelectorAll(".kit,#bom tr").forEach(e=>e.classList.remove("on","sel")); }
+  if(v==="out"){ tween(0,0,800); cam("hero"); } else { tween(0.66,0,900); cam("inside"); }
+}
+document.querySelectorAll("#viewSeg button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 
 viewer.addEventListener("object-select",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0]; if(!hit) return;
@@ -670,8 +685,8 @@ $("coachX").onclick=()=>{ coachDone=true; try{ localStorage.setItem("watts_coach
 function labelRows(){
   if(tab!=="parts"||!ready) return [];
   if(selKit){ const k=KITS.find(x=>x.id===selKit); return BOM.filter(b=>b.sub&&k.parts.includes(b.at)).concat(BOM.filter(b=>b.n==="4")); }
-  if(poseT>0.9) return BOM.filter(b=>b.sub||["2","4","5"].includes(b.n));
-  return BASE_LABELS.map(n=>BOM.find(b=>b.n===n));
+  if(selRow&&/^[67][a-e]$/.test(selRow)) return BOM.filter(b=>b.sub&&b.n[0]===selRow[0]);
+  return (pview==="in"?IN_LABELS:OUT_LABELS).map(n=>BOM.find(b=>b.n===n));
 }
 let labelKey="", labelEls=[];
 function centerOf(name){
