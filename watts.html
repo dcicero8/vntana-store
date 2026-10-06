@@ -298,7 +298,7 @@
 
 <script>
 const BASE="https://api.vntana.com", ORG="DCicero", WS="configurators";
-const UUID=new URLSearchParams(location.search).get("uuid")||"1817b68a-4962-4285-acc1-eda3687c9ef6";  // rebuilt 2000B-FP (v6), Live Public; ?uuid= to test another build
+const UUID=new URLSearchParams(location.search).get("uuid")||"737ea709-7cf9-445d-9153-a163b4d4bd3b";  // rebuilt 2000B-FP (v7), Live Public; ?uuid= to test another build
 const REVIT_UUID="a960f6a4-52c2-4969-8c89-4553b8d560ac";    // original Revit family as uploaded
 const $=id=>document.getElementById(id);
 const viewer=$("viewer");
@@ -619,7 +619,7 @@ function selectRow(n){
   $("partcard").classList.add("show");
   $("pcX").onclick=()=>{ $("partcard").classList.remove("show"); selRow=null; clearFx(); document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.remove("sel")); };
   try{ $("partcard").scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
-  tween(Math.max(r.open||0, r.sub?1:0),0,700); highlight(r.parts); cam(r.sub?"checks":(r.open?"open":"hero"));
+  tween(Math.max(r.open||0, r.sub?1:0, tab==="parts"?0.66:0),0,700); highlight(r.parts); cam(r.sub?"checks":(r.open?"open":"hero"));
   $("hint").textContent=r.name;
 }
 $("bom").addEventListener("click",e=>{ const tr=e.target.closest("tr"); if(tr) selectRow(tr.dataset.n); });
@@ -760,7 +760,7 @@ document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>setMode(b.da
 $("arLink").onclick=()=>{ try{ viewer.activateAR&&viewer.activateAR(); }catch(_){}; return false; };
 
 /* ---------------- load ---------------- */
-// v6 (open cover seat + ring gasket) first; fall back to v5 (same part names) if v6 isn't processed yet
+// v7 (open cover seat + ring gasket) first; fall back to v5 (same part names) if v6 isn't processed yet
 const FALLBACK="01ff0628-8b8f-4fed-bc09-65614a131b1a";
 const getGlb=u=>fetch(`${BASE}/products/${u}/organizations/${ORG}/clients/${WS}`).then(r=>r.ok?r.json():null).catch(()=>null)
   .then(p=>{ const m=((p&&p.response&&p.response.asset)||{}).models||[]; const g=m.find(x=>(x.conversionFormat??x.type)==="GLB"); return g?{uuid:u,blob:g.modelBlobId}:null; });
