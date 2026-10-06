@@ -775,8 +775,8 @@ document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>setMode(b.da
 $("arLink").onclick=()=>{ try{ viewer.activateAR&&viewer.activateAR(); }catch(_){}; return false; };
 
 /* ---------------- load ---------------- */
-// v7 (open cover seat + ring gasket) first; fall back to v5 (same part names) if v6 isn't processed yet
-const FALLBACK="01ff0628-8b8f-4fed-bc09-65614a131b1a";
+// single source: v7. (Older Ames uploads v2-v6 are deleted; ?uuid= still overrides for testing.)
+const FALLBACK=UUID;
 const getGlb=u=>fetch(`${BASE}/products/${u}/organizations/${ORG}/clients/${WS}`).then(r=>r.ok?r.json():null).catch(()=>null)
   .then(p=>{ const m=((p&&p.response&&p.response.asset)||{}).models||[]; const g=m.find(x=>(x.conversionFormat??x.type)==="GLB"); return g?{uuid:u,blob:g.modelBlobId}:null; });
 getGlb(UUID).then(g=>g||(UUID!==FALLBACK?getGlb(FALLBACK):null)).then(g=>{
