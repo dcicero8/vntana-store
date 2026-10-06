@@ -159,6 +159,27 @@
   .flow b{display:block;font-size:.78rem;margin-bottom:.2rem}.flow span{font-size:.7rem;color:var(--muted);line-height:1.4}
   .flow .src{background:var(--navy);border-color:var(--navy);color:#fff}.flow .src span{color:#c9d6e6}
   footer{padding:1.6rem 0 2.4rem;font-size:.7rem;color:var(--muted);line-height:1.5}
+  /* part labels pinned to the 3D model (parts tab) */
+  #labels{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+  .pl{position:absolute;left:0;top:0;display:flex;align-items:center;gap:0;pointer-events:none;transition:opacity .2s}
+  .pl .pt{width:9px;height:9px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);transform:translate(-50%,-50%)}
+  .pl .ln{width:16px;height:2px;background:var(--blue);margin-left:-4px;opacity:.8}
+  .pl .tx{pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:.35rem;background:#fff;border:1.5px solid var(--blue);border-radius:999px;padding:.12rem .55rem .12rem .14rem;font-size:.68rem;font-weight:700;color:var(--ink);white-space:nowrap;box-shadow:0 2px 8px rgba(11,35,64,.18)}
+  .pl .tx b{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:9px;background:var(--blue);color:#fff;font-size:.6rem;padding:0 .25rem}
+  .pl .tx:hover,.pl.sel .tx{background:var(--blue);color:#fff}.pl .tx:hover b,.pl.sel .tx b{background:#fff;color:var(--blue)}
+  #labels .dot{position:absolute;left:0;top:0;width:10px;height:10px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none}
+  #tip{position:absolute;z-index:7;pointer-events:none;background:var(--navy);color:#fff;border-radius:6px;padding:.4rem .55rem;font-size:.72rem;line-height:1.35;max-width:220px;display:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  #tip small{display:block;color:#c9d6e6;font-size:.64rem;margin-top:.1rem}
+  #coach{position:absolute;left:50%;bottom:.8rem;transform:translateX(-50%);z-index:6;background:rgba(11,35,64,.92);color:#fff;border-radius:8px;padding:.6rem .8rem .6rem .7rem;font-size:.74rem;line-height:1.4;display:none;align-items:center;gap:.6rem;max-width:92%;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  #coach.show{display:flex}
+  #coach .ic{flex:none;width:26px;height:26px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:900;animation:pulse 1.6s ease-in-out infinite}
+  #coach button{flex:none;background:none;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:4px;font-size:.66rem;padding:.2rem .45rem;cursor:pointer}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,83,155,.7)}50%{box-shadow:0 0 0 7px rgba(0,83,155,0)}}
+  .partcard .grid{display:grid;grid-template-columns:auto 1fr;gap:.25rem .7rem;font-size:.78rem;margin-top:.5rem}
+  .partcard .grid dt{color:var(--muted);font-weight:700}.partcard .grid dd{color:#2b3036}
+  .partcard .kitrow{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+  .partcard .kitrow .btn{padding:.42rem .6rem;font-size:.7rem}
+  .partcard .close{float:right;border:0;background:none;font-size:1rem;color:var(--muted);cursor:pointer;line-height:1}
 </style>
 </head>
 <body>
@@ -187,6 +208,8 @@
     <div class="stage">
       <vntana-viewer id="viewer" loading="eager" picking="true" environment-src="assets/env/studio.hdr" shadow-intensity="0.45" exposure="0.85" min-camera-distance="0.05m" dim-opacity="0.18"></vntana-viewer>
       <div class="ld" id="loading"><div class="spin"></div><p>Loading 3D model</p></div>
+      <div id="labels"></div><div id="tip"></div>
+      <div id="coach"><span class="ic">i</span><span>Each numbered label is a part you can replace. <b>Hover</b> any part to name it, <b>click</b> it for details and the kit that includes it.</span><button id="coachX">Got it</button></div>
       <div class="overlay" id="ovRenders"><span class="ovtag">Rendered from the same 3D asset</span><img id="renderImg" alt="Ames 2000B-FP render"><div class="thumbs" id="thumbs"></div></div>
       <div class="overlay" id="ovRevit"><span class="ovtag">Revit family as downloaded from BIMobject</span><iframe id="revitFrame" title="Original Revit model" loading="lazy"></iframe></div>
     </div>
@@ -233,9 +256,9 @@
    <section class="panel" id="p-parts">
     <div class="eyebrow">Replacement Parts · 1" 2000BM1-FP</div>
     <h1>Repair kits &amp; parts</h1>
-    <p class="lede">Pick a kit to see exactly which parts it replaces, or click any part in the 3D model. The internals are serviced through the top cover, so the model opens up when you select one.</p>
-    <div class="kits" id="kits"></div>
+    <p class="lede">The model is opened up the way a technician sees it: cover off, check modules out. Click any labeled part to see what it does and which kit replaces it, or pick a kit to light up everything inside it.</p>
     <div class="partcard" id="partcard"></div>
+    <div class="kits" id="kits"></div>
     <input class="search" id="search" placeholder="Search parts">
     <table class="bom"><thead><tr><th>#</th><th>Part</th><th>Qty</th><th>Kits</th></tr></thead><tbody id="bom"></tbody></table>
     <div class="callout note"><b>Matching springs and seats</b>On 1/2" to 2" sizes the first and second check springs and seats are not interchangeable. The heavier spring and smaller seat belong in the first check.</div>
@@ -343,31 +366,56 @@ const KITS=[
    inc:["Seat O-ring","Disc assembly","Spring","Check cage","Cover O-ring"],parts:["Check1_SeatORing","Check1_Disc","Check1_Spring","Check1_Cage",...G.oring],
    url:"https://www.watts.com/products/plumbing-flow-control-solutions/repair-kits/backflow-preventer-repair-kits/rk-2000b/ark-2000b-ck4-1"},
 ];
+/* what = what the part does, when = when to replace it, at = node the 3D label pins to, lbl = short label text */
 const BOM=[
-  {n:"1",name:"Body, cast bronze",qty:1,parts:G.body,info:"Single-cover modular body. Flow arrow cast on the outlet side."},
-  {n:"2",name:"Cover",qty:1,parts:G.cover,info:"Top-entry access cover. Test cock No. 3 threads into its center.",open:0.25},
-  {n:"3",name:"Cover bolts, stainless",qty:6,parts:G.bolts,open:0.25},
-  {n:"4",name:"Cover O-ring",qty:1,parts:G.oring,kits:["rt","ck"],open:0.25},
-  {n:"5",name:"Retainer",qty:1,parts:G.retainer,info:"Holds both check modules in the body bore. Must be reinstalled after the modules are fully seated.",open:0.66},
-  {n:"6",name:"First check module",qty:1,parts:G.c1,info:"Heavier spring and smaller seat than the second check.",open:0.66},
-  {n:"6a",sub:1,name:"Seat (first check)",qty:1,parts:["Check1_Seat"],open:1},
-  {n:"6b",sub:1,name:"Seat O-ring",qty:1,parts:["Check1_SeatORing"],kits:["rt","ck"],open:1},
-  {n:"6c",sub:1,name:"Disc assembly",qty:1,parts:["Check1_Disc"],kits:["rt","ck"],open:1},
-  {n:"6d",sub:1,name:"Spring, heavy (first check)",qty:1,parts:["Check1_Spring"],kits:["ck"],open:1},
-  {n:"6e",sub:1,name:"Check cage",qty:1,parts:["Check1_Cage"],kits:["ck"],open:1},
-  {n:"7",name:"Second check module",qty:1,parts:G.c2,open:0.66},
-  {n:"7a",sub:1,name:"Seat (second check)",qty:1,parts:["Check2_Seat"],open:1},
-  {n:"7b",sub:1,name:"Seat O-ring",qty:1,parts:["Check2_SeatORing"],kits:["rt","ck"],open:1},
-  {n:"7c",sub:1,name:"Disc assembly",qty:1,parts:["Check2_Disc"],kits:["rt","ck"],open:1},
-  {n:"7d",sub:1,name:"Spring, light (second check)",qty:1,parts:["Check2_Spring"],kits:["ck"],open:1},
-  {n:"7e",sub:1,name:"Check cage",qty:1,parts:["Check2_Cage"],kits:["ck"],open:1},
-  {n:"8",name:"Test cocks",qty:4,parts:G.testcocks,info:"No. 1 on the inlet shutoff, No. 2 before the first check, No. 3 in the cover, No. 4 after the second check."},
-  {n:"9",name:"Inlet shutoff, ball valve",qty:1,parts:G.valveIn},
-  {n:"10",name:"Outlet shutoff, ball valve",qty:1,parts:G.valveOut},
-  {n:"11",name:"Gear operator with tamper switches",qty:2,parts:[...G.gearIn,...G.gearOut],info:"Slow-close gear operator with position indicator and two pre-wired tamper switches."},
-  {n:"12",name:"Handwheel",qty:2,parts:[...G.wheelIn,...G.wheelOut]},
-  {n:"13",name:"Close nipple",qty:2,parts:G.nipples},
+  {n:"1",name:"Body, cast bronze",lbl:"Body",qty:1,parts:G.body,at:"Body_main",
+   what:"Holds both check modules in series between the shutoffs. The flow arrow is cast on the outlet side.",when:"Not a wear part."},
+  {n:"2",name:"Cover",lbl:"Cover",qty:1,parts:G.cover,at:"Cover",open:0.25,
+   what:"Top-entry access cover over both checks. Test cock No. 3 threads into its center.",when:"Reused. Remove its six bolts to reach the internals."},
+  {n:"3",name:"Cover bolts, stainless",lbl:"Cover bolts",qty:6,parts:G.bolts,at:"CoverBolts",open:0.25,
+   what:"Clamp the cover to the body.",when:"Reused unless the threads are damaged."},
+  {n:"4",name:"Cover O-ring",lbl:"Cover O-ring",qty:1,parts:G.oring,at:"Cover_ORing",kits:["rt","ck"],open:0.25,
+   what:"Seals the cover to the body.",when:"Inspect every time the cover comes off. Replace if it is nicked, flattened or the cover joint weeps."},
+  {n:"5",name:"Retainer",lbl:"Retainer",qty:1,parts:G.retainer,at:"Retainer",open:0.66,
+   what:"Locks both check modules in the body bore.",when:"Reused. Reinstall only after both modules are fully seated."},
+  {n:"6",name:"First check module",lbl:"First check",qty:1,parts:G.c1,at:"Check1_Cage",open:0.66,
+   what:"Spring-loaded check that closes against backflow. Uses a heavier spring and smaller seat than the second check.",when:"Rebuild with the kits below when the first check fails its annual test."},
+  {n:"6a",sub:1,name:"Seat (first check)",lbl:"Seat",qty:1,parts:["Check1_Seat"],at:"Check1_Seat",open:1,
+   what:"The surface the disc closes against. Bayonet-locks onto the cage.",when:"Replace if the sealing edge is scored or pitted."},
+  {n:"6b",sub:1,name:"Seat O-ring",lbl:"Seat O-ring",qty:1,parts:["Check1_SeatORing"],at:"Check1_SeatORing",kits:["rt","ck"],open:1,
+   what:"Seals the seat in the body bore so water can't bypass the check.",when:"Replace whenever the check is rebuilt."},
+  {n:"6c",sub:1,name:"Disc assembly",lbl:"Disc",qty:1,parts:["Check1_Disc"],at:"Check1_Disc",kits:["rt","ck"],open:1,
+   what:"Rubber-faced disc that seals against the seat. The most common wear part.",when:"Replace if the rubber is cut, swollen or embedded with debris. A fouled disc is the usual cause of a failed test."},
+  {n:"6d",sub:1,name:"Spring, heavy (first check)",lbl:"Spring",qty:1,parts:["Check1_Spring"],at:"Check1_Spring",kits:["ck"],open:1,
+   what:"Holds the disc closed and sets the check's opening pressure. The heavier of the two springs.",when:"Replace if corroded, broken, or the check won't hold its test pressure."},
+  {n:"6e",sub:1,name:"Check cage",lbl:"Cage",qty:1,parts:["Check1_Cage"],at:"Check1_Cage",kits:["ck"],open:1,
+   what:"Guides the disc and spring. The seat locks onto it.",when:"Replace if cracked or the guides are worn."},
+  {n:"7",name:"Second check module",lbl:"Second check",qty:1,parts:G.c2,at:"Check2_Cage",open:0.66,
+   what:"Second, independent check in series. Lighter spring and larger seat than the first check.",when:"Rebuild with the kits below when the second check fails its annual test."},
+  {n:"7a",sub:1,name:"Seat (second check)",lbl:"Seat",qty:1,parts:["Check2_Seat"],at:"Check2_Seat",open:1,
+   what:"The surface the disc closes against. Bayonet-locks onto the cage.",when:"Replace if the sealing edge is scored or pitted."},
+  {n:"7b",sub:1,name:"Seat O-ring",lbl:"Seat O-ring",qty:1,parts:["Check2_SeatORing"],at:"Check2_SeatORing",kits:["rt","ck"],open:1,
+   what:"Seals the seat in the body bore so water can't bypass the check.",when:"Replace whenever the check is rebuilt."},
+  {n:"7c",sub:1,name:"Disc assembly",lbl:"Disc",qty:1,parts:["Check2_Disc"],at:"Check2_Disc",kits:["rt","ck"],open:1,
+   what:"Rubber-faced disc that seals against the seat. The most common wear part.",when:"Replace if the rubber is cut, swollen or embedded with debris."},
+  {n:"7d",sub:1,name:"Spring, light (second check)",lbl:"Spring",qty:1,parts:["Check2_Spring"],at:"Check2_Spring",kits:["ck"],open:1,
+   what:"Holds the disc closed. The lighter of the two springs.",when:"Replace if corroded, broken, or the check won't hold."},
+  {n:"7e",sub:1,name:"Check cage",lbl:"Cage",qty:1,parts:["Check2_Cage"],at:"Check2_Cage",kits:["ck"],open:1,
+   what:"Guides the disc and spring. The seat locks onto it.",when:"Replace if cracked or the guides are worn."},
+  {n:"8",name:"Test cocks",lbl:"Test cocks",qty:4,parts:G.testcocks,at:"TestCock_4",
+   what:"Ports a certified tester connects to for the annual test. No. 1 on the inlet shutoff, No. 2 before the first check, No. 3 in the cover, No. 4 after the second check.",when:"Replace if one leaks or won't shut off."},
+  {n:"9",name:"Inlet shutoff, ball valve",lbl:"Inlet shutoff",qty:1,parts:G.valveIn,at:"ShutoffValve_Inlet",
+   what:"Isolates the assembly from the supply for testing and service.",when:"Replace the valve if it won't shut off tight."},
+  {n:"10",name:"Outlet shutoff, ball valve",lbl:"Outlet shutoff",qty:1,parts:G.valveOut,at:"ShutoffValve_Outlet",
+   what:"Isolates the assembly from the downstream system.",when:"Replace the valve if it won't shut off tight."},
+  {n:"11",name:"Gear operator with tamper switches",lbl:"Gear operator",qty:2,parts:[...G.gearIn,...G.gearOut],at:"Gearbox_Outlet",
+   what:"Closes the ball valve slowly to prevent water hammer. The orange indicator shows open or closed, and two tamper switches report the position to the fire alarm panel.",when:"Replace if the indicator or tamper switch stops tracking the valve."},
+  {n:"12",name:"Handwheel",lbl:"Handwheel",qty:2,parts:[...G.wheelIn,...G.wheelOut],at:"Handwheel_Inlet",
+   what:"Turns the gear operator.",when:"Replace if cracked."},
+  {n:"13",name:"Close nipple",lbl:"Close nipple",qty:2,parts:G.nipples,at:"Nipple_Outlet",
+   what:"Threaded nipple joining each shutoff to the body, sealed with thread tape.",when:"Reused. Re-tape if the joint is disturbed."},
 ];
+const BASE_LABELS=["2","4","5","6","7","8","11","12","9"];   // shown when the model is opened up
 const kitBadge=k=>k==="rt"?`<span class="badge rt">RT</span>`:`<span class="badge ck">CK4</span>`;
 $("kits").innerHTML=KITS.map(k=>`<div class="kit" data-k="${k.id}"><div class="top"><span class="nm">${k.name}</span><span class="code">Ordering code ${k.code}</span></div>
   <div class="desc"><b>${k.title}.</b> ${k.desc}</div><div class="inc">${k.inc.map(x=>`<span>${x}</span>`).join("")}</div>
@@ -410,14 +458,14 @@ let cur=-1; const acked=new Set();
 function renderSteps(){
   $("steps").innerHTML=STEPS.map((s,i)=>{
     const st=i===cur?"on":(i<cur?"done":"");
-    const warnBlock=s.warn?`<div class="callout warn"><b>Warning</b>${s.warn}${acked.has(i)?`<div class="ackd">Acknowledged</div>`:`<button class="ack" data-ack="${i}">I have read this warning</button>`}</div>`:"";
+    const warnBlock=s.warn?`<div class="callout warn"><b>Warning</b>${s.warn}</div>`:"";
     return `<li class="${st}" data-i="${i}"><div class="sh"><span class="num">${i+1}</span><span class="tt">${s.t}<span class="ol-sub">${s.s}</span></span><span class="phase">${s.ph}</span></div>
       <div class="body">${s.b}${warnBlock}${s.note?`<div class="callout note"><b>Note</b>${s.note}</div>`:""}${s.ok?`<div class="callout ok"><b>Done</b>${s.ok}</div>`:""}
       ${s.kit?`<div class="callout note"><b>Parts</b>Replacement discs and O-rings come in the <span class="kitlink" data-kit="${s.kit}">ARK 2000B-RT 1 rubber kit</span>.</div>`:""}</div></li>`;}).join("");
   $("count").textContent=cur<0?"Press Next to begin":`Step ${cur+1} of ${STEPS.length}`;
   $("prog").style.width=cur<0?"0":`${((cur+1)/STEPS.length)*100}%`;
   $("prev").disabled=cur<=0;
-  $("next").disabled=cur>=STEPS.length-1||(cur>=0&&STEPS[cur].warn&&!acked.has(cur));
+  $("next").disabled=cur>=STEPS.length-1;
   $("next").textContent=cur<0?"Start":"Next";
   const on=$("steps").querySelector("li.on"); if(on) try{on.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}
 }
@@ -473,7 +521,7 @@ function poseVec(nm,t){
   if(P0[nm]){ const k=(nm==="Retainer")?c((t-0.33)/0.33):c(t/0.33); return P0[nm].map(v=>v*k); }
   const m=nm.match(/^Check(\d)_(\w+)$/); if(m){
     const lift=c((t-0.33)/0.33), fan=c((t-0.66)/0.34), base=m[1]==="1"?-0.020:0.030;
-    return [base*lift+SPREAD[m[2]]*fan,0.05*lift,0]; }
+    return [base*lift+SPREAD[m[2]]*2.4*fan,0.05*lift,0]; }
   return null;
 }
 let poseT=0, spinA=0;
@@ -511,8 +559,9 @@ const CAMS={
   hero:{rotation:"-0.3rad 0.55rad 0rad",distance:"2.25r",target:"0r 0r 0r"},
   front:{rotation:"0rad 0.15rad 0rad",distance:"2.1r",target:"0r 0r 0r"},
   top:{rotation:"-0.25rad 0.95rad 0rad",distance:"1.6r",target:"0r 0r 0r"},
-  open:{rotation:"-0.3rad 0.85rad 0rad",distance:"2.5r",target:"0r 0.3r 0r"},
+  open:{rotation:"-0.3rad 0.72rad 0rad",distance:"2.95r",target:"0r 0.38r 0r"},
   inlet:{rotation:"-0.45rad 0.45rad 0rad",distance:"1.7r",target:"-0.45r 0r 0r"},
+  checks:{rotation:"-0.12rad 0.5rad 0rad",distance:"2.25r",target:"0r 0.32r 0r"},
 };
 function cam(k){ const c=CAMS[k]||CAMS.hero;
   try{ viewer.cameraRotation=c.rotation; viewer.cameraDistance=c.distance; viewer.cameraTarget=c.target; }catch(_){}
@@ -536,7 +585,9 @@ function applyTabState(){
   document.querySelectorAll(".features li,.kit,#bom tr").forEach(e=>e.classList.remove("on","sel"));
   $("partcard").classList.remove("show");
   if(tab==="product"){ clearFx(); tween(0,0,700); cam("hero"); $("hint").textContent="Drag to orbit · tap a feature to see it on the model"; }
-  if(tab==="parts"){ clearFx(); tween(0.66,0,900); cam("open"); $("hint").textContent="Click a part, a kit, or a row in the list"; }
+  selKit=null; selRow=null;
+  if(tab==="parts"){ clearFx(); tween(0.66,0,900); cam("open"); $("hint").textContent="Hover a part to name it · click for details"; showCoach(); }
+  else hideCoach();
   if(tab==="service"){ goStep(cur<0?-1:cur,true); }
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
@@ -545,24 +596,41 @@ $("features").addEventListener("click",e=>{ const li=e.target.closest("li"); if(
   const f=FEATURES[+li.dataset.i]; document.querySelectorAll(".features li").forEach(x=>x.classList.toggle("on",x===li));
   setMode("3d"); tween(f.open||0,0,700); highlight(f.parts); cam(f.open?"open":"hero"); });
 
+let selKit=null, selRow=null;
+// which BOM row a clicked/hovered mesh belongs to: whole modules while the checks are together, single pieces once they fan out
+function rowForName(nm){
+  const c=BOM.filter(b=>b.parts.includes(nm)); if(!c.length) return null;
+  const fanned=poseT>0.9||selKit;
+  return fanned ? c.sort((a,b)=>a.parts.length-b.parts.length)[0] : (c.find(b=>!b.sub)||c[0]);
+}
+const kitBtns=r=>(r.kits||[]).map(id=>{ const k=KITS.find(x=>x.id===id);
+  return `<a class="btn primary" href="#" onclick="return false">Add ${k.name} to quote</a>`; }).join("");
 function selectRow(n){
   const r=BOM.find(x=>x.n===n); if(!r) return;
+  selRow=n; selKit=null; hideCoach();
   document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.toggle("sel",tr.dataset.n===n));
   document.querySelectorAll(".kit").forEach(k=>k.classList.remove("on"));
-  const kits=(r.kits||[]).map(k=>KITS.find(x=>x.id===k)).map(k=>`${k.name} (${k.code})`);
-  $("partcard").innerHTML=`<div class="pn">Item ${r.n}</div><h3>${r.name}</h3><p>${r.info||""}${r.info?" ":""}Qty ${r.qty}.</p>${kits.length?`<p style="margin-top:.35rem">Included in: <b>${kits.join(", ")}</b></p>`:"<p style=\"margin-top:.35rem\">Not part of a repair kit. Order through your Ames distributor.</p>"}`;
+  const kits=(r.kits||[]).map(k=>KITS.find(x=>x.id===k));
+  const parent=r.sub?BOM.find(b=>!b.sub&&b.n===r.n.replace(/[a-z]$/,"")):null;
+  $("partcard").innerHTML=`<button class="close" id="pcX" aria-label="Close">&times;</button><div class="pn">Item ${r.n}${parent?` · part of the ${parent.name.toLowerCase()}`:""}</div><h3>${r.name}</h3>
+    <dl class="grid"><dt>What it does</dt><dd>${r.what||""}</dd><dt>Replace when</dt><dd>${r.when||""}</dd><dt>Qty</dt><dd>${r.qty} per assembly</dd>
+    <dt>Comes in</dt><dd>${kits.length?kits.map(k=>`<b>${k.name}</b> (ordering code ${k.code})`).join("<br>"):"Not in a repair kit. Order through your Ames distributor."}</dd></dl>
+    <div class="kitrow">${kitBtns(r)}${kits.length?"":`<a class="btn ghost" href="#" onclick="return false">Find a distributor</a>`}</div>`;
   $("partcard").classList.add("show");
-  tween(r.open||0,0,700); highlight(r.parts); cam(r.open?"open":"hero");
+  $("pcX").onclick=()=>{ $("partcard").classList.remove("show"); selRow=null; clearFx(); document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.remove("sel")); };
+  try{ $("partcard").scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
+  tween(Math.max(r.open||0, r.sub?1:0),0,700); highlight(r.parts); cam(r.sub?"checks":(r.open?"open":"hero"));
   $("hint").textContent=r.name;
 }
 $("bom").addEventListener("click",e=>{ const tr=e.target.closest("tr"); if(tr) selectRow(tr.dataset.n); });
 $("search").addEventListener("input",e=>renderBom(e.target.value));
 function selectKit(id){
-  const k=KITS.find(x=>x.id===id); setTab("parts");
+  const k=KITS.find(x=>x.id===id); if(tab!=="parts") setTab("parts");
+  selKit=id; selRow=null; hideCoach();
   document.querySelectorAll(".kit").forEach(x=>x.classList.toggle("on",x.dataset.k===id));
-  document.querySelectorAll("#bom tr").forEach(tr=>{ const r=BOM.find(b=>b.n===tr.dataset.n); tr.classList.toggle("sel",!!(r&&r.sub&&(r.kits||[]).includes(id))); });
+  document.querySelectorAll("#bom tr").forEach(tr=>{ const r=BOM.find(b=>b.n===tr.dataset.n); tr.classList.toggle("sel",!!(r&&(r.kits||[]).includes(id))); });
   $("partcard").classList.remove("show");
-  tween(1,0,900); highlight(k.parts); cam("open"); $("hint").textContent=`${k.name}: highlighted parts are in the kit`;
+  tween(1,0,900); highlight(k.parts); cam("checks"); $("hint").textContent=`${k.name}: every labeled part is in the kit`;
 }
 $("kits").addEventListener("click",e=>{ const k=e.target.closest(".kit"); if(k) selectKit(k.dataset.k); });
 $("openUp").addEventListener("input",e=>{ if(anim) cancelAnimationFrame(anim); poseT=+e.target.value; applyPose(); });
@@ -570,9 +638,89 @@ $("openUp").addEventListener("input",e=>{ if(anim) cancelAnimationFrame(anim); p
 viewer.addEventListener("object-select",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0]; if(!hit) return;
   const nm=uuidName[hit.uuid]; if(!nm) return;
-  if(tab==="parts"){ const r=BOM.filter(b=>b.parts.includes(nm)).sort((a,b)=>b.parts.length===a.parts.length?0:(a.parts.length-b.parts.length))[0]; if(r) selectRow(r.n); }
+  if(tab==="parts"){ const r=rowForName(nm); if(r) selectRow(r.n); }
   else if(tab==="product"){ const f=FEATURES.findIndex(x=>x.parts.includes(nm)); if(f>=0) $("features").querySelector(`li[data-i="${f}"]`).click(); }
 });
+
+/* ---- hover tooltip: name the part under the pointer ---- */
+let lastPtr=null;
+$("viewer").addEventListener("pointermove",e=>{ lastPtr=e; });
+viewer.addEventListener("object-hover",e=>{
+  const tip=$("tip"); const hit=((e.detail&&e.detail.intersections)||[])[0];
+  const nm=hit&&uuidName[hit.uuid]; const r=nm&&rowForName(nm);
+  const pe=(e.detail&&e.detail.originalEvent)||lastPtr;
+  if(!r||!pe||tab==="service"){ tip.style.display="none"; viewer.style.cursor=""; return; }
+  const box=$("viewer").getBoundingClientRect();
+  const kits=(r.kits||[]).map(id=>KITS.find(x=>x.id===id).name).join(", ");
+  tip.innerHTML=`<b>${r.n}. ${r.name}</b><small>${kits?`In ${kits}`:"Not in a repair kit"} · click for details</small>`;
+  tip.style.display="block";
+  const x=pe.clientX-box.left, y=pe.clientY-box.top;
+  tip.style.left=Math.min(x+14,box.width-230)+"px"; tip.style.top=Math.max(y-44,6)+"px";
+  viewer.style.cursor="pointer";
+});
+$("viewer").addEventListener("pointerleave",()=>{ $("tip").style.display="none"; });
+
+/* ---- first-visit coach ---- */
+let coachDone=false; try{ coachDone=localStorage.getItem("watts_coach")==="1"; }catch(_){}
+function showCoach(){ if(!coachDone) $("coach").classList.add("show"); }
+function hideCoach(){ $("coach").classList.remove("show"); }
+$("coachX").onclick=()=>{ coachDone=true; try{ localStorage.setItem("watts_coach","1"); }catch(_){}; hideCoach(); };
+
+/* ---- numbered labels pinned to parts (parts tab) ---- */
+function labelRows(){
+  if(tab!=="parts"||!ready) return [];
+  if(selKit){ const k=KITS.find(x=>x.id===selKit); return BOM.filter(b=>b.sub&&k.parts.includes(b.at)).concat(BOM.filter(b=>b.n==="4")); }
+  if(poseT>0.9) return BOM.filter(b=>b.sub||["2","4","5"].includes(b.n));
+  return BASE_LABELS.map(n=>BOM.find(b=>b.n===n));
+}
+let labelKey="", labelEls=[];
+function centerOf(name){
+  const objs=OBJ[name]; if(!objs||!objs.length) return null;
+  let mn=null,mx=null;
+  objs.forEach(o=>o.traverse(m=>{ if(!m.isMesh||!m.geometry) return;
+    if(!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+    const b=m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld);
+    if(!mn){ mn=b.min.clone(); mx=b.max.clone(); } else { mn.min(b.min); mx.max(b.max); } }));
+  return mn? mn.add(mx).multiplyScalar(0.5) : null;
+}
+// Labels = a dot on the part + a pill, joined by an SVG leader line. Pills are laid out in two columns
+// (left / right of the part cluster) and spaced so they never overlap, the way an exploded parts drawing is called out.
+function updateLabels(){
+  const rows=labelRows(), key=rows.map(r=>r.n).join(",");
+  const host=$("labels");
+  if(key!==labelKey){ labelKey=key;
+    host.innerHTML=`<svg width="100%" height="100%" style="position:absolute;inset:0;overflow:visible"></svg>`+
+      rows.map(r=>`<div class="pl" data-n="${r.n}"><span class="tx"><b>${r.n}</b>${r.lbl}</span></div><span class="dot" data-d="${r.n}"></span>`).join("");
+    labelEls=rows.map(r=>({pill:host.querySelector(`.pl[data-n="${r.n}"]`),dot:host.querySelector(`[data-d="${r.n}"]`)})); }
+  const svg=host.querySelector("svg");
+  if(!rows.length||!viewer.camera){ if(svg) svg.innerHTML=""; return; }
+  const W=host.clientWidth, H=host.clientHeight;
+  const pts=rows.map((r,i)=>{ const c=centerOf(r.at); if(!c) return null; c.project(viewer.camera);
+      if(c.z>1) return null; return {i,r,x:(c.x+1)/2*W,y:(1-c.y)/2*H}; }).filter(Boolean);
+  labelEls.forEach(e=>{ e.pill.style.opacity=0; e.dot.style.opacity=0; });
+  if(!pts.length){ svg.innerHTML=""; return; }
+  // side: first-check pieces left, second-check pieces right, everything else by which half of the cluster it sits in
+  const midX=pts.reduce((s,p)=>s+p.x,0)/pts.length;
+  pts.forEach(p=>{ p.left=/^6[a-e]$/.test(p.r.n)?true:/^7[a-e]$/.test(p.r.n)?false:p.x<midX; });
+  const GAP=24, lines=[];
+  [true,false].forEach(left=>{
+    const col=pts.filter(p=>p.left===left).sort((a,b)=>a.y-b.y); if(!col.length) return;
+    const edge=left?Math.min(...col.map(p=>p.x))-34:Math.max(...col.map(p=>p.x))+34;
+    let y=-1e9;
+    col.forEach(p=>{ y=Math.max(p.y,y+GAP); p.ly=Math.min(Math.max(y,12),H-12); p.lx=edge; });
+    col.forEach(p=>{ const e=labelEls[p.i], w=e.pill.offsetWidth;
+      const px=left?Math.max(4,p.lx-w):Math.min(W-w-4,p.lx);
+      e.pill.style.transform=`translate(${px}px,${p.ly-11}px)`; e.pill.style.opacity=1;
+      e.pill.classList.toggle("sel",p.r.n===selRow);
+      e.dot.style.transform=`translate(${p.x-5}px,${p.y-5}px)`; e.dot.style.opacity=1;
+      lines.push(`<polyline points="${p.x},${p.y} ${left?px+w:px},${p.ly}" fill="none" stroke="#00539b" stroke-width="1.5" opacity=".75"/>`); });
+  });
+  svg.innerHTML=lines.join("");
+}
+(function loop(){ try{ updateLabels(); }catch(_){}; requestAnimationFrame(loop); })();
+$("labels").addEventListener("click",e=>{ const l=e.target.closest(".pl"); if(l) selectRow(l.dataset.n); });
+$("labels").addEventListener("pointerover",e=>{ const l=e.target.closest(".pl"); if(!l||selRow||selKit) return; const r=BOM.find(b=>b.n===l.dataset.n); if(r) highlight(r.parts,false); });
+$("labels").addEventListener("pointerout",e=>{ const l=e.target.closest(".pl"); if(l&&!selRow&&!selKit) clearFx(); });
 
 /* service navigation */
 function goStep(i,fromTab){
