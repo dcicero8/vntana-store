@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ames 2000B-FP Double Check Valve Assembly | Interactive 3D, Parts &amp; Service | VNTANA Demo</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--blue:#00539b;--blue-d:#003e75;--navy:#0b2340;--red:#c8102e;--ink:#1a1d21;--line:#e4e6ea;--muted:#6b7280;--bg:#f6f7f9;--ok:#1b7f4b;--warn:#b45309}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#fff;color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 1.6rem}
+  a{color:inherit}
+  button{font-family:inherit}
+  /* header */
+  .site-header{background:var(--navy);color:#fff;height:62px;display:flex;align-items:center;position:sticky;top:0;z-index:100}
+  .site-header .wrap{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .brand{display:flex;align-items:baseline;gap:.7rem}
+  .brand .ames{font-weight:900;letter-spacing:.32em;font-size:1.15rem}
+  .brand .sub{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+  .nav{display:flex;gap:1.5rem;font-size:.78rem;font-weight:600}
+  .nav a{text-decoration:none;opacity:.85}.nav a:hover{opacity:1}
+  .powered{font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
+  @media(max-width:820px){.nav{display:none}}
+  @media(max-width:560px){.brand .sub{display:none}}
+  .crumb{border-bottom:1px solid var(--line);background:#fafbfc;font-size:.72rem;color:var(--muted)}
+  .crumb .wrap{padding-top:.65rem;padding-bottom:.65rem}.crumb b{color:var(--ink);font-weight:600}
+  /* tabs */
+  .tabs{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:62px;z-index:99}
+  .tabs .wrap{display:flex;gap:1.6rem;overflow-x:auto}
+  .tab{flex:none;border:0;background:none;cursor:pointer;padding:.95rem 0;font-size:.86rem;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+  .tab:hover{color:var(--ink)}.tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+  /* layout */
+  .main{display:grid;grid-template-columns:1.1fr .9fr;gap:2.2rem;padding:1.8rem 0 2rem;align-items:start}
+  @media(max-width:900px){.main{grid-template-columns:1fr}}
+  .stage-col{position:sticky;top:120px}
+  @media(max-width:900px){.stage-col{position:static}}
+  .card{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+  .modes{display:flex;gap:.3rem;padding:.55rem .6rem;border-bottom:1px solid var(--line);background:#fafbfc}
+  .modes button{flex:1;font-size:.72rem;font-weight:700;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:5px;padding:.48rem .3rem;cursor:pointer}
+  .modes button:hover{color:var(--ink);border-color:#b9bdc4}
+  .modes button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .stage{position:relative;width:100%;aspect-ratio:4/3;background:linear-gradient(#fbfbfc,#eef0f3)}
+  vntana-viewer{position:absolute;inset:0;width:100%;height:100%;display:block}
+  vntana-viewer::part(default-progress-bar){display:none}
+  vntana-exploded-view{display:none!important}
+  .overlay{position:absolute;inset:0;z-index:5;background:#f3f4f6;display:none}
+  .overlay.show{display:block}
+  .overlay img{width:100%;height:100%;object-fit:contain;display:block;background:#eef0f3}
+  .overlay iframe{width:100%;height:100%;border:0;display:block}
+  .ovtag{position:absolute;left:.7rem;top:.7rem;z-index:6;background:rgba(11,35,64,.86);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .55rem;border-radius:4px}
+  .thumbs{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;gap:.4rem;justify-content:center;padding:.6rem;background:linear-gradient(transparent,rgba(0,0,0,.25))}
+  .thumbs img{width:64px;height:44px;object-fit:cover;border-radius:4px;border:2px solid #fff;cursor:pointer;opacity:.75}
+  .thumbs img.on{opacity:1;border-color:var(--blue)}
+  .ld{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;background:#f3f4f6;z-index:4;transition:opacity .4s}
+  .ld.hidden{opacity:0;pointer-events:none}
+  .ld .spin{width:38px;height:38px;border-radius:50%;border:4px solid #e2e4e8;border-top-color:var(--blue);animation:sp 1s linear infinite}
+  .ld p{font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#9aa0a8}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.6rem .9rem;border-top:1px solid var(--line);font-size:.72rem;color:var(--muted);flex-wrap:wrap}
+  .foot .ctl{display:flex;align-items:center;gap:.6rem}
+  .foot input[type=range]{width:150px;accent-color:var(--blue)}
+  .linkbtn{border:1px solid var(--line);background:#fff;border-radius:5px;padding:.35rem .6rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--ink)}
+  .linkbtn:hover{border-color:var(--blue);color:var(--blue)}
+  .hint{min-height:1.1em}
+  /* right column */
+  .panel{display:none}.panel.on{display:block}
+  .eyebrow{font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+  h1{font-size:1.65rem;line-height:1.2;margin:.35rem 0 .4rem;letter-spacing:-.01em}
+  h2{font-size:1.05rem;margin:0 0 .7rem}
+  .lede{color:#3d434b;line-height:1.55;font-size:.9rem}
+  .model{display:inline-flex;gap:.5rem;align-items:center;margin:.9rem 0 .2rem;font-size:.75rem;color:var(--muted)}
+  .model code{font-family:ui-monospace,Menlo,monospace;font-size:.82rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.18rem .45rem;font-weight:700}
+  .opt{margin-top:1rem}
+  .opt .lbl{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem}
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem}
+  .chip{border:1.5px solid var(--line);background:#fff;border-radius:6px;padding:.5rem .8rem;font-size:.8rem;font-weight:700;cursor:pointer;color:var(--ink)}
+  .chip:hover{border-color:#9aa3ad}.chip.on{border-color:var(--blue);background:#eaf2fa;color:var(--blue-d)}
+  .note3d{font-size:.7rem;color:var(--muted);margin-top:.45rem}
+  .ctas{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1.2rem 0 .4rem}
+  .btn{display:flex;align-items:center;justify-content:center;gap:.4rem;border-radius:6px;padding:.75rem .8rem;font-size:.8rem;font-weight:800;text-decoration:none;cursor:pointer;border:1.5px solid var(--blue)}
+  .btn.primary{background:var(--blue);color:#fff}.btn.primary:hover{background:var(--blue-d)}
+  .btn.ghost{background:#fff;color:var(--blue)}.btn.ghost:hover{background:#eaf2fa}
+  .docs{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;font-size:.76rem}
+  .docs a{color:var(--blue);font-weight:700;text-decoration:none}.docs a:hover{text-decoration:underline}
+  .features{list-style:none;margin:1.3rem 0 0;border-top:1px solid var(--line)}
+  .features li{display:flex;gap:.7rem;align-items:flex-start;padding:.65rem .2rem;border-bottom:1px solid var(--line);cursor:pointer;font-size:.84rem;line-height:1.4}
+  .features li:hover{background:#f7f9fc}.features li.on{background:#eaf2fa}
+  .features .dot{flex:none;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .features b{display:block}.features span{color:var(--muted);font-size:.78rem}
+  table.spec{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:.4rem}
+  table.spec td{padding:.45rem .3rem;border-bottom:1px solid var(--line)}
+  table.spec td:first-child{color:var(--muted);width:55%}
+  table.spec td:last-child{font-weight:700;text-align:right}
+  .sec{margin-top:1.6rem}
+  .callout{border-radius:6px;padding:.7rem .85rem;font-size:.8rem;line-height:1.45;margin-top:.8rem}
+  .callout b{display:block;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.2rem}
+  .callout.warn{background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12}
+  .callout.note{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+  .callout.ok{background:#ecfdf3;border:1px solid #bbf7d0;color:#14532d}
+  .approvals{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
+  .approvals span{font-size:.66rem;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:.22rem .55rem;color:#3d434b;background:#fafbfc}
+  /* parts */
+  .kits{display:grid;gap:.6rem;margin:.8rem 0 1.2rem}
+  .kit{border:1.5px solid var(--line);border-radius:8px;padding:.8rem .9rem;cursor:pointer;background:#fff}
+  .kit:hover{border-color:#9aa3ad}.kit.on{border-color:var(--blue);background:#f3f8fd}
+  .kit .top{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem}
+  .kit .nm{font-weight:800;font-size:.86rem}.kit .code{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:var(--muted)}
+  .kit .desc{font-size:.78rem;color:#3d434b;margin:.25rem 0 .5rem}
+  .kit .inc{display:flex;flex-wrap:wrap;gap:.3rem}
+  .kit .inc span{font-size:.66rem;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.15rem .4rem}
+  .kit .row{display:flex;gap:.4rem;margin-top:.6rem}
+  .kit .row .btn{padding:.45rem .6rem;font-size:.72rem}
+  .search{width:100%;border:1px solid var(--line);border-radius:6px;padding:.55rem .7rem;font-size:.82rem;margin:.2rem 0 .5rem}
+  table.bom{width:100%;border-collapse:collapse;font-size:.8rem}
+  table.bom th{text-align:left;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.4rem .35rem;border-bottom:2px solid var(--line)}
+  table.bom td{padding:.5rem .35rem;border-bottom:1px solid var(--line);vertical-align:top}
+  table.bom tr{cursor:pointer}table.bom tr:hover td{background:#f7f9fc}table.bom tr.sel td{background:#eaf2fa}
+  table.bom tr.sub td:nth-child(2){padding-left:1.2rem;color:#3d434b}
+  .badge{display:inline-block;font-size:.58rem;font-weight:800;letter-spacing:.04em;border-radius:3px;padding:.1rem .3rem;margin:0 .15rem .15rem 0;color:#fff;background:#64748b}
+  .badge.rt{background:#0f766e}.badge.ck{background:#7c3aed}
+  .partcard{border:1px solid var(--line);border-radius:8px;padding:.8rem .9rem;margin-bottom:.9rem;background:#fafbfc;display:none}
+  .partcard.show{display:block}
+  .partcard .pn{font-size:.66rem;font-weight:800;letter-spacing:.1em;color:var(--blue);text-transform:uppercase}
+  .partcard h3{font-size:1rem;margin:.2rem 0 .3rem}.partcard p{font-size:.8rem;color:#3d434b;line-height:1.45}
+  /* steps */
+  .stepnav{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:.6rem 0 .9rem}
+  .stepnav .count{font-size:.74rem;color:var(--muted);font-weight:700}
+  .stepnav .btn{padding:.55rem 1rem}
+  .btn:disabled{opacity:.4;cursor:default}
+  .progress{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:.9rem}
+  .progress i{display:block;height:100%;background:var(--blue);width:0;transition:width .3s}
+  ol.steps{list-style:none}
+  ol.steps li{border:1px solid var(--line);border-radius:8px;margin-bottom:.45rem;overflow:hidden}
+  ol.steps .sh{display:flex;gap:.7rem;align-items:center;padding:.6rem .75rem;cursor:pointer}
+  ol.steps .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--bg);border:1px solid var(--line);font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  ol.steps li.done .num{background:#e7f6ee;border-color:#bbf7d0;color:var(--ok)}
+  ol.steps li.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+  ol.steps li.on .num{background:var(--blue);border-color:var(--blue);color:#fff}
+  ol.steps .tt{font-weight:800;font-size:.84rem}.ol-sub{display:block;font-weight:500;font-size:.72rem;color:var(--muted)}
+  ol.steps .phase{margin-left:auto;font-size:.58rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.12rem .45rem}
+  ol.steps .body{display:none;padding:0 .9rem .85rem 3.1rem;font-size:.83rem;line-height:1.5;color:#2b3036}
+  ol.steps li.on .body{display:block}
+  .ack{margin-top:.55rem;border:0;background:var(--warn);color:#fff;font-weight:800;font-size:.72rem;border-radius:5px;padding:.45rem .7rem;cursor:pointer}
+  .ackd{margin-top:.45rem;font-size:.72rem;font-weight:800;color:var(--ok)}
+  .kitlink{color:var(--blue);font-weight:800;cursor:pointer;text-decoration:underline}
+  /* full-width sections */
+  .band{background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:2.2rem 0}
+  .band h2{font-size:1.25rem}
+  .band .sublede{color:var(--muted);font-size:.86rem;margin:-.3rem 0 1.2rem;max-width:760px;line-height:1.5}
+  .gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+  @media(max-width:900px){.gallery{grid-template-columns:repeat(2,1fr)}}
+  .gallery figure{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:pointer}
+  .gallery img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}
+  .gallery figcaption{font-size:.7rem;color:var(--muted);padding:.45rem .6rem;font-weight:600}
+  .flow{display:grid;grid-template-columns:repeat(6,1fr);gap:.6rem;margin-top:.4rem}
+  @media(max-width:900px){.flow{grid-template-columns:repeat(2,1fr)}}
+  .flow div{background:#fff;border:1px solid var(--line);border-radius:8px;padding:.8rem .7rem}
+  .flow b{display:block;font-size:.78rem;margin-bottom:.2rem}.flow span{font-size:.7rem;color:var(--muted);line-height:1.4}
+  .flow .src{background:var(--navy);border-color:var(--navy);color:#fff}.flow .src span{color:#c9d6e6}
+  footer{padding:1.6rem 0 2.4rem;font-size:.7rem;color:var(--muted);line-height:1.5}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+  <div class="brand"><span class="ames">AMES</span><span class="sub">Fire &amp; Waterworks · A Watts Brand</span></div>
+  <nav class="nav"><a href="#">Backflow Prevention</a><a href="#">Fire Protection</a><a href="#">Repair Kits</a><a href="#">Where to Buy</a></nav>
+  <span class="powered">Demo · Powered by VNTANA</span>
+</div></header>
+<div class="crumb"><div class="wrap">Products / Backflow Preventers / Double Check Valve Assemblies / <b>2000B-FP</b></div></div>
+<div class="tabs"><div class="wrap">
+  <button class="tab on" data-tab="product">Product</button>
+  <button class="tab" data-tab="parts">Replacement Parts</button>
+  <button class="tab" data-tab="service">Install &amp; Service</button>
+</div></div>
+
+<div class="wrap">
+ <div class="main">
+  <!-- shared 3D stage -->
+  <div class="stage-col">
+   <div class="card">
+    <div class="modes" id="modes">
+      <button class="on" data-mode="3d">Interactive 3D</button>
+      <button data-mode="renders">Renders</button>
+      <button data-mode="revit">Original Revit file</button>
+    </div>
+    <div class="stage">
+      <vntana-viewer id="viewer" loading="eager" picking="true" environment-src="assets/env/studio.hdr" shadow-intensity="0.45" exposure="0.85" min-camera-distance="0.05m" dim-opacity="0.18"></vntana-viewer>
+      <div class="ld" id="loading"><div class="spin"></div><p>Loading 3D model</p></div>
+      <div class="overlay" id="ovRenders"><span class="ovtag">Rendered from the same 3D asset</span><img id="renderImg" alt="Ames 2000B-FP render"><div class="thumbs" id="thumbs"></div></div>
+      <div class="overlay" id="ovRevit"><span class="ovtag">Revit family as downloaded from BIMobject</span><iframe id="revitFrame" title="Original Revit model" loading="lazy"></iframe></div>
+    </div>
+    <div class="foot">
+      <span class="hint" id="hint">Drag to orbit · scroll to zoom · click a part</span>
+      <span class="ctl" id="openCtl" style="display:none">Open up <input type="range" id="openUp" min="0" max="1" step="0.01" value="0"></span>
+      <button class="linkbtn" id="resetBtn">Reset view</button>
+    </div>
+   </div>
+  </div>
+
+  <!-- right column -->
+  <div>
+   <!-- PRODUCT -->
+   <section class="panel on" id="p-product">
+    <div class="eyebrow">Ames Fire &amp; Waterworks</div>
+    <h1>Series 2000B-FP Double Check Valve Assembly</h1>
+    <p class="lede">Cast bronze double check assembly with UL-listed, gear-operated slow-close shutoffs and pre-wired tamper switches. Built for non-health-hazard cross-connections on fire protection lines, with every internal part serviced through a single top cover.</p>
+    <div class="model">Model <code id="modelCode">2000BM1-FP-GV 1"</code></div>
+    <div class="opt"><div class="lbl">Size</div><div class="chips" id="sizeChips"></div></div>
+    <div class="opt"><div class="lbl">End connection</div><div class="chips" id="endChips"></div>
+      <div class="note3d">3D model shown: 1" with grooved (GV) ends.</div></div>
+    <div class="ctas">
+      <a class="btn primary" href="#" onclick="return false">Find a distributor</a>
+      <a class="btn ghost" href="#" onclick="return false">Add to quote</a>
+    </div>
+    <div class="docs">
+      <a href="https://productsite.bimobject.com/en-us/wattswatertechnologies/privatecloud/wattswater/product/ames-fire-and-waterworks/2000B1-FP-2000B2-FP" target="_blank" rel="noopener">Download Revit / BIM</a>
+      <a href="https://www.watts.com/dfsmedia/0533dbba17714b1ab581ab07a4cbb521/35029-source/639254036500000000/es-a-2000b-fp.pdf" target="_blank" rel="noopener">Spec sheet (PDF)</a>
+      <a href="https://www.watts.com/dfsmedia/0533dbba17714b1ab581ab07a4cbb521/34853-source/639218658230000000/1911512.pdf" target="_blank" rel="noopener">Installation &amp; repair manual (PDF)</a>
+      <a href="#" id="arLink" onclick="return false">View in your space (AR)</a>
+    </div>
+
+    <ul class="features" id="features"></ul>
+
+    <div class="sec"><h2>Specifications</h2>
+      <table class="spec" id="specTable"></table>
+      <div class="approvals"><span>ASSE 1015</span><span>AWWA C510</span><span>UL Classified</span><span>FCCCHR-USC</span><span>IAPMO cUPC</span><span>CSA B64.5</span><span>NFPA 13 / 14 / 15 / 16 / 20 / 22 / 24</span></div>
+      <div class="callout warn"><b>Fire protection use only</b>This is not a lead-free assembly. It is illegal to use it in any plumbing system that supplies water for human consumption in the United States. For potable service, specify the lead-free LF2000B.</div>
+    </div>
+   </section>
+
+   <!-- PARTS -->
+   <section class="panel" id="p-parts">
+    <div class="eyebrow">Replacement Parts · 1" 2000BM1-FP</div>
+    <h1>Repair kits &amp; parts</h1>
+    <p class="lede">Pick a kit to see exactly which parts it replaces, or click any part in the 3D model. The internals are serviced through the top cover, so the model opens up when you select one.</p>
+    <div class="kits" id="kits"></div>
+    <div class="partcard" id="partcard"></div>
+    <input class="search" id="search" placeholder="Search parts">
+    <table class="bom"><thead><tr><th>#</th><th>Part</th><th>Qty</th><th>Kits</th></tr></thead><tbody id="bom"></tbody></table>
+    <div class="callout note"><b>Matching springs and seats</b>On 1/2" to 2" sizes the first and second check springs and seats are not interchangeable. The heavier spring and smaller seat belong in the first check.</div>
+   </section>
+
+   <!-- SERVICE -->
+   <section class="panel" id="p-service">
+    <div class="eyebrow">Install &amp; Service · from manual RP/IS-A-2000B</div>
+    <h1>Install it, then service the checks</h1>
+    <p class="lede">Ten steps from the factory installation and repair manual. Each step highlights the parts involved and moves them the way you would on the job.</p>
+    <div class="stepnav"><button class="btn ghost" id="prev">Back</button><span class="count" id="count">Press Next to begin</span><button class="btn primary" id="next">Next</button></div>
+    <div class="progress"><i id="prog"></i></div>
+    <ol class="steps" id="steps"></ol>
+   </section>
+  </div>
+ </div>
+</div>
+
+<section class="band"><div class="wrap">
+  <h2>Renders, made from the same file</h2>
+  <p class="sublede">Studio images generated from the identical 3D asset that powers the viewer, parts finder and instructions. Change the model once and every image, page and AR view updates with it.</p>
+  <div class="gallery" id="gallery"></div>
+</div></section>
+
+<section class="wrap" style="padding:2.2rem 1.6rem 0">
+  <h2>From one Revit file to the whole product page</h2>
+  <div class="flow">
+    <div class="src"><b>Revit family</b><span>The .rfa Watts already publishes on BIMobject.</span></div>
+    <div><b>Interactive 3D + AR</b><span>Web viewer and in-room AR from one optimized asset.</span></div>
+    <div><b>Studio renders</b><span>Catalog and marketplace images without a photo shoot.</span></div>
+    <div><b>Parts finder</b><span>Repair kits mapped to the exact parts they replace.</span></div>
+    <div><b>Animated instructions</b><span>Install and service steps driven by the same model.</span></div>
+    <div><b>CAD / BIM download</b><span>Specifiers still get the native file.</span></div>
+  </div>
+</section>
+<footer><div class="wrap">VNTANA demonstration page. Product information summarized from public Watts / Ames Fire &amp; Waterworks documentation (ES-A-2000B-FP, RP/IS-A-2000B). Not an official Watts page; no pricing shown.</div></footer>
+
+<script>
+const BASE="https://api.vntana.com", ORG="DCicero", WS="configurators";
+const UUID=new URLSearchParams(location.search).get("uuid")||"1817b68a-4962-4285-acc1-eda3687c9ef6";  // rebuilt 2000B-FP (v6), Live Public; ?uuid= to test another build
+const REVIT_UUID="a960f6a4-52c2-4969-8c89-4553b8d560ac";    // original Revit family as uploaded
+const $=id=>document.getElementById(id);
+const viewer=$("viewer");
+
+/* ---------------- product data (ES-A-2000B-FP) ---------------- */
+const SIZES={
+  '1"':    {model:"2000BM1-FP",A:['13-1/4"',337],AG:['13-1/2"',343],B:['4-1/2"',114],C:['3-1/2"',89],D:['1"',25],E:['7-1/2"',191],F:['5-3/4"',146],G:['2-7/8"',73],H:['2-7/8"',73],I:['14-3/8"',365],wt:[12.2,5.5],gpm:20},
+  '1-1/4"':{model:"2000BM2-FP",A:['15-5/8"',397],AG:['16"',406],B:['5-3/8"',136],C:['3-3/4"',95],D:['1-5/8"',41],E:['9-1/2"',241],F:['6-1/16"',154],G:['2-7/8"',73],H:['3-3/16"',81],I:['16-1/2"',419],wt:[17.3,7.8],gpm:35},
+  '1-1/2"':{model:"2000BM2-FP",A:['16-3/8"',416],AG:['16-1/2"',419],B:['5-5/8"',143],C:['4"',102],D:['1-5/8"',41],E:['9-3/4"',248],F:['6-1/4"',159],G:['2-7/8"',73],H:['3-3/8"',86],I:['17"',432],wt:[19,8.6],gpm:48},
+  '2"':    {model:"2000BM1-FP",A:['19-1/8"',486],AG:['19-2/3"',500],B:['6-1/2"',165],C:['4-1/4"',108],D:['2-1/4"',54],E:['13-3/8"',340],F:['6-1/2"',165],G:['2-7/8"',73],H:['3-5/8"',92],I:['19-1/2"',495],wt:[26.4,12],gpm:78},
+};
+const ENDS={GV:"Grooved inlet / outlet",FNPT:"Female NPT inlet / outlet"};
+let size='1"', end="GV";
+function renderSpecs(){
+  const s=SIZES[size];
+  $("modelCode").textContent=`${s.model}${end==="GV"?"-GV":""} ${size}`;
+  const len=end==="GV"?s.AG:s.A, d=v=>`${v[0]} (${v[1]} mm)`;
+  const rows=[["Size",size],["End connections",ENDS[end]],["Laying length (A)",d(len)],["Overall length incl. shutoffs (I)",d(s.I)],
+    ["Height, centerline to top (C)",d(s.C)],["Centerline to bottom (D)",d(s.D)],["Overall width (F)",d(s.F)],["Weight",`${s.wt[0]} lb (${s.wt[1]} kg)`],
+    ["Typical max flow at 7.5 ft/s",`about ${s.gpm} gpm`],["Max working pressure","175 psi (12.1 bar)"],["Temperature range","33 to 140 F (0.5 to 60 C)"],
+    ["Body","Cast bronze, single top-entry cover"],["Shutoffs","Gear-operated slow-close ball valves, 2 tamper switches each"],["Test cocks","4, resilient seated"],["Orientation","Horizontal or vertical flow-up"]];
+  $("specTable").innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
+}
+function chips(el,list,cur,on){ el.innerHTML=list.map(k=>`<button class="chip${k===cur?" on":""}" data-k="${k}">${k}</button>`).join("");
+  el.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{on(b.dataset.k);}); }
+function renderOptions(){
+  chips($("sizeChips"),Object.keys(SIZES),size,k=>{size=k;renderOptions();renderSpecs();});
+  chips($("endChips"),["GV","FNPT"],end,k=>{end=k;renderOptions();renderSpecs();});
+  $("endChips").querySelectorAll(".chip").forEach(b=>b.textContent=b.dataset.k==="GV"?"Grooved (GV)":"Female NPT");
+}
+renderOptions(); renderSpecs();
+
+/* ---------------- part groups (node names in the GLB) ---------------- */
+const G={
+  body:["Body_main","Body_Cavity"], cover:["Cover"], bolts:["CoverBolts"], oring:["Cover_ORing"], retainer:["Retainer"],
+  c1:["Check1_Seat","Check1_SeatORing","Check1_Disc","Check1_Spring","Check1_Cage"],
+  c2:["Check2_Seat","Check2_SeatORing","Check2_Disc","Check2_Spring","Check2_Cage"],
+  testcocks:["TestCock_1","TestCock_1_Port","TestCock_2","TestCock_2_Port","TestCock_3","TestCock_3_Port","TestCock_4","TestCock_4_Port"],
+  valveIn:["ShutoffValve_Inlet"], valveOut:["ShutoffValve_Outlet"],
+  gearIn:["Gearbox_Inlet","GearboxPlate_Inlet","Indicator_Inlet","IndicatorCap_Inlet","Wire1_Inlet","Wire2_Inlet","Wire3_Inlet","Wire4_Inlet"],
+  gearOut:["Gearbox_Outlet","GearboxPlate_Outlet","Indicator_Outlet","IndicatorCap_Outlet","Wire1_Outlet","Wire2_Outlet","Wire3_Outlet","Wire4_Outlet"],
+  wheelIn:["Handwheel_Inlet","HandwheelHub_Inlet"], wheelOut:["Handwheel_Outlet","HandwheelHub_Outlet"],
+  nipples:["Nipple_Inlet","Teflon_Inlet","Nipple_Outlet","Teflon_Outlet"],
+  wires:["Wire1_Inlet","Wire2_Inlet","Wire3_Inlet","Wire4_Inlet","Wire1_Outlet","Wire2_Outlet","Wire3_Outlet","Wire4_Outlet"],
+};
+const ALL_INTERNAL=[...G.c1,...G.c2,...G.retainer];
+
+/* features on the PDP, each tied to parts in the model */
+const FEATURES=[
+  {t:"Single top-entry cover",d:"Both checks are serviced through one cover held by six stainless bolts.",parts:[...G.cover,...G.bolts],open:0},
+  {t:"Gear-operated slow-close shutoffs",d:"UL-listed ball valves close gradually to prevent water hammer.",parts:[...G.wheelIn,...G.wheelOut,...G.gearIn,...G.gearOut]},
+  {t:"Pre-wired tamper switches",d:"Two per shutoff, reversible harness, wire normally open or closed.",parts:[...G.gearIn,...G.gearOut]},
+  {t:"Replaceable seats and discs",d:"Modular check cartridges with captured springs and rubber seat discs.",parts:[...G.c1,...G.c2],open:0.66},
+  {t:"Four resilient-seated test cocks",d:"For annual field testing to local code.",parts:G.testcocks},
+  {t:"Compact cast bronze body",d:"Low pressure drop, horizontal or vertical flow-up approved.",parts:G.body},
+];
+$("features").innerHTML=FEATURES.map((f,i)=>`<li data-i="${i}"><span class="dot">${i+1}</span><div><b>${f.t}</b><span>${f.d}</span></div></li>`).join("");
+
+/* ---------------- parts tab data ---------------- */
+const KITS=[
+  {id:"rt",code:"7016351",name:"ARK 2000B-RT 1",title:"Total rubber parts kit",desc:"Every rubber part in the 1\" assembly. The usual kit for an annual test failure.",
+   inc:["2 cover O-rings","2 disc assemblies","2 seat O-rings"],parts:[...G.oring,"Check1_Disc","Check2_Disc","Check1_SeatORing","Check2_SeatORing"],
+   url:"https://www.watts.com/products/plumbing-flow-control-solutions/repair-kits/backflow-preventer-repair-kits/rk-2000b/ark-2000b-rt-1"},
+  {id:"ck",code:"7016333",name:"ARK 2000B-CK4 1",title:"First or second check repair kit",desc:"Replaces the major internal components of one check.",
+   inc:["Seat O-ring","Disc assembly","Spring","Check cage","Cover O-ring"],parts:["Check1_SeatORing","Check1_Disc","Check1_Spring","Check1_Cage",...G.oring],
+   url:"https://www.watts.com/products/plumbing-flow-control-solutions/repair-kits/backflow-preventer-repair-kits/rk-2000b/ark-2000b-ck4-1"},
+];
+const BOM=[
+  {n:"1",name:"Body, cast bronze",qty:1,parts:G.body,info:"Single-cover modular body. Flow arrow cast on the outlet side."},
+  {n:"2",name:"Cover",qty:1,parts:G.cover,info:"Top-entry access cover. Test cock No. 3 threads into its center.",open:0.25},
+  {n:"3",name:"Cover bolts, stainless",qty:6,parts:G.bolts,open:0.25},
+  {n:"4",name:"Cover O-ring",qty:1,parts:G.oring,kits:["rt","ck"],open:0.25},
+  {n:"5",name:"Retainer",qty:1,parts:G.retainer,info:"Holds both check modules in the body bore. Must be reinstalled after the modules are fully seated.",open:0.66},
+  {n:"6",name:"First check module",qty:1,parts:G.c1,info:"Heavier spring and smaller seat than the second check.",open:0.66},
+  {n:"6a",sub:1,name:"Seat (first check)",qty:1,parts:["Check1_Seat"],open:1},
+  {n:"6b",sub:1,name:"Seat O-ring",qty:1,parts:["Check1_SeatORing"],kits:["rt","ck"],open:1},
+  {n:"6c",sub:1,name:"Disc assembly",qty:1,parts:["Check1_Disc"],kits:["rt","ck"],open:1},
+  {n:"6d",sub:1,name:"Spring, heavy (first check)",qty:1,parts:["Check1_Spring"],kits:["ck"],open:1},
+  {n:"6e",sub:1,name:"Check cage",qty:1,parts:["Check1_Cage"],kits:["ck"],open:1},
+  {n:"7",name:"Second check module",qty:1,parts:G.c2,open:0.66},
+  {n:"7a",sub:1,name:"Seat (second check)",qty:1,parts:["Check2_Seat"],open:1},
+  {n:"7b",sub:1,name:"Seat O-ring",qty:1,parts:["Check2_SeatORing"],kits:["rt","ck"],open:1},
+  {n:"7c",sub:1,name:"Disc assembly",qty:1,parts:["Check2_Disc"],kits:["rt","ck"],open:1},
+  {n:"7d",sub:1,name:"Spring, light (second check)",qty:1,parts:["Check2_Spring"],kits:["ck"],open:1},
+  {n:"7e",sub:1,name:"Check cage",qty:1,parts:["Check2_Cage"],kits:["ck"],open:1},
+  {n:"8",name:"Test cocks",qty:4,parts:G.testcocks,info:"No. 1 on the inlet shutoff, No. 2 before the first check, No. 3 in the cover, No. 4 after the second check."},
+  {n:"9",name:"Inlet shutoff, ball valve",qty:1,parts:G.valveIn},
+  {n:"10",name:"Outlet shutoff, ball valve",qty:1,parts:G.valveOut},
+  {n:"11",name:"Gear operator with tamper switches",qty:2,parts:[...G.gearIn,...G.gearOut],info:"Slow-close gear operator with position indicator and two pre-wired tamper switches."},
+  {n:"12",name:"Handwheel",qty:2,parts:[...G.wheelIn,...G.wheelOut]},
+  {n:"13",name:"Close nipple",qty:2,parts:G.nipples},
+];
+const kitBadge=k=>k==="rt"?`<span class="badge rt">RT</span>`:`<span class="badge ck">CK4</span>`;
+$("kits").innerHTML=KITS.map(k=>`<div class="kit" data-k="${k.id}"><div class="top"><span class="nm">${k.name}</span><span class="code">Ordering code ${k.code}</span></div>
+  <div class="desc"><b>${k.title}.</b> ${k.desc}</div><div class="inc">${k.inc.map(x=>`<span>${x}</span>`).join("")}</div>
+  <div class="row"><a class="btn primary" href="#" onclick="event.stopPropagation();return false">Add kit to quote</a><a class="btn ghost" href="${k.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Kit details</a></div></div>`).join("");
+function renderBom(f){ f=(f||"").toLowerCase();
+  $("bom").innerHTML=BOM.filter(r=>!f||r.name.toLowerCase().includes(f)||r.n.includes(f)).map(r=>
+    `<tr class="${r.sub?"sub":""}" data-n="${r.n}"><td>${r.n}</td><td>${r.name}</td><td>${r.qty}</td><td>${(r.kits||[]).map(kitBadge).join("")}</td></tr>`).join(""); }
+renderBom("");
+
+/* ---------------- service steps ---------------- */
+const STEPS=[
+  {t:"Flush the supply line",s:"Before installation",ph:"Install",parts:G.valveIn,pose:0,cam:"inlet",
+   b:"Thoroughly flush the pipe line to remove foreign material before installing the assembly. Debris left in the line fouls the check discs and is the most common cause of a failed test."},
+  {t:"Plan the strainer",s:"Upstream of the assembly",ph:"Install",parts:G.valveIn,pose:0,cam:"inlet",
+   b:"On general service lines, install a strainer ahead of the backflow preventer to keep the discs from unnecessary fouling.",
+   warn:"Do not install a strainer when the assembly protects a seldom-used emergency line such as a fire sprinkler system."},
+  {t:"Set the flow direction",s:"Arrow cast on the body",ph:"Install",parts:G.body,pose:0,cam:"front",
+   b:"Install the valve with the arrow on the body pointing in the direction of flow. The 2000B-FP is approved for horizontal and vertical flow-up installation."},
+  {t:"Leave room to test and service",s:"Accessible, never concealed",ph:"Install",parts:[...G.cover,...G.testcocks],pose:0,cam:"hero",
+   b:"Install where the assembly is easy to reach for testing and servicing. Do not install it in a concealed location; the cover and all four test cocks must stay accessible."},
+  {t:"Close both shutoffs",s:"Gear-operated, slow close",ph:"Service",parts:[...G.wheelIn,...G.wheelOut,...G.gearIn,...G.gearOut],pose:0,cam:"hero",spin:true,
+   b:"Turn both handwheels to close the inlet and outlet shutoffs. The gear operators close slowly to prevent water hammer, and the position indicators turn to show the valve is closed.",
+   note:"On fire protection systems, the tamper switches report the closed valves to the fire alarm panel. Notify the monitoring company before you start."},
+  {t:"Depressurize the assembly",s:"Bleed through the test cocks",ph:"Service",parts:G.testcocks,pose:0,cam:"top",closed:true,
+   b:"Open the test cocks slowly to relieve the pressure trapped between the shutoffs.",
+   warn:"Depressurize the valve before servicing. Make sure the water is off or both shutoffs are closed."},
+  {t:"Remove the cover",s:"Six bolts and the cover O-ring",ph:"Service",parts:[...G.cover,...G.bolts,...G.oring],pose:0.25,cam:"top",closed:true,
+   b:"Remove the six cover bolts and lift off the cover with test cock No. 3. Take out the cover O-ring and set it aside for inspection."},
+  {t:"Pull the retainer and check modules",s:"By hand, no special tools",ph:"Service",parts:[...G.retainer,...G.c1,...G.c2],pose:0.66,cam:"open",closed:true,
+   b:"Remove the retainer from the body bore. The check modules can now be lifted out by hand or with a screwdriver.",
+   warn:"The first and second checks are not interchangeable. The heavier spring and smaller seat belong in the first check; keep the parts together."},
+  {t:"Service the checks",s:"Bayonet seat, disc, O-rings",ph:"Service",parts:[...G.c1,...G.c2],pose:1,cam:"open",closed:true,
+   b:"Hold the cage in one hand, push the seat inward and rotate it clockwise to release the bayonet lock. Clean the disc assembly or replace it, and clean or replace the O-rings.",
+   kit:"rt"},
+  {t:"Reassemble and return to service",s:"Seats face the inlet",ph:"Service",parts:[...G.c1,...G.c2,...G.retainer,...G.cover],pose:0,cam:"hero",
+   b:"Reassemble each check in reverse order and install the modules with the seats facing the valve inlet. Seat the modules fully before replacing the retainer, then replace the cover. Reopen the shutoffs slowly.",
+   ok:"Retest after service. Test at least once a year or as local code requires. On fire systems NFPA requires a confirming flow test whenever a main valve has been operated."},
+];
+let cur=-1; const acked=new Set();
+function renderSteps(){
+  $("steps").innerHTML=STEPS.map((s,i)=>{
+    const st=i===cur?"on":(i<cur?"done":"");
+    const warnBlock=s.warn?`<div class="callout warn"><b>Warning</b>${s.warn}${acked.has(i)?`<div class="ackd">Acknowledged</div>`:`<button class="ack" data-ack="${i}">I have read this warning</button>`}</div>`:"";
+    return `<li class="${st}" data-i="${i}"><div class="sh"><span class="num">${i+1}</span><span class="tt">${s.t}<span class="ol-sub">${s.s}</span></span><span class="phase">${s.ph}</span></div>
+      <div class="body">${s.b}${warnBlock}${s.note?`<div class="callout note"><b>Note</b>${s.note}</div>`:""}${s.ok?`<div class="callout ok"><b>Done</b>${s.ok}</div>`:""}
+      ${s.kit?`<div class="callout note"><b>Parts</b>Replacement discs and O-rings come in the <span class="kitlink" data-kit="${s.kit}">ARK 2000B-RT 1 rubber kit</span>.</div>`:""}</div></li>`;}).join("");
+  $("count").textContent=cur<0?"Press Next to begin":`Step ${cur+1} of ${STEPS.length}`;
+  $("prog").style.width=cur<0?"0":`${((cur+1)/STEPS.length)*100}%`;
+  $("prev").disabled=cur<=0;
+  $("next").disabled=cur>=STEPS.length-1||(cur>=0&&STEPS[cur].warn&&!acked.has(cur));
+  $("next").textContent=cur<0?"Start":"Next";
+  const on=$("steps").querySelector("li.on"); if(on) try{on.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}
+}
+renderSteps();
+
+/* ---------------- viewer glue ---------------- */
+let ready=false, leaves=[], byName={}, uuidName={};
+function walk(){
+  const sg=viewer.sceneGraph; const found=[];
+  if(sg)(function w(n,path){ const p=n.name?[...path,n.name]:path;
+    if(n.type==="primitive"||n.type==="mesh") found.push({uuid:n.uuid,segs:p});
+    (n.children||[]).forEach(c=>w(c,p)); })(sg,[]);
+  return found;
+}
+const NAMES=new Set(Object.values(G).flat());
+function buildIndex(tries){
+  const f=walk();
+  if(!f.length){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
+  leaves=f; byName={}; uuidName={};
+  f.forEach(l=>{ const nm=[...l.segs].reverse().find(s=>NAMES.has(s)); if(!nm) return;
+    (byName[nm]=byName[nm]||[]).push(l.uuid); uuidName[l.uuid]=nm; });
+  ready=true; cacheObjects(); window.__w={byName,leaves};
+  applyTabState();
+}
+const uuidsFor=names=>names.flatMap(n=>byName[n]||[]);
+function clearFx(){ try{["glow","outline","highlight","dim"].forEach(e=>viewer.clearEffect(e));}catch(_){} }
+function highlight(names,dimRest=true){
+  clearFx(); if(!ready||!names||!names.length) return;
+  const hit=new Set(uuidsFor(names));
+  try{ hit.forEach(u=>viewer.setEffect(u,"highlight","outline"));
+       if(dimRest) leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); }); }catch(_){}
+}
+function renderNow(){ try{viewer.renderScene&&viewer.renderScene();}catch(_){}; try{viewer.render&&viewer.render();}catch(_){} }
+
+/* move/rotate parts in the glTF node frame (meters; +Y up, +X outlet, +Z toward the handwheels) */
+const OBJ={}; const HOME={};
+function cacheObjects(){
+  if(!viewer.scene||!viewer.scene.getObjectByProperty) return;
+  Object.entries(byName).forEach(([nm,uu])=>{
+    OBJ[nm]=uu.map(u=>viewer.scene.getObjectByProperty("uuid",u)).filter(Boolean);
+    OBJ[nm].forEach(o=>{ if(!HOME[o.uuid]) HOME[o.uuid]={p:o.position.clone(),r:o.rotation.clone()}; });
+  });
+}
+const P0={}; // pose targets: name -> [dx,dy,dz] at full open (1.0)
+function setOff(names,v){ names.forEach(n=>P0[n]=v); }
+setOff([...G.cover,...G.bolts,"TestCock_3","TestCock_3_Port"],[0,0.105,0]);
+setOff(G.oring,[0,0.088,0]);
+setOff(G.retainer,[0,0.068,0]);
+const SPREAD={Seat:-0.016,SeatORing:-0.010,Disc:-0.003,Spring:0.004,Cage:0.011};
+// stage thresholds: cover lifts over 0-0.33, checks + retainer lift over 0.33-0.66, check parts fan out over 0.66-1
+function poseVec(nm,t){
+  const c=x=>Math.max(0,Math.min(1,x));
+  if(P0[nm]){ const k=(nm==="Retainer")?c((t-0.33)/0.33):c(t/0.33); return P0[nm].map(v=>v*k); }
+  const m=nm.match(/^Check(\d)_(\w+)$/); if(m){
+    const lift=c((t-0.33)/0.33), fan=c((t-0.66)/0.34), base=m[1]==="1"?-0.020:0.030;
+    return [base*lift+SPREAD[m[2]]*fan,0.05*lift,0]; }
+  return null;
+}
+let poseT=0, spinA=0;
+const WHEEL_PIVOT={Inlet:[-0.131,0.059],Outlet:[0.131,0.059]};
+const IND_PIVOT={Inlet:-0.125,Outlet:0.125};
+function applyPose(){
+  if(!ready) return;
+  Object.entries(OBJ).forEach(([nm,objs])=>{
+    objs.forEach(o=>{ const h=HOME[o.uuid]; if(!h) return;
+      const v=poseVec(nm,poseT);
+      o.position.copy(h.p); o.rotation.copy(h.r);
+      if(v){ o.position.x+=v[0]; o.position.y+=v[1]; o.position.z+=v[2]; }
+      const w=nm.match(/^Handwheel(?:Hub)?_(Inlet|Outlet)$/);
+      if(w&&spinA){ const [px,py]=WHEEL_PIVOT[w[1]], a=(w[1]==="Inlet"?1:-1)*spinA, c=Math.cos(a), s=Math.sin(a);
+        o.rotation.z=h.r.z+a; o.position.x=h.p.x+px-(c*px-s*py); o.position.y=h.p.y+py-(s*px+c*py); }
+      const ind=nm.match(/^Indicator(?:Cap)?_(Inlet|Outlet)$/);
+      if(ind&&spinA){ const px=IND_PIVOT[ind[1]], a=Math.min(spinA/(Math.PI*6),1)*Math.PI/2, c=Math.cos(a), s=Math.sin(a);
+        o.rotation.y=h.r.y+a; o.position.x=h.p.x+px-(c*px); o.position.z=h.p.z+(s*px); }
+    });
+  });
+  renderNow();
+}
+let anim=null;
+function tween(toPose,toSpin,ms,done){
+  if(anim) cancelAnimationFrame(anim);
+  const p0=poseT,s0=spinA,t0=performance.now();
+  (function tick(){ const t=Math.min(1,(performance.now()-t0)/ms), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    poseT=p0+(toPose-p0)*e; spinA=s0+(toSpin-s0)*e; applyPose();
+    if(t<1) anim=requestAnimationFrame(tick); else { anim=null; done&&done(); } })();
+  $("openUp").value=toPose;
+}
+
+/* camera presets (viewer r-units are bounds-relative) */
+const CAMS={
+  hero:{rotation:"-0.3rad 0.55rad 0rad",distance:"2.25r",target:"0r 0r 0r"},
+  front:{rotation:"0rad 0.15rad 0rad",distance:"2.1r",target:"0r 0r 0r"},
+  top:{rotation:"-0.25rad 0.95rad 0rad",distance:"1.6r",target:"0r 0r 0r"},
+  open:{rotation:"-0.3rad 0.85rad 0rad",distance:"2.5r",target:"0r 0.3r 0r"},
+  inlet:{rotation:"-0.45rad 0.45rad 0rad",distance:"1.7r",target:"-0.45r 0r 0r"},
+};
+function cam(k){ const c=CAMS[k]||CAMS.hero;
+  try{ viewer.cameraRotation=c.rotation; viewer.cameraDistance=c.distance; viewer.cameraTarget=c.target; }catch(_){}
+  try{ viewer.setCameraRotation&&viewer.setCameraRotation(c.rotation); viewer.setCameraDistance&&viewer.setCameraDistance(c.distance); viewer.setCameraTarget&&viewer.setCameraTarget(c.target); }catch(_){}
+}
+
+/* ---------------- tabs + interactions ---------------- */
+let tab="product";
+function setTab(t){
+  tab=t;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
+  $("openCtl").style.display=t==="parts"?"":"none";
+  if(t!=="product") setMode("3d");
+  try{ const sp=new URLSearchParams(location.search); if(t==="product") sp.delete("tab"); else sp.set("tab",t);
+       const qs=sp.toString(); history.replaceState(null,"",location.pathname+(qs?"?"+qs:"")); }catch(_){}
+  applyTabState();
+}
+function applyTabState(){
+  if(!ready) return;
+  document.querySelectorAll(".features li,.kit,#bom tr").forEach(e=>e.classList.remove("on","sel"));
+  $("partcard").classList.remove("show");
+  if(tab==="product"){ clearFx(); tween(0,0,700); cam("hero"); $("hint").textContent="Drag to orbit · tap a feature to see it on the model"; }
+  if(tab==="parts"){ clearFx(); tween(0.66,0,900); cam("open"); $("hint").textContent="Click a part, a kit, or a row in the list"; }
+  if(tab==="service"){ goStep(cur<0?-1:cur,true); }
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+
+$("features").addEventListener("click",e=>{ const li=e.target.closest("li"); if(!li) return;
+  const f=FEATURES[+li.dataset.i]; document.querySelectorAll(".features li").forEach(x=>x.classList.toggle("on",x===li));
+  setMode("3d"); tween(f.open||0,0,700); highlight(f.parts); cam(f.open?"open":"hero"); });
+
+function selectRow(n){
+  const r=BOM.find(x=>x.n===n); if(!r) return;
+  document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.toggle("sel",tr.dataset.n===n));
+  document.querySelectorAll(".kit").forEach(k=>k.classList.remove("on"));
+  const kits=(r.kits||[]).map(k=>KITS.find(x=>x.id===k)).map(k=>`${k.name} (${k.code})`);
+  $("partcard").innerHTML=`<div class="pn">Item ${r.n}</div><h3>${r.name}</h3><p>${r.info||""}${r.info?" ":""}Qty ${r.qty}.</p>${kits.length?`<p style="margin-top:.35rem">Included in: <b>${kits.join(", ")}</b></p>`:"<p style=\"margin-top:.35rem\">Not part of a repair kit. Order through your Ames distributor.</p>"}`;
+  $("partcard").classList.add("show");
+  tween(r.open||0,0,700); highlight(r.parts); cam(r.open?"open":"hero");
+  $("hint").textContent=r.name;
+}
+$("bom").addEventListener("click",e=>{ const tr=e.target.closest("tr"); if(tr) selectRow(tr.dataset.n); });
+$("search").addEventListener("input",e=>renderBom(e.target.value));
+function selectKit(id){
+  const k=KITS.find(x=>x.id===id); setTab("parts");
+  document.querySelectorAll(".kit").forEach(x=>x.classList.toggle("on",x.dataset.k===id));
+  document.querySelectorAll("#bom tr").forEach(tr=>{ const r=BOM.find(b=>b.n===tr.dataset.n); tr.classList.toggle("sel",!!(r&&r.sub&&(r.kits||[]).includes(id))); });
+  $("partcard").classList.remove("show");
+  tween(1,0,900); highlight(k.parts); cam("open"); $("hint").textContent=`${k.name}: highlighted parts are in the kit`;
+}
+$("kits").addEventListener("click",e=>{ const k=e.target.closest(".kit"); if(k) selectKit(k.dataset.k); });
+$("openUp").addEventListener("input",e=>{ if(anim) cancelAnimationFrame(anim); poseT=+e.target.value; applyPose(); });
+
+viewer.addEventListener("object-select",e=>{
+  const hit=((e.detail&&e.detail.intersections)||[])[0]; if(!hit) return;
+  const nm=uuidName[hit.uuid]; if(!nm) return;
+  if(tab==="parts"){ const r=BOM.filter(b=>b.parts.includes(nm)).sort((a,b)=>b.parts.length===a.parts.length?0:(a.parts.length-b.parts.length))[0]; if(r) selectRow(r.n); }
+  else if(tab==="product"){ const f=FEATURES.findIndex(x=>x.parts.includes(nm)); if(f>=0) $("features").querySelector(`li[data-i="${f}"]`).click(); }
+});
+
+/* service navigation */
+function goStep(i,fromTab){
+  cur=Math.max(-1,Math.min(STEPS.length-1,i));
+  if(cur<0){ clearFx(); tween(0,0,600); cam("hero"); $("hint").textContent="Press Start to walk through installation and service"; renderSteps(); return; }
+  const s=STEPS[cur];
+  const closedSpin=Math.PI*6;
+  const wantSpin=(s.spin||s.closed)?closedSpin:0;
+  highlight(s.parts); cam(s.cam);
+  if(s.spin&&!fromTab){ tween(s.pose,wantSpin,2200); } else tween(s.pose,wantSpin,1100);
+  $("hint").textContent="Highlighted parts are what this step acts on. Drag to orbit.";
+  renderSteps();
+}
+$("next").onclick=()=>goStep(cur+1);
+$("prev").onclick=()=>goStep(cur-1);
+$("steps").addEventListener("click",e=>{
+  const a=e.target.closest(".ack"); if(a){ acked.add(+a.dataset.ack); renderSteps(); return; }
+  const kl=e.target.closest(".kitlink"); if(kl){ selectKit(kl.dataset.kit); return; }
+  const li=e.target.closest(".sh"); if(li) goStep(+li.parentElement.dataset.i);
+});
+$("resetBtn").onclick=()=>{ applyTabState(); };
+
+/* ---------------- renders + Revit overlay ---------------- */
+const RENDERS=[["hero","Hero, three-quarter"],["front","Front elevation"],["top","Top three-quarter"],["detail","Gear operator detail"],["service","Service view, checks removed"]];
+$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/watts/render_${k}.jpg" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
+$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/watts/render_${k}.jpg" alt="${c}">`).join("");
+function showRender(i){ $("renderImg").src=`assets/watts/render_${RENDERS[i][0]}.jpg`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
+$("thumbs").addEventListener("click",e=>{ const t=e.target.closest("img"); if(t) showRender(+t.dataset.i); });
+$("gallery").addEventListener("click",e=>{ const f=e.target.closest("figure"); if(!f) return; setTab("product"); setMode("renders"); showRender(+f.dataset.i); window.scrollTo({top:0,behavior:"smooth"}); });
+function setMode(m){
+  document.querySelectorAll("#modes button").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));
+  $("ovRenders").classList.toggle("show",m==="renders"); $("ovRevit").classList.toggle("show",m==="revit");
+  if(m==="renders"&&!$("renderImg").src) showRender(0);
+  if(m==="revit"&&!$("revitFrame").src) $("revitFrame").src=`https://embed.vntana.com/v2?productUuid=${REVIT_UUID}&clientSlug=${WS}&organizationSlug=${ORG}`;
+}
+document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$("arLink").onclick=()=>{ try{ viewer.activateAR&&viewer.activateAR(); }catch(_){}; return false; };
+
+/* ---------------- load ---------------- */
+// v6 (open cover seat + ring gasket) first; fall back to v5 (same part names) if v6 isn't processed yet
+const FALLBACK="01ff0628-8b8f-4fed-bc09-65614a131b1a";
+const getGlb=u=>fetch(`${BASE}/products/${u}/organizations/${ORG}/clients/${WS}`).then(r=>r.ok?r.json():null).catch(()=>null)
+  .then(p=>{ const m=((p&&p.response&&p.response.asset)||{}).models||[]; const g=m.find(x=>(x.conversionFormat??x.type)==="GLB"); return g?{uuid:u,blob:g.modelBlobId}:null; });
+getGlb(UUID).then(g=>g||(UUID!==FALLBACK?getGlb(FALLBACK):null)).then(g=>{
+  if(!g){ $("loading").querySelector("p").textContent="Model is still processing"; return; }
+  let inited=false;
+  function init(){ if(inited||!viewer.sceneGraph) return; inited=true;
+    $("loading").classList.add("hidden"); buildIndex(150);
+    let n=0;(function f(){ cam(tab==="service"&&cur>=0?STEPS[cur].cam:(tab==="parts"?"open":"hero")); if(n++<5) setTimeout(f,160); })(); }
+  viewer.addEventListener("load",init,{once:true});
+  viewer.src=`${BASE}/assets/products/${g.uuid}/organizations/${ORG}/clients/${WS}/${g.blob}`;
+  window.__modelUuid=g.uuid;
+  let polls=0; const t=setInterval(()=>{ if(inited||polls++>80) clearInterval(t); else if(viewer.sceneGraph){ init(); clearInterval(t); } },500);
+}).catch(e=>{ $("loading").querySelector("p").textContent="Could not load the model"; console.error(e); });
+
+const q=new URLSearchParams(location.search).get("tab"); if(q&&["parts","service"].includes(q)) setTab(q);
+</script>
+<script>if(window.self===window.top){var hs=document.createElement("script");hs.type="text/javascript";hs.id="hs-script-loader";hs.async=true;hs.defer=true;hs.src="//js.hs-scripts.com/5892493.js";document.body.appendChild(hs);}</script>
+</body>
+</html>
