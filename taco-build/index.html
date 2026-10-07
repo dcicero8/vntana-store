@@ -86,10 +86,24 @@
 
 <div class="wrap">
 
+<div class="callout" style="background:#fff1f1;border-color:#f3c2c2;color:#5c1414;margin-top:24px;font-size:15px">
+  <span class="badge-new">Updated Oct 6</span> <b>First delivery reviewed (0034e). Requirements have changed.</b>
+  <ul class="rules" style="margin-top:8px">
+    <li><b>Substance source files are now required</b> (.sbs + .sbsar per repeatable material, .spp per asset).</li>
+    <li><b>Separate reusable materials</b> in the .blend, from the signed-off library. No single baked atlas for the whole product.</li>
+    <li><b>GLB must be exported from the delivered .blend</b>: same meshes, names and materials. No merged single-mesh GLBs.</li>
+    <li><b>No empties and no scale</b> on any object. Real size, origin bottom-center, bottom at Z = 0.</li>
+    <li><b>Taco's 8 named cameras</b> and the <b>calibrated lighting</b> (Neutral_512_render_v1, strength 4.3, AgX exposure -1.1).</li>
+    <li><b>Next deliverable: Material Library v1</b> for Ken's sign-off, then the 0034e re-delivery, then 0026e.</li>
+  </ul>
+  <p style="margin:12px 0 0"><a class="btn" href="review-0034e.html">Read the full 0034e review: what worked, what must change &rarr;</a></p>
+</div>
+
 <!-- SECTION 1: REPEATABLE MATERIALS -->
 <section>
   <h2><span class="n">1</span>Repeatable Materials</h2>
   <p class="lead">Build these first. They are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. Get each one built and signed off once, then reuse the exact same material everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
+  <p class="lead"><span class="badge-new">New</span> <b>Deliver the library as its own first deliverable</b>, before any more assets: each material as a <b>Substance source (.sbs + .sbsar)</b> and as a <b>Blender material</b> in one library .blend, with one material-ball render each. Ken signs each off; then apply the exact same material, by name, on every SKU. A per-asset baked atlas does not count as a library material.</p>
   <p class="lead"><b>Not a complete list.</b> These are only the materials that repeat and that the catalog names. Individual assets will have additional, non-repeated materials that are not shown here. Build those per asset and flag anything you are unsure of.</p>
 
   <div class="card">
@@ -128,10 +142,12 @@
   <div class="card">
     <h3>What you deliver (per asset)</h3>
     <ul class="rules">
-      <li><b>GLB</b> (glTF binary, PBR metal/roughness, textures embedded). This is the primary deliverable.</li>
+      <li><b>GLB</b> (glTF binary, PBR metal/roughness, textures embedded). This is the primary deliverable. <span class="badge-new">New</span> <b>Export it from the delivered .blend</b>: same meshes, same names, same materials. A GLB merged into one mesh or one material is returned.</li>
       <li><b>Packed Blender file</b> (.blend) with all textures packed in.</li>
       <li><b>Parts manifest</b> (CSV): one row per serviceable part, with the real part name.</li>
-      <li><b>4K texture maps</b> (source resolution, before embedding).</li>
+      <li><b>Substance source files</b> <span class="badge-new">New, required</span>: the Substance Painter project (.spp) per asset, with layers intact. Library materials as .sbs + .sbsar.</li>
+      <li><b>Self-check renders</b> <span class="badge-new">New</span>: the hero shot plus one 4K close-up of the cast metal, as PNGs.</li>
+      <li><s>4K texture maps folder</s>: no longer needed; the maps are packed in the .blend.</li>
     </ul>
   </div>
 
@@ -162,6 +178,7 @@
       <li><b>Upright and grounded.</b> Origin at <b>bottom-center</b> of the product.</li>
       <li><b>Real-world scale in meters.</b></li>
       <li>No animations, curves, constraints, or empties in the delivered file.</li>
+      <li><span class="badge-new">New</span> <b>No scale on any object.</b> Apply all transforms (scale 1.0 everywhere). Never scale the product to fit a camera; move the camera instead.</li>
     </ul>
   </div>
 
@@ -169,7 +186,7 @@
     <h3>Materials &amp; UVs</h3>
     <ul class="rules">
       <li><b>glTF PBR metal/roughness</b>, textures embedded in the GLB.</li>
-      <li><b>One material per physical material.</b> Do not split one physical material across several, or merge two real materials into one.</li>
+      <li><b>One material per physical material.</b> Do not split one physical material across several, or merge two real materials into one. <span class="badge-new">New</span> In the .blend this means <b>separate Blender materials taken from the signed-off library</b>, named as in the library, not regions of one baked atlas. Cast metals must show real sand-cast grain at true scale.</li>
       <li><b>Single 0 to 1 UV space per material</b>, with seams hidden on non-visible faces.</li>
       <li><b>Faceplates and labels are textures</b>, not modeled geometry. Confirm the version/label artwork before baking it in.</li>
       <li><b>Side-of-casing label, build it both ways.</b> <span class="badge-new">New</span> Taco is not yet sure whether the side marking is <b>etched into the casing</b> or a <b>flat sticker/label applied on top</b>, so deliver <b>both</b>: one version with the artwork etched into the surface, and one with it as a flat label sitting on the casing. Some fields (MN / PN / JO / DC) are machine-generated at assembly and appear as <code>XXXXXX</code> placeholders. Use the <a href="refs/Taco-Side-Label-Layout.pdf" target="_blank" rel="noopener">side label layout</a> (<a href="refs/Taco-Side-Label-Layout.ai" target="_blank" rel="noopener">.ai working file</a>) for placement and keep the X-string fields as shown.</li>
@@ -197,11 +214,12 @@
     <ul class="rules" style="margin-top:12px">
       <li><b>File naming:</b> <code>TACO-RES_&lt;SKU&gt;_IMG-01_FRONT-TOP-LEFT_HERO</code> (IMG number + angle label; the hero tag sits on 01).</li>
       <li><b>Export each shot three ways:</b> JPG 300-DPI 3000&times;3000, JPG 150-DPI 1500&times;1500, and EPS vector.</li>
-      <li>Packed <b>neutral HDRI</b>, no extra lights. AgX view transform. Blender 5.1.x.</li>
+      <li><b>Camera names</b> <span class="badge-new">New</span>: <code>IMG-01_FRONT-TOP-LEFT_HERO</code>, <code>IMG-02_FRONT</code> ... <code>IMG-08_BOTTOM</code>. Square 1:1, whole product in frame with an even margin, no cropping.</li>
+      <li><b>Calibrated lighting</b> <span class="badge-new">New</span>: world = <a href="refs/Neutral_512_render_v1.hdr" download>Neutral_512_render_v1.hdr</a> (packed) at strength <b>4.3</b>, AgX view transform, exposure <b>-1.1</b>. No extra lights. Do not change exposure per asset. Blender 5.1.x.</li>
       <li>Render budget: 256 samples, single GPU, 26GB, 600s cap.</li>
     </ul>
     <div class="note"><b>EPS vector output on the angle shots is still being confirmed.</b> Photoreal 3D renders are raster; the vector/EPS requirement is clear for the side label artwork (above) but is being verified for the product angle renders. Build the two JPG outputs now, and hold on EPS for the angle shots until we confirm.</div>
-    <div class="note"><b>Shared render toolkit</b> (Taco 3D toolkit workspace): download the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">sample Blender file</a> and the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">neutral HDRI</a> (pack it into your file). The toolkit cameras are being updated to this 8-angle set; until that lands, build cameras to match the guide above. Same links are on each family page.</div>
+    <div class="note"><b>Shared render toolkit</b> (Taco 3D toolkit workspace): download the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">sample Blender file</a> and the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">neutral HDRI</a> (pack it into your file). <b>Do not copy the sample file's current cameras or lighting</b>: they are the old set and are being replaced with the 8 angles and calibrated lighting above. Until the updated file lands, build cameras to the guide and use the lighting values above. Same links are on each family page.</div>
   </div>
 
   <div class="callout">If a Taco redesign changes a product, it is a <b>full new delivery</b>, not a patch to the old file.</div>
