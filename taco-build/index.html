@@ -93,9 +93,10 @@
     <li><b>Separate reusable materials</b> in the .blend, from the signed-off library. No single baked atlas for the whole product.</li>
     <li><b>GLB must be exported from the delivered .blend</b>: same meshes, names and materials. No merged single-mesh GLBs.</li>
     <li><b>No empties and no scale</b> on any object. Real size, origin bottom-center, bottom at Z = 0.</li>
-    <li><b>Taco's 8 named cameras</b> and the <b>calibrated lighting</b> (Neutral_512_render_v1, strength 4.3, AgX exposure -1.1).</li>
-    <li><b>Next deliverable: Material Library v1</b> for Ken's sign-off, then the 0034e re-delivery, then 0026e.</li>
+    <li><b>Cameras and lighting: do not change yet.</b> VNTANA will send a new template (Taco's 8 cameras + HDRI and light rig) after Taco signs it off on Friday, Oct 9.</li>
+    <li><b>Next deliverable (Oct 8): 0034e</b> with one mesh per part, real part names, Substance materials per finish, Substance files attached. Then Ken's sign-off, the new template, and 0026e.</li>
   </ul>
+  <p style="margin:10px 0 0"><b>All feedback on delivered assets is on the review page.</b></p>
   <p style="margin:12px 0 0"><a class="btn" href="review-0034e.html">Read the full 0034e review: what worked, what must change &rarr;</a></p>
 </div>
 
@@ -103,7 +104,7 @@
 <section>
   <h2><span class="n">1</span>Repeatable Materials</h2>
   <p class="lead">Build these first. They are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. Get each one built and signed off once, then reuse the exact same material everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
-  <p class="lead"><span class="badge-new">New</span> <b>Deliver the library as its own first deliverable</b>, before any more assets: each material as a <b>Substance source (.sbs + .sbsar)</b> and as a <b>Blender material</b> in one library .blend, with one material-ball render each. Ken signs each off; then apply the exact same material, by name, on every SKU. A per-asset baked atlas does not count as a library material.</p>
+  <p class="lead"><span class="badge-new">New</span> <b>Build each material in Substance</b> and deliver the Substance files. Use the exact same material, by name, on every part and every SKU with that finish. Ken signs each one off. A per-asset baked atlas does not count as a library material.</p>
   <p class="lead"><b>Not a complete list.</b> These are only the materials that repeat and that the catalog names. Individual assets will have additional, non-repeated materials that are not shown here. Build those per asset and flag anything you are unsure of.</p>
 
   <div class="card">
@@ -214,12 +215,12 @@
     <ul class="rules" style="margin-top:12px">
       <li><b>File naming:</b> <code>TACO-RES_&lt;SKU&gt;_IMG-01_FRONT-TOP-LEFT_HERO</code> (IMG number + angle label; the hero tag sits on 01).</li>
       <li><b>Export each shot three ways:</b> JPG 300-DPI 3000&times;3000, JPG 150-DPI 1500&times;1500, and EPS vector.</li>
-      <li><b>Camera names</b> <span class="badge-new">New</span>: <code>IMG-01_FRONT-TOP-LEFT_HERO</code>, <code>IMG-02_FRONT</code> ... <code>IMG-08_BOTTOM</code>. Square 1:1, whole product in frame with an even margin, no cropping.</li>
-      <li><b>Calibrated lighting</b> <span class="badge-new">New</span>: world = <a href="refs/Neutral_512_render_v1.hdr" download>Neutral_512_render_v1.hdr</a> (packed) at strength <b>4.3</b>, AgX view transform, exposure <b>-1.1</b>. No extra lights. Do not change exposure per asset. Blender 5.1.x.</li>
+      <li><b>Camera names</b> (coming in the VNTANA template): <code>IMG-01_FRONT-TOP-LEFT_HERO</code>, <code>IMG-02_FRONT</code> ... <code>IMG-08_BOTTOM</code>. Square 1:1, whole product in frame, no cropping.</li>
+      <li><b>Lighting</b> <span class="badge-new">New</span>: VNTANA is building the lighting template (HDRI + light rig) for Taco's sign-off on Friday, Oct 9. <b>Do not change cameras or lighting until we send it.</b> Blender 5.1.x.</li>
       <li>Render budget: 256 samples, single GPU, 26GB, 600s cap.</li>
     </ul>
     <div class="note"><b>EPS vector output on the angle shots is still being confirmed.</b> Photoreal 3D renders are raster; the vector/EPS requirement is clear for the side label artwork (above) but is being verified for the product angle renders. Build the two JPG outputs now, and hold on EPS for the angle shots until we confirm.</div>
-    <div class="note"><b>Shared render toolkit</b> (Taco 3D toolkit workspace): download the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">sample Blender file</a> and the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">neutral HDRI</a> (pack it into your file). <b>Do not copy the sample file's current cameras or lighting</b>: they are the old set and are being replaced with the 8 angles and calibrated lighting above. Until the updated file lands, build cameras to the guide and use the lighting values above. Same links are on each family page.</div>
+    <div class="note"><b>Shared render toolkit</b> (Taco 3D toolkit workspace): download the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">sample Blender file</a> and the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">neutral HDRI</a> (pack it into your file). A new version of this file (8 cameras + lighting) is coming after Friday, Oct 9. <b>Until then, keep the cameras and lighting you have.</b> Same links are on each family page.</div>
   </div>
 
   <div class="callout">If a Taco redesign changes a product, it is a <b>full new delivery</b>, not a patch to the old file.</div>
