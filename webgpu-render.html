@@ -87,6 +87,7 @@
   <div class="ctl"><label>Liquid</label>
     <div class="swatches" id="swatches"></div>
   </div>
+  <button class="btn" id="pause">Pause GPU</button>
   <button class="btn" id="reset">Reset view</button>
   <div class="cap"><b>A/B compare:</b> left is today's real-time render, right is WebGPU path tracing. <b>Live hybrid:</b> one smart viewer, real-time preview while you move, auto-refines to photoreal when it settles. The left half of the glass is frosted, the right half clear.</div>
 </div>
@@ -197,10 +198,11 @@ function placeLight(){
     TARGET.z + r*Math.cos(e)*Math.cos(a)
   );
   if (pathTracer){ pathTracer.updateLights(); samples = 0; }
+  startLoop();
 }
 $('azi').addEventListener('input', e=>{ azimuth=+e.target.value; placeLight(); pulseInteract(); });
 $('elev').addEventListener('input', e=>{ elev=+e.target.value; placeLight(); pulseInteract(); });
-$('orbit').addEventListener('click', e=>{ autoOrbit=!autoOrbit; e.target.classList.toggle('on',autoOrbit); });
+$('orbit').addEventListener('click', e=>{ autoOrbit=!autoOrbit; e.target.classList.toggle('on',autoOrbit); startLoop(); });
 $('reset').addEventListener('click', ()=>{ camera.position.set(0.85,0.92,1.55); controls.target.copy(TARGET); controls.update(); });
 
 // ---------- liquid swatches ----------
@@ -218,7 +220,7 @@ function buildSwatches(){
       document.querySelectorAll('#swatches .sw').forEach(x=>x.classList.remove('on')); s.classList.add('on');
       if(liquidMat){ liquidMat.color.setHex(f.c); liquidMat.attenuationColor && liquidMat.attenuationColor.setHex(f.c);
         if(pathTracer){ pathTracer.updateMaterials(); samples=0; } }
-      pulseInteract();
+      pulseInteract(); startLoop();
     });
     $('swatches').appendChild(s);
   });
@@ -232,7 +234,7 @@ function resize(){
     r.setSize(w,h,false);
   }
   const c=$('cv-pt'); camera.aspect=c.clientWidth/Math.max(1,c.clientHeight); camera.updateProjectionMatrix();
-  if(pathTracer){ pathTracer.setSize($('cv-pt').clientWidth, $('cv-pt').clientHeight); pathTracer.updateCamera(); samples=0; }
+  if(pathTracer){ pathTracer.setSize($('cv-pt').clientWidth, $('cv-pt').clientHeight); pathTracer.updateCamera(); samples=0; startLoop(); }
 }
 addEventListener('resize', resize);
 
@@ -266,12 +268,19 @@ addEventListener('resize', resize);
   placeLight();
 
   $('loading').classList.add('hidden');
-  animate();
+  startLoop();
 })().catch(err=>{ console.error(err); $('samples').textContent='error: '+err.message; });
 
-// ---------- loop ----------
+// ---------- loop (with battery-saving auto-stop) ----------
+const SAMPLE_CAP = 320;            // stop accumulating once converged, to spare the GPU/battery
+let running = false, userPaused = false, rafId = null;
+
+function startLoop(){ if(userPaused || running) return; running = true; rafId = requestAnimationFrame(animate); }
+function stopLoop(){ running = false; if(rafId){ cancelAnimationFrame(rafId); rafId = null; } }
+
 function animate(){
-  requestAnimationFrame(animate);
+  if(!running) return;
+  rafId = requestAnimationFrame(animate);
   controls.update();
   if(autoOrbit){ azimuth=(azimuth+0.4)%360; $('azi').value=azimuth; placeLight(); }
   rasterRenderer.renderAsync(scene, camera);
@@ -292,7 +301,27 @@ function animate(){
     $('hstatus').className = 'hstatus '+cls;
     $('hstatus-t').textContent = txt;
   }
+  // settled: stop rendering so the GPU idles (last frame stays on screen)
+  if(!interacting && !autoOrbit && samples >= SAMPLE_CAP){
+    stopLoop();
+    $('samples').textContent = 'WebGPU · converged · idle (saving power)';
+  }
 }
+
+// resume whenever anything changes
+controls.addEventListener('change', startLoop);
+controls.addEventListener('start', startLoop);
+
+// manual pause / resume
+$('pause').addEventListener('click', e=>{
+  userPaused = !userPaused;
+  e.target.classList.toggle('on', userPaused);
+  e.target.textContent = userPaused ? 'Resume GPU' : 'Pause GPU';
+  if(userPaused) stopLoop(); else { running = true; rafId = requestAnimationFrame(animate); }
+});
+
+// pause when the tab is hidden
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) stopLoop(); else startLoop(); });
 </script>
 </body>
 </html>
