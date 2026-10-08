@@ -276,7 +276,7 @@
    <section class="panel" id="p-parts">
     <div class="eyebrow">Replacement Parts · 1" 2000BM1-FP</div>
     <h1>Repair kits &amp; parts</h1>
-    <p class="lede">Pick a kit or any part in the list to see what it does, when to replace it and which kit includes it. Switch to <b>Inside</b> to see the serviceable internals with the cover off.</p>
+    <p class="lede">Pick a kit or any part in the list to see what it does, when to replace it and which kit includes it.</p>
     <div class="partcard" id="partcard"></div>
     <div class="kits" id="kits"></div>
     <input class="search" id="search" placeholder="Search parts">
@@ -596,7 +596,7 @@ function setTab(t){
   tab=t;
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
-  $("viewSeg").style.display=t==="parts"?"":"none";
+  $("viewSeg").style.display="none";   // classic parts view: assembled model only, no explode
   document.body.classList.toggle("not-product",t!=="product");
   if(t!=="product") setMode("3d");
   try{ const sp=new URLSearchParams(location.search); if(t==="product") sp.delete("tab"); else sp.set("tab",t);
@@ -609,7 +609,7 @@ function applyTabState(){
   $("partcard").classList.remove("show");
   if(tab==="product"){ clearFx(); tween(0,0,700); cam("hero"); $("hint").textContent="Drag to orbit · scroll to zoom"; }
   selKit=null; selRow=null;
-  if(tab==="parts"){ clearFx(); setView("out"); $("hint").textContent="Pick a kit or a part for details"; showCoach(); }
+  if(tab==="parts"){ clearFx(); tween(0,0,700); cam("hero"); $("hint").textContent="Click a part on the model or in the list"; showCoach(); }
   else hideCoach();
   if(tab==="service"){ goStep(cur<0?-1:cur,true); }
 }
@@ -621,7 +621,7 @@ let selKit=null, selRow=null;
 // which BOM row a clicked/hovered mesh belongs to: whole modules while the checks are together, single pieces once they fan out
 function rowForName(nm){
   const c=BOM.filter(b=>b.parts.includes(nm)); if(!c.length) return null;
-  const fanned=poseT>0.9||selKit;
+  const fanned=false;
   return fanned ? c.sort((a,b)=>a.parts.length-b.parts.length)[0] : (c.find(b=>!b.sub)||c[0]);
 }
 const kitBtns=r=>(r.kits||[]).map(id=>{ const k=KITS.find(x=>x.id===id);
@@ -640,9 +640,10 @@ function selectRow(n){
   $("partcard").classList.add("show");
   $("pcX").onclick=()=>{ $("partcard").classList.remove("show"); selRow=null; clearFx(); document.querySelectorAll("#bom tr").forEach(tr=>tr.classList.remove("sel")); };
   try{ $("partcard").scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
-  const inside="4567".includes(r.n[0])&&r.n.length<=2;          // cover O-ring, retainer, checks and their pieces
+  const inside=false;   // classic: never explode; ghosting shows internal parts through the body
   if(tab==="parts") markView(inside?"in":"out");
-  if(inside){ tween(r.sub?1:0.66,0,700); cam(r.sub?"checks":"inside"); } else { tween(0,0,700); cam("hero"); }
+  tween(0,0,500); cam("hero");
+  highlight(r.parts);
   $("hint").textContent=r.name;
 }
 $("bom").addEventListener("click",e=>{ const tr=e.target.closest("tr"); if(tr) selectRow(tr.dataset.n); });
@@ -653,7 +654,7 @@ function selectKit(id){
   document.querySelectorAll(".kit").forEach(x=>x.classList.toggle("on",x.dataset.k===id));
   document.querySelectorAll("#bom tr").forEach(tr=>{ const r=BOM.find(b=>b.n===tr.dataset.n); tr.classList.toggle("sel",!!(r&&(r.kits||[]).includes(id))); });
   $("partcard").classList.remove("show");
-  markView("in"); tween(0.66,0,900); clearFx(); cam("inside"); $("hint").textContent=`${k.name}: parts marked in the list below`;
+  tween(0,0,500); highlight(k.parts); cam("hero"); $("hint").textContent=`${k.name}: highlighted parts are in the kit`;
 }
 $("kits").addEventListener("click",e=>{ const k=e.target.closest(".kit"); if(k) selectKit(k.dataset.k); });
 let pview="out";
@@ -673,13 +674,17 @@ viewer.addEventListener("object-select",e=>{
 });
 
 /* ---- hover tooltip: name the part under the pointer ---- */
-let lastPtr=null;
+let lastPtr=null, hoverRow=null;
 $("viewer").addEventListener("pointermove",e=>{ lastPtr=e; });
 viewer.addEventListener("object-hover",e=>{
   const tip=$("tip"); const hit=((e.detail&&e.detail.intersections)||[])[0];
   const nm=hit&&uuidName[hit.uuid]; const r=nm&&rowForName(nm);
   const pe=(e.detail&&e.detail.originalEvent)||lastPtr;
-  { tip.style.display="none"; viewer.style.cursor=""; return; }   // simplified: no hover names
+  tip.style.display="none";
+  if(tab!=="parts"){ viewer.style.cursor=""; return; }
+  viewer.style.cursor=r?"pointer":"";
+  if(!selRow&&!selKit){ if(r){ if(hoverRow!==r.n){ hoverRow=r.n; highlight(r.parts,false); } } else if(hoverRow){ hoverRow=null; clearFx(); } }
+  return;
   const box=$("viewer").getBoundingClientRect();
   const kits=(r.kits||[]).map(id=>KITS.find(x=>x.id===id).name).join(", ");
   tip.innerHTML=`<b>${r.n}. ${r.name}</b><small>${kits?`In ${kits}`:"Not in a repair kit"} · click for details</small>`;
