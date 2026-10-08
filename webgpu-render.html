@@ -274,7 +274,8 @@ addEventListener('resize', resize);
 })().catch(err=>{ console.error(err); $('samples').textContent='error: '+err.message; });
 
 // ---------- loop (with battery-saving auto-stop) ----------
-const SAMPLE_CAP = 320;            // stop accumulating once converged, to spare the GPU/battery
+const SAMPLE_CAP = 2400;           // refine all the way to near-final quality, then idle (spares battery)
+const FADE_START = 1500, FADE_END = 2300;   // keep the fast preview up until the path tracer is actually clean, THEN cross over
 let running = false, userPaused = false, rafId = null;
 
 function startLoop(){ if(userPaused || running) return; running = true; rafId = requestAnimationFrame(animate); }
@@ -295,7 +296,7 @@ function animate(){
     let op, cls, txt;
     if(interacting || autoOrbit){ op=1; cls='preview'; txt='Previewing · real-time'; }
     else {
-      op = 1 - Math.min(1, Math.max(0, (samples-4)/32));   // crossfade raster -> path traced
+      op = 1 - Math.min(1, Math.max(0, (samples - FADE_START)/(FADE_END - FADE_START)));   // reveal path-traced result only once it's clean
       if(op>0.02){ cls='refine'; txt='Refining · '+samples+' samples'; }
       else { cls='ready'; txt='Photoreal · WebGPU path traced'; }
     }
