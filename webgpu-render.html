@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>WebGPU vs Real-Time — VNTANA</title>
+<style>
+  :root{--ink:#12151b;--muted:#6b7280;--line:#e4e6ea;--bg:#0d0f13;--accent:#c8102e}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:var(--bg);color:#eef0f3;-webkit-font-smoothing:antialiased;overflow:hidden}
+  header{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #20242c;background:#0f1218}
+  header .b{font-weight:800;letter-spacing:.02em}
+  header .b span{color:var(--accent)}
+  header .p{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8b93a4}
+  .stage{position:relative;display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 52px - 104px)}
+  @media(max-width:820px){.stage{grid-template-columns:1fr;height:calc(100vh - 52px - 150px)}}
+  .pane{position:relative;overflow:hidden;background:#15181e}
+  .pane.left{border-right:1px solid #20242c}
+  .pane canvas{display:block;width:100%;height:100%}
+  .tag{position:absolute;top:12px;left:12px;z-index:3;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:7px;background:rgba(12,14,18,.72);backdrop-filter:blur(6px)}
+  .tag.today{color:#c9ced6;border:1px solid #333a45}
+  .tag.gpu{color:#ffd9dd;border:1px solid #5a2630;background:rgba(80,20,28,.5)}
+  .tag small{display:block;font-weight:400;letter-spacing:.02em;text-transform:none;color:#9aa2b2;margin-top:2px;font-size:.6rem}
+  .samples{position:absolute;bottom:12px;right:12px;z-index:3;font-size:.64rem;font-family:ui-monospace,Menlo,monospace;color:#9aa2b2;background:rgba(12,14,18,.72);padding:5px 9px;border-radius:6px}
+  .controls{height:104px;border-top:1px solid #20242c;background:#0f1218;display:flex;align-items:center;gap:26px;padding:0 24px;flex-wrap:wrap}
+  @media(max-width:820px){.controls{height:150px;gap:16px 22px;padding:14px 20px;align-content:center}}
+  .ctl{display:flex;flex-direction:column;gap:6px;min-width:150px}
+  .ctl label{font-size:.6rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#8b93a4}
+  .ctl input[type=range]{width:170px;accent-color:var(--accent)}
+  .swatches{display:flex;gap:8px}
+  .sw{width:26px;height:26px;border-radius:50%;border:2px solid #333a45;cursor:pointer}
+  .sw.on{border-color:#fff}
+  .btn{font:inherit;font-size:.72rem;font-weight:700;color:#eef0f3;background:#1b1f27;border:1px solid #333a45;border-radius:8px;padding:9px 14px;cursor:pointer}
+  .btn:hover{border-color:#5a6372}
+  .btn.on{background:var(--accent);border-color:var(--accent)}
+  .cap{font-size:.68rem;color:#8b93a4;max-width:320px;line-height:1.4}
+  #nogpu{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#0d0f13;text-align:center;padding:30px}
+  #nogpu h2{font-size:1.2rem}#nogpu p{color:#9aa2b2;max-width:440px;line-height:1.5;font-size:.9rem}
+  #loading{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;color:#8b93a4;font-size:.8rem;letter-spacing:.06em}
+  #loading.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="b">AURA <span>·</span> WebGPU Render Demo</div>
+  <div class="p">VNTANA · real-time rasterization vs WebGPU path tracing</div>
+</header>
+
+<div class="stage">
+  <div class="pane left">
+    <div class="tag today">Real-time rasterized<small>what the live viewer renders today</small></div>
+    <canvas id="cv-raster"></canvas>
+  </div>
+  <div class="pane right">
+    <div class="tag gpu">WebGPU path traced<small>true transmission, refraction, soft shadows</small></div>
+    <canvas id="cv-pt"></canvas>
+    <div class="samples" id="samples">initializing…</div>
+    <div id="loading">Building the scene…</div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="ctl"><label>Light angle</label><input id="azi" type="range" min="0" max="360" value="135"></div>
+  <div class="ctl"><label>Light height</label><input id="elev" type="range" min="8" max="82" value="45"></div>
+  <button class="btn" id="orbit">Auto-orbit light</button>
+  <div class="ctl"><label>Liquid</label>
+    <div class="swatches" id="swatches"></div>
+  </div>
+  <button class="btn" id="reset">Reset view</button>
+  <div class="cap">Drag the right view to orbit. Move the light and watch the shadow, the colored refraction, and the back label reading through the bottle, which only the path-traced side can do.</div>
+</div>
+
+<div id="nogpu">
+  <h2>This demo needs WebGPU</h2>
+  <p>Open it in Google Chrome or Microsoft Edge (desktop). Your current browser does not expose WebGPU, which the path-traced side requires.</p>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://esm.sh/three@0.186.1/webgpu",
+    "three/webgpu": "https://esm.sh/three@0.186.1/webgpu",
+    "three/tsl": "https://esm.sh/three@0.186.1/tsl",
+    "three/addons/": "https://esm.sh/three@0.186.1/examples/jsm/",
+    "three/examples/jsm/": "https://esm.sh/three@0.186.1/examples/jsm/",
+    "three-mesh-bvh": "https://esm.sh/three-mesh-bvh@0.9.15?external=three",
+    "three-mesh-bvh/webgpu": "https://esm.sh/three-mesh-bvh@0.9.15/webgpu?external=three",
+    "three-mesh-bvh/worker": "https://esm.sh/three-mesh-bvh@0.9.15/worker?external=three",
+    "three-gpu-pathtracer/webgpu": "https://esm.sh/three-gpu-pathtracer@0.0.26/webgpu?external=three,three-mesh-bvh"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three/webgpu';
+import { WebGPUPathTracer } from 'three-gpu-pathtracer/webgpu';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+
+const $ = id => document.getElementById(id);
+
+if (!navigator.gpu){ $('nogpu').style.display='flex'; throw new Error('no webgpu'); }
+
+const GLB = 'assets/perfume_aura.glb';
+const HDR = 'assets/env/studio.hdr';
+const TARGET = new THREE.Vector3(0, 0.62, 0);
+
+// ---------- shared scene ----------
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x15181e);
+
+const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 100);
+camera.position.set(0.85, 0.92, 1.55);
+
+// ground
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(40, 40),
+  new THREE.MeshPhysicalMaterial({ color: 0xdedbd4, roughness: 0.75, metalness: 0 })
+);
+ground.rotation.x = -Math.PI/2; ground.receiveShadow = true;
+scene.add(ground);
+
+// key light (spot: casts a raster shadow, MIS in the path tracer)
+const key = new THREE.SpotLight(0xffffff, 55, 0, Math.PI/5, 0.45, 2);
+key.castShadow = true;
+key.shadow.mapSize.set(1024,1024); key.shadow.bias = -0.0005;
+key.target.position.copy(TARGET);
+scene.add(key); scene.add(key.target);
+
+let liquidMat = null;
+
+// ---------- renderers ----------
+const rasterRenderer = new THREE.WebGPURenderer({ canvas: $('cv-raster'), antialias: true });
+rasterRenderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+rasterRenderer.shadowMap.enabled = true;
+rasterRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+rasterRenderer.toneMappingExposure = 1.0;
+
+const ptRenderer = new THREE.WebGPURenderer({ canvas: $('cv-pt'), antialias: true });
+ptRenderer.setPixelRatio(1);
+ptRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+let pathTracer = null;
+let samples = 0;
+
+const controls = new OrbitControls(camera, $('cv-pt'));
+controls.enableDamping = false; controls.target.copy(TARGET);
+controls.minDistance = 1.2; controls.maxDistance = 6;
+controls.addEventListener('change', () => { if(pathTracer){ pathTracer.updateCamera(); samples = 0; } });
+
+// ---------- light placement ----------
+let azimuth = 135, elev = 45, autoOrbit = false;
+function placeLight(){
+  const a = azimuth*Math.PI/180, e = elev*Math.PI/180, r = 3.2;
+  key.position.set(
+    TARGET.x + r*Math.cos(e)*Math.sin(a),
+    TARGET.y + r*Math.sin(e),
+    TARGET.z + r*Math.cos(e)*Math.cos(a)
+  );
+  if (pathTracer){ pathTracer.updateLights(); samples = 0; }
+}
+$('azi').addEventListener('input', e=>{ azimuth=+e.target.value; placeLight(); });
+$('elev').addEventListener('input', e=>{ elev=+e.target.value; placeLight(); });
+$('orbit').addEventListener('click', e=>{ autoOrbit=!autoOrbit; e.target.classList.toggle('on',autoOrbit); });
+$('reset').addEventListener('click', ()=>{ camera.position.set(0.85,0.92,1.55); controls.target.copy(TARGET); controls.update(); });
+
+// ---------- liquid swatches ----------
+const FILLS = [
+  { n:'Amber',    c:0xc75a14 },
+  { n:'Rose',     c:0xd14b74 },
+  { n:'Emerald',  c:0x1f7a4d },
+  { n:'Sapphire', c:0x2550b0 },
+];
+function buildSwatches(){
+  FILLS.forEach((f,i)=>{
+    const s=document.createElement('div'); s.className='sw'+(i===0?' on':'');
+    s.style.background='#'+f.c.toString(16).padStart(6,'0'); s.title=f.n;
+    s.addEventListener('click',()=>{
+      document.querySelectorAll('#swatches .sw').forEach(x=>x.classList.remove('on')); s.classList.add('on');
+      if(liquidMat){ liquidMat.color.setHex(f.c); liquidMat.attenuationColor && liquidMat.attenuationColor.setHex(f.c);
+        if(pathTracer){ pathTracer.updateMaterials(); samples=0; } }
+    });
+    $('swatches').appendChild(s);
+  });
+}
+buildSwatches();
+
+// ---------- resize ----------
+function resize(){
+  for (const [r,c] of [[rasterRenderer,$('cv-raster')],[ptRenderer,$('cv-pt')]]){
+    const w=c.clientWidth, h=c.clientHeight;
+    r.setSize(w,h,false);
+  }
+  const c=$('cv-pt'); camera.aspect=c.clientWidth/Math.max(1,c.clientHeight); camera.updateProjectionMatrix();
+  if(pathTracer){ pathTracer.setSize($('cv-pt').clientWidth, $('cv-pt').clientHeight); pathTracer.updateCamera(); samples=0; }
+}
+addEventListener('resize', resize);
+
+// ---------- boot ----------
+(async function init(){
+  await rasterRenderer.init();
+  await ptRenderer.init();
+
+  // environment
+  const hdr = await new RGBELoader().loadAsync(HDR);
+  hdr.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = hdr;
+  scene.environmentIntensity = 0.42;
+
+  // model
+  const gltf = await new GLTFLoader().loadAsync(GLB);
+  gltf.scene.traverse(o=>{
+    if(o.isMesh){
+      o.castShadow = true; o.receiveShadow = true;
+      const m = o.material;
+      if(m && /liquid/i.test(m.name)){ liquidMat = m; m.attenuationColor = new THREE.Color(0xc75a14); m.attenuationDistance = 2.0; m.thickness = 0.3; }
+    }
+  });
+  scene.add(gltf.scene);
+
+  resize();
+
+  pathTracer = new WebGPUPathTracer(ptRenderer);
+  pathTracer.renderScale = 1;
+  pathTracer.setScene(scene, camera);
+  placeLight();
+
+  $('loading').classList.add('hidden');
+  animate();
+})().catch(err=>{ console.error(err); $('samples').textContent='error: '+err.message; });
+
+// ---------- loop ----------
+function animate(){
+  requestAnimationFrame(animate);
+  controls.update();
+  if(autoOrbit){ azimuth=(azimuth+0.4)%360; $('azi').value=azimuth; placeLight(); }
+  rasterRenderer.renderAsync(scene, camera);
+  if(pathTracer){
+    pathTracer.renderSample();
+    samples++;
+    $('samples').textContent = 'WebGPU path tracer · '+samples+' samples';
+  }
+}
+</script>
+</body>
+</html>
