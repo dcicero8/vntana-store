@@ -266,7 +266,7 @@
    <section class="panel" id="p-parts">
     <div class="eyebrow">Replacement Parts · 1" 2000BM1-FP</div>
     <h1>Repair kits &amp; parts</h1>
-    <p class="lede">Click any labeled part to see what it does and which kit replaces it. Switch to <b>Inside</b> to see the serviceable internals with the cover off, or pick a kit to light up exactly what is in the box.</p>
+    <p class="lede">Pick a kit or any part in the list to see what it does, when to replace it and which kit includes it. Switch to <b>Inside</b> to see the serviceable internals with the cover off.</p>
     <div class="partcard" id="partcard"></div>
     <div class="kits" id="kits"></div>
     <input class="search" id="search" placeholder="Search parts">
@@ -598,7 +598,7 @@ function applyTabState(){
   $("partcard").classList.remove("show");
   if(tab==="product"){ clearFx(); tween(0,0,700); cam("hero"); $("hint").textContent="Drag to orbit · scroll to zoom"; }
   selKit=null; selRow=null;
-  if(tab==="parts"){ clearFx(); setView("out"); $("hint").textContent="Hover a part to name it · click for details"; showCoach(); }
+  if(tab==="parts"){ clearFx(); setView("out"); $("hint").textContent="Pick a kit or a part for details"; showCoach(); }
   else hideCoach();
   if(tab==="service"){ goStep(cur<0?-1:cur,true); }
 }
@@ -632,7 +632,6 @@ function selectRow(n){
   const inside="4567".includes(r.n[0])&&r.n.length<=2;          // cover O-ring, retainer, checks and their pieces
   if(tab==="parts") markView(inside?"in":"out");
   if(inside){ tween(r.sub?1:0.66,0,700); cam(r.sub?"checks":"inside"); } else { tween(0,0,700); cam("hero"); }
-  highlight(r.parts);
   $("hint").textContent=r.name;
 }
 $("bom").addEventListener("click",e=>{ const tr=e.target.closest("tr"); if(tr) selectRow(tr.dataset.n); });
@@ -643,7 +642,7 @@ function selectKit(id){
   document.querySelectorAll(".kit").forEach(x=>x.classList.toggle("on",x.dataset.k===id));
   document.querySelectorAll("#bom tr").forEach(tr=>{ const r=BOM.find(b=>b.n===tr.dataset.n); tr.classList.toggle("sel",!!(r&&(r.kits||[]).includes(id))); });
   $("partcard").classList.remove("show");
-  markView("in"); tween(1,0,900); highlight(k.parts); cam("checks"); $("hint").textContent=`${k.name}: every labeled part is in the kit`;
+  markView("in"); tween(0.66,0,900); clearFx(); cam("inside"); $("hint").textContent=`${k.name}: parts marked in the list below`;
 }
 $("kits").addEventListener("click",e=>{ const k=e.target.closest(".kit"); if(k) selectKit(k.dataset.k); });
 let pview="out";
@@ -669,7 +668,7 @@ viewer.addEventListener("object-hover",e=>{
   const tip=$("tip"); const hit=((e.detail&&e.detail.intersections)||[])[0];
   const nm=hit&&uuidName[hit.uuid]; const r=nm&&rowForName(nm);
   const pe=(e.detail&&e.detail.originalEvent)||lastPtr;
-  if(!r||!pe||tab!=="parts"){ tip.style.display="none"; viewer.style.cursor=""; return; }
+  { tip.style.display="none"; viewer.style.cursor=""; return; }   // simplified: no hover names
   const box=$("viewer").getBoundingClientRect();
   const kits=(r.kits||[]).map(id=>KITS.find(x=>x.id===id).name).join(", ");
   tip.innerHTML=`<b>${r.n}. ${r.name}</b><small>${kits?`In ${kits}`:"Not in a repair kit"} · click for details</small>`;
@@ -682,12 +681,13 @@ $("viewer").addEventListener("pointerleave",()=>{ $("tip").style.display="none";
 
 /* ---- first-visit coach ---- */
 let coachDone=false; try{ coachDone=localStorage.getItem("watts_coach")==="1"; }catch(_){}
-function showCoach(){ if(!coachDone) $("coach").classList.add("show"); }
+function showCoach(){}
 function hideCoach(){ $("coach").classList.remove("show"); }
 $("coachX").onclick=()=>{ coachDone=true; try{ localStorage.setItem("watts_coach","1"); }catch(_){}; hideCoach(); };
 
 /* ---- numbered labels pinned to parts (parts tab) ---- */
 function labelRows(){
+  return [];   // simplified: no pinned callouts (Derek, 2026-10-07)
   if(tab!=="parts"||!ready) return [];
   if(selKit){ const k=KITS.find(x=>x.id===selKit); return BOM.filter(b=>b.sub&&k.parts.includes(b.at)).concat(BOM.filter(b=>b.n==="4")); }
   if(selRow&&/^[67][a-e]$/.test(selRow)) return BOM.filter(b=>b.sub&&b.n[0]===selRow[0]);
