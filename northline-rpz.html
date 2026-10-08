@@ -188,6 +188,16 @@
   #arModal h3{font-size:1.05rem;margin-bottom:.35rem}#arModal p{font-size:.8rem;color:var(--muted);line-height:1.45}
   #arQR{display:flex;justify-content:center;margin:1rem 0}#arQR img,#arQR canvas{width:200px;height:200px}
   #arGo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;display:none}
+  /* VNTANA hotspots (loaded from the platform, Product tab only) */
+  vntana-hotspot{--hotspot-size:30px;position:relative}
+  .hs{position:relative;pointer-events:auto}
+  .hs .pin{width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;cursor:pointer;transition:transform .15s}
+  .hs:hover .pin,.hs.open .pin{transform:scale(1.12)}
+  .hs .card{display:none;position:absolute;left:36px;top:-6px;width:230px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:.6rem .7rem;font-size:.74rem;line-height:1.45;color:#2b3036;box-shadow:0 8px 24px rgba(0,0,0,.18);text-align:left}
+  .hs .card b{display:block;font-size:.78rem;color:var(--ink);margin-bottom:.15rem}
+  .hs.open .card{display:block}
+  .hs.flip .card{left:auto;right:36px}
+  body.not-product vntana-hotspot{display:none}
   .partcard .close{float:right;border:0;background:none;font-size:1rem;color:var(--muted);cursor:pointer;line-height:1}
 </style>
 </head>
@@ -592,6 +602,7 @@ function setTab(t){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
   $("viewSeg").style.display=t==="parts"?"":"none";
+  document.body.classList.toggle("not-product",t!=="product");
   if(t!=="product") setMode("3d");
   try{ const sp=new URLSearchParams(location.search); if(t==="product") sp.delete("tab"); else sp.set("tab",t);
        const qs=sp.toString(); history.replaceState(null,"",location.pathname+(qs?"?"+qs:"")); }catch(_){}
@@ -795,6 +806,31 @@ $("arModal").onclick=e=>{ if(e.target.id==="arModal") $("arModal").classList.rem
 if(new URLSearchParams(location.search).get("ar")==="1"&&matchMedia("(pointer:coarse)").matches){
   $("arGo").style.display="flex"; $("arGo").onclick=()=>{ try{ viewer.startAR(); }catch(_){}; $("arGo").style.display="none"; }; }
 
+
+/* ---------------- hotspots: authored on the VNTANA platform (via API), rendered here on the Product tab ---------------- */
+let hsLoaded=false;
+function loadHotspots(uuid){
+  if(hsLoaded) return; hsLoaded=true;
+  fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({productUuid:uuid,page:1,size:20})})
+   .then(r=>r.json()).then(j=>{
+    const grid=((j.response||{}).grid||[]);
+    grid.forEach((h,i)=>{
+      let dims={}; try{ dims=JSON.parse((h.config&&h.config.dimensions)||h.dimensions||"{}"); }catch(_){}
+      if(!dims.position) return;
+      const tmp=document.createElement("div"); tmp.innerHTML=h.text||""; const txt=tmp.textContent||"";
+      const cut=txt.indexOf(":"); const title=cut>0&&cut<60?txt.slice(0,cut):""; let body=cut>0&&cut<60?txt.slice(cut+1).trim():txt; body=body.charAt(0).toUpperCase()+body.slice(1);
+      const el=document.createElement("vntana-hotspot");
+      el.setAttribute("position",dims.position); el.setAttribute("normal",dims.normal||"0m 1m 0m");
+      el.innerHTML=`<div class="hs"><div class="pin">${i+1}</div><div class="card">${title?`<b>${title}</b>`:""}${body}</div></div>`;
+      const hs=el.querySelector(".hs");
+      hs.addEventListener("click",e=>{ e.stopPropagation(); const was=hs.classList.contains("open");
+        document.querySelectorAll(".hs.open").forEach(x=>{ x.classList.remove("open"); x.closest("vntana-hotspot").style.zIndex=""; });
+        if(!was){ hs.classList.add("open"); el.style.zIndex="50"; const r=hs.getBoundingClientRect(), s=$("viewer").getBoundingClientRect(); hs.classList.toggle("flip", r.left-s.left>s.width*0.55); } });
+      viewer.appendChild(el);
+    });
+  }).catch(()=>{});
+}
+document.addEventListener("click",e=>{ if(!e.target.closest(".hs")) document.querySelectorAll(".hs.open").forEach(x=>x.classList.remove("open")); });
 /* ---------------- load ---------------- */
 // single source (?uuid= overrides for testing)
 const FALLBACK=UUID;
@@ -810,7 +846,7 @@ getGlb(UUID).then(g=>g||(UUID!==FALLBACK?getGlb(FALLBACK):null)).then(g=>{
   viewer.addEventListener("load",init,{once:true});
   if(g.usdz) try{ viewer.usdzSrc=`${BASE}/assets/products/${g.uuid}/organizations/${ORG}/clients/${WS}/${g.usdz}`; }catch(_){}
   viewer.src=`${BASE}/assets/products/${g.uuid}/organizations/${ORG}/clients/${WS}/${g.blob}`;
-  window.__modelUuid=g.uuid; $("glbLink").href=`${BASE}/assets/products/${g.uuid}/organizations/${ORG}/clients/${WS}/${g.blob}`;
+  window.__modelUuid=g.uuid; loadHotspots(g.uuid); $("glbLink").href=`${BASE}/assets/products/${g.uuid}/organizations/${ORG}/clients/${WS}/${g.blob}`;
   let polls=0; const t=setInterval(()=>{ if(inited||polls++>80) clearInterval(t); else if(viewer.sceneGraph){ init(); clearInterval(t); } },500);
 }).catch(e=>{ $("loading").querySelector("p").textContent="Could not load the model"; console.error(e); });
 
