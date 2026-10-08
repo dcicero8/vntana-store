@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ames 2000B-FP Double Check Valve Assembly | Interactive 3D, Parts &amp; Service | VNTANA Demo</title>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--blue:#00539b;--blue-d:#003e75;--navy:#0b2340;--red:#c8102e;--ink:#1a1d21;--line:#e4e6ea;--muted:#6b7280;--bg:#f6f7f9;--ok:#1b7f4b;--warn:#b45309}
@@ -182,6 +183,12 @@
   .partcard .grid dt{color:var(--muted);font-weight:700}.partcard .grid dd{color:#2b3036}
   .partcard .kitrow{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
   .partcard .kitrow .btn{padding:.42rem .6rem;font-size:.7rem}
+  #arModal{position:fixed;inset:0;z-index:200;background:rgba(11,35,64,.55);display:none;align-items:center;justify-content:center;padding:16px}
+  #arModal.show{display:flex}
+  #arModal .box{background:#fff;border-radius:10px;padding:1.4rem 1.4rem 1.1rem;max-width:340px;width:100%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+  #arModal h3{font-size:1.05rem;margin-bottom:.35rem}#arModal p{font-size:.8rem;color:var(--muted);line-height:1.45}
+  #arQR{display:flex;justify-content:center;margin:1rem 0}#arQR img,#arQR canvas{width:200px;height:200px}
+  #arGo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;display:none}
   .partcard .close{float:right;border:0;background:none;font-size:1rem;color:var(--muted);cursor:pointer;line-height:1}
 </style>
 </head>
@@ -209,9 +216,10 @@
       <button data-mode="revit">Original Revit file</button>
     </div>
     <div class="stage">
-      <vntana-viewer id="viewer" loading="eager" picking="true" environment-src="assets/env/studio.hdr" shadow-intensity="0.45" exposure="0.85" min-camera-distance="0.05m" dim-opacity="0.18"></vntana-viewer>
+      <vntana-viewer id="viewer" loading="eager" picking="true" environment-src="assets/env/studio.hdr" shadow-intensity="0.45" exposure="0.85" min-camera-distance="0.05m" dim-opacity="0.18"><vntana-ar-button></vntana-ar-button><vntana-qr-button></vntana-qr-button></vntana-viewer>
       <div class="ld" id="loading"><div class="spin"></div><p>Loading 3D model</p></div>
       <div id="labels"></div><div id="tip"></div>
+      <button class="btn primary" id="arGo">View in your space (AR)</button>
       <div id="coach"><span class="ic">i</span><span>Each numbered label is a part you can replace. <b>Hover</b> any part to name it, <b>click</b> it for details and the kit that includes it.</span><button id="coachX">Got it</button></div>
       <div class="overlay" id="ovRenders"><span class="ovtag">Rendered from the same 3D asset</span><img id="renderImg" alt="Ames 2000B-FP render"><div class="thumbs" id="thumbs"></div></div>
       <div class="overlay" id="ovRevit"><span class="ovtag">Revit family as downloaded from BIMobject</span><iframe id="revitFrame" title="Original Revit model" loading="lazy"></iframe></div>
@@ -297,6 +305,7 @@
     <div><b>CAD / BIM download</b><span>Specifiers still get the native file.</span></div>
   </div>
 </section>
+<div id="arModal"><div class="box"><h3>See it in your space</h3><p>Scan with your phone's camera to open this page and place the 2000B-FP at full size in AR.</p><div id="arQR"></div><button class="btn ghost" id="arClose" style="width:100%">Close</button></div></div>
 <footer><div class="wrap">VNTANA demonstration page. Product information summarized from public Watts / Ames Fire &amp; Waterworks documentation (ES-A-2000B-FP, RP/IS-A-2000B). Not an official Watts page; no pricing shown.</div></footer>
 
 <script>
@@ -772,13 +781,25 @@ function setMode(m){
   if(m==="revit"&&!$("revitFrame").src) $("revitFrame").src=`https://embed.vntana.com/v2?productUuid=${REVIT_UUID}&clientSlug=${WS}&organizationSlug=${ORG}`;
 }
 document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-$("arLink").onclick=()=>{ try{ viewer.activateAR&&viewer.activateAR(); }catch(_){}; return false; };
+// AR: phones launch AR directly; desktop opens the viewer's QR code so the visitor can continue on their phone
+$("arLink").onclick=()=>{ setMode("3d");
+  const mobile=matchMedia("(pointer:coarse)").matches;
+  try{ if(mobile&&viewer.startAR){ viewer.startAR(); return false; } }catch(_){}
+  const url=location.origin+location.pathname+"?ar=1";
+  $("arQR").innerHTML=""; try{ new QRCode($("arQR"),{text:url,width:200,height:200,correctLevel:QRCode.CorrectLevel.M}); }catch(_){ $("arQR").textContent=url; }
+  $("arModal").classList.add("show"); return false; };
+$("arClose").onclick=()=>$("arModal").classList.remove("show");
+$("arModal").onclick=e=>{ if(e.target.id==="arModal") $("arModal").classList.remove("show"); };
+// arriving from the QR code on a phone: AR needs a tap, so offer one big button
+if(new URLSearchParams(location.search).get("ar")==="1"&&matchMedia("(pointer:coarse)").matches){
+  $("arGo").style.display="flex"; $("arGo").onclick=()=>{ try{ viewer.startAR(); }catch(_){}; $("arGo").style.display="none"; }; }
 
 /* ---------------- load ---------------- */
 // single source: v7. (Older Ames uploads v2-v6 are deleted; ?uuid= still overrides for testing.)
 const FALLBACK=UUID;
 const getGlb=u=>fetch(`${BASE}/products/${u}/organizations/${ORG}/clients/${WS}`).then(r=>r.ok?r.json():null).catch(()=>null)
-  .then(p=>{ const m=((p&&p.response&&p.response.asset)||{}).models||[]; const g=m.find(x=>(x.conversionFormat??x.type)==="GLB"); return g?{uuid:u,blob:g.modelBlobId}:null; });
+  .then(p=>{ const m=((p&&p.response&&p.response.asset)||{}).models||[]; const g=m.find(x=>(x.conversionFormat??x.type)==="GLB"); const z=m.find(x=>(x.conversionFormat??x.type)==="USDZ");
+    return g?{uuid:u,blob:g.modelBlobId,usdz:z&&z.modelBlobId}:null; });
 getGlb(UUID).then(g=>g||(UUID!==FALLBACK?getGlb(FALLBACK):null)).then(g=>{
   if(!g){ $("loading").querySelector("p").textContent="Model is still processing"; return; }
   let inited=false;
@@ -786,6 +807,7 @@ getGlb(UUID).then(g=>g||(UUID!==FALLBACK?getGlb(FALLBACK):null)).then(g=>{
     $("loading").classList.add("hidden"); buildIndex(150);
     let n=0;(function f(){ cam(tab==="service"&&cur>=0?STEPS[cur].cam:(tab==="parts"?"open":"hero")); if(n++<5) setTimeout(f,160); })(); }
   viewer.addEventListener("load",init,{once:true});
+  if(g.usdz) try{ viewer.usdzSrc=`${BASE}/assets/products/${g.uuid}/organizations/${ORG}/clients/${WS}/${g.usdz}`; }catch(_){}
   viewer.src=`${BASE}/assets/products/${g.uuid}/organizations/${ORG}/clients/${WS}/${g.blob}`;
   window.__modelUuid=g.uuid;
   let polls=0; const t=setInterval(()=>{ if(inited||polls++>80) clearInterval(t); else if(viewer.sceneGraph){ init(); clearInterval(t); } },500);
