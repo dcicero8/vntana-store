@@ -88,8 +88,7 @@
   .docs{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;font-size:.76rem}
   .docs a{color:var(--blue);font-weight:700;text-decoration:none}.docs a:hover{text-decoration:underline}
   .features{list-style:none;margin:1.3rem 0 0;border-top:1px solid var(--line)}
-  .features li{display:flex;gap:.7rem;align-items:flex-start;padding:.65rem .2rem;border-bottom:1px solid var(--line);cursor:pointer;font-size:.84rem;line-height:1.4}
-  .features li:hover{background:#f7f9fc}.features li.on{background:#eaf2fa}
+  .features li{display:flex;gap:.7rem;align-items:flex-start;padding:.65rem .2rem;border-bottom:1px solid var(--line);font-size:.84rem;line-height:1.4}
   .features .dot{flex:none;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
   .features b{display:block}.features span{color:var(--muted);font-size:.78rem}
   table.spec{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:.4rem}
@@ -225,7 +224,7 @@
       <div class="overlay" id="ovRevit"><span class="ovtag">Revit family as downloaded from BIMobject</span><iframe id="revitFrame" title="Original Revit model" loading="lazy"></iframe></div>
     </div>
     <div class="foot">
-      <span class="hint" id="hint">Drag to orbit · scroll to zoom · click a part</span>
+      <span class="hint" id="hint">Drag to orbit · scroll to zoom</span>
       <span class="seg" id="viewSeg" style="display:none"><button data-v="out" class="on">Outside</button><button data-v="in">Inside</button></span>
       <button class="linkbtn" id="resetBtn">Reset view</button>
     </div>
@@ -597,7 +596,7 @@ function applyTabState(){
   if(!ready) return;
   document.querySelectorAll(".features li,.kit,#bom tr").forEach(e=>e.classList.remove("on","sel"));
   $("partcard").classList.remove("show");
-  if(tab==="product"){ clearFx(); tween(0,0,700); cam("hero"); $("hint").textContent="Drag to orbit · tap a feature to see it on the model"; }
+  if(tab==="product"){ clearFx(); tween(0,0,700); cam("hero"); $("hint").textContent="Drag to orbit · scroll to zoom"; }
   selKit=null; selRow=null;
   if(tab==="parts"){ clearFx(); setView("out"); $("hint").textContent="Hover a part to name it · click for details"; showCoach(); }
   else hideCoach();
@@ -605,9 +604,7 @@ function applyTabState(){
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 
-$("features").addEventListener("click",e=>{ const li=e.target.closest("li"); if(!li) return;
-  const f=FEATURES[+li.dataset.i]; document.querySelectorAll(".features li").forEach(x=>x.classList.toggle("on",x===li));
-  setMode("3d"); tween(f.open||0,0,700); highlight(f.parts); cam(f.open?"open":"hero"); });
+// Product tab is plain interactive 3D: feature list is informational; part highlighting lives in Replacement Parts.
 
 let selKit=null, selRow=null;
 // which BOM row a clicked/hovered mesh belongs to: whole modules while the checks are together, single pieces once they fan out
@@ -663,7 +660,6 @@ viewer.addEventListener("object-select",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0]; if(!hit) return;
   const nm=uuidName[hit.uuid]; if(!nm) return;
   if(tab==="parts"){ const r=rowForName(nm); if(r) selectRow(r.n); }
-  else if(tab==="product"){ const f=FEATURES.findIndex(x=>x.parts.includes(nm)); if(f>=0) $("features").querySelector(`li[data-i="${f}"]`).click(); }
 });
 
 /* ---- hover tooltip: name the part under the pointer ---- */
@@ -673,7 +669,7 @@ viewer.addEventListener("object-hover",e=>{
   const tip=$("tip"); const hit=((e.detail&&e.detail.intersections)||[])[0];
   const nm=hit&&uuidName[hit.uuid]; const r=nm&&rowForName(nm);
   const pe=(e.detail&&e.detail.originalEvent)||lastPtr;
-  if(!r||!pe||tab==="service"){ tip.style.display="none"; viewer.style.cursor=""; return; }
+  if(!r||!pe||tab!=="parts"){ tip.style.display="none"; viewer.style.cursor=""; return; }
   const box=$("viewer").getBoundingClientRect();
   const kits=(r.kits||[]).map(id=>KITS.find(x=>x.id===id).name).join(", ");
   tip.innerHTML=`<b>${r.n}. ${r.name}</b><small>${kits?`In ${kits}`:"Not in a repair kit"} · click for details</small>`;
