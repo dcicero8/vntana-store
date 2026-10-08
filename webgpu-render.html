@@ -40,6 +40,18 @@
   #nogpu h2{font-size:1.2rem}#nogpu p{color:#9aa2b2;max-width:440px;line-height:1.5;font-size:.9rem}
   #loading{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;color:#8b93a4;font-size:.8rem;letter-spacing:.06em}
   #loading.hidden{display:none}
+  /* hybrid single-view mode */
+  .stage.hybrid{grid-template-columns:1fr}
+  .stage.hybrid .pane.left{display:none}
+  .stage.hybrid .tag{display:none}
+  .pane.right canvas#cv-raster{position:absolute;inset:0;z-index:2;transition:opacity .35s ease}
+  .hstatus{display:none;position:absolute;top:12px;left:12px;z-index:3;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:7px;background:rgba(12,14,18,.72);backdrop-filter:blur(6px);border:1px solid #333a45}
+  .hstatus .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px;background:#8b93a4}
+  .hstatus.preview .dot{background:#e0a21a}.hstatus.refine .dot{background:#3fa9f5}.hstatus.ready .dot{background:#3fae4f}
+  .stage.hybrid .hstatus{display:block}
+  .mode-tog{display:flex;border:1px solid #333a45;border-radius:8px;overflow:hidden}
+  .mode-tog button{font:inherit;font-size:.68rem;font-weight:700;color:#c9ced6;background:#1b1f27;border:0;padding:9px 13px;cursor:pointer}
+  .mode-tog button.on{background:var(--accent);color:#fff}
 </style>
 </head>
 <body>
@@ -53,8 +65,9 @@
     <div class="tag today">Real-time rasterized<small>what the live viewer renders today</small></div>
     <canvas id="cv-raster"></canvas>
   </div>
-  <div class="pane right">
+  <div class="pane right" id="pane-right">
     <div class="tag gpu">WebGPU path traced<small>true transmission, refraction, soft shadows</small></div>
+    <div class="hstatus" id="hstatus"><span class="dot"></span><span id="hstatus-t">Previewing</span></div>
     <canvas id="cv-pt"></canvas>
     <div class="samples" id="samples">initializing…</div>
     <div id="loading">Building the scene…</div>
@@ -62,6 +75,12 @@
 </div>
 
 <div class="controls">
+  <div class="ctl"><label>View</label>
+    <div class="mode-tog" id="modetog">
+      <button data-mode="compare" class="on">A / B compare</button>
+      <button data-mode="hybrid">Live hybrid</button>
+    </div>
+  </div>
   <div class="ctl"><label>Light angle</label><input id="azi" type="range" min="0" max="360" value="135"></div>
   <div class="ctl"><label>Light height</label><input id="elev" type="range" min="8" max="82" value="45"></div>
   <button class="btn" id="orbit">Auto-orbit light</button>
@@ -69,7 +88,7 @@
     <div class="swatches" id="swatches"></div>
   </div>
   <button class="btn" id="reset">Reset view</button>
-  <div class="cap">Drag the right view to orbit. Move the light and watch the shadow, the colored refraction, and the back label reading through the bottle, which only the path-traced side can do.</div>
+  <div class="cap"><b>A/B compare:</b> left is today's real-time render, right is WebGPU path tracing. <b>Live hybrid:</b> one smart viewer, real-time preview while you move, auto-refines to photoreal when it settles. The left half of the glass is frosted, the right half clear.</div>
 </div>
 
 <div id="nogpu">
@@ -104,7 +123,7 @@ const $ = id => document.getElementById(id);
 
 if (!navigator.gpu){ $('nogpu').style.display='flex'; throw new Error('no webgpu'); }
 
-const GLB = 'assets/perfume_aura.glb';
+const GLB = 'assets/perfume_aura_v2.glb';
 const HDR = 'assets/env/studio.hdr';
 const TARGET = new THREE.Vector3(0, 0.62, 0);
 
@@ -151,6 +170,23 @@ controls.enableDamping = false; controls.target.copy(TARGET);
 controls.minDistance = 1.2; controls.maxDistance = 6;
 controls.addEventListener('change', () => { if(pathTracer){ pathTracer.updateCamera(); samples = 0; } });
 
+// ---------- mode + interaction (for Live hybrid) ----------
+let mode = 'compare', interacting = false, interactTimer = null;
+function pulseInteract(){ interacting = true; clearTimeout(interactTimer); interactTimer = setTimeout(()=>interacting=false, 240); }
+controls.addEventListener('start', ()=> interacting = true);
+controls.addEventListener('end',   ()=> pulseInteract());
+const stageEl = document.querySelector('.stage');
+const leftPane = document.querySelector('.pane.left');
+const rightPane = $('pane-right');
+const rasterCanvas = $('cv-raster');
+document.querySelectorAll('#modetog button').forEach(b=>b.addEventListener('click',()=>{
+  mode = b.dataset.mode;
+  document.querySelectorAll('#modetog button').forEach(x=>x.classList.toggle('on', x===b));
+  if(mode==='hybrid'){ stageEl.classList.add('hybrid'); rightPane.appendChild(rasterCanvas); }
+  else { stageEl.classList.remove('hybrid'); rasterCanvas.style.opacity=1; leftPane.appendChild(rasterCanvas); }
+  resize();
+}));
+
 // ---------- light placement ----------
 let azimuth = 135, elev = 45, autoOrbit = false;
 function placeLight(){
@@ -162,8 +198,8 @@ function placeLight(){
   );
   if (pathTracer){ pathTracer.updateLights(); samples = 0; }
 }
-$('azi').addEventListener('input', e=>{ azimuth=+e.target.value; placeLight(); });
-$('elev').addEventListener('input', e=>{ elev=+e.target.value; placeLight(); });
+$('azi').addEventListener('input', e=>{ azimuth=+e.target.value; placeLight(); pulseInteract(); });
+$('elev').addEventListener('input', e=>{ elev=+e.target.value; placeLight(); pulseInteract(); });
 $('orbit').addEventListener('click', e=>{ autoOrbit=!autoOrbit; e.target.classList.toggle('on',autoOrbit); });
 $('reset').addEventListener('click', ()=>{ camera.position.set(0.85,0.92,1.55); controls.target.copy(TARGET); controls.update(); });
 
@@ -182,6 +218,7 @@ function buildSwatches(){
       document.querySelectorAll('#swatches .sw').forEach(x=>x.classList.remove('on')); s.classList.add('on');
       if(liquidMat){ liquidMat.color.setHex(f.c); liquidMat.attenuationColor && liquidMat.attenuationColor.setHex(f.c);
         if(pathTracer){ pathTracer.updateMaterials(); samples=0; } }
+      pulseInteract();
     });
     $('swatches').appendChild(s);
   });
@@ -242,6 +279,18 @@ function animate(){
     pathTracer.renderSample();
     samples++;
     $('samples').textContent = 'WebGPU path tracer · '+samples+' samples';
+  }
+  if(mode==='hybrid'){
+    let op, cls, txt;
+    if(interacting || autoOrbit){ op=1; cls='preview'; txt='Previewing · real-time'; }
+    else {
+      op = 1 - Math.min(1, Math.max(0, (samples-4)/32));   // crossfade raster -> path traced
+      if(op>0.02){ cls='refine'; txt='Refining · '+samples+' samples'; }
+      else { cls='ready'; txt='Photoreal · WebGPU path traced'; }
+    }
+    rasterCanvas.style.opacity = op;
+    $('hstatus').className = 'hstatus '+cls;
+    $('hstatus-t').textContent = txt;
   }
 }
 </script>
