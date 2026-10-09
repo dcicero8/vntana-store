@@ -121,10 +121,10 @@ Confirm from the catalog page:
 
   <div class="card">
     <h3>Shared render toolkit</h3>
-    <p>Use VNTANA’s shared toolkit so cameras, lighting, and the render environment are identical on every asset.</p>
+    <p>Use VNTANA’s shared toolkit so cameras, lighting, and the render environment are identical on every asset. <b>Always download the latest version.</b></p>
     <ul class="rules">
-      <li><a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">Sample Blender file</a> (cameras + render settings). A new version with Taco's 8 cameras and lighting is coming after Oct 9. Until then, keep your current cameras and lighting.</li>
-      <li><a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">Neutral environment map (HDRI)</a>. Pack it into your file.</li>
+      <li><a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">Blender template</a>: download the <b>latest version</b>. It has Taco's 9 cameras (01_Front-Top-Left_Hero to 09_Detail) and the render settings. Copy the cameras, World and color settings into your file; delete any old cameras.</li>
+      <li><a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">Studio HDRI</a>: download the latest version, pack it into your file, strength 1.0. Color: ACES 1.3, exposure 1.0. No extra lights.</li>
     </ul>
   </div>
 
@@ -139,7 +139,7 @@ Confirm from the catalog page:
       <li>glTF PBR metal/roughness, textures embedded. Separate materials from the signed-off library, named as in the library. No single baked atlas for the whole product.</li>
       <li>Single 0 to 1 UV per material, seams hidden.</li>
       <li>Faceplate / labels / screens are textures, artwork version confirmed.</li>
-      <li>Cameras and lighting: keep the current setup until VNTANA sends the new template (8 cameras + lighting, after Taco sign-off Oct 9).</li>
+      <li>Cameras, World and color settings from the <b>latest</b> VNTANA template (9 cameras, Studio HDRI at 1.0, ACES 1.3, exposure 1.0). Real-world size, checked against Taco's CAD.</li>
       <li>Renders smooth at 4K. Source artifacts flagged in notes, not reproduced.</li>
       <li>All variants share the same body geometry; only the noted differences change.</li>
     </ul>
@@ -148,8 +148,8 @@ Confirm from the catalog page:
   <div class="card">
     <h3>Upload to VNTANA platform</h3>
     <ul class="rules">
-      <li>Upload with <b>Convert Only</b> so the platform does not re-mesh, decimate, or optimize your finished geometry.</li>
-      <li>Set <b>Pivot: None</b> and turn <b>Draco OFF</b>. Keep it a straight conversion, nothing else happening.</li>
+      <li>Pipeline: <b>Preserve Meshes + UVs</b>. Keep the model where it is (no recentering, no rescaling).</li>
+      <li>Turn <b>Draco OFF</b>.</li>
       <li>Save as <b>Draft</b>. Do not publish.</li>
       <li>Fill the parts manifest so the platform part list matches your named meshes.</li>
       <li>Upload the finished <b>GLB, packed Blender file, and parts manifest as a new version of the original platform asset</b> (the same asset the Platform link points to), not as a brand-new asset.</li>

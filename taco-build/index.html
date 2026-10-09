@@ -87,14 +87,14 @@
 <div class="wrap">
 
 <div class="callout" style="background:#fff1f1;border-color:#f3c2c2;color:#5c1414;margin-top:24px;font-size:15px">
-  <span class="badge-new">Updated Oct 6</span> <b>First delivery reviewed (0034e). Requirements have changed.</b>
+  <span class="badge-new">Updated Oct 9</span> <b>Taco reviewed the 0034e. Here is what changed.</b>
   <ul class="rules" style="margin-top:8px">
-    <li><b>Substance source files are now required</b> (.sbs + .sbsar per repeatable material, .spp per asset).</li>
-    <li><b>Separate reusable materials</b> in the .blend, from the signed-off library. No single baked atlas for the whole product.</li>
-    <li><b>GLB must be exported from the delivered .blend</b>: same meshes, names and materials. No merged single-mesh GLBs.</li>
-    <li><b>No empties and no scale</b> on any object. Real size, origin bottom-center, bottom at Z = 0.</li>
-    <li><b>Cameras and lighting: do not change yet.</b> VNTANA will send a new template (Taco's 8 cameras + HDRI and light rig) after Taco signs it off on Friday, Oct 9.</li>
-    <li><b>Next deliverable (Oct 8): 0034e</b> with one mesh per part, real part names, Substance materials per finish, Substance files attached. Then Ken's sign-off, the new template, and 0026e.</li>
+    <li><b>Materials approved.</b> Taco green, stainless, cast iron and black plastic are <b>locked</b>. Keep them exactly as they are and reuse them on every product.</li>
+    <li><b>New template is ready.</b> Download the <b>latest</b> <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">Blender template</a> and <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">Studio HDRI</a>: 9 cameras, Studio HDRI at 1.0, ACES 1.3, exposure 1.0. Delete your old cameras.</li>
+    <li><b>Side labels on 0034e and 0026e are stickers.</b> Deliver the <b>Flat Label</b> version only (no Etched version), using Liz's new layout. Put the label text in its own material.</li>
+    <li><b>Real-world size.</b> 0034e is about 163 x 206 x 179 mm. Bottom at Z = 0, centered.</li>
+    <li><b>Upload:</b> pipeline <b>Preserve Meshes + UVs</b>, <b>Draco OFF</b>, new version of the original asset, <b>one Blender file per asset</b>.</li>
+    <li><b>Next:</b> update the 0034e files, then continue with <b>0026e</b>, the <b>separators</b> and <b>VT2218</b>.</li>
   </ul>
   <p style="margin:10px 0 0"><b>All feedback on delivered assets is on the review page.</b></p>
   <p style="margin:12px 0 0"><a class="btn" href="review-0034e.html">Read the full 0034e review: what worked, what must change &rarr;</a></p>
@@ -104,7 +104,8 @@
 <section>
   <h2><span class="n">1</span>Repeatable Materials</h2>
   <p class="lead">Build these first. They are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. Get each one built and signed off once, then reuse the exact same material everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
-  <p class="lead"><span class="badge-new">New</span> <b>Build each material in Substance</b> and deliver the Substance files. Use the exact same material, by name, on every part and every SKU with that finish. Ken signs each one off. A per-asset baked atlas does not count as a library material.</p>
+  <p class="lead"><span class="badge-new">Approved Oct 9</span> <b>Taco approved the materials</b> (Taco green, stainless, cast iron, black plastic). They are <b>locked</b>: reuse them exactly, by name, on every product. If a product needs a material that is not in the library, ask before building it.</p>
+  <p class="lead"><b>Build each material in Substance</b> and deliver the Substance files. Use the exact same material, by name, on every part and every SKU with that finish. Ken signs each one off. A per-asset baked atlas does not count as a library material.</p>
   <p class="lead"><b>Not a complete list.</b> These are only the materials that repeat and that the catalog names. Individual assets will have additional, non-repeated materials that are not shown here. Build those per asset and flag anything you are unsure of.</p>
 
   <div class="card">
@@ -190,7 +191,7 @@
       <li><b>One material per physical material.</b> Do not split one physical material across several, or merge two real materials into one. <span class="badge-new">New</span> In the .blend this means <b>separate Blender materials taken from the signed-off library</b>, named as in the library, not regions of one baked atlas. Cast metals must show real sand-cast grain at true scale.</li>
       <li><b>Single 0 to 1 UV space per material</b>, with seams hidden on non-visible faces.</li>
       <li><b>Faceplates and labels are textures</b>, not modeled geometry. Confirm the version/label artwork before baking it in.</li>
-      <li><b>Side-of-casing label, build it both ways.</b> <span class="badge-new">New</span> Taco is not yet sure whether the side marking is <b>etched into the casing</b> or a <b>flat sticker/label applied on top</b>, so deliver <b>both</b>: one version with the artwork etched into the surface, and one with it as a flat label sitting on the casing. Some fields (MN / PN / JO / DC) are machine-generated at assembly and appear as <code>XXXXXX</code> placeholders. Use the <a href="refs/Taco-Side-Label-Layout.pdf" target="_blank" rel="noopener">side label layout</a> (<a href="refs/Taco-Side-Label-Layout.ai" target="_blank" rel="noopener">.ai working file</a>) for placement and keep the X-string fields as shown.</li>
+      <li><b>Side-of-casing label.</b> <span class="badge-new">Decided Oct 9</span> For <b>0034e and 0026e</b> the side marking is a <b>sticker label</b>: deliver the <b>Flat Label</b> version only, using the <a href="refs/Taco-Side-Label-Layout.pdf" target="_blank" rel="noopener">side label layout</a> (<a href="refs/Taco-Side-Label-Layout.ai" target="_blank" rel="noopener">.ai</a>), never the old CAD text. Put the label text in <b>its own material</b> on the label part (Taco may ask for lighter text). Keep the casing shape as the CAD has it. Other families: ask before building the label; some newer products are etched.</li>
     </ul>
     <div class="note"><span class="badge-new">New</span> <b>Faceplate on hold.</b> Taco is redesigning the 007e-family faceplate across multiple departments (target end of October). Do not bake faceplate artwork yet; model the surface so a texture can drop in later. Ken owns materials / art direction; Jess &amp; Jai own angles / render outputs.</div>
   </div>
@@ -215,12 +216,12 @@
     <ul class="rules" style="margin-top:12px">
       <li><b>File naming:</b> <code>TACO-RES_&lt;SKU&gt;_IMG-01_FRONT-TOP-LEFT_HERO</code> (IMG number + angle label; the hero tag sits on 01).</li>
       <li><b>Export each shot three ways:</b> JPG 300-DPI 3000&times;3000, JPG 150-DPI 1500&times;1500, and EPS vector.</li>
-      <li><b>Camera names</b> (coming in the VNTANA template): <code>IMG-01_FRONT-TOP-LEFT_HERO</code>, <code>IMG-02_FRONT</code> ... <code>IMG-08_BOTTOM</code>. Square 1:1, whole product in frame, no cropping.</li>
-      <li><b>Lighting</b> <span class="badge-new">New</span>: VNTANA is building the lighting template (HDRI + light rig) for Taco's sign-off on Friday, Oct 9. <b>Do not change cameras or lighting until we send it.</b> Blender 5.1.x.</li>
+      <li><b>Cameras</b>: the 9 cameras in the latest VNTANA template (01_Front-Top-Left_Hero to 09_Detail). Square 1:1, whole product in frame.</li>
+      <li><b>Lighting and color</b>: Studio HDRI from the template, strength 1.0, packed. ACES 1.3, exposure 1.0. No extra lights. Blender 5.1.</li>
       <li>Render budget: 256 samples, single GPU, 26GB, 600s cap.</li>
     </ul>
     <div class="note"><b>EPS vector output on the angle shots is still being confirmed.</b> Photoreal 3D renders are raster; the vector/EPS requirement is clear for the side label artwork (above) but is being verified for the product angle renders. Build the two JPG outputs now, and hold on EPS for the angle shots until we confirm.</div>
-    <div class="note"><b>Shared render toolkit</b> (Taco 3D toolkit workspace): download the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">sample Blender file</a> and the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">neutral HDRI</a> (pack it into your file). A new version of this file (8 cameras + lighting) is coming after Friday, Oct 9. <b>Until then, keep the cameras and lighting you have.</b> Same links are on each family page.</div>
+    <div class="note"><b>Shared render toolkit</b> (Taco 3D toolkit workspace): always download the <b>latest version</b> of the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">Blender template</a> and the <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">Studio HDRI</a>. Copy the cameras, World and color settings into each file. Same links are on each family page.</div>
   </div>
 
   <div class="callout">If a Taco redesign changes a product, it is a <b>full new delivery</b>, not a patch to the old file.</div>

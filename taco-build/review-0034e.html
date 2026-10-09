@@ -87,6 +87,8 @@
 
 <div class="wrap">
 
+<div class="callout" style="background:#eef9f1;border-color:#bfe3c9;color:#1f4d2c;margin-top:20px"><b>Update Oct 9 (Taco review):</b> materials <b>approved and locked</b>; the new <b>template is ready</b> (latest version in the 3d-toolkit workspace); side labels on 0034e/0026e are <b>stickers</b> (Flat Label only); upload with <b>Preserve Meshes + UVs, Draco off</b>. Items below are updated to match.</div>
+
 <!-- 1. TARGET LOOK -->
 <section>
   <h2><span class="n">1</span>The target look</h2>
@@ -126,11 +128,11 @@
         <tr><td class="ic minus">&minus;</td><td><b>Cast surface has almost no grain.</b> The normal map is nearly flat (with some baking artifacts) and the height map is blank, so the cast iron reads smooth and lumpy instead of sand-cast.
           <span class="fix"><b>Fix:</b> the shared metal materials carry real cast grain at true scale. Check it in a close-up 4K render before delivery.</span></td></tr>
         <tr><td class="ic minus">&minus;</td><td><b>Old cameras.</b> The file has the 11 cameras from our old sample file, not Taco's 8 named angles. The hero is front-right instead of <b>FRONT-TOP-LEFT</b>, and several shots crop the product. (Our sample file still had the old cameras; that part is on us.)
-          <span class="fix"><b>Fix:</b> VNTANA will send a new template file with Taco's 8 cameras. <b>Until then, keep the cameras you have.</b></span></td></tr>
+          <span class="fix"><b>Fix:</b> use the 9 cameras from the <b>latest</b> VNTANA template (3d-toolkit workspace). Delete the old 11.</span></td></tr>
         <tr><td class="ic minus">&minus;</td><td><b>Lighting settings.</b> Exposure is +1.0 with the original Neutral HDRI at strength 1.0. This is a big part of the washed-out look.
-          <span class="fix"><b>Fix:</b> VNTANA is building the new lighting template (HDRI + light rig). Taco reviews it on Friday, Oct 9. <b>Until then, do not change the lighting.</b></span></td></tr>
+          <span class="fix"><b>Fix:</b> use the World and color settings from the latest template: Studio HDRI at 1.0, ACES 1.3, exposure 1.0.</span></td></tr>
         <tr><td class="ic minus">&minus;</td><td><b>Flat label is not flush.</b> On the Flat Label version, the side label is angled and does not sit flat against the casing.
-          <span class="fix"><b>Fix:</b> the label must sit flat and flush on the casing surface. Keep delivering both versions (Etched and Flat Label) until Taco confirms which one is correct for each variant.</span></td></tr>
+          <span class="fix"><b>Fix:</b> Taco confirmed 0034e/0026e use sticker labels: deliver the <b>Flat Label</b> version only, label flat and flush on the casing, text in its own material.</span></td></tr>
         <tr><td class="ic minus">&minus;</td><td><b>Flange bores are closed.</b> The flange openings are solid discs; the real part is open.
           <span class="fix"><b>Fix:</b> open the bores.</span></td></tr>
         <tr><td class="ic minus">&minus;</td><td><b>Variant check.</b> The F2 files look like the stainless build. Per the catalog, F2 is <b>cast iron</b> and SF2 is <b>stainless</b>.
@@ -143,7 +145,7 @@
 <!-- 3. MUST-HAVES -->
 <section>
   <h2><span class="n">3</span>Must-haves for every delivery, from now on</h2>
-  <p class="lead">These are acceptance requirements. Items marked <b>Required</b> apply now. Items marked <b>Coming from VNTANA</b> start when we send the new template. The full rules are on the <a href="index.html">dashboard</a>.</p>
+  <p class="lead">These are acceptance requirements. Items marked <b>Required</b> apply now. The template is now ready, so every item applies. The full rules are on the <a href="index.html">dashboard</a>.</p>
   <div class="card">
     <ol class="must">
       <li><b>Substance source files.</b> <span class="tagreq">Required</span><br>For each repeatable material: the Substance Designer source (<code>.sbs</code>) and packaged <code>.sbsar</code>. For each asset: the Substance Painter project (<code>.spp</code>) with layers intact. If this is outside the current scope, tell us and we will cover it.</li>
@@ -151,9 +153,9 @@
       <li><b>GLB exported from the delivered .blend.</b> <span class="tagreq">Required</span><br>Same meshes, same names, same materials. Baking a material's textures for the GLB is fine; merging the product into one mesh or one material is not.</li>
       <li><b>One mesh per serviceable part, real names, CSV matches exactly.</b> <span class="tagreq">Required</span></li>
       <li><b>No empties, no scale.</b> <span class="tagreq">Required</span><br>Meshes at the scene root, transforms applied (scale 1.0 everywhere), real-world meters, origin bottom-center, bottom at Z = 0.</li>
-      <li><b>Taco's 8 named cameras, full product in frame.</b> <span class="tagreq">Coming from VNTANA</span><br><b>Do not change cameras yet.</b> VNTANA will send a template file with these cameras. For reference, the names will be:<br>
+      <li><b>Taco's 8 named cameras, full product in frame.</b> <span class="tagreq">Required</span><br>Use the 9 cameras from the latest VNTANA template:<br>
         <code>IMG-01_FRONT-TOP-LEFT_HERO</code>, <code>IMG-02_FRONT</code>, <code>IMG-03_FRONT-TOP-RIGHT</code>, <code>IMG-04_LEFT</code>, <code>IMG-05_BACK</code>, <code>IMG-06_RIGHT</code>, <code>IMG-07_TOP-DOWN</code>, <code>IMG-08_BOTTOM</code>. Square 1:1, the whole product visible with an even margin, no cropping. Match the <a href="refs/Taco-Image-Reference-Guide.pdf" target="_blank" rel="noopener">reference guide</a>.</li>
-      <li><b>Lighting from the VNTANA template.</b> <span class="tagreq">Coming from VNTANA</span><br><b>Do not change lighting yet.</b> VNTANA is building the lighting template (HDRI + light rig). Taco signs it off on Friday, Oct 9. After that, every file uses it.</li>
+      <li><b>Lighting from the VNTANA template.</b> <span class="tagreq">Required</span><br>Studio HDRI (packed) at strength 1.0, ACES 1.3, exposure 1.0, no extra lights. From the latest template in the 3d-toolkit workspace.</li>
       <li><b>Self-check renders before upload.</b> <span class="tagreq">Required</span><br>Render the hero and one 4K close-up of the cast metal and compare against the catalog photo. Include both PNGs with the delivery.</li>
     </ol>
     <div class="note"><b>Separate 4K texture map folders are no longer needed.</b> The maps are already packed in the .blend. The Substance files replace them as the editable source.</div>
@@ -165,35 +167,34 @@
   <h2><span class="n">4</span>Next deliverables, in this order</h2>
   <div class="steps">
     <div class="step first">
-      <div class="no">Next deliverable (Oct 8)</div>
-      <div class="t">0034e: parts + Substance materials</div>
+      <div class="no">Next deliverable</div>
+      <div class="t">0034e update (F2 + SF2)</div>
       <ul>
-        <li>One mesh for each part, with its real name</li>
-        <li>One Substance material for each finish (Taco green, stainless, black plastic, ...), the same material on every part with that finish</li>
-        <li>Substance files attached</li>
-        <li>GLB exported from the same Blender file; CSV matches the parts</li>
-        <li>Keep current cameras and lighting</li>
-      </ul>
-    </div>
-    <div class="step">
-      <div class="no">Then (after Friday, Oct 9)</div>
-      <div class="t">Sign-off + new template</div>
-      <ul>
-        <li>Taco (Ken) signs off the materials</li>
-        <li>VNTANA sends the new template: 8 cameras + lighting</li>
-        <li>Update 0034e to the template</li>
+        <li>Latest template: 9 cameras, Studio HDRI, ACES</li>
+        <li>Real-world size, grounded</li>
+        <li>Flat Label version only (sticker)</li>
+        <li>Names: Pump_Body, Fastener_Steel; CSV matches</li>
+        <li>Materials unchanged (approved)</li>
       </ul>
     </div>
     <div class="step">
       <div class="no">Then</div>
-      <div class="t">0026e, then the remaining families</div>
+      <div class="t">0026e, separators, VT2218</div>
       <ul>
-        <li>Same must-haves, same library</li>
-        <li>Production schedule confirmed on the review call</li>
+        <li>Same template and approved materials</li>
+        <li>These do not wait on faceplate art</li>
+        <li>Send the production schedule</li>
+      </ul>
+    </div>
+    <div class="step">
+      <div class="no">Later</div>
+      <div class="t">E-series faceplates</div>
+      <ul>
+        <li>Final faceplate art from Taco, end of October</li>
+        <li>Keep placeholders until then</li>
       </ul>
     </div>
   </div>
-  <div class="callout"><b>VNTANA will provide:</b> a new template .blend with Taco's 8 named cameras and the lighting (HDRI + light rig), after Taco signs it off on Friday, Oct 9. Until then, keep your current cameras and lighting.</div>
 </section>
 
 <!-- 5. HOW TO UPLOAD -->
@@ -201,7 +202,7 @@
   <h2><span class="n">5</span>How to upload</h2>
   <div class="card">
     <ol class="must">
-      <li>Upload the <b>GLB</b> as the asset.</li>
+      <li>Upload the <b>GLB</b> as the asset. Pipeline <b>Preserve Meshes + UVs</b>, <b>Draco OFF</b>.</li>
       <li>Add the <b>Blender file, CSV, and Substance files</b> as <b>attachments</b> (the paperclip icon on the asset page).</li>
       <li><b>For a new version:</b> click <b>Create Version</b> and upload the new GLB. The attachments stay. If the Blender file changed, replace it.</li>
       <li>Save as <b>Draft</b>. Post in the Slack channel when the upload is done.</li>
