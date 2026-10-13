@@ -54,6 +54,17 @@
   .ref img{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
   .note{margin-top:.9rem;font-size:.7rem;color:var(--muted);line-height:1.45}
   .badge{display:inline-block;background:var(--accent);color:#fff;font-size:.56rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:9px;vertical-align:1px;margin-left:6px}
+  .brief{padding:0 0 3rem}
+  .brief h2{font-size:1.1rem;font-weight:800;letter-spacing:-.01em;margin:2.2rem 0 .7rem;padding-top:1.6rem;border-top:1px solid var(--line)}
+  .brief h2 .tag{font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a8;display:block;margin-bottom:.2rem}
+  .brief .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.3rem;font-size:.86rem;line-height:1.6}
+  .brief .card ul{margin:.3rem 0 .3rem 1.2rem}
+  .brief .card li{margin:.35rem 0}
+  .brief .kv{display:grid;grid-template-columns:150px 1fr;gap:.45rem .9rem;font-size:.86rem}
+  .brief .kv b{color:#6b7280;font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;padding-top:.1rem}
+  @media(max-width:700px){.brief .kv{grid-template-columns:1fr}}
+  .diagram-big{max-width:760px;margin:0 auto}
+  .diagram-big img{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff}
 </style>
 </head>
 <body>
@@ -61,7 +72,7 @@
 <div class="wrap stage">
   <div class="viewer-card">
     <div class="viewer-box">
-      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v4.glb"></vntana-viewer>
+      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v5.glb"></vntana-viewer>
       <div class="ld" id="ld"><div class="spin"></div><p>Loading 3D&hellip;</p></div>
     </div>
     <div class="viewer-foot"><span class="live">Live 3D</span><span>Drag to rotate &middot; scroll to zoom</span></div>
@@ -87,13 +98,56 @@
 
     <div class="summary" id="summary"></div>
 
-    <div class="ref">
-      <div class="lab" style="font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a8;margin-bottom:.5rem">Module placement reference</div>
-      <img src="assets/alaris-modules-diagram.png" alt="Alaris electronic modules placement">
-    </div>
-
-    <div class="note">Scope demo. The chair geometry here is a stand-in pending the Alaris asset. The electronic modules are modeled in: RGB cooling fans (spinning, lit ring), lumbar heating panels, main unit, and an under-seat lighting strip. Base cannot take electronics; Elite accepts any combination of the 4 modules (none through all 4).</div>
+    <div class="note">Scope demo. The chair geometry here is a stand-in pending the real Alaris asset. The electronic modules are modeled in from the SteelSeries placement diagram: RGB cooling fans (spinning, lit rings), lumbar heating arch, main unit, and lighting strips under the seat front and sides. Base cannot take electronics; Elite accepts any combination of the 4 modules (none through all 4).</div>
   </div>
+</div>
+
+<div class="wrap brief">
+
+  <h2><span class="tag">Reference</span>Module placement (SteelSeries diagram)</h2>
+  <div class="diagram-big"><img src="assets/alaris-modules-diagram.png" alt="Alaris electronic modules placement"></div>
+
+  <h2><span class="tag">Project brief</span>What we are building</h2>
+  <div class="card">
+    <div class="kv">
+      <b>Deliverable</b><span>Live 3D + AR chair configurator embedded in the SteelSeries PDP image gallery: shopper picks model, finish, and electronic modules, sees the chair update in real time, and adds the configured chair to cart.</span>
+      <b>Products</b><span>Alaris (Base) and Alaris Elite. Finishes: Black and White. Elite takes any combination of the 4 electronic modules (Main Unit, RGB Cooling Fans, Lighting Strips, Lumbar Heating); Base takes none. 2 Base + 32 Elite = 34 end configurations.</span>
+      <b>Customer</b><span>SteelSeries (GN Group). Toni Au (Sr. Global Platform &amp; Operations Manager, E-Commerce); engineering: Jakub Prus, Timothy Stoneberg.</span>
+      <b>VNTANA</b><span>Derek Cicero (scoping / technical coordination), Ashley Crowder (commercial terms), Neven (viewer engineering + commerce integration scoping).</span>
+      <b>Goal</b><span>Prove the configurator experience and commerce path on the Alaris line, with a quote and timeline driven by the configuration matrix. Complexity (rules + integration) drives the quote more than raw asset count.</span>
+      <b>Assets today</b><span>Alaris Elite chair CAD received (1.1 GB STEP, optimizes to ~3 MB web GLB). No CAD yet for the 4 electronic modules; the modules on this page were modeled by VNTANA from the placement diagram. The chair shown here is a stand-in while the real Alaris asset is prepped.</span>
+    </div>
+  </div>
+
+  <h2><span class="tag">Open questions</span>For Neven (configurator + commerce scoping)</h2>
+  <div class="card"><ul>
+    <li><b>Build approach.</b> This demo runs as ONE combined GLB with named module nodes toggled at runtime on the public npm-bundle viewer. For production, is that the supported path, or do we build on the 3.0.0 configurator module (Wilbert pattern)? What is supportable for a customer vs demo-only?</li>
+    <li><b>Render loop.</b> Runtime-mutated scenes only redraw while the viewer's loop runs (this page keeps auto-rotate on as a workaround). Is there a supported request-render API, or does the configurator module handle this?</li>
+    <li><b>Commerce integration.</b> What do you need from the SteelSeries stack to produce the integration plan: platform, cart API, how a configuration maps to SKU/price? Session with Jakub Prus + Timothy Stoneberg to schedule.</li>
+    <li><b>AR.</b> Should AR reflect the shopper's selected configuration (per-config USDZ, 34 variants) or a hero configuration per model? What does that do to scope?</li>
+    <li><b>PDP embed.</b> Constraints for living inside their gallery: iframe sizing, lazy load, performance budget on the PDP.</li>
+    <li><b>Scope inputs.</b> What granularity do you need from the config matrix (asset count, interactions, integration points) for you and Ashley to price it?</li>
+  </ul></div>
+
+  <h2><span class="tag">Open questions</span>For Toni (assets + product rules)</h2>
+  <div class="card"><ul>
+    <li><b>CAD coverage.</b> Do we receive native CAD for ALL pieces, including the 4 electronic modules, or does VNTANA model the modules from references? This is the biggest driver of cost and timeline.</li>
+    <li><b>Asset status.</b> For each part: what source files exist, and are any textured? If your creative team can hand over files with materials intact, asset prep drops out of the quote. A CMF/material spec (mesh fabric, plastics, logos) works too.</li>
+    <li><b>Module rules.</b> Does the Main Unit have to be present for the other 3 modules to function (does it gate them), or are all 4 fully independent?</li>
+    <li><b>Module finish.</b> Do the electronic modules come in both Black and White, or one fixed finish?</li>
+    <li><b>SKUs.</b> Is each of the 34 end configurations its own SKU, or are modules separate line items added at cart?</li>
+    <li><b>Stack.</b> Which eCommerce platform serves the PDPs, and when can we get Neven together with Jakub and Timothy?</li>
+    <li><b>Timeline.</b> Target launch window, and when do you need the quote to make a decision?</li>
+  </ul></div>
+
+  <h2><span class="tag">Plan</span>What we need to make it happen</h2>
+  <div class="card"><ul>
+    <li><b>1. CAD handoff</b> from SteelSeries: chair + electronic modules, plus CMF/material references (or confirmation that VNTANA models the modules).</li>
+    <li><b>2. Rules sign-off</b> from Toni: module gating, finishes, SKU mapping (the configuration matrix sheet captures these).</li>
+    <li><b>3. Commerce scoping session:</b> Neven + Jakub/Timothy, producing the high-level integration plan.</li>
+    <li><b>4. Quote + timeline</b> from Ashley once 1-3 land: asset prep, configurator build, integration, launch.</li>
+  </ul></div>
+
 </div>
 <script>
   var viewer=document.getElementById("viewer"), ld=document.getElementById("ld");
