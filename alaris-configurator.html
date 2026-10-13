@@ -98,7 +98,7 @@
 
     <div class="summary" id="summary"></div>
 
-    <div class="note">Scope demo. The chair geometry here is a stand-in pending the real Alaris asset. The electronic modules are modeled in from the SteelSeries placement diagram: RGB cooling fans (spinning, lit rings), lumbar heating arch, main unit, and lighting strips under the seat front and sides. Base cannot take electronics; Elite accepts any combination of the 4 modules (none through all 4).</div>
+    <div class="note">Scope demo. The chair geometry here is a stand-in pending the real Alaris asset. The electronic modules are modeled in from the SteelSeries placement diagram: RGB cooling fans, lumbar heating arch, main unit, and lighting strips under the seat front and sides. Base cannot take electronics; Elite accepts any combination of the 4 modules (none through all 4).</div>
   </div>
 </div>
 
@@ -118,16 +118,6 @@
       <b>Assets today</b><span>Alaris Elite chair CAD received (1.1 GB STEP, optimizes to ~3 MB web GLB). No CAD yet for the 4 electronic modules; the modules on this page were modeled by VNTANA from the placement diagram. The chair shown here is a stand-in while the real Alaris asset is prepped.</span>
     </div>
   </div>
-
-  <h2><span class="tag">Open questions</span>For Neven (configurator + commerce scoping)</h2>
-  <div class="card"><ul>
-    <li><b>Build approach.</b> This demo runs as ONE combined GLB with named module nodes toggled at runtime on the public npm-bundle viewer. For production, is that the supported path, or do we build on the 3.0.0 configurator module (Wilbert pattern)? What is supportable for a customer vs demo-only?</li>
-    <li><b>Animation / updates.</b> Requirement: module toggles update instantly and the fans/glow animate continuously. On the public npm viewer this only works while its render loop runs (this page keeps auto-rotate on as a workaround). Does 3.0.0 handle this natively, or is there a supported render API?</li>
-    <li><b>Commerce integration.</b> What do you need from the SteelSeries stack to produce the integration plan: platform, cart API, how a configuration maps to SKU/price? Session with Jakub Prus + Timothy Stoneberg to schedule.</li>
-    <li><b>AR.</b> Should AR reflect the shopper's selected configuration (per-config USDZ, 34 variants) or a hero configuration per model? What does that do to scope?</li>
-    <li><b>PDP embed.</b> Constraints for living inside their gallery: iframe sizing, lazy load, performance budget on the PDP.</li>
-    <li><b>Scope inputs.</b> What granularity do you need from the config matrix (asset count, interactions, integration points) for you and Ashley to price it?</li>
-  </ul></div>
 
   <h2><span class="tag">Open questions</span>For Toni (assets + product rules)</h2>
   <div class="card"><ul>
@@ -206,7 +196,7 @@
       var on = model==="elite" && mods[mo.id];
       (moduleMeshes[mo.id]||[]).forEach(function(m){ if(m) m.visible=!!on; });
     });
-    spinOn = model==="elite" && mods.fans;
+    spinOn = false;   // fans do not rotate (not a SteelSeries requirement); rings stay statically lit
     renderNow();
   }
   function renderSummary(){
@@ -260,7 +250,7 @@
       if(found.length || tries>60){
         clearInterval(poll);
         uphMeshes=found; rootObj=viewer.scene.children.find(function(o){return o.name==='root';})||null; bbox=worldBBox();
-        try{ collectModules(); rotateToBack(180); spinLoop(); }catch(e){ console.warn("modules",e); }
+        try{ collectModules(); rotateToBack(180); }catch(e){ console.warn("modules",e); }
         ready=true; apply(); ld.classList.add("hidden");
       }
     } else if(tries>120){ clearInterval(poll); ld.querySelector("p").textContent="Could not read the 3D scene."; }
