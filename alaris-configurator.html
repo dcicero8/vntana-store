@@ -61,7 +61,7 @@
 <div class="wrap stage">
   <div class="viewer-card">
     <div class="viewer-box">
-      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v2.glb"></vntana-viewer>
+      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v3.glb"></vntana-viewer>
       <div class="ld" id="ld"><div class="spin"></div><p>Loading 3D&hellip;</p></div>
     </div>
     <div class="viewer-foot"><span class="live">Live 3D</span><span>Drag to rotate &middot; scroll to zoom</span></div>
@@ -92,7 +92,7 @@
       <img src="assets/alaris-modules-diagram.png" alt="Alaris electronic modules placement">
     </div>
 
-    <div class="note">Scope demo. The chair geometry here is a stand-in pending the Alaris asset, and the electronic modules are shown as placeholder blocks to confirm the interaction and rules. Base cannot take electronics; Elite accepts any combination of the 4 modules (none through all 4).</div>
+    <div class="note">Scope demo. The chair geometry here is a stand-in pending the Alaris asset. The electronic modules are modeled in: RGB cooling fans (spinning, lit ring), lumbar heating panels, main unit, and an under-seat lighting strip. Base cannot take electronics; Elite accepts any combination of the 4 modules (none through all 4).</div>
   </div>
 </div>
 <script>
@@ -116,37 +116,22 @@
       mn=[Math.min(mn[0],b.min.x),Math.min(mn[1],b.min.y),Math.min(mn[2],b.min.z)]; mx=[Math.max(mx[0],b.max.x),Math.max(mx[1],b.max.y),Math.max(mx[2],b.max.z)]; } });
     return {min:mn,max:mx,size:[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]],center:[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2]};
   }
-  function box(w,h,d,hex,emis){
-    var ref=refMesh(); if(!ref) return null;
-    var hx=w/2,hy=h/2,hz=d/2;
-    var q=[[hx,-hy,-hz],[hx,hy,-hz],[hx,hy,hz],[hx,-hy,hz],[-hx,-hy,hz],[-hx,hy,hz],[-hx,hy,-hz],[-hx,-hy,-hz],
-           [-hx,hy,-hz],[-hx,hy,hz],[hx,hy,hz],[hx,hy,-hz],[-hx,-hy,hz],[-hx,-hy,-hz],[hx,-hy,-hz],[hx,-hy,hz],
-           [-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz],[hx,-hy,-hz],[-hx,-hy,-hz],[-hx,hy,-hz],[hx,hy,-hz]];
-    var pos=[]; for(var f=0;f<6;f++){var b=f*4;[0,1,2,0,2,3].forEach(function(k){pos.push.apply(pos,q[b+k]);});}
-    var geo=new ref.geometry.constructor();
-    geo.setAttribute('position', new ref.geometry.attributes.position.constructor(new Float32Array(pos),3));
-    try{geo.computeVertexNormals();}catch(e){}
-    var mat=ref.material.clone();
-    try{ if(mat.color&&mat.color.setHex) mat.color.setHex(hex); mat.metalness=0.3; mat.roughness=0.5;
-      ["map","normalMap","roughnessMap","metalnessMap","aoMap","emissiveMap"].forEach(function(k){ if(k in mat) mat[k]=null; });
-      if(emis&&mat.emissive&&mat.emissive.setHex){ mat.emissive.setHex(emis); if('emissiveIntensity' in mat) mat.emissiveIntensity=0.9; }
-      mat.needsUpdate=true; }catch(e){}
-    var m=new ref.constructor(geo,mat); m.visible=false; (rootObj||viewer.scene).add(m); return m;
+  // real module meshes are baked into the GLB, named MOD_*; collect them by prefix
+  var fanRotors=[], spinOn=false;
+  function collectModules(){
+    moduleMeshes={fans:[],lumbar:[],main:[],lights:[]}; fanRotors=[];
+    viewer.scene.traverse(function(o){
+      var n=o.name||"";
+      if(n.indexOf("MOD_FAN")===0){ moduleMeshes.fans.push(o); if(n.indexOf("MOD_FAN_ROTOR")===0) fanRotors.push(o); }
+      else if(n.indexOf("MOD_LUMBAR")===0){ moduleMeshes.lumbar.push(o); }
+      else if(n.indexOf("MOD_MAIN")===0){ moduleMeshes.main.push(o); }
+      else if(n.indexOf("MOD_LIGHT")===0){ moduleMeshes.lights.push(o); }
+    });
+    Object.keys(moduleMeshes).forEach(function(k){ moduleMeshes[k].forEach(function(m){ m.visible=false; }); });
   }
-  // orange module blocks, attached to the chair (root) so they move with it; placed on the backrest
-  function placeModules(){
-    if(!rootObj) return;
-    rootObj.updateMatrixWorld(true);
-    var mn=bbox.min, mx=bbox.max, c=bbox.center, H=bbox.size[1];
-    var backZ=mn[2]-0.20;  // stand well proud of the backrest frame so the orange modules are not occluded (back is the min.z face)
-    function V(x,y,z){ var v=refMesh().position.clone(); v.set(x,y,z); return rootObj.worldToLocal(v); }
-    function ob(w,h,d){ return box(w,h,d,0xff6a00,0x5a2600); }
-    var f1=ob(0.15,0.15,0.10), f2=ob(0.15,0.15,0.10);
-    f1.position.copy(V(c[0]-0.12, mn[1]+0.86*H, backZ)); f2.position.copy(V(c[0]+0.12, mn[1]+0.86*H, backZ));
-    moduleMeshes.fans=[f1,f2];
-    var lu=ob(0.32,0.17,0.11); lu.position.copy(V(c[0], mn[1]+0.55*H, backZ)); moduleMeshes.lumbar=[lu];
-    var mu=ob(0.22,0.16,0.12); mu.position.copy(V(c[0], mn[1]+0.34*H, backZ)); moduleMeshes.main=[mu];
-    var li=ob(0.46,0.06,0.06); li.position.copy(V(c[0], mn[1]+0.10*H, mn[2]-0.12)); moduleMeshes.lights=[li];
+  function spinLoop(){
+    if(spinOn){ fanRotors.forEach(function(r){ try{ r.rotateZ(0.18); }catch(e){} }); renderNow(); }
+    requestAnimationFrame(spinLoop);
   }
   function rotateToBack(deg){ if(rootObj){ rootObj.rotation.y = deg*Math.PI/180; rootObj.updateMatrixWorld(true); renderNow(); } }
   function renderNow(){ try{viewer.renderScene&&viewer.renderScene();}catch(e){} try{viewer.render&&viewer.render();}catch(e){} }
@@ -161,6 +146,7 @@
       var on = model==="elite" && mods[mo.id];
       (moduleMeshes[mo.id]||[]).forEach(function(m){ if(m) m.visible=!!on; });
     });
+    spinOn = model==="elite" && mods.fans;
     renderNow();
   }
   function renderSummary(){
@@ -214,7 +200,7 @@
       if(found.length || tries>60){
         clearInterval(poll);
         uphMeshes=found; rootObj=viewer.scene.children.find(function(o){return o.name==='root';})||null; bbox=worldBBox();
-        try{ placeModules(); rotateToBack(180); }catch(e){ console.warn("modules",e); }
+        try{ collectModules(); rotateToBack(180); spinLoop(); }catch(e){ console.warn("modules",e); }
         ready=true; apply(); ld.classList.add("hidden");
       }
     } else if(tries>120){ clearInterval(poll); ld.querySelector("p").textContent="Could not read the 3D scene."; }
