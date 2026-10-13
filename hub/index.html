@@ -34,9 +34,15 @@
    <span class="key"><span class="sw" style="background:#fff5f5;border:1px solid #f3c0c8"></span> Retire candidate</span>
    <span class="key"><span class="sw" style="background:#fffdf2;border:1px solid #ece3b0"></span> Version family, pick canonical</span>
    <span class="key"><span class="sw" style="background:#fff;border:1px solid var(--line)"></span> Keep</span>
-   <span style="margin-left:auto">61 pages</span>
+   <span style="margin-left:auto">62 pages</span>
  </div>
  <table><tr><th>Page</th><th>What it is</th><th>Updated</th><th>Live UUIDs</th><th>Note</th></tr>
+ <tr class="keep">
+      <td><a href="/alaris-configurator.html" target="_blank">alaris-configurator.html</a><div class="grp">SteelSeries</div></td>
+      <td><b>SteelSeries Alaris chair configurator (scope demo for Toni Au deal).</b> Model toggle Alaris (Base) vs Alaris Elite, Black/White finish, and the 4 electronic modules (Main Unit, RGB Cooling Fans, Lighting Strips, Lumbar Heating) as toggles, Elite-only (Base cannot take electronics; Elite = any combination, 2^4=16). Live config summary + the SteelSeries module-placement diagram. npm-bundle viewer drives finish tint on viewer.scene. Chair is a STAND-IN (combined_chair_v2.glb) pending the real Alaris asset; 3D module geometry drops in when SteelSeries sends it (blind placeholder-box placement on the wrong chair looked broken, so pulled). Config matrix + specs + scope live in Google Sheet 1dOza5YgYyNoEkTvUQQyvDlSqVGP35iOuNAVvFQpYIUw.</td>
+      <td class="d">2026-10-13</td>
+      <td class="u">Stand-in asset <code>assets/chair/combined_chair_v2.glb</code>, env studio.hdr, diagram <code>assets/alaris-modules-diagram.png</code>. Real Alaris: STEP 1.1 GB optimized to &lt;3.2 MB; AlarisElite.zip received. Asset status TBC from SteelSeries.</td>
+      <td class="n">SteelSeries eng contacts for Neven's commerce scoping: Jakub Prus, Timothy Stoneberg. Rules confirmed by Toni Au (Oct 9). Open: module finish (both colors?), does Main Unit gate the others, asset textured status.</td></tr>
  <tr class="keep">
       <td><a href="/webgpu-render.html" target="_blank">webgpu-render.html</a><div class="grp">WebGPU / internal</div></td>
       <td><b>WebGPU vs real-time render demo (internal, for the WebGPU case to Ashley/eng).</b> Split-screen of the SAME asset: left = real-time rasterization (what the live viewer renders today), right = genuine <b>WebGPU path tracing</b> via three-gpu-pathtracer@0.0.26/webgpu (the version merged into three.js examples Sep 29 2026) on a WebGPURenderer. Shows what WebGL cannot: true transmission/refraction (back label reads through the glass + liquid), warm <b>caustics</b> on the ground, colored soft shadows. Two view modes: <b>A/B compare</b> (side-by-side) and <b>Live hybrid</b> (one smart viewer: real-time raster preview while you move, auto-crossfades to path-traced photoreal once it settles, the real product UX). Bottle glass is <b>half frosted</b> (left frosted / right clear) to show rough transmission. Controls: orbit, light angle/height, auto-orbit, 4 liquid materials (material-swap vision), reset. Sample counter + status pill. <b>Requires Chrome/Edge (WebGPU)</b>; esm.sh importmap pins three@0.186.1 webgpu build + three-mesh-bvh@0.9.15.</td>

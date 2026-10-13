@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>SteelSeries Alaris Configurator — VNTANA</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#ff5200;--dark:#0d0f13}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f6f7f9;color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 2rem}
+  header{background:#0d0f13;color:#fff;height:58px;display:flex;align-items:center}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;width:100%}
+  header .brand{font-weight:800;letter-spacing:.03em}
+  header .brand span{color:var(--accent)}
+  header .powered{font-size:.58rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#8b93a4}
+  .stage{display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;padding:1.8rem 0}
+  @media(max-width:880px){.stage{grid-template-columns:1fr}}
+  .viewer-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .viewer-box{position:relative;aspect-ratio:1/1;background:#eef0f3}
+  vntana-viewer{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .ld{position:absolute;inset:0;display:flex;flex-direction:column;gap:.7rem;align-items:center;justify-content:center;background:rgba(238,240,243,.94);z-index:5;transition:opacity .3s}
+  .ld.hidden{opacity:0;pointer-events:none}
+  .ld .spin{width:36px;height:36px;border-radius:50%;border:4px solid #dfe2e6;border-top-color:var(--accent);animation:sp 1s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .ld p{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#9aa0a8}
+  .viewer-foot{display:flex;justify-content:space-between;align-items:center;padding:.65rem 1rem;border-top:1px solid var(--line);font-size:.68rem;color:var(--muted)}
+  .live{display:inline-flex;align-items:center;gap:.4rem;font-weight:700;font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:#3a7d44}
+  .live::before{content:'';width:7px;height:7px;border-radius:50%;background:#3fae4f;box-shadow:0 0 6px rgba(63,174,79,.7)}
+  h1{font-size:1.55rem;font-weight:800;letter-spacing:-.02em}
+  .sub{color:var(--muted);margin-top:.25rem;font-size:.86rem}
+  .grp{margin-top:1.4rem}
+  .grp .lab{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a8;margin-bottom:.55rem;display:flex;justify-content:space-between}
+  .seg{display:flex;gap:.5rem}
+  .seg button{flex:1;font:inherit;font-size:.82rem;font-weight:700;color:#374151;background:#fff;border:1px solid var(--line);border-radius:8px;padding:.7rem;cursor:pointer}
+  .seg button.on{border-color:var(--accent);background:#fff4ee;color:var(--accent)}
+  .finish{display:flex;gap:.6rem}
+  .fin{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:.82rem;color:#374151;background:#fff;border:1px solid var(--line);border-radius:8px;padding:.6rem .9rem;cursor:pointer}
+  .fin.on{border-color:var(--accent);color:var(--accent)}
+  .fin .dot{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.2)}
+  .mods{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+  .mod{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:.8rem;color:#374151;background:#fff;border:1px solid var(--line);border-radius:8px;padding:.6rem .7rem;cursor:pointer;text-align:left}
+  .mod .n{display:block;font-weight:400;font-size:.66rem;color:#9aa0a8;margin-top:.1rem}
+  .mod .chk{width:18px;height:18px;border-radius:5px;border:2px solid #cfd4db;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff}
+  .mod.on{border-color:var(--accent);background:#fff4ee}
+  .mod.on .chk{background:var(--accent);border-color:var(--accent)}
+  .mod[disabled]{opacity:.4;cursor:not-allowed}
+  .summary{margin-top:1.4rem;background:#fff;border:1px solid var(--line);border-radius:8px;padding:.9rem 1.1rem;font-size:.84rem;line-height:1.5}
+  .summary b{color:var(--ink)}
+  .summary .cfg{font-size:.68rem;color:var(--muted);margin-top:.35rem}
+  .ref{margin-top:1.2rem}
+  .ref img{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
+  .note{margin-top:.9rem;font-size:.7rem;color:var(--muted);line-height:1.45}
+  .badge{display:inline-block;background:var(--accent);color:#fff;font-size:.56rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:9px;vertical-align:1px;margin-left:6px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">SteelSeries <span>Alaris</span></div><div class="powered">Configurator demo · powered by VNTANA</div></div></header>
+<div class="wrap stage">
+  <div class="viewer-card">
+    <div class="viewer-box">
+      <vntana-viewer id="viewer" shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v2.glb"></vntana-viewer>
+      <div class="ld" id="ld"><div class="spin"></div><p>Loading 3D&hellip;</p></div>
+    </div>
+    <div class="viewer-foot"><span class="live">Live 3D</span><span>Drag to rotate &middot; scroll to zoom</span></div>
+  </div>
+  <div>
+    <h1>Configure your Alaris</h1>
+    <div class="sub">Pick the model, finish, and (on Elite) any combination of the 4 electronic modules.</div>
+
+    <div class="grp"><div class="lab">Model</div>
+      <div class="seg" id="modelSeg">
+        <button data-model="base" class="on">Alaris<span style="display:block;font-weight:400;font-size:.66rem;color:#9aa0a8">Base</span></button>
+        <button data-model="elite">Alaris Elite<span style="display:block;font-weight:400;font-size:.66rem;color:#9aa0a8">Electronics-ready</span></button>
+      </div>
+    </div>
+
+    <div class="grp"><div class="lab">Finish</div>
+      <div class="finish" id="finishRow"></div>
+    </div>
+
+    <div class="grp"><div class="lab"><span>Electronic modules</span><span id="elecState" style="color:var(--accent)">Elite only</span></div>
+      <div class="mods" id="mods"></div>
+    </div>
+
+    <div class="summary" id="summary"></div>
+
+    <div class="ref">
+      <div class="lab" style="font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a8;margin-bottom:.5rem">Module placement reference</div>
+      <img src="assets/alaris-modules-diagram.png" alt="Alaris electronic modules placement">
+    </div>
+
+    <div class="note">Scope demo. The chair geometry here is a stand-in pending the Alaris asset, and the electronic modules are shown as placeholder blocks to confirm the interaction and rules. Base cannot take electronics; Elite accepts any combination of the 4 modules (none through all 4).</div>
+  </div>
+</div>
+<script>
+  var viewer=document.getElementById("viewer"), ld=document.getElementById("ld");
+  var model="base", finish="black", mods={main:false,fans:false,lights:false,lumbar:false};
+
+  var FINISHES=[{id:"black",name:"Black",css:"#1b1b1e",rgb:[0.09,0.09,0.10]},{id:"white",name:"White",css:"#eceae6",rgb:[0.88,0.88,0.86]}];
+  var MODULES=[
+    {id:"main",   name:"Main Unit",        d:"Controller hub"},
+    {id:"fans",   name:"RGB Cooling Fans",  d:"Upper back"},
+    {id:"lights", name:"Lighting Strips",   d:"Base accent"},
+    {id:"lumbar", name:"Lumbar Heating",    d:"Mid-lower back"}
+  ];
+
+  var uphMeshes=[], moduleMeshes={}, ready=false, bbox=null;
+
+  function refMesh(){ var r=null; viewer.scene.traverse(function(o){ if(!r&&o.isMesh&&o.geometry&&o.geometry.attributes&&o.geometry.attributes.position) r=o; }); return r; }
+  function worldBBox(){
+    var mn=[1e9,1e9,1e9], mx=[-1e9,-1e9,-1e9];
+    viewer.scene.traverse(function(o){ if(o.isMesh&&o.geometry){ o.geometry.computeBoundingBox(); var b=o.geometry.boundingBox.clone(); b.applyMatrix4(o.matrixWorld);
+      mn=[Math.min(mn[0],b.min.x),Math.min(mn[1],b.min.y),Math.min(mn[2],b.min.z)]; mx=[Math.max(mx[0],b.max.x),Math.max(mx[1],b.max.y),Math.max(mx[2],b.max.z)]; } });
+    return {min:mn,max:mx,size:[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]],center:[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2]};
+  }
+  function box(w,h,d,hex,emis){
+    var ref=refMesh(); if(!ref) return null;
+    var hx=w/2,hy=h/2,hz=d/2;
+    var q=[[hx,-hy,-hz],[hx,hy,-hz],[hx,hy,hz],[hx,-hy,hz],[-hx,-hy,hz],[-hx,hy,hz],[-hx,hy,-hz],[-hx,-hy,-hz],
+           [-hx,hy,-hz],[-hx,hy,hz],[hx,hy,hz],[hx,hy,-hz],[-hx,-hy,hz],[-hx,-hy,-hz],[hx,-hy,-hz],[hx,-hy,hz],
+           [-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz],[hx,-hy,-hz],[-hx,-hy,-hz],[-hx,hy,-hz],[hx,hy,-hz]];
+    var pos=[]; for(var f=0;f<6;f++){var b=f*4;[0,1,2,0,2,3].forEach(function(k){pos.push.apply(pos,q[b+k]);});}
+    var geo=new ref.geometry.constructor();
+    geo.setAttribute('position', new ref.geometry.attributes.position.constructor(new Float32Array(pos),3));
+    try{geo.computeVertexNormals();}catch(e){}
+    var mat=ref.material.clone();
+    try{ if(mat.color&&mat.color.setHex) mat.color.setHex(hex); mat.metalness=0.3; mat.roughness=0.5;
+      ["map","normalMap","roughnessMap","metalnessMap","aoMap","emissiveMap"].forEach(function(k){ if(k in mat) mat[k]=null; });
+      if(emis&&mat.emissive&&mat.emissive.setHex){ mat.emissive.setHex(emis); if('emissiveIntensity' in mat) mat.emissiveIntensity=0.9; }
+      mat.needsUpdate=true; }catch(e){}
+    var m=new ref.constructor(geo,mat); m.visible=false; viewer.scene.add(m); return m;
+  }
+  function placeModules(){
+    var mn=bbox.min, mx=bbox.max, c=bbox.center, H=bbox.size[1], W=bbox.size[0], D=bbox.size[2];
+    var backZ=mx[2]+0.055; // sit proud of the backrest so the placeholder modules read clearly
+    moduleMeshes.fans=[ box(0.15,0.15,0.10,0xf2f2f2,0xff3b30), box(0.15,0.15,0.10,0xf2f2f2,0x34c759) ];
+    moduleMeshes.fans[0].position.set(c[0]-0.12, mn[1]+0.86*H, backZ);
+    moduleMeshes.fans[1].position.set(c[0]+0.12, mn[1]+0.86*H, backZ);
+    moduleMeshes.lumbar=[ box(0.32,0.17,0.11,0xff5200,0x6a1f00) ]; moduleMeshes.lumbar[0].position.set(c[0], mn[1]+0.55*H, backZ);
+    moduleMeshes.main=[ box(0.22,0.16,0.12,0x1b1b22) ]; moduleMeshes.main[0].position.set(c[0], mn[1]+0.34*H, backZ);
+    moduleMeshes.lights=[ box(0.46,0.05,0.05,0xffffff,0x00a3ff) ]; moduleMeshes.lights[0].position.set(c[0], mn[1]+0.08*H, mx[2]-0.02);
+  }
+  function renderNow(){ try{viewer.renderScene&&viewer.renderScene();}catch(e){} try{viewer.render&&viewer.render();}catch(e){} }
+
+  function applyFinish(){
+    var f=FINISHES.filter(function(x){return x.id===finish;})[0];
+    uphMeshes.forEach(function(u){ if(u.color&&u.color.setRGB){ u.color.setRGB(f.rgb[0],f.rgb[1],f.rgb[2]); u.needsUpdate=true; } });
+    renderNow();
+  }
+  function applyModules(){
+    MODULES.forEach(function(mo){
+      var on = model==="elite" && mods[mo.id];
+      (moduleMeshes[mo.id]||[]).forEach(function(m){ if(m) m.visible=!!on; });
+    });
+    renderNow();
+  }
+  function renderSummary(){
+    var active=MODULES.filter(function(m){return model==="elite"&&mods[m.id];});
+    var combo = model==="base" ? 0 : active.length;
+    var modelName = model==="elite"?"Alaris Elite":"Alaris (Base)";
+    var finName = FINISHES.filter(function(x){return x.id===finish;})[0].name;
+    var elecTxt = model==="base" ? "no electronics" : (active.length? active.map(function(m){return m.name;}).join(" + ") : "no modules");
+    document.getElementById("summary").innerHTML =
+      "<b>"+modelName+"</b> &middot; "+finName+" &middot; "+elecTxt+
+      "<div class='cfg'>"+(model==="base"?"Base model: electronics not available.":"Electronic modules active: "+active.length+" of 4.")+"</div>";
+  }
+  function syncUI(){
+    document.querySelectorAll("#modelSeg button").forEach(function(b){ b.classList.toggle("on", b.dataset.model===model); });
+    document.querySelectorAll("#finishRow .fin").forEach(function(b){ b.classList.toggle("on", b.dataset.fin===finish); });
+    document.getElementById("elecState").textContent = model==="elite" ? "Any combination" : "Elite only";
+    document.querySelectorAll("#mods .mod").forEach(function(b){
+      var on = model==="elite" && mods[b.dataset.mod];
+      b.classList.toggle("on", on);
+      if(model==="elite"){ b.removeAttribute("disabled"); } else { b.setAttribute("disabled","true"); }
+      b.querySelector(".chk").textContent = on ? "✓" : "";
+    });
+  }
+  function apply(){ syncUI(); renderSummary(); if(ready){ applyFinish(); applyModules(); } }
+
+  // build controls
+  FINISHES.forEach(function(f){
+    var b=document.createElement("button"); b.className="fin"+(f.id===finish?" on":""); b.dataset.fin=f.id;
+    b.innerHTML='<span class="dot" style="background:'+f.css+'"></span>'+f.name;
+    b.addEventListener("click",function(){ finish=f.id; apply(); });
+    document.getElementById("finishRow").appendChild(b);
+  });
+  MODULES.forEach(function(mo){
+    var b=document.createElement("button"); b.className="mod"; b.dataset.mod=mo.id; b.setAttribute("disabled","true");
+    b.innerHTML='<span class="chk"></span><span>'+mo.name+'<span class="n">'+mo.d+'</span></span>';
+    b.addEventListener("click",function(){ if(model!=="elite") return; mods[mo.id]=!mods[mo.id]; apply(); });
+    document.getElementById("mods").appendChild(b);
+  });
+  document.querySelectorAll("#modelSeg button").forEach(function(b){
+    b.addEventListener("click",function(){ model=b.dataset.model; if(model==="base"){ mods={main:false,fans:false,lights:false,lumbar:false}; } apply(); });
+  });
+  syncUI(); renderSummary();
+
+  // wire the scene once loaded
+  var tries=0, poll=setInterval(function(){
+    tries++;
+    if(viewer.scene&&viewer.scene.traverse){
+      var found=[];
+      viewer.scene.traverse(function(o){ if(o.isMesh&&o.material){ var ms=Array.isArray(o.material)?o.material:[o.material];
+        for(var i=0;i<ms.length;i++){ if(ms[i]&&ms[i].name&&/phol|uphol|mesh|fabric|seat|back|chair|gray|grey/i.test(ms[i].name)){ found.push(ms[i]); break; } } } });
+      if(found.length || tries>60){
+        clearInterval(poll);
+        uphMeshes=found; bbox=worldBBox();
+        // 3D module geometry drops in with the real Alaris asset; until then the diagram carries placement
+        ready=true; apply(); ld.classList.add("hidden");
+      }
+    } else if(tries>120){ clearInterval(poll); ld.querySelector("p").textContent="Could not read the 3D scene."; }
+  },200);
+</script>
+</body>
+</html>
