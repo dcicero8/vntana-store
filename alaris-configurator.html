@@ -61,7 +61,7 @@
 <div class="wrap stage">
   <div class="viewer-card">
     <div class="viewer-box">
-      <vntana-viewer id="viewer" shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v2.glb"></vntana-viewer>
+      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v2.glb"></vntana-viewer>
       <div class="ld" id="ld"><div class="spin"></div><p>Loading 3D&hellip;</p></div>
     </div>
     <div class="viewer-foot"><span class="live">Live 3D</span><span>Drag to rotate &middot; scroll to zoom</span></div>
@@ -107,7 +107,7 @@
     {id:"lumbar", name:"Lumbar Heating",    d:"Mid-lower back"}
   ];
 
-  var uphMeshes=[], moduleMeshes={}, ready=false, bbox=null;
+  var uphMeshes=[], moduleMeshes={}, ready=false, bbox=null, rootObj=null;
 
   function refMesh(){ var r=null; viewer.scene.traverse(function(o){ if(!r&&o.isMesh&&o.geometry&&o.geometry.attributes&&o.geometry.attributes.position) r=o; }); return r; }
   function worldBBox(){
@@ -131,18 +131,24 @@
       ["map","normalMap","roughnessMap","metalnessMap","aoMap","emissiveMap"].forEach(function(k){ if(k in mat) mat[k]=null; });
       if(emis&&mat.emissive&&mat.emissive.setHex){ mat.emissive.setHex(emis); if('emissiveIntensity' in mat) mat.emissiveIntensity=0.9; }
       mat.needsUpdate=true; }catch(e){}
-    var m=new ref.constructor(geo,mat); m.visible=false; viewer.scene.add(m); return m;
+    var m=new ref.constructor(geo,mat); m.visible=false; (rootObj||viewer.scene).add(m); return m;
   }
+  // orange module blocks, attached to the chair (root) so they move with it; placed on the backrest
   function placeModules(){
-    var mn=bbox.min, mx=bbox.max, c=bbox.center, H=bbox.size[1], W=bbox.size[0], D=bbox.size[2];
-    var backZ=mx[2]+0.055; // sit proud of the backrest so the placeholder modules read clearly
-    moduleMeshes.fans=[ box(0.15,0.15,0.10,0xf2f2f2,0xff3b30), box(0.15,0.15,0.10,0xf2f2f2,0x34c759) ];
-    moduleMeshes.fans[0].position.set(c[0]-0.12, mn[1]+0.86*H, backZ);
-    moduleMeshes.fans[1].position.set(c[0]+0.12, mn[1]+0.86*H, backZ);
-    moduleMeshes.lumbar=[ box(0.32,0.17,0.11,0xff5200,0x6a1f00) ]; moduleMeshes.lumbar[0].position.set(c[0], mn[1]+0.55*H, backZ);
-    moduleMeshes.main=[ box(0.22,0.16,0.12,0x1b1b22) ]; moduleMeshes.main[0].position.set(c[0], mn[1]+0.34*H, backZ);
-    moduleMeshes.lights=[ box(0.46,0.05,0.05,0xffffff,0x00a3ff) ]; moduleMeshes.lights[0].position.set(c[0], mn[1]+0.08*H, mx[2]-0.02);
+    if(!rootObj) return;
+    rootObj.updateMatrixWorld(true);
+    var mn=bbox.min, mx=bbox.max, c=bbox.center, H=bbox.size[1];
+    var backZ=mn[2]-0.20;  // stand well proud of the backrest frame so the orange modules are not occluded (back is the min.z face)
+    function V(x,y,z){ var v=refMesh().position.clone(); v.set(x,y,z); return rootObj.worldToLocal(v); }
+    function ob(w,h,d){ return box(w,h,d,0xff6a00,0x5a2600); }
+    var f1=ob(0.15,0.15,0.10), f2=ob(0.15,0.15,0.10);
+    f1.position.copy(V(c[0]-0.12, mn[1]+0.86*H, backZ)); f2.position.copy(V(c[0]+0.12, mn[1]+0.86*H, backZ));
+    moduleMeshes.fans=[f1,f2];
+    var lu=ob(0.32,0.17,0.11); lu.position.copy(V(c[0], mn[1]+0.55*H, backZ)); moduleMeshes.lumbar=[lu];
+    var mu=ob(0.22,0.16,0.12); mu.position.copy(V(c[0], mn[1]+0.34*H, backZ)); moduleMeshes.main=[mu];
+    var li=ob(0.46,0.06,0.06); li.position.copy(V(c[0], mn[1]+0.10*H, mn[2]-0.12)); moduleMeshes.lights=[li];
   }
+  function rotateToBack(deg){ if(rootObj){ rootObj.rotation.y = deg*Math.PI/180; rootObj.updateMatrixWorld(true); renderNow(); } }
   function renderNow(){ try{viewer.renderScene&&viewer.renderScene();}catch(e){} try{viewer.render&&viewer.render();}catch(e){} }
 
   function applyFinish(){
@@ -207,8 +213,8 @@
         for(var i=0;i<ms.length;i++){ if(ms[i]&&ms[i].name&&/phol|uphol|mesh|fabric|seat|back|chair|gray|grey/i.test(ms[i].name)){ found.push(ms[i]); break; } } } });
       if(found.length || tries>60){
         clearInterval(poll);
-        uphMeshes=found; bbox=worldBBox();
-        // 3D module geometry drops in with the real Alaris asset; until then the diagram carries placement
+        uphMeshes=found; rootObj=viewer.scene.children.find(function(o){return o.name==='root';})||null; bbox=worldBBox();
+        try{ placeModules(); rotateToBack(180); }catch(e){ console.warn("modules",e); }
         ready=true; apply(); ld.classList.add("hidden");
       }
     } else if(tries>120){ clearInterval(poll); ld.querySelector("p").textContent="Could not read the 3D scene."; }
