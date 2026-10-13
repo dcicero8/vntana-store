@@ -61,7 +61,7 @@
 <div class="wrap stage">
   <div class="viewer-card">
     <div class="viewer-box">
-      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v3.glb"></vntana-viewer>
+      <vntana-viewer id="viewer" enable-auto-rotate shadow-intensity="0.4" environment-src="assets/env/studio.hdr" src="assets/chair/combined_chair_v4.glb"></vntana-viewer>
       <div class="ld" id="ld"><div class="spin"></div><p>Loading 3D&hellip;</p></div>
     </div>
     <div class="viewer-foot"><span class="live">Live 3D</span><span>Drag to rotate &middot; scroll to zoom</span></div>
@@ -129,8 +129,14 @@
     });
     Object.keys(moduleMeshes).forEach(function(k){ moduleMeshes[k].forEach(function(m){ m.visible=false; }); });
   }
-  function spinLoop(){
-    if(spinOn){ fanRotors.forEach(function(r){ try{ r.rotateZ(0.18); }catch(e){} }); renderNow(); }
+  var lastTs=0;
+  function spinLoop(ts){
+    if(spinOn && lastTs){
+      var dt=Math.min((ts-lastTs)/1000, 0.1);   // seconds, clamped across pauses
+      fanRotors.forEach(function(r){ try{ r.rotateZ(3.0*dt); }catch(e){} });
+      renderNow();
+    }
+    lastTs=ts;
     requestAnimationFrame(spinLoop);
   }
   function rotateToBack(deg){ if(rootObj){ rootObj.rotation.y = deg*Math.PI/180; rootObj.updateMatrixWorld(true); renderNow(); } }
