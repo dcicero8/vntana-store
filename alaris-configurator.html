@@ -122,7 +122,7 @@
   <h2><span class="tag">Open questions</span>For Neven (configurator + commerce scoping)</h2>
   <div class="card"><ul>
     <li><b>Build approach.</b> This demo runs as ONE combined GLB with named module nodes toggled at runtime on the public npm-bundle viewer. For production, is that the supported path, or do we build on the 3.0.0 configurator module (Wilbert pattern)? What is supportable for a customer vs demo-only?</li>
-    <li><b>Render loop.</b> Runtime-mutated scenes only redraw while the viewer's loop runs (this page keeps auto-rotate on as a workaround). Is there a supported request-render API, or does the configurator module handle this?</li>
+    <li><b>Animation / updates.</b> Requirement: module toggles update instantly and the fans/glow animate continuously. On the public npm viewer this only works while its render loop runs (this page keeps auto-rotate on as a workaround). Does 3.0.0 handle this natively, or is there a supported render API?</li>
     <li><b>Commerce integration.</b> What do you need from the SteelSeries stack to produce the integration plan: platform, cart API, how a configuration maps to SKU/price? Session with Jakub Prus + Timothy Stoneberg to schedule.</li>
     <li><b>AR.</b> Should AR reflect the shopper's selected configuration (per-config USDZ, 34 variants) or a hero configuration per model? What does that do to scope?</li>
     <li><b>PDP embed.</b> Constraints for living inside their gallery: iframe sizing, lazy load, performance budget on the PDP.</li>
