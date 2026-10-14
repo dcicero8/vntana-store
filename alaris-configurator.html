@@ -65,9 +65,30 @@
   @media(max-width:700px){.brief .kv{grid-template-columns:1fr}}
   .diagram-big{max-width:760px;margin:0 auto}
   .diagram-big img{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff}
+  /* access gate (soft, client-side: keeps the pre-launch page off casual eyes, not a security control) */
+  .gate{position:fixed;inset:0;z-index:100;background:#0d0f13;display:flex;align-items:center;justify-content:center;padding:16px}
+  .gate.hidden{display:none}
+  .gate .card{background:#fff;border-radius:14px;padding:26px 24px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
+  .gate .eyebrow{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:800}
+  .gate h1{font-size:1.2rem;font-weight:800;margin:6px 0 6px}
+  .gate p{font-size:.84rem;color:var(--muted);margin:0 0 16px;line-height:1.45}
+  .gate input{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:1rem;margin-bottom:10px;text-align:center}
+  .gate .err{font-size:.78rem;color:#c8102e;min-height:1.2em;margin:0 0 10px}
+  .gate button{width:100%;font:inherit;font-size:.9rem;font-weight:700;color:#fff;background:var(--accent);border:0;border-radius:10px;padding:12px;cursor:pointer}
+  body.locked{overflow:hidden}
 </style>
 </head>
-<body>
+<body class="locked">
+<div class="gate" id="gate">
+  <form class="card" id="gateForm" autocomplete="off">
+    <div class="eyebrow">Private preview</div>
+    <h1>SteelSeries Alaris Configurator</h1>
+    <p>This preview is for the SteelSeries team. Enter the access code to continue.</p>
+    <input type="password" id="gatePw" placeholder="Access code" autofocus>
+    <p class="err" id="gateErr"></p>
+    <button type="submit">Enter</button>
+  </form>
+</div>
 <header><div class="wrap"><div class="brand">SteelSeries <span>Alaris</span></div><div class="powered">Configurator demo · powered by VNTANA</div></div></header>
 <div class="wrap stage">
   <div class="viewer-card">
@@ -140,6 +161,22 @@
 
 </div>
 <script>
+  // ---- access gate: SHA-256 of the normalized code (lowercase, no spaces); remembered for this browser session ----
+  (function(){
+    var HASH="c16a02ca0aaab54d06e5ec194aa236047beade79c1792223bff0f9574d965bb0";
+    function sha256(s){ return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function(b){ return [].map.call(new Uint8Array(b),function(x){return x.toString(16).padStart(2,"0");}).join(""); }); }
+    function unlock(){ var g=document.getElementById("gate"); if(g) g.classList.add("hidden"); document.body.classList.remove("locked"); }
+    try{ if(sessionStorage.getItem("alaris_gate")===HASH) unlock(); }catch(e){}
+    var f=document.getElementById("gateForm");
+    if(f) f.addEventListener("submit", function(e){ e.preventDefault();
+      var code=(document.getElementById("gatePw").value||"").toLowerCase().replace(/\s+/g,"");
+      sha256(code).then(function(h){
+        if(h===HASH){ try{ sessionStorage.setItem("alaris_gate",h); }catch(e){} unlock(); }
+        else { document.getElementById("gateErr").textContent="That code is not right. Check with the person who sent you the link."; document.getElementById("gatePw").select(); }
+      });
+    });
+  })();
+
   var viewer=document.getElementById("viewer"), ld=document.getElementById("ld");
   var model="base", finish="black", mods={main:false,fans:false,lights:false,lumbar:false};
 
