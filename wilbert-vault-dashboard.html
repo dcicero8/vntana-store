@@ -116,25 +116,36 @@
       <table class="ck" id="ckTable">
         <thead><tr><th class="ck">Done</th><th>Item</th><th>Due</th><th>Notes</th></tr></thead>
         <tbody>
-          <tr data-k="catalog"><td class="ck"><input type="checkbox"></td><td class="item">Updated product catalog</td><td><span class="due soon">Oct 14</span></td><td>Drives the asset matrix and variant list.</td></tr>
-          <tr data-k="palette"><td class="ck"><input type="checkbox"></td><td class="item">Color palette</td><td><span class="due soon">Oct 16</span></td><td>Assumption: we create the variants listed online.</td></tr>
-          <tr data-k="refs"><td class="ck"><input type="checkbox"></td><td class="item">All references, images, 2D assets, reference imagery</td><td><span class="due soon">Oct 16</span></td><td>Everything needed to build and texture.</td></tr>
-          <tr data-k="cad-bronze"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Wilbert Bronze</td><td><span class="due">Oct 16</span></td><td>Metal/plastic lined, triple-reinforced.</td></tr>
-          <tr data-k="cad-triune"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Triune</td><td><span class="due">Oct 16</span></td><td>SST, double-reinforced.</td></tr>
-          <tr data-k="cad-venetian"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Venetian</td><td><span class="due">Oct 16</span></td><td>Plastic lined, single.</td></tr>
-          <tr data-k="cad-continental"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Continental</td><td><span class="due">Oct 16</span></td><td>Plastic lined; pre-cast round-top option.</td></tr>
-          <tr data-k="cad-monticello"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Monticello</td><td><span class="due">Oct 16</span></td><td>Plastic lined, single.</td></tr>
-          <tr data-k="cad-salute"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Salute</td><td><span class="due">Oct 16</span></td><td>Plastic lined, single.</td></tr>
-          <tr data-k="steps"><td class="ck"><input type="checkbox"></td><td class="item">STEP files for every assembly in the construction PDF</td><td><span class="due">For Edgar call</span></td><td>Liners, carapace, base assemblies, hardware.</td></tr>
-          <tr data-k="materials"><td class="ck"><input type="checkbox"></td><td class="item">Confirm materials understanding with Edgar</td><td><span class="due">For Edgar call</span></td><td>Finishes, metals (SST/bronze/copper), plastics, concrete.</td></tr>
+          <tr data-k="scope-confirm"><td class="ck"><input type="checkbox"></td><td class="item"><b>Chris / Casey —</b> confirm final in-scope product list</td><td><span class="due soon">Oct 15</span></td><td>Resolves whether Citadel, Tribute, Monarch are in. Then we send Edgar the final list.</td></tr>
+          <tr data-k="catalog"><td class="ck"><input type="checkbox"></td><td class="item"><b>Chris / Casey —</b> updated product catalog</td><td><span class="due soon">Oct 14</span></td><td>The site is out of date; the catalog drives the variant list.</td></tr>
+          <tr data-k="palette"><td class="ck"><input type="checkbox"></td><td class="item"><b>Chris / Casey —</b> color palette</td><td><span class="due soon">Oct 16</span></td><td>Base + highlight color per vault.</td></tr>
+          <tr data-k="steps"><td class="ck"><input type="checkbox"></td><td class="item"><b>Edgar —</b> updated STEP assemblies, all in-scope vaults (add base pattern window, half-moons, nameplate indents, handle detail)</td><td><span class="due">Fri Oct 16</span></td><td>STEP format only (not IGES). Full assemblies like the first delivery.</td></tr>
+          <tr data-k="liner2"><td class="ck"><input type="checkbox"></td><td class="item"><b>Edgar —</b> second plastic liner option (speed-bump)</td><td><span class="due">Fri Oct 16</span></td><td>We have the standard; which one is pending Chris.</td></tr>
+          <tr data-k="nameplates"><td class="ck"><input type="checkbox"></td><td class="item"><b>Edgar —</b> nameplate + Wilbert logo-plate photos with a ruler + exact dimensions</td><td><span class="due">This week</span></td><td>We texture these as decals.</td></tr>
+          <tr data-k="carapace"><td class="ck"><input type="checkbox"></td><td class="item"><b>Edgar —</b> Venetian carapace drawings (plain / cross / Star of David)</td><td><span class="due">This week</span></td><td>In scope TBD with Chris.</td></tr>
+          <tr data-k="bronze-handle"><td class="ck"><input type="checkbox"></td><td class="item"><b>Edgar —</b> confirm Wilbert Bronze handle material (plastic vs metal)</td><td><span class="due">This week</span></td><td></td></tr>
+          <tr data-k="final-list"><td class="ck"><input type="checkbox"></td><td class="item"><b>Derek / Erin —</b> send Edgar the final product list + liner choice</td><td><span class="due">After Chris/Casey</span></td><td>Unblocks Edgar's CAD updates.</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section>
-    <h2><span class="n">2</span>Product &amp; configuration matrix</h2>
-    <p class="lead">The construction of record for each vault (from the Wilbert construction reference). Build the individual vault pages to match these configurations. Rows highlighted green are the six in scope for this phase.</p>
+    <h2><span class="n">2</span>Open decisions (Chris / Casey)</h2>
+    <p class="lead">These gate the build. Confirm in the Chris / Casey meeting, then relay to Edgar.</p>
+    <div class="card"><ul>
+      <li><b>Scope of the last three.</b> Are Citadel, Tribute, and Monarch in or out? Monarch is an unlined concrete box, size-defined with no liner, so it would be a size selector, not a liner build.</li>
+      <li><b>Liner.</b> Standard base liner or the speed-bump variant? (Chris flagged ours as wrong; Edgar says ours was right.)</li>
+      <li><b>Handles.</b> One fixed handle per vault (our recommendation for pass 1), or configurable across vaults?</li>
+      <li><b>Venetian carapace.</b> Include the plain / cross / Star of David options, or plain only?</li>
+      <li><b>Continental cover.</b> Molded pillow-top, flat, or both? (The only vault with two cover options.)</li>
+      <li><b>Construction / cutaway view.</b> Do we ever show a cross-section? If not, butyl and inner liners stay out (default: not shown).</li>
+    </ul></div>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>Product &amp; configuration matrix</h2>
+    <p class="lead">The construction of record for each vault (from the Wilbert construction reference). Build the individual vault pages to match these configurations. Rows highlighted green are the six in scope for this phase. Per-product variants (finish colors, pattern, handle type, protection tier) live in Erin's <b>VTANA PROJECT.xlsx</b>, the variant matrix of record; this table stays construction-focused.</p>
     <div class="card scroll" style="padding:0">
       <table class="mx">
         <thead><tr><th>Vault</th><th>Scope</th><th>Protection</th><th>Unit type</th><th>Cover profile</th><th>Cover / base liner</th><th>Carapace</th><th>Seal</th></tr></thead>
@@ -155,7 +166,7 @@
   </section>
 
   <section>
-    <h2><span class="n">3</span>Construction system</h2>
+    <h2><span class="n">4</span>Construction system</h2>
     <p class="lead"><b>Model only what is visible</b> (confirmed with Edgar, Oct 14). The first three are visible geometry we model and texture, external plastic, visible metal liners, carapace, plus nameplate, Wilbert logo plate, and handles. The last three (tagged <span class="q3d">Not needed for 3D</span>) are internal detail, inside plastic liners, butyl/seals, bonding, which are never shown unless we do a cross-section, so they are out of scope for modeling. Full cross-sections and per-vault exploded views are in the reference PDF.</p>
     <div class="legend">
       <div class="b"><h4>External plastic liners</h4><ul><li>Tribute Cover</li><li>Tribute Base Assembly (2 side + 2 end, epoxy joints)</li><li>Wilbert Bronze Base Liner</li></ul></div>
@@ -169,7 +180,32 @@
   </section>
 
   <section>
-    <h2><span class="n">4</span>Timeline</h2>
+    <h2><span class="n">5</span>3D modeling scope — what we build vs skip</h2>
+    <p class="lead">Confirmed with Edgar (Oct 14): model only what a shopper can see, even with the lid off. Scope is set by mesh / variant count, not open configuration.</p>
+    <div class="legend" style="grid-template-columns:1fr 1fr">
+      <div class="b"><h4 style="color:#1f8a4c">We model (visible)</h4><ul>
+        <li>External plastic shell — cover + base</li>
+        <li>Visible metal liners — metal cover liner, metal base liner (Bronze, Triune)</li>
+        <li>Outer metal cover (Bronze / metal vaults)</li>
+        <li>Carapace (plastic or metal)</li>
+        <li>Nameplate (molded, fixed position) + Wilbert logo plate</li>
+        <li>Handles — fixed per vault; one geometry, recolored to the finish</li>
+        <li>Base pattern window + half-moon lift notches (Bronze: corner indents)</li>
+        <li>Emblems / cover prints — 2D decals</li>
+      </ul></div>
+      <div class="b mfg"><h4>We do NOT model (internal)</h4><ul>
+        <li>Inside plastic liner (never visible)</li>
+        <li>Butyl seal between cover and base <span class="q3d">Chris?</span></li>
+        <li>Bonding / adhesive / caulking</li>
+        <li>Concrete interior, casket rest, record tube (hidden)</li>
+        <li>Manufacturing stamp codes</li>
+      </ul></div>
+    </div>
+    <div class="callout info"><b>Flag:</b> the butyl and inner liners are only needed if Chris / Casey want a construction / cutaway view. Default is no, so they stay out.</div>
+  </section>
+
+  <section>
+    <h2><span class="n">6</span>Timeline</h2>
     <p class="lead">Aggressive, per the plan. Flag: not confident all 3D creation lands inside one month.</p>
     <div class="card scroll" style="padding:0">
       <table class="tl">
@@ -186,7 +222,7 @@
   </section>
 
   <section>
-    <h2><span class="n">5</span>Individual vault pages</h2>
+    <h2><span class="n">7</span>Individual vault pages</h2>
     <p class="lead">Build each to match the configuration matrix above. Existing pages linked; the rest come as CADs land.</p>
     <div class="pagegrid">
       <a href="wilbert-vault-config.html" target="_blank"><div class="t">White Venetian — configurator</div><div class="d">base color, accent, cover, emblem</div></a>
