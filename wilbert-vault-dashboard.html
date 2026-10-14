@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Wilbert Burial Vaults — Project Dashboard</title>
+<style>
+  :root{--ink:#17202a;--muted:#667;--line:#e2e6ec;--bg:#f4f6f9;--card:#fff;--brand:#1f6d5a;--brand2:#0f3d33;--amber:#b4690e;--red:#b4232c;--green:#1f8a4c;--blue:#1f6feb}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+  header.top{background:var(--brand2);color:#fff;padding:20px 0}
+  header.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  header.top h1{font-size:1.3rem;font-weight:800;letter-spacing:-.01em}
+  header.top .sub{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#9fc7bc}
+  header.top .meta{font-size:.74rem;color:#bfe0d6;text-align:right}
+  section{margin:26px 0}
+  h2{font-size:1.05rem;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:var(--brand);color:#fff;font-size:.8rem;font-weight:800}
+  .lead{color:var(--muted);font-size:.9rem;margin:2px 0 12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:16px 18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .callout{border-radius:9px;padding:11px 14px;font-size:.84rem;margin:12px 0}
+  .callout.warn{background:#fff7e9;border:1px solid #f3dca6;color:#7a4e08}
+  .callout.info{background:#eef5ff;border:1px solid #cfe0fb;color:#1c3e73}
+  /* checklist */
+  table.ck{width:100%;border-collapse:collapse;font-size:.86rem}
+  table.ck th,table.ck td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.ck th{font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:#f7f9fb}
+  table.ck td.ck{width:46px;text-align:center}
+  table.ck input{width:18px;height:18px;accent-color:var(--green);cursor:pointer}
+  table.ck tr.done td{color:#8a97a8}
+  table.ck tr.done td.item{text-decoration:line-through}
+  .due{font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:5px;background:#eef1f5;color:#55606e;white-space:nowrap}
+  .due.soon{background:#fde7e7;color:var(--red)}
+  .prog{display:flex;align-items:center;gap:12px;margin:0 0 10px}
+  .bar{flex:1;height:10px;background:#e7edf3;border-radius:999px;overflow:hidden}
+  .bar>span{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
+  .pct{font-weight:800;color:var(--brand2);font-size:.85rem;white-space:nowrap}
+  .reset{font-size:.72rem;color:var(--muted);background:none;border:1px solid var(--line);border-radius:6px;padding:4px 9px;cursor:pointer}
+  /* matrix */
+  .scroll{overflow-x:auto}
+  table.mx{width:100%;border-collapse:collapse;font-size:.8rem;min-width:860px}
+  table.mx th,table.mx td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.mx th{font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:#f7f9fb;position:sticky;top:0}
+  table.mx td.v{font-weight:700;white-space:nowrap}
+  table.mx tr.scope td{background:#f1f9f4}
+  .pill{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:2px 7px;border-radius:6px}
+  .pill.in{background:#d7f0e0;color:#15663a}
+  .pill.no{background:#eef1f5;color:#808a97}
+  .pill.triple{background:#e7dcff;color:#5b34b8}.pill.double{background:#d7e8ff;color:#1f5bbd}.pill.single{background:#eaf4ea;color:#2f7a44}.pill.unlined{background:#f1f1f1;color:#777}
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .legend .b{background:#fafbfc;border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+  .legend .b h4{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin:0 0 5px}
+  .legend .b ul{margin:0 0 0 1rem;font-size:.82rem;color:#3a4553}
+  .legend .b li{margin:2px 0}
+  a.btn{display:inline-block;font-size:.8rem;font-weight:700;color:#fff;background:var(--brand);text-decoration:none;padding:8px 13px;border-radius:8px;margin-top:8px}
+  /* timeline */
+  table.tl{width:100%;border-collapse:collapse;font-size:.84rem}
+  table.tl td{padding:8px 10px;border-bottom:1px solid var(--line)}
+  table.tl td.ph{font-weight:700;white-space:nowrap}
+  table.tl td.wk{color:var(--muted);white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+  table.tl tr.v td.ph{color:var(--brand)}
+  table.tl tr.launch td{background:#f1f9f4;font-weight:700}
+  .pagegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+  .pagegrid a,.pagegrid span{display:block;border:1px solid var(--line);border-radius:9px;padding:11px 13px;background:#fff;text-decoration:none;color:var(--ink)}
+  .pagegrid a{border-color:#cfe0d9}
+  .pagegrid a:hover{border-color:var(--brand)}
+  .pagegrid span{color:#9aa4b0;background:#fafbfc}
+  .pagegrid .t{font-weight:700;font-size:.86rem}
+  .pagegrid .d{font-size:.72rem;color:var(--muted);margin-top:2px}
+  footer{color:var(--muted);font-size:.74rem;padding:24px 0 40px;border-top:1px solid var(--line);margin-top:30px}
+  /* gate */
+  .gate{position:fixed;inset:0;z-index:100;background:var(--brand2);display:flex;align-items:center;justify-content:center;padding:16px}
+  .gate.hidden{display:none}
+  .gate .card{max-width:380px;width:100%;text-align:center;padding:28px 24px}
+  .gate .eyebrow{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:800}
+  .gate h1{font-size:1.2rem;font-weight:800;margin:6px 0}
+  .gate p{color:var(--muted);font-size:.84rem;margin:0 0 14px}
+  .gate input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:1rem;margin-bottom:10px;text-align:center}
+  .gate .err{color:var(--red);font-size:.78rem;min-height:1.1em;margin-bottom:8px}
+  .gate button{width:100%;font:inherit;font-weight:700;color:#fff;background:var(--brand);border:0;border-radius:10px;padding:12px;cursor:pointer}
+  body.locked{overflow:hidden}
+</style>
+</head>
+<body class="locked">
+<div class="gate" id="gate">
+  <form class="card" id="gateForm" autocomplete="off">
+    <div class="eyebrow">Private preview</div>
+    <h1>Wilbert Burial Vaults</h1>
+    <p>Internal project dashboard. Enter the access code to continue.</p>
+    <input type="password" id="gatePw" placeholder="Access code" autofocus>
+    <p class="err" id="gateErr"></p>
+    <button type="submit">Enter</button>
+  </form>
+</div>
+
+<header class="top"><div class="wrap">
+  <div><h1>Wilbert Burial Vaults</h1><div class="sub">Project dashboard · 3D + configurator build</div></div>
+  <div class="meta">Customer: Wilbert · Contact: Edgar<br>Target launch: Dec 18, 2026</div>
+</div></header>
+
+<div class="wrap">
+
+  <section>
+    <div class="callout warn"><b>Blocked:</b> 3D creation and configurator development cannot start until we receive the catalog, color palette, references, and the six CADs below. Confirm materials understanding with Edgar, and request STEP files for every assembly in the construction PDF.</div>
+  </section>
+
+  <section>
+    <h2><span class="n">1</span>What we need from Wilbert</h2>
+    <p class="lead">The checklist that unblocks the build. Check items off as they arrive (saved in your browser).</p>
+    <div class="prog"><div class="bar"><span id="barFill"></span></div><div class="pct" id="pct">0%</div><button class="reset" id="resetCk">Reset</button></div>
+    <div class="card" style="padding:0">
+      <table class="ck" id="ckTable">
+        <thead><tr><th class="ck">Done</th><th>Item</th><th>Due</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr data-k="catalog"><td class="ck"><input type="checkbox"></td><td class="item">Updated product catalog</td><td><span class="due soon">Oct 14</span></td><td>Drives the asset matrix and variant list.</td></tr>
+          <tr data-k="palette"><td class="ck"><input type="checkbox"></td><td class="item">Color palette</td><td><span class="due soon">Oct 16</span></td><td>Assumption: we create the variants listed online.</td></tr>
+          <tr data-k="refs"><td class="ck"><input type="checkbox"></td><td class="item">All references, images, 2D assets, reference imagery</td><td><span class="due soon">Oct 16</span></td><td>Everything needed to build and texture.</td></tr>
+          <tr data-k="cad-bronze"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Wilbert Bronze</td><td><span class="due">Oct 16</span></td><td>Metal/plastic lined, triple-reinforced.</td></tr>
+          <tr data-k="cad-triune"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Triune</td><td><span class="due">Oct 16</span></td><td>SST, double-reinforced.</td></tr>
+          <tr data-k="cad-venetian"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Venetian</td><td><span class="due">Oct 16</span></td><td>Plastic lined, single.</td></tr>
+          <tr data-k="cad-continental"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Continental</td><td><span class="due">Oct 16</span></td><td>Plastic lined; pre-cast round-top option.</td></tr>
+          <tr data-k="cad-monticello"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Monticello</td><td><span class="due">Oct 16</span></td><td>Plastic lined, single.</td></tr>
+          <tr data-k="cad-salute"><td class="ck"><input type="checkbox"></td><td class="item">CAD — Salute</td><td><span class="due">Oct 16</span></td><td>Plastic lined, single.</td></tr>
+          <tr data-k="steps"><td class="ck"><input type="checkbox"></td><td class="item">STEP files for every assembly in the construction PDF</td><td><span class="due">For Edgar call</span></td><td>Liners, carapace, base assemblies, hardware.</td></tr>
+          <tr data-k="materials"><td class="ck"><input type="checkbox"></td><td class="item">Confirm materials understanding with Edgar</td><td><span class="due">For Edgar call</span></td><td>Finishes, metals (SST/bronze/copper), plastics, concrete.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>Product &amp; configuration matrix</h2>
+    <p class="lead">The construction of record for each vault (from the Wilbert construction reference). Build the individual vault pages to match these configurations. Rows highlighted green are the six in scope for this phase.</p>
+    <div class="card scroll" style="padding:0">
+      <table class="mx">
+        <thead><tr><th>Vault</th><th>Scope</th><th>Protection</th><th>Unit type</th><th>Cover profile</th><th>Cover / base liner</th><th>Carapace</th><th>Seal</th></tr></thead>
+        <tbody>
+          <tr class="scope"><td class="v">Wilbert Bronze</td><td><span class="pill in">In scope</span></td><td><span class="pill triple">Triple</span></td><td>Metal / plastic lined</td><td>2 bumps, unique / flat top</td><td>Modern Cover / Flat Bottom Base</td><td>Metal</td><td>T&amp;G + butyl</td></tr>
+          <tr class="scope"><td class="v">Triune <span style="font-weight:400;color:#8a97a8">(SST group)</span></td><td><span class="pill in">In scope</span></td><td><span class="pill double">Double</span></td><td>Metal / plastic lined</td><td>3 bumps / flat top</td><td>Modern Cover / Flat Bottom Base</td><td>Metal</td><td>T&amp;G + butyl</td></tr>
+          <tr class="scope"><td class="v">Venetian</td><td><span class="pill in">In scope</span></td><td><span class="pill single">Single</span></td><td>Plastic lined</td><td>3 bumps / flat top</td><td>Modern Cover / Standard Base</td><td>Plastic</td><td>T&amp;G + butyl</td></tr>
+          <tr class="scope"><td class="v">Continental</td><td><span class="pill in">In scope</span></td><td><span class="pill single">Single</span></td><td>Plastic lined</td><td>3 bumps / flat top · pre-cast round top</td><td>Dome Cover / Standard · Speed Bump Base</td><td>Plastic (flat top, optional); none (round top)</td><td>T&amp;G + butyl</td></tr>
+          <tr class="scope"><td class="v">Monticello</td><td><span class="pill in">In scope</span></td><td><span class="pill single">Single</span></td><td>Plastic lined</td><td>2 bumps / flat top</td><td>Dome Cover / Standard · Speed Bump Base</td><td>None</td><td>T&amp;G + butyl</td></tr>
+          <tr class="scope"><td class="v">Salute</td><td><span class="pill in">In scope</span></td><td><span class="pill single">Single</span></td><td>Plastic lined</td><td>2 bumps / flat top</td><td>Dome Cover / Standard · Speed Bump Base</td><td>None</td><td>T&amp;G + butyl</td></tr>
+          <tr><td class="v">Citadel</td><td><span class="pill no">Later</span></td><td><span class="pill single">Single</span></td><td>Plastic lined</td><td>3 bumps / flat top</td><td>Dome Cover / Standard Base</td><td>Plastic</td><td>T&amp;G + butyl</td></tr>
+          <tr><td class="v">Tribute</td><td><span class="pill no">Later</span></td><td><span class="pill double">Double</span></td><td>Plastic lined</td><td>1 bump / flat top</td><td>Dome Cover / Standard Base (+ Tribute Base Assembly)</td><td>Plastic</td><td>T&amp;G + butyl</td></tr>
+          <tr><td class="v">Monarch</td><td><span class="pill no">Later</span></td><td><span class="pill unlined">Unlined</span></td><td>Unlined</td><td>1 bump / flat top (T&amp;G or flat)</td><td>None</td><td>None</td><td>T&amp;G + butyl, or flat</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout info">The SST group shares construction: <b>Triune, Veteran, Cameo Rose, Copper, Bronze</b>. Monticello shares construction with <b>Cemetery</b>. Build one per construction family, then reskin finishes per model.</div>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>Construction system</h2>
+    <p class="lead">Shared components across the line, for modeling the layer stack correctly. Full detail (cross-sections, exploded views, bonding per vault) in the reference PDF.</p>
+    <div class="legend">
+      <div class="b"><h4>Internal plastic liners</h4><ul><li>Dome Cover</li><li>Modern Cover</li><li>Flat Bottom Base</li><li>Standard Base</li><li>Speed Bump Base</li></ul></div>
+      <div class="b"><h4>External plastic liners</h4><ul><li>Tribute Cover</li><li>Tribute Base Assembly (2 side + 2 end, epoxy joints)</li><li>Wilbert Bronze Base Liner</li></ul></div>
+      <div class="b"><h4>Metal liners</h4><ul><li>Metal Cover — one piece</li><li>Metal Base — bottom plate + 2 side + 2 end + 4 corner (interlocked + taped)</li><li>Metals: stainless, bronze, copper</li></ul></div>
+      <div class="b"><h4>Carapace (personalization top)</h4><ul><li>Plastic or metal (vault defines)</li><li>Emblems, engravings, photos, images, canvas</li></ul></div>
+      <div class="b"><h4>Seals</h4><ul><li>Tongue &amp; Groove with butyl (all plastic-lined)</li><li>Flat (unlined only)</li></ul></div>
+      <div class="b"><h4>Bonding</h4><ul><li>UNIDEX — concrete/plastic, metal/plastic</li><li>2-part adhesive — carapace to cover</li><li>Urethane caulking — metal base surround</li></ul></div>
+    </div>
+    <a class="btn" href="assets/wilbert/WILBERT-BURIAL-VAULTS_REV01.pdf" target="_blank" rel="noopener">Open the full construction reference (PDF)</a>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span>Timeline</h2>
+    <p class="lead">Aggressive, per the plan. Flag: not confident all 3D creation lands inside one month.</p>
+    <div class="card scroll" style="padding:0">
+      <table class="tl">
+        <tr class="v"><td class="ph">Project planning</td><td>Asset matrix, catalog, palette, CADs / 2D / reference, technical implementation plan</td><td class="wk">Oct 7 – Oct 16</td></tr>
+        <tr class="v"><td class="ph">VNTANA — 3D creation</td><td>Model the six vaults</td><td class="wk">Oct 19 – Nov 12</td></tr>
+        <tr class="v"><td class="ph">VNTANA — configurator dev</td><td>Build on the configurator</td><td class="wk">Oct 12 – Nov 12</td></tr>
+        <tr><td class="ph">Hotspot creation</td><td>Wilbert handles when ready</td><td class="wk">TBD</td></tr>
+        <tr class="v"><td class="ph">VNTANA — delivery</td><td>Configurator for implementation</td><td class="wk">Nov 13</td></tr>
+        <tr><td class="ph">Wilbert — implementation</td><td></td><td class="wk">Nov 16 – Nov 18</td></tr>
+        <tr><td class="ph">Wilbert — QA</td><td></td><td class="wk">Nov 30 – Dec 11</td></tr>
+        <tr class="launch"><td class="ph">Launch</td><td>Assumes last two weeks of December are holidays</td><td class="wk">Dec 18</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span>Individual vault pages</h2>
+    <p class="lead">Build each to match the configuration matrix above. Existing pages linked; the rest come as CADs land.</p>
+    <div class="pagegrid">
+      <a href="wilbert-vault-config.html" target="_blank"><div class="t">White Venetian — configurator</div><div class="d">base color, accent, cover, emblem</div></a>
+      <a href="wilbert-vault-parts-v2.html" target="_blank"><div class="t">White Venetian — parts reference</div><div class="d">components, tiers, materials, CAD handoff</div></a>
+      <a href="wilbert-vault-parts-triune.html" target="_blank"><div class="t">Triune — parts reference</div><div class="d">stainless steel, metal liners</div></a>
+      <span><div class="t">Wilbert Bronze</div><div class="d">to build (CAD needed)</div></span>
+      <span><div class="t">Continental</div><div class="d">to build (CAD needed)</div></span>
+      <span><div class="t">Monticello</div><div class="d">to build (CAD needed)</div></span>
+      <span><div class="t">Salute</div><div class="d">to build (CAD needed)</div></span>
+    </div>
+  </section>
+
+  <footer>VNTANA × Wilbert Funeral Services · internal project dashboard · pre-launch, do not distribute outside the project.</footer>
+</div>
+
+<script>
+  // access gate
+  (function(){
+    var HASH="745aab30169d010efdc6d1c1f8bcda183c7f13cfc9f0ebb3c8495d5018e10198";
+    function sha256(s){ return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function(b){ return [].map.call(new Uint8Array(b),function(x){return x.toString(16).padStart(2,"0");}).join(""); }); }
+    function unlock(){ var g=document.getElementById("gate"); if(g) g.classList.add("hidden"); document.body.classList.remove("locked"); }
+    try{ if(sessionStorage.getItem("wilbert_gate")===HASH) unlock(); }catch(e){}
+    var f=document.getElementById("gateForm");
+    f.addEventListener("submit", function(e){ e.preventDefault();
+      var code=(document.getElementById("gatePw").value||"").toLowerCase().replace(/\s+/g,"");
+      sha256(code).then(function(h){
+        if(h===HASH){ try{ sessionStorage.setItem("wilbert_gate",h); }catch(e){} unlock(); }
+        else { document.getElementById("gateErr").textContent="That code is not right. Check with the person who sent you the link."; document.getElementById("gatePw").select(); }
+      });
+    });
+  })();
+
+  // checklist persistence + progress
+  (function(){
+    var KEY="wilbert_vault_checklist", rows=[].slice.call(document.querySelectorAll("#ckTable tbody tr"));
+    var saved={}; try{ saved=JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){}
+    function paint(){
+      var done=0;
+      rows.forEach(function(tr){ var cb=tr.querySelector("input"); tr.classList.toggle("done",cb.checked); if(cb.checked) done++; });
+      var pct=rows.length?Math.round(done/rows.length*100):0;
+      document.getElementById("barFill").style.width=pct+"%"; document.getElementById("pct").textContent=pct+"%";
+    }
+    rows.forEach(function(tr){ var k=tr.dataset.k, cb=tr.querySelector("input");
+      cb.checked=!!saved[k];
+      cb.addEventListener("change",function(){ saved[k]=cb.checked; try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){} paint(); });
+    });
+    document.getElementById("resetCk").addEventListener("click",function(){ saved={}; try{localStorage.removeItem(KEY);}catch(e){} rows.forEach(function(tr){tr.querySelector("input").checked=false;}); paint(); });
+    paint();
+  })();
+</script>
+</body>
+</html>
