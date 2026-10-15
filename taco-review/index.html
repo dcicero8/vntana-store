@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Taco Comfort Weekly Review</title>
+<link rel="stylesheet" href="../taco-build/style.css">
+<style>
+  #gate{position:fixed;inset:0;z-index:1000;background:var(--brand2);display:flex;align-items:center;justify-content:center;padding:24px}
+  #gate .card{background:#fff;max-width:400px;width:100%;padding:40px 34px;text-align:center;border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+  #gate .tag{font-weight:800;color:var(--brand2);letter-spacing:.03em;margin-bottom:6px}
+  #gate h1{font-size:20px;margin:0 0 6px}
+  #gate p{font-size:13px;color:var(--muted);margin:0 0 20px}
+  #gate input{width:100%;padding:14px 16px;font-size:16px;border:1px solid var(--line);border-radius:8px;outline:none;font-family:inherit}
+  #gate button{margin-top:14px;width:100%;background:var(--brand2);color:#fff;border:0;padding:15px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer}
+  #gate .err{color:var(--brand);font-size:13px;font-weight:600;margin-top:12px;min-height:16px}
+  body.locked{overflow:hidden}
+  body.locked .site{filter:blur(7px);pointer-events:none;user-select:none}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:14px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+  .stat .v{font-size:26px;font-weight:800;color:var(--brand2);margin-top:2px}
+  .stat .s{font-size:12px;color:var(--muted)}
+
+  .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+
+  .ready{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:10px}
+  .rcard{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .rcard iframe{width:100%;aspect-ratio:4/3;border:0;display:block;background:#eceff3}
+  .rcard .rh{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .rcard .sku{font-weight:800}
+  .rcard .meta{font-size:12px;color:var(--muted)}
+
+  table.st{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+  table.st th,table.st td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.st th{background:#f0f4f8;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  table.st tr.famrow td{background:#f7f9fb;font-weight:800;color:var(--brand2)}
+  .pill2{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .p-ready{background:#e6f6ec;color:#1f8a4c}
+  .p-next{background:#eef4ff;color:#1f5fbf}
+  .p-wait{background:#fff6e6;color:#a6620a}
+  .p-none{background:#f0f2f5;color:#5b6b7a}
+
+  ul.clean{margin:6px 0 0;padding-left:20px} ul.clean li{margin:6px 0}
+  table.log{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+  table.log td,table.log th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.log th{background:#f0f4f8;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  table.log td.d{white-space:nowrap;color:var(--muted);width:90px}
+  ol.q{margin:6px 0 0;padding-left:22px} ol.q li{margin:9px 0} ol.q .who{font-size:12px;color:var(--muted);font-weight:700;margin-left:6px}
+</style>
+</head>
+<body class="locked">
+
+<div id="gate">
+  <div class="card">
+    <div class="tag">TACO COMFORT &times; VNTANA</div>
+    <h1>Weekly Review</h1>
+    <p>This page is private. Enter the password to continue.</p>
+    <input id="pw" type="password" placeholder="Password" autocomplete="off">
+    <button id="unlock">Unlock</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<div class="site">
+<div class="top"><div class="wrap"><span class="tag">TACO COMFORT &times; VNTANA</span><span>Weekly Review</span><span class="sub" id="updated">Updated Oct 15, 2026</span></div></div>
+
+<div class="head"><div class="wrap">
+  <div class="crumbs">3D assets and Advanced Renders</div>
+  <h1>Where we are</h1>
+  <p>What we have received from Taco, what has been built and is on your VNTANA platform, the decisions made so far, and the open questions for this week.</p>
+  <div class="stats" id="stats"></div>
+  <div class="links">
+    <a class="btn" href="https://platform.vntana.com/taco/products/products" target="_blank" rel="noopener">Your assets on VNTANA &#8599;</a>
+    <a class="btn" href="https://cycles.vntana.com" target="_blank" rel="noopener">Advanced Renders &#8599;</a>
+    <a class="btn ghost" href="../taco-build/refs/Taco-Image-Reference-Guide.pdf" target="_blank" rel="noopener">Image reference guide (PDF)</a>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+<!-- 1 READY FOR REVIEW -->
+<section>
+  <h2><span class="n">1</span>Ready for your review</h2>
+  <p class="lead">These products are built, on your platform, and can be rendered in Advanced Renders. Spin them below, or open them on the platform to leave notes (annotations, tag @Derek). Renders you make are saved in each product's Project.</p>
+  <div class="ready" id="ready"></div>
+  <div class="note"><b>Placeholders:</b> faceplate art on these models is a placeholder until the final faceplate design arrives. The side label uses your new label layout as a sticker.</div>
+</section>
+
+<!-- 2 STATUS -->
+<section>
+  <h2><span class="n">2</span>Status of all 32 products</h2>
+  <p class="lead">The first set: 12 product families, 32 SKUs.</p>
+  <div class="card" style="padding:8px 14px">
+    <table class="st"><thead><tr><th>SKU</th><th>Body</th><th>Connection</th><th>Status</th><th>Platform</th></tr></thead><tbody id="status"></tbody></table>
+  </div>
+  <p style="font-size:13px;color:var(--muted)">
+    <span class="pill2 p-ready">Ready for review</span> built and on platform &nbsp;
+    <span class="pill2 p-next">Next up</span> in production now &nbsp;
+    <span class="pill2 p-wait">After faceplate art</span> waiting on final faceplate design &nbsp;
+    <span class="pill2 p-none">Not started</span>
+  </p>
+</section>
+
+<!-- 3 RECEIVED -->
+<section>
+  <h2><span class="n">3</span>What we have received from Taco</h2>
+  <div class="card" style="padding:8px 14px">
+    <table class="log"><thead><tr><th>Date</th><th>Item</th><th>Used for</th></tr></thead><tbody>
+      <tr><td class="d">Sep</td><td>CAD (STEP) for all 32 SKUs</td><td>The 3D models</td></tr>
+      <tr><td class="d">Sep</td><td>Wholesale catalog (PDF)</td><td>Specs, proportions, finishes</td></tr>
+      <tr><td class="d">Oct 2</td><td>Product Image Reference Guide (8 standard angles)</td><td>The cameras in every render</td></tr>
+      <tr><td class="d">Oct 2</td><td>Side label layout (.ai)</td><td>The side label on the casing</td></tr>
+      <tr><td class="d">Oct 5</td><td>Etching example photos</td><td>Etched marking style (future products)</td></tr>
+      <tr><td class="d">Oct 5</td><td>Faceplate drawings (DXF: 198-202, 198-219, 198-3668)</td><td>Faceplate shape, when final art arrives</td></tr>
+      <tr><td class="d">Oct 9</td><td>Parts photos (bronze, stainless, cast iron, composite casings)</td><td>Material reference; saved in your account with tags</td></tr>
+      <tr><td class="d">Oct 9</td><td>Stainless sample photos (Ken)</td><td>Stainless material check</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<!-- 4 DECISIONS -->
+<section>
+  <h2><span class="n">4</span>Decisions so far</h2>
+  <div class="card" style="padding:8px 14px">
+    <table class="log"><thead><tr><th>Date</th><th>Decision</th></tr></thead><tbody>
+      <tr><td class="d">Oct 2</td><td>8 standard angles for every product; hero = Front-Top-Left. File names follow TACO-RES_&lt;SKU&gt;_IMG-&lt;NN&gt;_&lt;VIEW&gt;.</td></tr>
+      <tr><td class="d">Oct 9</td><td>Materials approved (first pass, Ken): <b>stainless, cast iron, Taco Comfort green</b>. These are reused on every product.</td></tr>
+      <tr><td class="d">Oct 9</td><td>0034e and 0026e side markings are <b>sticker labels</b> (not etched). Lighter label text may be requested.</td></tr>
+      <tr><td class="d">Oct 9</td><td>Viewer look: the <b>Taco Default</b> preset on all products.</td></tr>
+      <tr><td class="d">Oct 9</td><td>Feedback: 3D notes as platform annotations; render app, cameras, and file-name notes in a shared SharePoint sheet.</td></tr>
+      <tr><td class="d">Oct 15</td><td>0026e uses the same body as 0034e: Taco's CAD for both is identical, and the catalog shows the same casing. Only the faceplate differs.</td></tr>
+      <tr><td class="d">Proposed</td><td><b>Render count:</b> through the end of the year, we count the renders in your Projects folders. If you do not want a render, delete it and it will not count.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<!-- 5 OPEN QUESTIONS -->
+<section>
+  <h2><span class="n">5</span>Open questions for this week</h2>
+  <div class="card">
+    <ol class="q">
+      <li><b>Side label values:</b> do the 0026e and 0034e have different values on the side label (for example amps)? Both currently show 0.54 AMPS.<span class="who">Liz</span></li>
+      <li><b>Side label text:</b> keep it dark, or lighter? Sales sign-off images for Sara.<span class="who">Liz, Jess, Sara</span></li>
+      <li><b>Black plastic:</b> does the black plastic (control cover, terminal box) look right?<span class="who">Ken</span></li>
+      <li><b>Bronze:</b> which products use the bronze sweat casings (198-3527L, 198-3528L)?<span class="who">Ken</span></li>
+      <li><b>Composite union:</b> the part number for the black composite union casing.<span class="who">Liz</span></li>
+      <li><b>Laser etching:</b> which products are etched (new manufacturing line) vs sticker labels?<span class="who">Liz</span></li>
+      <li><b>007e cover:</b> smooth cover (007e-2F2) or the cover with the raised knob (other 007e variants)?<span class="who">Ken</span></li>
+      <li><b>Faceplate art:</b> date and format (layered .ai) for the final faceplates, and which models.<span class="who">Liz</span></li>
+      <li><b>SolidWorks files:</b> available for the next batches? Most useful where there are many replacement parts.<span class="who">Sara, Liz</span></li>
+      <li><b>Render outputs:</b> sizes by DPI (3000 px at 300 DPI, 1500 px at 150 DPI), what "EPS vector" means, the file prefix for commercial products, and the list of optional shots.<span class="who">Jess, Jai</span></li>
+      <li><b>Separators:</b> are 49-150 Press and 49-200 Sweat/Press missing from the list, or not made?<span class="who">Liz</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 6 NEXT -->
+<section>
+  <h2><span class="n">6</span>Next steps</h2>
+  <div class="card">
+    <ul class="clean">
+      <li><b>VNTANA:</b> continue building 0034e+, VT2218, and the air &amp; dirt separators (these do not wait on faceplate art).</li>
+      <li><b>VNTANA:</b> add each product to the platform as it is ready, with Advanced Renders available.</li>
+      <li><b>Taco:</b> render and review the ready products; leave notes as annotations.</li>
+      <li><b>Taco:</b> answers to the open questions above.</li>
+      <li><b>Timeline:</b> all 32 products by end of year, likely sooner; e-series faceplate models follow the final faceplate art.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>Taco Comfort Solutions &times; VNTANA &middot; Weekly review</footer>
+</div>
+</div>
+
+<script>
+(function(){var PASSWORD="tacocomfort",KEY="tacoReviewUnlocked";var gate=document.getElementById('gate');
+  function unlock(){try{sessionStorage.setItem(KEY,'1');}catch(e){}gate.style.display='none';document.body.classList.remove('locked');}
+  try{if(sessionStorage.getItem(KEY)==='1')unlock();}catch(e){}
+  function tryPw(){var v=document.getElementById('pw').value.trim();if(v.toLowerCase()===PASSWORD){unlock();}else{document.getElementById('err').textContent='Incorrect password. Please try again.';}}
+  document.getElementById('unlock').addEventListener('click',tryPw);
+  document.getElementById('pw').addEventListener('keydown',function(e){if(e.key==='Enter')tryPw();});
+})();
+
+/* ===== Edit status here ===== */
+var FAMILIES = [{"id":"007e","variants":[{"sku":"007e-2F2","body":"Cast iron","conn":"2-bolt flange"},{"sku":"007e3-2F4","body":"Cast iron","conn":"Universal 2-way flange"},{"sku":"007e-SF4","body":"304 Stainless","conn":"Universal flange"},{"sku":"007e3-SU","body":"304 Stainless","conn":"Union"}]},{"id":"0015e3","variants":[{"sku":"0015e3-2F2","body":"Cast iron","conn":"2-bolt flange"},{"sku":"0015e3-2F4","body":"Cast iron","conn":"Universal 2-way flange"},{"sku":"0015e3-SF4","body":"304 Stainless","conn":"Universal flange"},{"sku":"0015e3-SU","body":"304 Stainless","conn":"Union"}]},{"id":"0018e","variants":[{"sku":"0018e-2F2","body":"Cast iron","conn":"2-bolt flange"},{"sku":"0018e-2F4","body":"Cast iron","conn":"Universal 2-way flange"},{"sku":"0018e-SF4","body":"304 Stainless","conn":"Universal flange"},{"sku":"0018e-SU","body":"304 Stainless","conn":"Union"}]},{"id":"0026e","variants":[{"sku":"0026e-F2","body":"Cast iron","conn":"Flanged"},{"sku":"0026e-SF2","body":"304 Stainless","conn":"Flanged"}]},{"id":"0034e","variants":[{"sku":"0034e-F2","body":"Cast iron","conn":"Flanged"},{"sku":"0034e-SF2","body":"304 Stainless","conn":"Flanged"}]},{"id":"0034e+","variants":[{"sku":"003eP-F2","body":"Cast iron","conn":"Flanged"},{"sku":"003eP-SF2","body":"304 Stainless","conn":"Flanged"}]},{"id":"VT2218","variants":[{"sku":"VT2218-HY1-4C1A00","body":"Cast iron","conn":"Flanged"},{"sku":"VT2218-HY2-FC1A00","body":"Cast iron","conn":"Flanged"}]},{"id":"49-075","variants":[{"sku":"49-075T","body":"Bronze 3/4\"","conn":"NPT (threaded)"},{"sku":"49-075C","body":"Bronze 3/4\"","conn":"Sweat (solder)"},{"sku":"49-075P","body":"Bronze 3/4\"","conn":"Press"}]},{"id":"49-100","variants":[{"sku":"49-100T","body":"Bronze 1\"","conn":"NPT (threaded)"},{"sku":"49-100C","body":"Bronze 1\"","conn":"Sweat (solder)"},{"sku":"49-100P","body":"Bronze 1\"","conn":"Press"}]},{"id":"49-125","variants":[{"sku":"49-125T","body":"Bronze 1-1/4\"","conn":"NPT (threaded)"},{"sku":"49-125C","body":"Bronze 1-1/4\"","conn":"Sweat (solder)"},{"sku":"49-125P","body":"Bronze 1-1/4\"","conn":"Press"}]},{"id":"49-150","variants":[{"sku":"49-150T","body":"Bronze 1-1/2\"","conn":"NPT (threaded)"},{"sku":"49-150C","body":"Bronze 1-1/2\"","conn":"Sweat (solder)"}]},{"id":"49-200","variants":[{"sku":"49-200T","body":"Bronze 2\"","conn":"NPT (threaded)"}]}];
+// Built products: SKU -> platform asset uuid (products workspace)
+var BUILT = {
+  "0034e-F2":"dd44df80-5f24-42d4-827b-729e8d89b101",
+  "0034e-SF2":"f7e86c19-ef61-47cd-a3ec-76d690d10fd0",
+  "0026e-F2":"4fa95e8e-e1d6-4467-937b-7b01d7f06ce5",
+  "0026e-SF2":"e65196f8-be2a-49c6-a562-47467f51c153"
+};
+// Family status for products not yet built: next | wait | none
+var FAMSTATUS = {"007e":"wait","0015e3":"wait","0018e":"wait","0034e+":"next","VT2218":"next","49-075":"next","49-100":"next","49-125":"next","49-150":"next","49-200":"next"};
+/* ============================ */
+
+var EMBED=function(u){return "https://embed.vntana.com/v2?productUuid="+u+"&clientSlug=products&organizationSlug=taco";};
+var PLAT=function(u){return "https://platform.vntana.com/taco/products/products/details/"+u;};
+var LBL={ready:["p-ready","Ready for review"],next:["p-next","Next up"],wait:["p-wait","After faceplate art"],none:["p-none","Not started"]};
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+var total=0,built=0,next=0,wait=0,rows="",cards="";
+FAMILIES.forEach(function(f){
+  rows+='<tr class="famrow"><td colspan="5">'+esc(f.id)+'</td></tr>';
+  f.variants.forEach(function(v){
+    total++; var u=BUILT[v.sku]; var st=u?"ready":(FAMSTATUS[f.id]||"none");
+    if(st==="ready")built++; else if(st==="next")next++; else if(st==="wait")wait++;
+    var l=LBL[st];
+    rows+='<tr><td><b>'+esc(v.sku)+'</b></td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+l[1]+'</span></td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
+    if(u) cards+='<div class="rcard"><iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(u)+'"></iframe><div class="rh"><div><div class="sku">'+esc(v.sku)+'</div><div class="meta">'+esc(v.body)+' &middot; '+esc(v.conn)+'</div></div><a class="btn ghost" href="'+PLAT(u)+'" target="_blank" rel="noopener">Platform &#8599;</a></div></div>';
+  });
+});
+document.getElementById("status").innerHTML=rows;
+document.getElementById("ready").innerHTML=cards;
+document.getElementById("stats").innerHTML=
+  '<div class="stat"><div class="k">Products in this set</div><div class="v">'+total+'</div><div class="s">12 families</div></div>'+
+  '<div class="stat"><div class="k">Ready for review</div><div class="v">'+built+'</div><div class="s">on platform, renderable</div></div>'+
+  '<div class="stat"><div class="k">Next up</div><div class="v">'+next+'</div><div class="s">in production</div></div>'+
+  '<div class="stat"><div class="k">After faceplate art</div><div class="v">'+wait+'</div><div class="s">e-series faceplates</div></div>';
+</script>
+</body>
+</html>
