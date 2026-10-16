@@ -320,7 +320,7 @@
 <script>
 const BASE="https://api.vntana.com", ORG="DCicero", WS="configurators";
 const UUID=new URLSearchParams(location.search).get("uuid")||"737ea709-7cf9-445d-9153-a163b4d4bd3b";  // rebuilt 2000B-FP (v7), Live Public; ?uuid= to test another build
-const REVIT_UUID="a960f6a4-52c2-4969-8c89-4553b8d560ac";    // original Revit family as uploaded
+const REVIT_UUID="a960f6a4-52c2-4969-8c89-4553b8d560ac", REVIT_WS="configurators";    // original Revit family as uploaded
 const $=id=>document.getElementById(id);
 const viewer=$("viewer");
 
@@ -781,16 +781,16 @@ $("resetBtn").onclick=()=>{ applyTabState(); };
 
 /* ---------------- renders + Revit overlay ---------------- */
 const RENDERS=[["hero","Hero, three-quarter"],["front","Front elevation"],["top","Top three-quarter"],["detail","Gear operator detail"],["service","Service view, checks removed"]];
-$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/watts/render_${k}.jpg?v=3" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
-$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/watts/render_${k}.jpg?v=3" alt="${c}">`).join("");
-function showRender(i){ $("renderImg").src=`assets/watts/render_${RENDERS[i][0]}.jpg?v=3`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
+$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/watts/render_${k}.jpg?v=5" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
+$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/watts/render_${k}.jpg?v=5" alt="${c}">`).join("");
+function showRender(i){ $("renderImg").src=`assets/watts/render_${RENDERS[i][0]}.jpg?v=5`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
 $("thumbs").addEventListener("click",e=>{ const t=e.target.closest("img"); if(t) showRender(+t.dataset.i); });
 $("gallery").addEventListener("click",e=>{ const f=e.target.closest("figure"); if(!f) return; setTab("product"); setMode("renders"); showRender(+f.dataset.i); window.scrollTo({top:0,behavior:"smooth"}); });
 function setMode(m){
   document.querySelectorAll("#modes button").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));
   $("ovRenders").classList.toggle("show",m==="renders"); $("ovRevit").classList.toggle("show",m==="revit");
   if(m==="renders"&&!$("renderImg").src) showRender(0);
-  if(m==="revit"&&!$("revitFrame").src) $("revitFrame").src=`https://embed.vntana.com/v2?productUuid=${REVIT_UUID}&clientSlug=${WS}&organizationSlug=${ORG}`;
+  if(m==="revit"&&!$("revitFrame").src) $("revitFrame").src=`https://embed.vntana.com/v2?productUuid=${REVIT_UUID}&clientSlug=${REVIT_WS}&organizationSlug=${ORG}`;
 }
 document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 // AR: phones launch AR directly; desktop opens the viewer's QR code so the visitor can continue on their phone
