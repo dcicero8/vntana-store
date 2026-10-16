@@ -781,9 +781,9 @@ $("resetBtn").onclick=()=>{ applyTabState(); };
 
 /* ---------------- renders + Revit overlay ---------------- */
 const RENDERS=[["hero","Hero, three-quarter"],["front","Front elevation"],["top","Top three-quarter"],["detail","Gear operator detail"],["service","Service view, checks removed"]];
-$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/watts/render_${k}.jpg?v=2" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
-$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/watts/render_${k}.jpg?v=2" alt="${c}">`).join("");
-function showRender(i){ $("renderImg").src=`assets/watts/render_${RENDERS[i][0]}.jpg?v=2`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
+$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/watts/render_${k}.jpg?v=3" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
+$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/watts/render_${k}.jpg?v=3" alt="${c}">`).join("");
+function showRender(i){ $("renderImg").src=`assets/watts/render_${RENDERS[i][0]}.jpg?v=3`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
 $("thumbs").addEventListener("click",e=>{ const t=e.target.closest("img"); if(t) showRender(+t.dataset.i); });
 $("gallery").addEventListener("click",e=>{ const f=e.target.closest("figure"); if(!f) return; setTab("product"); setMode("renders"); showRender(+f.dataset.i); window.scrollTo({top:0,behavior:"smooth"}); });
 function setMode(m){
