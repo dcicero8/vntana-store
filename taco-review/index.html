@@ -188,7 +188,7 @@
 </div>
 
 <script>
-(function(){var PASSWORD="tacocomfort",KEY="tacoReviewUnlocked";var gate=document.getElementById('gate');
+(function(){var PASSWORD="taco2026",KEY="tacoReviewUnlocked";var gate=document.getElementById('gate');
   function unlock(){try{sessionStorage.setItem(KEY,'1');}catch(e){}gate.style.display='none';document.body.classList.remove('locked');}
   try{if(sessionStorage.getItem(KEY)==='1')unlock();}catch(e){}
   function tryPw(){var v=document.getElementById('pw').value.trim();if(v.toLowerCase()===PASSWORD){unlock();}else{document.getElementById('err').textContent='Incorrect password. Please try again.';}}
