@@ -318,7 +318,7 @@
 
 <script>
 const BASE="https://api.vntana.com", ORG="DCicero", WS="tradeshows";
-const UUID=new URLSearchParams(location.search).get("uuid")||"872c460e-1b31-40ba-8f71-577ac5708dee";  // Northline NRP-200 RPZ v3 (z-fight fix), Live Public (tradeshows ws); ?uuid= to test another build
+const UUID=new URLSearchParams(location.search).get("uuid")||"28fe585b-b03f-40ac-8d56-7e745e33733b";  // Northline NRP-200 RPZ v7 (industrial rebuild, real cap screws), Live Public (tradeshows ws), 4 UI-authored hotspots; ?uuid= to test another build
 const REVIT_UUID="";
 const $=id=>document.getElementById(id);
 const viewer=$("viewer");
@@ -822,8 +822,11 @@ function loadHotspots(uuid){
     grid.forEach((h,i)=>{
       let dims={}; try{ dims=JSON.parse((h.config&&h.config.dimensions)||h.dimensions||"{}"); }catch(_){}
       if(!dims.position) return;
-      const tmp=document.createElement("div"); tmp.innerHTML=h.text||""; const txt=tmp.textContent||"";
-      const cut=txt.indexOf(":"); const title=cut>0&&cut<60?txt.slice(0,cut):""; let body=cut>0&&cut<60?txt.slice(cut+1).trim():txt; body=body.charAt(0).toUpperCase()+body.slice(1);
+      const tmp=document.createElement("div"); tmp.innerHTML=h.text||""; let title="", body="";
+      const bEl=tmp.querySelector("b,strong");   // platform editor: bold title, line break, body
+      if(bEl){ title=bEl.textContent.trim(); bEl.remove(); body=(tmp.textContent||"").trim(); }
+      else { const txt=tmp.textContent||""; const cut=txt.indexOf(":"); title=cut>0&&cut<60?txt.slice(0,cut):""; body=cut>0&&cut<60?txt.slice(cut+1).trim():txt; }
+      body=body.charAt(0).toUpperCase()+body.slice(1);
       const el=document.createElement("vntana-hotspot");
       el.setAttribute("position",dims.position); el.setAttribute("normal",dims.normal||"0m 1m 0m");
       el.innerHTML=`<div class="hs"><div class="pin">${i+1}</div><div class="card">${title?`<b>${title}</b>`:""}${body}</div></div>`;

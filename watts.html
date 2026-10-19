@@ -817,8 +817,11 @@ function loadHotspots(uuid){
     grid.forEach((h,i)=>{
       let dims={}; try{ dims=JSON.parse((h.config&&h.config.dimensions)||h.dimensions||"{}"); }catch(_){}
       if(!dims.position) return;
-      const tmp=document.createElement("div"); tmp.innerHTML=h.text||""; const txt=tmp.textContent||"";
-      const cut=txt.indexOf(":"); const title=cut>0&&cut<60?txt.slice(0,cut):""; let body=cut>0&&cut<60?txt.slice(cut+1).trim():txt; body=body.charAt(0).toUpperCase()+body.slice(1);
+      const tmp=document.createElement("div"); tmp.innerHTML=h.text||""; let title="", body="";
+      const bEl=tmp.querySelector("b,strong");   // platform editor: bold title, line break, body
+      if(bEl){ title=bEl.textContent.trim(); bEl.remove(); body=(tmp.textContent||"").trim(); }
+      else { const txt=tmp.textContent||""; const cut=txt.indexOf(":"); title=cut>0&&cut<60?txt.slice(0,cut):""; body=cut>0&&cut<60?txt.slice(cut+1).trim():txt; }
+      body=body.charAt(0).toUpperCase()+body.slice(1);
       const el=document.createElement("vntana-hotspot");
       el.setAttribute("position",dims.position); el.setAttribute("normal",dims.normal||"0m 1m 0m");
       el.innerHTML=`<div class="hs"><div class="pin">${i+1}</div><div class="card">${title?`<b>${title}</b>`:""}${body}</div></div>`;
