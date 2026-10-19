@@ -786,9 +786,9 @@ $("resetBtn").onclick=()=>{ applyTabState(); };
 
 /* ---------------- renders + Revit overlay ---------------- */
 const RENDERS=[["hero","Hero, three-quarter"],["front","Front elevation"],["top","Top three-quarter"],["detail","Relief valve and air gap"],["service","Service view, checks and relief removed"]];
-$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/northline/render_${k}.jpg?v=3" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
-$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/northline/render_${k}.jpg?v=3" alt="${c}">`).join("");
-function showRender(i){ $("renderImg").src=`assets/northline/render_${RENDERS[i][0]}.jpg?v=3`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
+$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/northline/render_${k}.jpg?v=4" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
+$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/northline/render_${k}.jpg?v=4" alt="${c}">`).join("");
+function showRender(i){ $("renderImg").src=`assets/northline/render_${RENDERS[i][0]}.jpg?v=4`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
 $("thumbs").addEventListener("click",e=>{ const t=e.target.closest("img"); if(t) showRender(+t.dataset.i); });
 $("gallery").addEventListener("click",e=>{ const f=e.target.closest("figure"); if(!f) return; setTab("product"); setMode("renders"); showRender(+f.dataset.i); window.scrollTo({top:0,behavior:"smooth"}); });
 function setMode(m){
