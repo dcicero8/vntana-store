@@ -7,7 +7,7 @@
 <title>Costco Asset Tracker — VNTANA</title>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#e21836;--ok:#1d9a4e;--warn:#d98a00;--bad:#d1293d;--pend:#8b93a4}
+  :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#e21836;--ok:#1d9a4e;--warn:#d98a00;--bad:#d1293d;--pend:#8b93a4;--disc:#4b5563}
   body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f6f7f9;color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
   .wrap{max-width:1280px;margin:0 auto;padding:0 1.5rem}
   header{background:#0d0f13;color:#fff;height:56px;display:flex;align-items:center}
@@ -21,7 +21,7 @@
   .count b{display:block;font-size:1.3rem;letter-spacing:-.02em}
   .count span{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .count.active{outline:2px solid var(--ink)}
-  .count.ideal b{color:var(--ok)} .count.issues b{color:var(--warn)} .count.wont b{color:var(--bad)} .count.pending b{color:var(--pend)}
+  .count.ideal b{color:var(--ok)} .count.issues b{color:var(--warn)} .count.wont b{color:var(--bad)} .count.pending b{color:var(--pend)} .count.discarded b{color:var(--disc)}
   .tools{margin-left:auto;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
   select,input[type=search]{font:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:7px;padding:.5rem .6rem;background:#fff}
   .golive-toggle{display:flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;color:#374151;background:#fff;border:1px solid var(--line);border-radius:7px;padding:.5rem .7rem;cursor:pointer;user-select:none}
@@ -30,8 +30,9 @@
   th{font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#9aa0a8;text-align:left;padding:.6rem .7rem;border-bottom:2px solid var(--line);background:#fafbfc;cursor:pointer;white-space:nowrap}
   td{padding:.6rem .7rem;border-bottom:1px solid var(--line);vertical-align:top;font-size:.82rem;line-height:1.45}
   tr:hover td{background:#fafbfc}
+  tr.disc td{opacity:.55}
   .pill{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;color:#fff;white-space:nowrap}
-  .pill.ideal{background:var(--ok)} .pill.issues{background:var(--warn)} .pill.wont{background:var(--bad)} .pill.pending{background:var(--pend)}
+  .pill.ideal{background:var(--ok)} .pill.issues{background:var(--warn)} .pill.wont{background:var(--bad)} .pill.pending{background:var(--pend)} .pill.discarded{background:var(--disc)}
   .g20{display:inline-block;font-size:.58rem;font-weight:800;background:#0d0f13;color:#fff;padding:2px 7px;border-radius:9px;margin-left:5px;vertical-align:1px}
   .item{font-weight:700;white-space:nowrap}
   .nm{color:var(--muted);font-size:.74rem;display:block}
@@ -67,7 +68,7 @@
     <tbody id="rows"></tbody>
   </table>
   <div class="foot">
-    <b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Ideal</b> = processed clean, live-public ready. <b>Has issues</b> = usable or fixable, something needs attention (VNTANA fix or vendor re-export for quality). <b>Won't process</b> = cannot produce a usable asset from what was sent; vendor action required. <b>Pending</b> = not yet reviewed.<br>
+    <b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Ideal</b> = processed clean, live-public ready. <b>Has issues</b> = usable or fixable, something needs attention (VNTANA fix or vendor re-export for quality). <b>Won't process</b> = cannot produce a usable asset from what was sent; vendor action required. <b>Pending</b> = not yet reviewed. <b>Discarded</b> = removed from the workspace (demo content, duplicates); kept here for the record, listed at the bottom.<br>
     Triage rules: see the Optimization Settings Guide + the triage order in the cleanup handoff. Fixed files stay in Mexico POC; originals move to the archive workspace. Asset name = item number; description = product name; UUID goes in Costco's back office; must be Live Public for the app.
   </div>
 </div>
@@ -192,9 +193,9 @@ var DATA = [
  {item:"1933950", name:"TBD", vendor:"TBD", status:"issues", g20:false, ready:true, so:171.7, sn:3.4, nm:"ok",
   issue:"Convert Only kept 2.0M triangles: heavy on mobile GPUs despite 3.4 MB.",
   action:"Reprocess via optimization pipeline (decompress first if pre-Draco'd)."},
- {item:"Stove with Range", name:"Demo stove", vendor:"VNTANA demo", status:"ideal", g20:false, ready:true, so:36.1, sn:0.96, nm:"n/a (demo)",
-  issue:"Clean.",
-  action:"None (demo content)."},
+ {item:"Stove with Range", name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
+  issue:"Derek-added demo asset, not part of the POC catalog.",
+  action:"DELETED from workspace 10-20 (moved to discarded)."},
  {item:"264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"ideal", g20:false, ready:true, so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
   issue:"Clean: 75k tris, 1.5 MB, correct 1.87 m scale, materials good (verified in render 10-20).",
   action:"Rename on platform to item number; add product name to description. Then done."}
@@ -212,10 +213,10 @@ function nmCell(r){
   return "<span style='color:var(--warn);font-weight:700;font-size:.72rem'>"+r.nm+"</span>";
 }
 function counts(){
-  var c={ideal:0,issues:0,wont:0,pending:0,total:DATA.length};
+  var c={ideal:0,issues:0,wont:0,pending:0,discarded:0,total:DATA.length};
   DATA.forEach(function(r){c[r.status]++;});
   var el=document.getElementById("counts"); el.innerHTML="";
-  [["","All",c.total],["ideal","Ideal",c.ideal],["issues","Has issues",c.issues],["wont","Won't process",c.wont],["pending","Pending",c.pending]].forEach(function(x){
+  [["","All",c.total],["ideal","Ideal",c.ideal],["issues","Has issues",c.issues],["wont","Won't process",c.wont],["pending","Pending",c.pending],["discarded","Discarded",c.discarded]].forEach(function(x){
     var d=document.createElement("div"); d.className="count "+(x[0]||"all")+(state.status===x[0]?" active":"");
     d.innerHTML="<b>"+x[2]+"</b><span>"+x[1]+"</span>";
     d.onclick=function(){state.status=(state.status===x[0]?"":x[0]);render();};
@@ -235,11 +236,11 @@ function render(){
     if(state.q){var h=(r.item+" "+r.name+" "+r.issue+" "+r.vendor).toLowerCase(); if(h.indexOf(state.q)<0)return false;}
     return true;
   });
-  rows.sort(function(a,b){var k=state.sort;var va=(a[k]||"")+"",vb=(b[k]||"")+"";return va<vb?-state.dir:va>vb?state.dir:0;});
-  var PILL={ideal:"Ideal",issues:"Has issues",wont:"Won't process",pending:"Pending"};
+  rows.sort(function(a,b){if((a.status==="discarded")!==(b.status==="discarded"))return a.status==="discarded"?1:-1;var k=state.sort;var va=(a[k]||"")+"",vb=(b[k]||"")+"";return va<vb?-state.dir:va>vb?state.dir:0;});
+  var PILL={ideal:"Ideal",issues:"Has issues",wont:"Won't process",pending:"Pending",discarded:"Discarded"};
   var tb=document.getElementById("rows"); tb.innerHTML="";
   rows.forEach(function(r){
-    var tr=document.createElement("tr");
+    var tr=document.createElement("tr"); if(r.status==="discarded")tr.className="disc";
     tr.innerHTML=
       "<td><span class='item'>"+r.item+"</span>"+(r.g20?"<span class='g20'>GO-LIVE 20</span>":"")+"<span class='nm'>"+r.name+"</span></td>"+
       "<td><span class='pill "+r.status+"'>"+PILL[r.status]+"</span></td>"+
