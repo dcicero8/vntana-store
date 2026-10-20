@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Nova 3D Build Brief</title>
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body class="locked">
+<div class="site">
+<div class="top"><div class="wrap"><span class="tag">APEX &times; VNTANA</span><span>3D Build Brief</span><span class="sub">DRAFT &middot; Oct 20, 2026</span></div></div>
+
+<div class="head"><div class="wrap">
+  <div class="crumbs"><a href="index.html">All platforms</a> / Nova</div>
+  <h1>Nova: ESPA-Grande LEO bus</h1>
+  <p>The first platform to build. Apex calls it an "adaptable LEO workhorse" for large constellations. First flight 2026.</p>
+  <p><span class="pill">Prefix: NOVA_</span><span class="pill">Assets: NOVA_Deployed, NOVA_Stowed, NOVA_Animated</span><span class="pill">Due: TBD</span><span class="tbd">CONFIRM</span></p>
+  <p><a class="btn" href="https://www.apexspace.com/platforms/nova" target="_blank" rel="noopener">Nova product page &#8599;</a> <a class="btn ghost" href="https://apex.docsend.com/view/8r3tppih6jtzad5s" target="_blank" rel="noopener">Nova spec sheet &#8599;</a></p>
+</div></div>
+
+<div class="wrap">
+
+<!-- 1 -->
+<section>
+  <h2><span class="n">1</span>Specs that affect the model</h2>
+  <div class="card" style="padding:8px 14px">
+    <table class="t"><tbody>
+      <tr><th style="width:220px">Class</th><td>ESPA-Grande, LEO (500 to 1,100 km)</td></tr>
+      <tr><th>Bus dry mass</th><td>300 kg</td></tr>
+      <tr><th>Payload</th><td>300+ kg; up to 4 customer optical comms terminals (OCTs) can be mounted</td></tr>
+      <tr><th>Payload volume</th><td>935 &times; 1185 &times; 1000 mm (L &times; W &times; H), SpaceX Rideshare XL plate</td></tr>
+      <tr><th>Power</th><td>1 kW payload power (end of life); deployable solar arrays on single-axis SADAs (sun tracking)</td></tr>
+      <tr><th>Propulsion</th><td>Hall-effect electric thruster (HET), up to 650 m/s</td></tr>
+      <tr><th>Comms</th><td>S-band TT&amp;C (base); X-band Mission Data Link (option)</td></tr>
+      <tr><th>Launch</th><td>SpaceX Falcon 9 (rideshare or dedicated), NSSL, others</td></tr>
+      <tr><th>Bus outer size</th><td>Not published. Use the CAD VNTANA sends you (outside only).<span class="tbd">CAD COMING</span></td></tr>
+    </tbody></table>
+  </div>
+  <p class="lead">Source: <a href="https://www.apexspace.com/platforms/nova" target="_blank" rel="noopener">apexspace.com/platforms/nova</a>, read Oct 20, 2026.</p>
+</section>
+
+<!-- 2 -->
+<section>
+  <h2><span class="n">2</span>Reference</h2>
+  <p class="lead">VNTANA shares these when the project starts. Gray boxes are placeholders until then.</p>
+  <div class="phs"><div class="ph"><div class="box"><span>TBD</span><small>CAD</small></div><div class="cap"><b>Nova CAD (outside only)</b>Internals removed by VNTANA. Source for all sizes, positions, stowed and deployed layouts.<span class="where">Lives in: Apex workspace &gt; asset "NOVA_CAD_Reference"</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>PHOTOS</small></div><div class="cap"><b>Nova hardware photos</b>Real finishes and surface detail: isogrid, chromate, MLI, harness.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>IMAGE</small></div><div class="cap"><b>Nova stowed reference</b>How the arrays fold for launch.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>IMAGE</small></div><div class="cap"><b>Nova deploy sequence</b>Order the parts move from stowed to deployed.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div></div>
+  <div class="card">
+    <ul class="rules">
+      <li><b>Reference images and CAD:</b> in the Apex workspace on VNTANA<span class="tbd">LINK TBD</span>. Hardware photos there show the real finishes (gold chromate isogrid, bare aluminum, MLI, harness). Use them for materials and surface detail.</li>
+      <li><b>CAD from VNTANA</b> (outside only, internals removed)<span class="tbd">COMING</span>: the source for all sizes, part positions, and the stowed and deployed layouts.</li>
+      <li><b>Product images:</b> the renders and line drawings on the <a href="https://www.apexspace.com/platforms/nova" target="_blank" rel="noopener">Nova page</a> show the overall shape and the two solar array wings.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 3 -->
+<section>
+  <h2><span class="n">3</span>Configurator options</h2>
+  <p class="lead">From the Nova configurator. Only options that change the look need their own parts.</p>
+  <div class="card" style="padding:8px 14px">
+    <table class="t"><thead><tr><th>Option group</th><th>Choices</th><th>Changes the model?</th><th>Parts</th></tr></thead><tbody>
+      <tr><td><b>Communications</b></td><td>Base (S-band TT&amp;C); Mission Data Link (X-band)</td><td><b>Yes</b></td><td>S-band antennas (always); X-band antenna in <code>OPT_COMMS_MDL</code><span class="tbd">CONFIRM location</span></td></tr>
+      <tr><td><b>Payload</b></td><td>Customer payload; up to 4 OCTs</td><td><b>Yes</b><span class="tbd">CONFIRM</span></td><td>Payload volume shown as a see-through box (935 &times; 1185 &times; 1000 mm) in <code>OPT_PAYLOAD_VOLUME</code>; OCT mounts in <code>OPT_PAYLOAD_OCT_1..4</code></td></tr>
+      <tr><td><b>Encryption</b></td><td>AES-256; NSA Type 1</td><td>No</td><td>None</td></tr>
+      <tr><td><b>GNC</b></td><td>Base GNC package</td><td>No</td><td>Star trackers and sensors are part of the base model</td></tr>
+      <tr><td><b>Services</b></td><td>Analysis, testing, launch, operations</td><td>No</td><td>None</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<!-- 4 -->
+<section>
+  <h2><span class="n">4</span>Parts to model</h2>
+  <div class="card" style="padding:8px 14px">
+    <table class="t"><thead><tr><th>Part name</th><th>What it is</th></tr></thead><tbody>
+      <tr><td><code>NOVA_BUS</code></td><td>Main structure: isogrid panels, top and bottom decks</td></tr>
+      <tr><td><code>NOVA_MLI</code></td><td>Thermal blankets (MLI) on the bus</td></tr>
+      <tr><td><code>NOVA_RADIATOR</code></td><td>Radiator panels</td></tr>
+      <tr><td><code>NOVA_SEP_RING</code></td><td>Launch interface / separation ring</td></tr>
+      <tr><td><code>NOVA_SADA_L</code>, <code>NOVA_SADA_R</code></td><td>Solar array drives (rotate the wings to track the sun)</td></tr>
+      <tr><td><code>NOVA_YOKE_L</code>, <code>NOVA_YOKE_R</code></td><td>Arms from the SADA to the array</td></tr>
+      <tr><td><code>NOVA_ARRAY_L1..</code>, <code>NOVA_ARRAY_R1..</code></td><td>Solar array panels (one name per panel), with <code>NOVA_HINGE_*</code> between panels</td></tr>
+      <tr><td><code>NOVA_THRUSTER</code></td><td>Hall-effect electric thruster</td></tr>
+      <tr><td><code>NOVA_PROP_TANK</code></td><td>Xenon tank, if visible</td></tr>
+      <tr><td><code>NOVA_ANTENNA_SBAND_1..</code></td><td>S-band antennas</td></tr>
+      <tr><td><code>NOVA_STAR_TRACKER_1..</code></td><td>Star trackers</td></tr>
+      <tr><td><code>NOVA_PAYLOAD_DECK</code></td><td>Payload mounting deck</td></tr>
+      <tr><td><code>NOVA_HARNESS</code></td><td>Visible wiring harness</td></tr>
+    </tbody></table>
+  </div>
+  <p class="lead">Starting list. Follow the CAD: if it shows more parts, add them with the same naming. Panel and part counts<span class="tbd">FROM CAD</span></p>
+</section>
+
+<!-- 5 -->
+<section>
+  <h2><span class="n">5</span>Pre-delivery QA</h2>
+  <div class="card">
+    <ol class="qa">
+      <li>Real-world size from the VNTANA CAD, in meters.</li>
+      <li>Every part named with <code>NOVA_</code>; options grouped under <code>OPT_</code> empties.</li>
+      <li>Hide each option group: nothing else disappears, nothing floats.</li>
+      <li>Three assets uploaded: NOVA_Deployed, NOVA_Stowed, NOVA_Animated, each with its own GLB and .blend. Stowed fits the launch envelope in the CAD.</li>
+      <li>NOVA_Animated: 10-second DEPLOY clip, stowed to deployed, no parts passing through each other; pivots on the real hinge and SADA axes.</li>
+      <li>Only approved library materials (MAT_ names).</li>
+      <li>Render template used: 9 cameras, 2 environments, ACES 1.3; check camera 01_Hero in Rendered view in both environments.</li>
+            <li>All transforms applied; origin at the separation ring, +Z up.</li>
+      <li>All textures packed; the GLB looks the same in the VNTANA viewer as in Blender.</li>
+      <li>Within the triangle budget.<span class="tbd">TBD</span></li>
+    </ol>
+  </div>
+</section>
+
+<footer>Apex &times; VNTANA &middot; Nova build brief (draft)</footer>
+</div>
+</div>
+<script src="gate.js?v=2"></script>
+</body>
+</html>

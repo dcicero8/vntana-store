@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Apex 3D Build Brief</title>
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body class="locked">
+<div class="site">
+<div class="top"><div class="wrap"><span class="tag">APEX &times; VNTANA</span><span>3D Build Brief</span><span class="sub">DRAFT &middot; Oct 20, 2026</span></div></div>
+
+<div class="head"><div class="wrap">
+  <div class="crumbs">3D asset production brief for the 3D Team</div>
+  <h1>Apex satellite platforms: what to build</h1>
+  <p>Apex builds satellite buses. We are building a 3D model of each of their three platforms. Start with <b>Nova</b>. This page has the process and rules for all platforms; each platform page has its specs, options, parts, and QA.</p>
+  <p><a class="btn" href="https://www.apexspace.com/" target="_blank" rel="noopener">apexspace.com &#8599;</a> <a class="btn ghost" href="https://www.apexspace.com/configurator" target="_blank" rel="noopener">Apex configurator &#8599;</a></p>
+</div></div>
+
+<div class="wrap">
+
+<!-- 1 -->
+<section>
+  <h2><span class="n">1</span>The three platforms</h2>
+  <div class="plats">
+    <div class="plat">
+      <span class="st st-now">START HERE</span>
+      <h3>Nova</h3>
+      <div class="meta">ESPA-Grande class LEO bus &middot; first flight 2026</div>
+      <ul><li>Bus dry mass 300 kg, payload 300+ kg</li><li>1 kW payload power, single-axis SADAs</li><li>Hall-effect electric propulsion</li></ul>
+      <a class="btn" href="nova.html">Nova brief &rarr;</a>
+    </div>
+    <div class="plat">
+      <span class="st st-next">NEXT</span>
+      <h3>Aries (LEO and GEO)</h3>
+      <div class="meta">Mid-size bus &middot; flying since 2024</div>
+      <ul><li>LEO: 125 kg bus, up to 150 kg payload</li><li>GEO: 175 kg bus, chemical 6DOF propulsion</li><li>Most configurator options of the three</li></ul>
+      <a class="btn ghost" href="aries.html">Aries brief (draft) &rarr;</a>
+    </div>
+    <div class="plat">
+      <span class="st st-later">LATER</span>
+      <h3>Comet</h3>
+      <div class="meta">High-power constellation bus &middot; 2028</div>
+      <ul><li>20 kW array, 8 kW payload power</li><li>Up to 1,000 kg payload (base)</li><li>Few public details yet</li></ul>
+      <span class="meta">Brief to follow</span>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section>
+  <h2><span class="n">2</span>How the work runs</h2>
+  <div class="card">
+    <div class="note"><b>Confidential:</b> all Apex files (CAD, reference images, this brief) are covered by the NDA. Do not share them outside your team or use them for anything else.</div>
+    <ol class="qa">
+      <li><b>Render template.</b> Build the render template (section 6) and send it for approval. If you cannot build it, tell us and VNTANA will provide it.</li>
+      <li><b>Materials.</b> Build a material cube for each key material. Apex approves them. Approved materials go into the material library (section 5).</li>
+      <li><b>Build the model</b> from the VNTANA CAD, with library materials only: stowed, deployed, and the deploy animation (section 4).</li>
+      <li><b>Set up renders</b> with the approved render template.</li>
+      <li><b>Upload</b> to the Apex workspace on VNTANA, run the QA check, and tell us it is ready.</li>
+      <li><b>Review:</b> Apex and VNTANA leave notes as annotations on the asset. Fix, re-upload as a new version.</li>
+    </ol>
+    <h3>Where files live</h3>
+    <ul class="rules">
+      <li><b>Apex workspace</b> on the VNTANA platform<span class="tbd">LINK TBD</span>: VNTANA gives you access. Reference images, CAD, the render template, and the material library live here. Upload all your deliveries here too.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 2b -->
+<section>
+  <h2><span class="n">3</span>Reference files (all platforms)</h2>
+  <p class="lead">VNTANA shares these when the project starts. Gray boxes are placeholders until then.</p>
+  <div class="phs"><div class="ph"><div class="box"><span>TBD</span><small>BLEND</small></div><div class="cap"><b>Render template (.blend)</b>9 cameras, Studio + Dark Space environments, ACES 1.3. Your first deliverable (section 6).<span class="where">Lives in: Apex workspace &gt; asset "APEX_Render_Template"</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>HDRI</small></div><div class="cap"><b>Studio environment (HDRI)</b>Clean product lighting for catalog shots.<span class="where">Lives in: Apex workspace &gt; render template asset</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>HDRI</small></div><div class="cap"><b>Dark Space environment (HDRI)</b>Black background with a hard sun light.<span class="where">Lives in: Apex workspace &gt; render template asset</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>PHOTOS</small></div><div class="cap"><b>Material reference photos</b>Real finishes to match: solar cells, MLI, chromate, bare aluminum, paint.<span class="where">Lives in: Apex workspace &gt; "Reference" assets (tagged by material)</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>LIBRARY</small></div><div class="cap"><b>Approved material library</b>Approved MAT_ materials, ready to append into your files.<span class="where">Lives in: Apex workspace &gt; MAT_ assets</span></div></div></div>
+</section>
+
+<!-- 3 -->
+<section>
+  <h2><span class="n">4</span>What you deliver (per platform)</h2>
+  <div class="card">
+    <ul class="rules">
+      <li><b>Three separate assets</b> on the VNTANA platform, each with its own GLB and its own .blend:</li>
+    </ul>
+    <table class="t"><thead><tr><th>Asset name</th><th>What it shows</th></tr></thead><tbody>
+      <tr><td><code>&lt;PLATFORM&gt;_Deployed</code></td><td>Solar arrays open. The main product asset.</td></tr>
+      <tr><td><code>&lt;PLATFORM&gt;_Stowed</code></td><td>Folded for launch, arrays stowed against the bus.</td></tr>
+      <tr><td><code>&lt;PLATFORM&gt;_Animated</code></td><td>10-second animation from stowed to deployed. One clip named <code>DEPLOY</code> in the GLB. Rotate the real hinges and SADAs; do not morph or scale parts.</td></tr>
+    </tbody></table>
+    <ul class="rules">
+      <li>Example: <code>NOVA_Deployed</code>, <code>NOVA_Stowed</code>, <code>NOVA_Animated</code>.</li>
+      <li><b>Render setup:</b> every .blend uses the approved render template (section 6).</li>
+      <li><b>Materials:</b> library materials only. Substance source files (.spp or .sbsar) for every new material.</li>
+      <li>All textures packed in each .blend. One .blend attached per asset.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4 -->
+<section>
+  <h2><span class="n">5</span>Material library (approve first)</h2>
+  <div class="card">
+    <p class="lead">One approved material per finish, used on every part and every platform with that finish. The solar cells on Nova must look the same as the solar cells on Aries and Comet.</p>
+    <h3>Key materials to build first</h3>
+    <table class="t"><thead><tr><th>Material</th><th>Where it is used</th></tr></thead><tbody>
+      <tr><td><code>MAT_SOLAR_CELL</code></td><td>Front of the solar arrays</td></tr>
+      <tr><td><code>MAT_ARRAY_BACK</code></td><td>Back of the solar arrays (substrate)</td></tr>
+      <tr><td><code>MAT_MLI_GOLD</code></td><td>Gold thermal blanket</td></tr>
+      <tr><td><code>MAT_MLI_SILVER</code></td><td>Silver thermal blanket</td></tr>
+      <tr><td><code>MAT_WHITE_PAINT</code></td><td>Radiators and painted panels</td></tr>
+      <tr><td><code>MAT_AL_CHROMATE</code></td><td>Gold chromate-coated aluminum (isogrid, brackets)</td></tr>
+      <tr><td><code>MAT_AL_BARE</code></td><td>Bare machined aluminum</td></tr>
+      <tr><td><code>MAT_BLACK_ANODIZE</code></td><td>Black anodized parts</td></tr>
+      <tr><td><code>MAT_HARNESS</code></td><td>White wiring harness</td></tr>
+    </tbody></table>
+    <p class="lead">Starting list<span class="tbd">CONFIRM with Apex</span>. Match the reference images in the Apex workspace.</p>
+    <h3>Material cube (for approval)</h3>
+    <ul class="rules">
+      <li>One beveled cube per material, 20 cm, with the texture at real-world scale.</li>
+      <li>Render it in the render template, in <b>both</b> environments (Studio and Dark Space), hero camera.</li>
+      <li>Upload each cube to the Apex workspace as an asset named <code>MAT_&lt;NAME&gt;_v1</code>, with the .blend attached and the reference photo it matches.</li>
+      <li>After approval, the material is locked. Use it as is. If a part needs a finish that is not in the library, make a new cube and get it approved first.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5 -->
+<section>
+  <h2><span class="n">6</span>Render template</h2>
+  <div class="card">
+    <ul class="rules">
+      <li><b>You build the template first</b> and upload it as <code>APEX_Render_Template</code> for approval. If you cannot, tell us and VNTANA will provide it. After approval, start every file from it. Do not copy cameras into your own scene: the color settings do not come with them.</li>
+      <li><b>9 cameras:</b> 01_Hero, then 02 to 09 for the standard views (front, sides, back, top, bottom, detail).<span class="tbd">CONFIRM names</span></li>
+      <li><b>2 environments,</b> packed in the file: <b>Studio</b> (clean product lighting) and <b>Dark Space</b> (black background, hard sun light).</li>
+      <li>Cycles. Color Management: ACES 1.3, exposure 1.0. 2048 &times; 2048, transparent background. No extra lights.</li>
+      <li>Renders run in VNTANA Advanced Renders from the attached .blend.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6 -->
+<section>
+  <h2><span class="n">7</span>Model rules</h2>
+  <div class="card">
+    <h3>Geometry</h3>
+    <ul class="rules">
+      <li>Real-world size in meters, from the CAD VNTANA sends you. This CAD is the <b>outside only</b>: internal parts are removed before you receive it. Model only what is in the CAD; do not add internal parts.</li>
+      <li>Clean geometry where visible.</li>
+      <li>Triangle budget<span class="tbd">TBD</span></li>
+    </ul>
+    <h3>Naming</h3>
+    <ul class="rules">
+      <li>Every part is a separate, named mesh with the platform prefix: <code>NOVA_</code>, <code>ARIES_</code>, <code>COMET_</code>. For example <code>NOVA_BUS</code>, <code>NOVA_SADA_L</code>, <code>NOVA_ARRAY_L1</code>.</li>
+      <li>Each configurator option is a parent empty named <code>OPT_&lt;GROUP&gt;_&lt;CHOICE&gt;</code>, for example <code>OPT_COMMS_MDL</code>.</li>
+      <li>Moving parts (hinges, SADAs, yokes) have their pivot on the real rotation axis.</li>
+      <li>English names, no spaces, no default names like "Cube.001".</li>
+    </ul>
+    <h3>Origin, scale, orientation</h3>
+    <ul class="rules">
+      <li>Origin at the center of the launch interface (separation ring) face. +Z up, toward the payload deck.<span class="tbd">CONFIRM</span></li>
+      <li>All transforms applied on static parts (scale 1).</li>
+    </ul>
+    <h3>UVs</h3>
+    <ul class="rules"><li>Single 0 to 1 UV space per material; texture density at real-world scale.</li></ul>
+  </div>
+</section>
+
+<footer>Apex &times; VNTANA &middot; 3D Build Brief (draft)</footer>
+</div>
+</div>
+<script src="gate.js?v=2"></script>
+</body>
+</html>
