@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Apex 3D Build Brief</title>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body class="locked">
 <div class="site">
@@ -101,19 +101,24 @@
   <h2><span class="n">5</span>Material library (approve first)</h2>
   <div class="card">
     <p class="lead">One approved material per finish, used on every part and every platform with that finish. The solar cells on Nova must look the same as the solar cells on Aries and Comet.</p>
-    <h3>Key materials to build first</h3>
-    <table class="t"><thead><tr><th>Material</th><th>Where it is used</th></tr></thead><tbody>
-      <tr><td><code>MAT_SOLAR_CELL</code></td><td>Front of the solar arrays</td></tr>
-      <tr><td><code>MAT_ARRAY_BACK</code></td><td>Back of the solar arrays (substrate)</td></tr>
-      <tr><td><code>MAT_MLI_GOLD</code></td><td>Gold thermal blanket</td></tr>
-      <tr><td><code>MAT_MLI_SILVER</code></td><td>Silver thermal blanket</td></tr>
-      <tr><td><code>MAT_WHITE_PAINT</code></td><td>Radiators and painted panels</td></tr>
-      <tr><td><code>MAT_AL_CHROMATE</code></td><td>Gold chromate-coated aluminum (isogrid, brackets)</td></tr>
-      <tr><td><code>MAT_AL_BARE</code></td><td>Bare machined aluminum</td></tr>
-      <tr><td><code>MAT_BLACK_ANODIZE</code></td><td>Black anodized parts</td></tr>
-      <tr><td><code>MAT_HARNESS</code></td><td>White wiring harness</td></tr>
+    <h3>Key materials</h3>
+    <p class="lead">From the Nova 1 hardware photos. <b>Priority 1</b> = build these cubes first: they are the hardest to get right and appear on every platform.</p>
+    <table class="t"><thead><tr><th>Material</th><th>Priority</th><th>What it looks like</th><th>Where it is used</th></tr></thead><tbody>
+      <tr><td><code>MAT_SOLAR_CELL</code></td><td>1</td><td>Very dark blue-black cells, fine silver grid lines, thin white gaps between cells, glossy cover glass</td><td>Solar array faces</td></tr>
+      <tr><td><code>MAT_AL_CHROMATE</code></td><td>1</td><td>Yellow-gold chromate coating on aluminum, slightly uneven tone, satin</td><td>Most structure: brackets, rails, hinges, mounts</td></tr>
+      <tr><td><code>MAT_AL_MILLED</code></td><td>1</td><td>Bare aluminum with circular face-milling swirl marks</td><td>Avionics boxes, machined covers</td></tr>
+      <tr><td><code>MAT_KAPTON</code></td><td>1</td><td>Amber-orange see-through tape, glossy</td><td>Corners of array panels, edges, cable points</td></tr>
+      <tr><td><code>MAT_MLI_SILVER</code></td><td>1</td><td>Crinkled, mirror-like silver foil</td><td>Thermal blanket on boxes</td></tr>
+      <tr><td><code>MAT_AL_BARE</code></td><td>2</td><td>Plain bare aluminum, light brushed</td><td>Array panel frames, plain parts</td></tr>
+      <tr><td><code>MAT_MLI_GOLD</code></td><td>2</td><td>Crinkled gold foil</td><td>Thermal blanket (small areas)</td></tr>
+      <tr><td><code>MAT_BLACK_ANODIZE</code></td><td>2</td><td>Matte black</td><td>Brackets, clamps, payload box</td></tr>
+      <tr><td><code>MAT_HARNESS</code></td><td>2</td><td>White cable wrap with blue ties</td><td>Wiring harness</td></tr>
+      <tr><td><code>MAT_SPRING_BLACK</code></td><td>2</td><td>Black coil springs with gold caps</td><td>Spring stacks on the rails</td></tr>
+      <tr><td><code>MAT_WHITE_PAINT</code></td><td>2</td><td>Flat white</td><td>Radiators and painted panels</td></tr>
+      <tr><td><code>MAT_COPPER</code></td><td>3</td><td>Bare copper</td><td>Small plates and straps</td></tr>
+      <tr><td><code>MAT_STAINLESS</code></td><td>3</td><td>Polished steel</td><td>Fasteners, fittings</td></tr>
     </tbody></table>
-    <p class="lead">Starting list<span class="tbd">CONFIRM with Apex</span>. Match the reference images in the Apex workspace.</p>
+    <p class="lead">Starting list<span class="tbd">CONFIRM with Apex</span>. Match the reference photos in the Apex workspace.</p>
     <h3>Material cube (for approval)</h3>
     <ul class="rules">
       <li>One beveled cube per material, 20 cm, with the texture at real-world scale.</li>
