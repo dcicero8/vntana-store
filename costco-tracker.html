@@ -70,7 +70,7 @@
     <tbody id="rows"></tbody>
   </table>
   <div class="foot">
-    <b>As uploaded vs Now:</b> the left pill is the state the asset arrived in; the right pill is after VNTANA's cleanup (FIXED marks the ones Derek repaired: decompressed, rescaled, stray nodes removed, reprocessed).<br><b>AR scale column:</b> &#10003; = world dimensions measured in Blender and plausible for the product (AR will place it true to size); &#10007; = wrong units found; 'not checked' = not yet measured.<br><b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Ideal</b> = processed clean, live-public ready. <b>Has issues</b> = usable or fixable, something needs attention (VNTANA fix or vendor re-export for quality). <b>Won't process</b> = cannot produce a usable asset from what was sent; vendor action required. <b>Pending</b> = not yet reviewed. <b>Discarded</b> = removed from the workspace (demo content, duplicates); kept here for the record, listed at the bottom.<br>
+    <b>Viewer presets:</b> Derek is also setting per-asset scene settings (hero-shot camera framing + lighting) during cleanup, so assets load looking right in the viewer.<br><b>As uploaded vs Now:</b> the left pill is the state the asset arrived in; the right pill is after VNTANA's cleanup (FIXED marks the ones Derek repaired: decompressed, rescaled, stray nodes removed, reprocessed).<br><b>AR scale column:</b> &#10003; = world dimensions measured in Blender and plausible for the product (AR will place it true to size); &#10007; = wrong units found; 'not checked' = not yet measured.<br><b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Ideal</b> = processed clean, live-public ready. <b>Has issues</b> = usable or fixable, something needs attention (VNTANA fix or vendor re-export for quality). <b>Won't process</b> = cannot produce a usable asset from what was sent; vendor action required. <b>Pending</b> = not yet reviewed. <b>Discarded</b> = removed from the workspace (demo content, duplicates); kept here for the record, listed at the bottom.<br>
     Triage rules: see the Optimization Settings Guide + the triage order in the cleanup handoff. Fixed files stay in Mexico POC; originals move to the archive workspace. Asset name = item number; description = product name; UUID goes in Costco's back office; must be Live Public for the app.
   </div>
 </div>
@@ -183,9 +183,9 @@ var DATA = [
  {item:"Cannes carver chair", name:".max upload", vendor:"TBD", status:"wont", g20:false, ready:false, so:275.9, sn:null, nm:"NEEDS ITEM NUMBER",
   issue:"Raw 3ds Max .max file: no output produced.",
   action:"Export from Max as GLB or FBX (embedded media), re-upload under the item number."},
- {item:"Lasso Wall Mount", name:"Demo", vendor:"VNTANA demo", status:"ideal", g20:false, ready:false, so:8.3, sn:0.09, nm:"n/a (demo)",
-  issue:"Processed clean. Draft.",
-  action:"Publish if needed, else archive."},
+ {item:"Lasso Wall Mount", name:"Lasso wall mount rail (REAL product, item # TBD)", vendor:"TBD (ID/INTENT design)", status:"issues", g20:false, ready:false, ar:"ok 0.74 x 0.04 m wall rail", so:8.3, sn:0.09, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
+  issue:"File is clean: 30.5k tris, 94 KB, correct scale. Draft, no metadata.",
+  action:"Derek: item number + description, publish, set hero-shot scene preset. No file work needed."},
  {item:"266345", name:"Table (asset currently named 'Table')", vendor:"TBD", status:"issues", g20:false, ready:true, ar:"ok 1.09 x 0.51 x 0.47 m, coffee table", so:1.6, sn:1.4, nm:"RENAME asset 'Table' to 266345 + description missing",
   issue:"File itself is clean: 10.2k tris, 1.4 MB, correct real-world scale.",
   action:"Derek: rename to item number 266345 (from the 4K_266345 filename) and add description. No file work needed."},
