@@ -60,6 +60,7 @@
       <th data-k="status">Status</th>
       <th data-k="vendor" class="hide-m">Vendor / Source</th>
       <th data-k="sn">File size</th>
+      <th data-k="ar">AR scale</th>
       <th data-k="nm" class="hide-m">Naming</th>
       <th data-k="issue">Issue found</th>
       <th data-k="action" class="hide-m">Action / Next step</th>
@@ -68,7 +69,7 @@
     <tbody id="rows"></tbody>
   </table>
   <div class="foot">
-    <b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Ideal</b> = processed clean, live-public ready. <b>Has issues</b> = usable or fixable, something needs attention (VNTANA fix or vendor re-export for quality). <b>Won't process</b> = cannot produce a usable asset from what was sent; vendor action required. <b>Pending</b> = not yet reviewed. <b>Discarded</b> = removed from the workspace (demo content, duplicates); kept here for the record, listed at the bottom.<br>
+    <b>AR scale column:</b> &#10003; = world dimensions measured in Blender and plausible for the product (AR will place it true to size); &#10007; = wrong units found; 'not checked' = not yet measured.<br><b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Ideal</b> = processed clean, live-public ready. <b>Has issues</b> = usable or fixable, something needs attention (VNTANA fix or vendor re-export for quality). <b>Won't process</b> = cannot produce a usable asset from what was sent; vendor action required. <b>Pending</b> = not yet reviewed. <b>Discarded</b> = removed from the workspace (demo content, duplicates); kept here for the record, listed at the bottom.<br>
     Triage rules: see the Optimization Settings Guide + the triage order in the cleanup handoff. Fixed files stay in Mexico POC; originals move to the archive workspace. Asset name = item number; description = product name; UUID goes in Costco's back office; must be Live Public for the app.
   </div>
 </div>
@@ -76,19 +77,19 @@
 var UPDATED = "2026-10-20";
 // status: ideal | issues | wont | pending.  g20: in the 20 go-live set.  ready: ready for Thursday beta.
 var DATA = [
- {item:"697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"issues", g20:true, ready:true, so:1024.0, sn:0.92, nm:"ok",
+ {item:"697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"issues", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
   issue:"Processes fine (9.5M to 256k) but LCD text + logo blur is BAKED INTO SOURCE (250px display texture).",
   action:"Vendor re-export from KeyShot: DPI 600+, Advanced materials. Live and usable meanwhile."},
- {item:"1288769", name:"Wine cooler", vendor:"TBD (Blender)", status:"issues", g20:true, ready:true, so:15.9, sn:0.32, nm:"ok",
+ {item:"1288769", name:"Wine cooler", vendor:"TBD (Blender)", status:"issues", g20:true, ready:true, ar:"ok 0.72 x 1.87 m tall; depth 1.15 m reads deep for a cooler, verify vs PDP", so:15.9, sn:0.32, nm:"ok",
   issue:"Processes but 'stainless' authored with BLACK base color (renders black); zero textures; LED display is plain emissive blue.",
   action:"Vendor re-authors materials + display texture. Interim: Derek tints the metal in Blender."},
- {item:"GAF858_raw_v2", name:"Gourmia air fryer (= item 6232432)", vendor:"TBD (KeyShot 15)", status:"ideal", g20:true, ready:true, so:56.2, sn:1.7, nm:"RENAME to 6232432",
+ {item:"GAF858_raw_v2", name:"Gourmia air fryer (= item 6232432)", vendor:"TBD (KeyShot 15)", status:"ideal", g20:true, ready:true, ar:"ok 0.30 x 0.40 x 0.30 m", so:56.2, sn:1.7, nm:"RENAME to 6232432",
   issue:"Original was pre-Draco'd 14M tris (failed 3D Scan twice; Convert Only = 45.8 MB).",
   action:"FIXED via decompressed master + Preserve Meshes and UVs. Rename asset to the item number; archive failed originals."},
- {item:"697287", name:"Fitness (likely RW300 rower)", vendor:"iFIT/NordicTrack", status:"ideal", g20:true, ready:false, so:3.7, sn:3.7, nm:"ok",
+ {item:"697287", name:"Fitness (likely RW300 rower)", vendor:"iFIT/NordicTrack", status:"ideal", g20:true, ready:false, ar:"ok 0.65 x 2.10 x 1.12 m, rower", so:3.7, sn:3.7, nm:"ok",
   issue:"Clean (75k, Convert Only). Currently LIVE INTERNAL, not Public.",
   action:"Flip to Live Public."},
- {item:"1856726", name:"Fitness (likely T Series 7 treadmill)", vendor:"iFIT/NordicTrack", status:"ideal", g20:true, ready:false, so:2.6, sn:2.6, nm:"ok",
+ {item:"1856726", name:"Fitness (likely T Series 7 treadmill)", vendor:"iFIT/NordicTrack", status:"ideal", g20:true, ready:false, ar:"ok 0.88 x 1.51 x 1.63 m, treadmill", so:2.6, sn:2.6, nm:"ok",
   issue:"Clean (112.2k, Convert Only). Currently LIVE INTERNAL, not Public.",
   action:"Flip to Live Public."},
  {item:"3583883", name:"TBD", vendor:"TBD", status:"ideal", g20:true, ready:true, so:350.3, sn:0.53, nm:"ok",
@@ -187,16 +188,16 @@ var DATA = [
  {item:"Table", name:"Demo table", vendor:"VNTANA demo", status:"ideal", g20:false, ready:true, so:1.6, sn:1.4, nm:"n/a (demo)",
   issue:"Clean.",
   action:"None (demo content)."},
- {item:"Rag Rug Chair", name:"Woven Marija rag rug chair (REAL product, item # TBD)", vendor:"TBD", status:"issues", g20:false, ready:true, so:4.5, sn:4.3, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
+ {item:"Rag Rug Chair", name:"Woven Marija rag rug chair (REAL product, item # TBD)", vendor:"TBD", status:"issues", g20:false, ready:true, ar:"ok 0.84 x 0.83 x 0.91 m, chair", so:4.5, sn:4.3, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
   issue:"File itself is clean: 10k tris, 4.3 MB (under goal), correct 0.84 x 0.91 m chair scale, world units right.",
   action:"Derek: rename asset to the Costco item number and add description. No file work needed."},
- {item:"1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", status:"issues", g20:false, ready:false, so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
+ {item:"1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", status:"issues", g20:false, ready:false, ar:"wrong WAS 158 m wide (inches as meters); fixed file ready: 4.01 x 1.93 x 0.81 m", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
   issue:"TWO problems: (1) SCALE: authored in inches, world size 158 m wide (stadium-sized in AR). (2) 2.0M triangles kept by Convert Only: heavy on mobile.",
   action:"FIX READY: 1933950_fixed_v2.glb in Downloads (inches to meters: 4.01 x 1.93 x 0.81 m, un-Draco'd). Upload as new version via Preserve Meshes and UVs. Then set correct description."},
  {item:"Stove with Range", name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
   issue:"Derek-added demo asset, not part of the POC catalog.",
   action:"DELETED from workspace 10-20 (moved to discarded)."},
- {item:"264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"ideal", g20:false, ready:true, so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
+ {item:"264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"ideal", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
   issue:"Clean: 75k tris, 1.5 MB, correct 1.87 m scale, materials good (verified in render 10-20).",
   action:"Rename on platform to item number; description MISSING (Daniela skipped it): Derek adding. Then done."}
 ];
@@ -206,6 +207,12 @@ function sizeCell(r){
   var now = r.sn===null ? "<span style='color:var(--bad);font-weight:700'>no output</span>"
     : (r.sn>5 ? "<b style='color:var(--bad)'>"+r.sn+" MB</b>" : "<b style='color:var(--ok)'>"+r.sn+" MB</b>");
   return "<td style='white-space:nowrap'><span style='color:var(--muted)'>"+r.so+" MB &rarr;</span> "+now+"</td>";
+}
+function arCell(r){
+  var v=r.ar||"";
+  if(v.indexOf("ok")===0) return "<td style='white-space:nowrap'><span style='color:var(--ok);font-weight:700;font-size:.72rem'>&#10003; "+v.slice(3)+"</span></td>";
+  if(v.indexOf("wrong")===0) return "<td><span style='color:var(--bad);font-weight:700;font-size:.72rem'>&#10007; "+v.slice(6)+"</span></td>";
+  return "<td><span style='color:var(--muted);font-size:.72rem'>not checked</span></td>";
 }
 function nmCell(r){
   if(r.nm==="ok") return "<span style='color:var(--ok);font-weight:700;font-size:.72rem'>OK</span>";
@@ -246,6 +253,7 @@ function render(){
       "<td><span class='pill "+r.status+"'>"+PILL[r.status]+"</span></td>"+
       "<td class='vendor hide-m'>"+r.vendor+"</td>"+
       sizeCell(r)+
+      arCell(r)+
       "<td class='hide-m'>"+nmCell(r)+"</td>"+
       "<td class='note'>"+r.issue+"</td>"+
       "<td class='next hide-m'>"+r.action+"</td>"+
