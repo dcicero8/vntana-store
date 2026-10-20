@@ -190,15 +190,15 @@ var DATA = [
  {item:"Rag Rug Chair", name:"Demo chair", vendor:"VNTANA demo", status:"ideal", g20:false, ready:true, so:4.5, sn:4.3, nm:"n/a (demo)",
   issue:"Clean.",
   action:"None (demo content)."},
- {item:"1933950", name:"TBD", vendor:"TBD", status:"issues", g20:false, ready:true, so:171.7, sn:3.4, nm:"ok",
-  issue:"Convert Only kept 2.0M triangles: heavy on mobile GPUs despite 3.4 MB.",
-  action:"Reprocess via optimization pipeline (decompress first if pre-Draco'd)."},
+ {item:"1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", status:"issues", g20:false, ready:false, so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
+  issue:"TWO problems: (1) SCALE: authored in inches, world size 158 m wide (stadium-sized in AR). (2) 2.0M triangles kept by Convert Only: heavy on mobile.",
+  action:"FIX READY: 1933950_fixed_v2.glb in Downloads (inches to meters: 4.01 x 1.93 x 0.81 m, un-Draco'd). Upload as new version via Preserve Meshes and UVs. Then set correct description."},
  {item:"Stove with Range", name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
   issue:"Derek-added demo asset, not part of the POC catalog.",
   action:"DELETED from workspace 10-20 (moved to discarded)."},
  {item:"264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"ideal", g20:false, ready:true, so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
   issue:"Clean: 75k tris, 1.5 MB, correct 1.87 m scale, materials good (verified in render 10-20).",
-  action:"Rename on platform to item number; add product name to description. Then done."}
+  action:"Rename on platform to item number; description MISSING (Daniela skipped it): Derek adding. Then done."}
 ];
 // ---- render ----
 var state={status:"",vendor:"",q:"",g20:false,sort:"item",dir:1};
