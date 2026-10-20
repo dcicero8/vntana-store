@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Costco Asset Tracker — VNTANA</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#e21836;--ok:#1d9a4e;--warn:#d98a00;--bad:#d1293d;--pend:#8b93a4}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f6f7f9;color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 1.5rem}
+  header{background:#0d0f13;color:#fff;height:56px;display:flex;align-items:center}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;width:100%}
+  header .brand{font-weight:800}
+  header .brand span{color:var(--accent)}
+  header .sub{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8b93a4}
+  .bar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;padding:1.1rem 0}
+  .counts{display:flex;gap:.6rem;flex-wrap:wrap}
+  .count{background:#fff;border:1px solid var(--line);border-radius:9px;padding:.55rem .9rem;text-align:center;cursor:pointer}
+  .count b{display:block;font-size:1.3rem;letter-spacing:-.02em}
+  .count span{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .count.active{outline:2px solid var(--ink)}
+  .count.ideal b{color:var(--ok)} .count.issues b{color:var(--warn)} .count.wont b{color:var(--bad)} .count.pending b{color:var(--pend)}
+  .tools{margin-left:auto;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  select,input[type=search]{font:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:7px;padding:.5rem .6rem;background:#fff}
+  .golive-toggle{display:flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;color:#374151;background:#fff;border:1px solid var(--line);border-radius:7px;padding:.5rem .7rem;cursor:pointer;user-select:none}
+  .golive-toggle.on{border-color:var(--accent);color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th{font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#9aa0a8;text-align:left;padding:.6rem .7rem;border-bottom:2px solid var(--line);background:#fafbfc;cursor:pointer;white-space:nowrap}
+  td{padding:.6rem .7rem;border-bottom:1px solid var(--line);vertical-align:top;font-size:.82rem;line-height:1.45}
+  tr:hover td{background:#fafbfc}
+  .pill{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;color:#fff;white-space:nowrap}
+  .pill.ideal{background:var(--ok)} .pill.issues{background:var(--warn)} .pill.wont{background:var(--bad)} .pill.pending{background:var(--pend)}
+  .g20{display:inline-block;font-size:.58rem;font-weight:800;background:#0d0f13;color:#fff;padding:2px 7px;border-radius:9px;margin-left:5px;vertical-align:1px}
+  .item{font-weight:700;white-space:nowrap}
+  .nm{color:var(--muted);font-size:.74rem;display:block}
+  .vendor{white-space:nowrap}
+  .note{font-size:.76rem;color:#374151}
+  .next{font-size:.76rem;color:var(--muted)}
+  .foot{padding:1.2rem 0 2.5rem;font-size:.72rem;color:var(--muted);line-height:1.5}
+  @media(max-width:860px){ .hide-m{display:none} }
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">Costco <span>Mexico POC</span> Asset Tracker</div><div class="sub">internal triage &middot; updated <span id="upd"></span></div></div></header>
+<div class="wrap">
+  <div class="bar">
+    <div class="counts" id="counts"></div>
+    <div class="tools">
+      <div class="golive-toggle" id="g20toggle">Go-live 20 only</div>
+      <select id="vendorSel"><option value="">All vendors</option></select>
+      <input type="search" id="q" placeholder="Search item / name / issue">
+    </div>
+  </div>
+  <table>
+    <thead><tr>
+      <th data-k="item">Item</th>
+      <th data-k="status">Status</th>
+      <th data-k="vendor" class="hide-m">Vendor / Source</th>
+      <th data-k="issue">Issue found</th>
+      <th data-k="action" class="hide-m">Action / Next step</th>
+      <th data-k="ready">Thu beta</th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="foot">
+    Status legend: <b>Ideal</b> = processed clean, live-public ready. <b>Has issues</b> = usable or fixable, something needs attention (VNTANA fix or vendor re-export for quality). <b>Won't process</b> = cannot produce a usable asset from what was sent; vendor action required. <b>Pending</b> = not yet reviewed.<br>
+    Triage rules: see the Optimization Settings Guide + the triage order in the cleanup handoff. Fixed files stay in Mexico POC; originals move to the archive workspace. Asset name = item number; description = product name; UUID goes in Costco's back office; must be Live Public for the app.
+  </div>
+</div>
+<script>
+var UPDATED = "2026-10-20";
+// status: ideal | issues | wont | pending.  g20: in the 20 go-live set.  ready: ready for Thursday beta.
+var DATA = [
+ {item:"697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"issues", g20:false, ready:false,
+  issue:"Blurry LCD + logo baked into source (250px display texture, 1-14 px/cm everywhere); 26 of 55 parts untextured gray; 9.5M tris; 1 GB source.",
+  action:"Vendor re-export from their KeyShot scene: DPI 600+, Advanced materials. Processes as-is but quality is below bar."},
+ {item:"1288769", name:"Wine cooler", vendor:"TBD (Blender)", status:"issues", g20:false, ready:false,
+  issue:"'Stainless' authored with black base color (renders black); zero textures in file; LED display is plain emissive blue, no texture ever existed.",
+  action:"Vendor re-author materials (light-gray base metallic) + display texture. Possible interim: Derek tints the metal material in Blender."},
+ {item:"GAF858", name:"Gourmia air fryer", vendor:"TBD (KeyShot 15)", status:"ideal", g20:false, ready:true,
+  issue:"Was: pre-Draco'd 14M-tri export; failed optimization, Convert Only gave 43 MB.",
+  action:"FIXED: decompressed to raw master, reprocessed: 1.7 MB / 169k tris, display text sharp, glass intact. Vendor told: no compression at export."},
+ {item:"NTEL10825", name:"NordicTrack step climber", vendor:"iFIT/NordicTrack", status:"ideal", g20:false, ready:true,
+  issue:"None. Web-authored source. Console screen is blank black BY DESIGN in source.",
+  action:"Done (2.1 MB). Optional: vendor adds screen-UI texture to match treadmill."},
+ {item:"NTRW39125", name:"NordicTrack RW300 rower", vendor:"iFIT/NordicTrack", status:"ideal", g20:false, ready:true,
+  issue:"None. Screen content intact.",
+  action:"Done (3.7 MB)."},
+ {item:"NTL10225", name:"NordicTrack T Series 7 treadmill", vendor:"iFIT/NordicTrack", status:"ideal", g20:false, ready:true,
+  issue:"None. Best of batch: full screen UI, legible console.",
+  action:"Done (2.6 MB)."},
+ {item:"675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"wont", g20:false, ready:false,
+  issue:".3DS file (format cannot embed textures); references P31_BIKE.PNG + KEYPANEL.PNG which were NOT sent; pre-PBR Phong materials.",
+  action:"Vendor re-exports GLB / FBX embedded media, OR sends the 2 PNGs and Derek rebuilds materials in Blender."},
+ {item:"1752967", name:"Sectional sofa", vendor:"TBD", status:"ideal", g20:false, ready:true,
+  issue:"Was: floated in AR due to stray Helper001 + Particle_View nodes.",
+  action:"FIXED: stray nodes deleted in Blender; pivot bottom-center. Vendor rule added: delete helpers/dummies before export."},
+ {item:"LG TV", name:"LG television (item # TBD)", vendor:"LG", status:"ideal", g20:true, ready:true,
+  issue:"None. Reference-standard web asset; survives identical compression sharp.",
+  action:"None. Use as the good example with vendors."}
+];
+// ---- render ----
+var state={status:"",vendor:"",q:"",g20:false,sort:"item",dir:1};
+function counts(){
+  var c={ideal:0,issues:0,wont:0,pending:0,total:DATA.length};
+  DATA.forEach(function(r){c[r.status]++;});
+  var el=document.getElementById("counts"); el.innerHTML="";
+  [["","All",c.total],["ideal","Ideal",c.ideal],["issues","Has issues",c.issues],["wont","Won't process",c.wont],["pending","Pending",c.pending]].forEach(function(x){
+    var d=document.createElement("div"); d.className="count "+(x[0]||"all")+(state.status===x[0]?" active":"");
+    d.innerHTML="<b>"+x[2]+"</b><span>"+x[1]+"</span>";
+    d.onclick=function(){state.status=(state.status===x[0]?"":x[0]);render();};
+    el.appendChild(d);
+  });
+}
+function render(){
+  counts();
+  document.getElementById("upd").textContent=UPDATED;
+  var vs={}; DATA.forEach(function(r){vs[r.vendor]=1;});
+  var sel=document.getElementById("vendorSel");
+  if(sel.options.length<2){Object.keys(vs).sort().forEach(function(v){var o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);});}
+  var rows=DATA.filter(function(r){
+    if(state.status&&r.status!==state.status)return false;
+    if(state.vendor&&r.vendor!==state.vendor)return false;
+    if(state.g20&&!r.g20)return false;
+    if(state.q){var h=(r.item+" "+r.name+" "+r.issue+" "+r.vendor).toLowerCase(); if(h.indexOf(state.q)<0)return false;}
+    return true;
+  });
+  rows.sort(function(a,b){var k=state.sort;var va=(a[k]||"")+"",vb=(b[k]||"")+"";return va<vb?-state.dir:va>vb?state.dir:0;});
+  var PILL={ideal:"Ideal",issues:"Has issues",wont:"Won't process",pending:"Pending"};
+  var tb=document.getElementById("rows"); tb.innerHTML="";
+  rows.forEach(function(r){
+    var tr=document.createElement("tr");
+    tr.innerHTML=
+      "<td><span class='item'>"+r.item+"</span>"+(r.g20?"<span class='g20'>GO-LIVE 20</span>":"")+"<span class='nm'>"+r.name+"</span></td>"+
+      "<td><span class='pill "+r.status+"'>"+PILL[r.status]+"</span></td>"+
+      "<td class='vendor hide-m'>"+r.vendor+"</td>"+
+      "<td class='note'>"+r.issue+"</td>"+
+      "<td class='next hide-m'>"+r.action+"</td>"+
+      "<td>"+(r.ready?"&#9989;":"&#10060;")+"</td>";
+    tb.appendChild(tr);
+  });
+}
+document.getElementById("vendorSel").onchange=function(){state.vendor=this.value;render();};
+document.getElementById("q").oninput=function(){state.q=this.value.toLowerCase();render();};
+document.getElementById("g20toggle").onclick=function(){state.g20=!state.g20;this.classList.toggle("on",state.g20);render();};
+document.querySelectorAll("th").forEach(function(th){th.onclick=function(){var k=th.dataset.k;if(state.sort===k)state.dir*=-1;else{state.sort=k;state.dir=1;}render();};});
+render();
+</script>
+</body>
+</html>
