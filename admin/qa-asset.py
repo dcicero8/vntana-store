@@ -42,11 +42,17 @@ def header_checks(path, report):
     report.info("generator", a.get("generator", "unknown"))
 
     req = j.get("extensionsRequired") or []
+    KNOWN_REQ = ("draco", "webp", "basisu", "texture_transform")
     for ext in req:
-        if "draco" in ext.lower():
+        el = ext.lower()
+        if "draco" in el:
             report.flag("pre-compressed", "Draco in extensionsRequired: optimization pipelines reject this. Decompress (Blender re-export) or Convert Only.")
-        if "webp" in ext.lower() or "basisu" in ext.lower():
+        elif "webp" in el or "basisu" in el:
             report.flag("texture-format", f"{ext} required: conversion may not decode it. Re-export with PNG/JPEG.")
+        elif "texture_transform" in el:
+            report.flag("required-extension", f"{ext} in extensionsRequired: optimization pipelines MUST reject (LG OLED case). Fix: Blender import, bake texture transforms into UVs per polygon, re-export raw.")
+        else:
+            report.flag("required-extension", f"{ext} in extensionsRequired: any unsupported REQUIRED extension makes pipelines reject the whole file. Decode/bake it out in Blender and re-export raw.")
 
     meshes = j.get("meshes", [])
     if not meshes:
