@@ -247,7 +247,11 @@ def blender_checks(path, outdir, fix, expect, report):
     pitch, roll = out["lean_pitch_deg"], out["lean_roll_deg"]
     if abs(pitch) > 1 or abs(roll) > 1:
         sd = out["straight_dims"]
-        report.flag("LEAN", f"Baked lean: pitch {pitch:.1f} deg, roll {roll:.1f} deg. True dims ~{sd[0]:.2f} x {sd[1]:.2f} m footprint. Straighten in Blender (AR will tilt).")
+        gain = 1 - (sd[0]*sd[1]) / max(d[0]*d[1], 1e-9)
+        if gain < 0.04:
+            report.note("lean?", f"Solver found pitch {pitch:.1f}/roll {roll:.1f} deg but footprint shrinks only {gain*100:.0f}%: likely shape-driven (slab with feet, curvy product), not a real lean. Confirm in the side render.")
+        else:
+            report.flag("LEAN", f"Baked lean: pitch {pitch:.1f} deg, roll {roll:.1f} deg ({gain*100:.0f}% footprint reduction). True dims ~{sd[0]:.2f} x {sd[1]:.2f} m. Straighten in Blender (AR will tilt).")
     else:
         report.ok("lean", f"straight (pitch {pitch:.1f}, roll {roll:.1f} deg)")
     if abs(out["min_z"]) > 0.02:
