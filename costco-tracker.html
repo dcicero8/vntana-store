@@ -7,7 +7,7 @@
 <title>Costco Asset Tracker — VNTANA</title>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#e21836;--ok:#1d9a4e;--warn:#d98a00;--bad:#d1293d;--pend:#8b93a4;--disc:#4b5563}
+  :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#e21836;--ok:#1d9a4e;--warn:#d98a00;--bad:#d1293d;--pend:#8b93a4;--disc:#4b5563;--rev:#2563eb}
   body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f6f7f9;color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
   .wrap{max-width:1280px;margin:0 auto;padding:0 1.5rem}
   header{background:#0d0f13;color:#fff;height:56px;display:flex;align-items:center}
@@ -21,7 +21,7 @@
   .count b{display:block;font-size:1.3rem;letter-spacing:-.02em}
   .count span{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .count.active{outline:2px solid var(--ink)}
-  .count.ideal b{color:var(--ok)} .count.issues b{color:var(--warn)} .count.wont b{color:var(--bad)} .count.pending b{color:var(--pend)} .count.discarded b{color:var(--disc)}
+  .count.shippable b{color:var(--ok)} .count.review b{color:var(--rev)} .count.repair b{color:var(--warn)} .count.vendor b{color:var(--bad)} .count.pending b{color:var(--pend)} .count.discarded b{color:var(--disc)}
   .tools{margin-left:auto;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
   select,input[type=search]{font:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:7px;padding:.5rem .6rem;background:#fff}
   .golive-toggle{display:flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;color:#374151;background:#fff;border:1px solid var(--line);border-radius:7px;padding:.5rem .7rem;cursor:pointer;user-select:none}
@@ -32,7 +32,7 @@
   tr:hover td{background:#fafbfc}
   tr.disc td{opacity:.55}
   .pill{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;color:#fff;white-space:nowrap}
-  .pill.ideal{background:var(--ok)} .pill.issues{background:var(--warn)} .pill.wont{background:var(--bad)} .pill.pending{background:var(--pend)} .pill.discarded{background:var(--disc)}
+  .pill.shippable{background:var(--ok)} .pill.review{background:var(--rev)} .pill.repair{background:var(--warn)} .pill.vendor{background:var(--bad)} .pill.pending{background:var(--pend)} .pill.discarded{background:var(--disc)}
   .g20{display:inline-block;font-size:.58rem;font-weight:800;background:#0d0f13;color:#fff;padding:2px 7px;border-radius:9px;margin-left:5px;vertical-align:1px}
   .item{font-weight:700;white-space:nowrap}
   .nm{color:var(--muted);font-size:.74rem;display:block}
@@ -70,7 +70,7 @@
     <tbody id="rows"></tbody>
   </table>
   <div class="foot">
-    <b>UUID RULE (do not forget):</b> assets already keyed into Costco's back office (the go-live 20) must be fixed IN PLACE via versioning: their UUID is what the app loads; a new asset = new UUID = Daniela re-keys the back office. Before reprocessing a corrected file, ZERO the asset's stored Orientation model-ops (they compensated for the old file and will flip the fixed one) and re-publish after (new versions drop to Draft). Assets NOT yet keyed: upload fixes as NEW assets named by item number; move the broken original to the archive workspace.<br><b>Viewer presets:</b> Derek is also setting per-asset scene settings (hero-shot camera framing + lighting) during cleanup, so assets load looking right in the viewer.<br><b>As uploaded vs Now:</b> the left pill is the state the asset arrived in; the right pill is after VNTANA's cleanup (FIXED marks the ones Derek repaired: decompressed, rescaled, stray nodes removed, reprocessed).<br><b>AR scale column:</b> &#10003; = world dimensions measured in Blender and plausible for the product (AR will place it true to size); &#10007; = wrong units found; 'not checked' = not yet measured.<br><b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Ideal</b> = processed clean, live-public ready. <b>Has issues</b> = usable or fixable, something needs attention (VNTANA fix or vendor re-export for quality). <b>Won't process</b> = cannot produce a usable asset from what was sent; vendor action required. <b>Pending</b> = not yet reviewed. <b>Discarded</b> = removed from the workspace (demo content, duplicates); kept here for the record, listed at the bottom.<br>
+    <b>UUID RULE (do not forget):</b> assets already keyed into Costco's back office (the go-live 20) must be fixed IN PLACE via versioning: their UUID is what the app loads; a new asset = new UUID = Daniela re-keys the back office. Before reprocessing a corrected file, ZERO the asset's stored Orientation model-ops (they compensated for the old file and will flip the fixed one) and re-publish after (new versions drop to Draft). Assets NOT yet keyed: upload fixes as NEW assets named by item number; move the broken original to the archive workspace.<br><b>Viewer presets:</b> Derek is also setting per-asset scene settings (hero-shot camera framing + lighting) during cleanup, so assets load looking right in the viewer.<br><b>As uploaded vs Now:</b> the left pill is the state the asset arrived in; the right pill is after VNTANA's cleanup (FIXED marks the ones Derek repaired: decompressed, rescaled, stray nodes removed, reprocessed).<br><b>AR scale column:</b> &#10003; = world dimensions measured in Blender and plausible for the product (AR will place it true to size); &#10007; = wrong units found; 'not checked' = not yet measured.<br><b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Shippable</b> = AR-checked and looks right, correct item-number name, description present: ready for members. <b>Costco review</b> = 3D work done; awaiting metadata (name/description: Daniela) and/or final visual sign-off in AR. <b>In repair</b> = VNTANA actively fixing (corrected file ready or reprocess pending). <b>Vendor action</b> = only the vendor can fix it (missing textures or geometry, unsupported format, low-res source). <b>Pending</b> = not reviewed. <b>Discarded</b> = removed from the workspace, kept for the record.<br>
     Triage rules: see the Optimization Settings Guide + the triage order in the cleanup handoff. Fixed files stay in Mexico POC; originals move to the archive workspace. Asset name = item number; description = product name; UUID goes in Costco's back office; must be Live Public for the app.
   </div>
 </div>
@@ -78,127 +78,127 @@
 var UPDATED = "2026-10-20";
 // status: ideal | issues | wont | pending.  g20: in the 20 go-live set.  ready: ready for Thursday beta.
 var DATA = [
- {item:"697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"issues", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
+ {item:"697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"vendor", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
   issue:"Processes fine (9.5M to 256k) but LCD text + logo blur is BAKED INTO SOURCE (250px display texture).",
   action:"Vendor re-export from KeyShot: DPI 600+, Advanced materials. Live and usable meanwhile."},
- {item:"1288769", name:"Wine Enthusiast Cava de Vinos 150 Botellas Gris", vendor:"Wine Enthusiast (Stuart Diamond)", status:"issues", g20:true, ready:true, ar:"ok 0.72 x 1.87 m tall; depth 1.15 m reads deep for a cooler, verify vs PDP", so:15.9, sn:0.32, nm:"ok",
+ {item:"1288769", name:"Wine Enthusiast Cava de Vinos 150 Botellas Gris", vendor:"Wine Enthusiast (Stuart Diamond)", status:"shippable", g20:true, ready:true, ar:"ok 0.72 x 1.87 m tall; depth 1.15 m reads deep for a cooler, verify vs PDP", so:15.9, sn:0.32, nm:"ok",
   issue:"Was: 'stainless' authored BLACK + wood shelves authored metallic-gray. PDP (Cava 150 Botellas GRIS) confirms stainless frame, black sides, wood shelves.",
   action:"FIX READY: 1288769_fixed_v2.glb in Downloads (stainless retint + wood shelves corrected, verified vs PDP photo). Upload via Preserve Meshes and UVs. Vendor: WINE ENTHUSIAST (Stuart Diamond)."},
- {item:"GAF858_raw_v2", name:"Gourmia air fryer (= item 6232432)", vendor:"TBD (KeyShot 15)", os:"wont", status:"ideal", g20:true, ready:true, ar:"ok 0.30 x 0.40 x 0.30 m", so:56.2, sn:1.7, nm:"RENAME to 6232432",
+ {item:"GAF858_raw_v2", name:"Gourmia air fryer (= item 6232432)", vendor:"TBD (KeyShot 15)", os:"vendor", status:"review", g20:true, ready:true, ar:"ok 0.30 x 0.40 x 0.30 m", so:56.2, sn:1.7, nm:"RENAME to 6232432",
   issue:"Original was pre-Draco'd 14M tris (failed 3D Scan twice; Convert Only = 45.8 MB).",
   action:"FIXED via decompressed master + Preserve Meshes and UVs. Rename asset to the item number; archive failed originals."},
- {item:"697287", name:"Fitness (likely RW300 rower)", vendor:"iFIT/NordicTrack", os:"issues", status:"ideal", g20:true, ready:false, ar:"ok 0.65 x 2.10 x 1.12 m, rower", so:3.7, sn:3.7, nm:"ok",
+ {item:"697287", name:"Fitness (likely RW300 rower)", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.65 x 2.10 x 1.12 m, rower", so:3.7, sn:3.7, nm:"ok",
   issue:"Clean (75k, Convert Only). Currently LIVE INTERNAL, not Public.",
   action:"Flip to Live Public."},
- {item:"1856726", name:"Fitness (likely T Series 7 treadmill)", vendor:"iFIT/NordicTrack", os:"issues", status:"ideal", g20:true, ready:false, ar:"ok 0.88 x 1.51 x 1.63 m, treadmill", so:2.6, sn:2.6, nm:"ok",
+ {item:"1856726", name:"Fitness (likely T Series 7 treadmill)", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.88 x 1.51 x 1.63 m, treadmill", so:2.6, sn:2.6, nm:"ok",
   issue:"Clean (112.2k, Convert Only). Currently LIVE INTERNAL, not Public.",
   action:"Flip to Live Public."},
- {item:"3583883", name:"TBD", vendor:"TBD", status:"ideal", g20:true, ready:true, so:350.3, sn:0.53, nm:"ok",
+ {item:"3583883", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:350.3, sn:0.53, nm:"ok",
   issue:"None: 3.8M to 75k via Industrial. Textbook win.",
   action:"None."},
- {item:"VA701689", name:"TBD", vendor:"TBD", status:"ideal", g20:true, ready:true, so:5.2, sn:1.7, nm:"ok",
+ {item:"VA701689", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.7, nm:"ok",
   issue:"Clean (99.8k, Convert Only).",
   action:"None."},
- {item:"697416", name:"Refrigerator", vendor:"TBD", status:"ideal", g20:true, ready:true, so:2.0, sn:0.31, nm:"ok",
+ {item:"697416", name:"Refrigerator", vendor:"TBD", status:"review", g20:true, ready:true, so:2.0, sn:0.31, nm:"ok",
   issue:"Clean (56.4k, Preserve Meshes and UVs).",
   action:"None."},
- {item:"5248298", name:"TBD", vendor:"TBD", status:"ideal", g20:true, ready:true, so:0.61, sn:0.54, nm:"ok",
+ {item:"5248298", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:0.61, sn:0.54, nm:"ok",
   issue:"Clean (44.1k, Industrial).",
   action:"None."},
- {item:"1876771", name:"TBD", vendor:"TBD", status:"issues", g20:true, ready:true, so:42.0, sn:4.4, nm:"drop '.glb' from asset name",
+ {item:"1876771", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:42.0, sn:4.4, nm:"drop '.glb' from asset name",
   issue:"Convert Only kept 901k triangles. Heavy GPU load on mobile despite 4.4 MB.",
   action:"Reprocess through Preserve Meshes and UVs (decompress first if pre-Draco'd)."},
- {item:"p200962kx-krff300ebs-overlay", name:"Fridge overlay (KRFF300)", vendor:"TBD", status:"ideal", g20:true, ready:true, so:6.9, sn:3.8, nm:"NEEDS ITEM NUMBER",
+ {item:"p200962kx-krff300ebs-overlay", name:"Fridge overlay (KRFF300)", vendor:"TBD", status:"review", g20:true, ready:true, so:6.9, sn:3.8, nm:"NEEDS ITEM NUMBER",
   issue:"Clean (30.4k, Convert Only).",
   action:"Rename to the Costco item number; vendor SKU string in description."},
- {item:"1950733", name:"TBD", vendor:"TBD", status:"ideal", g20:true, ready:true, so:5.2, sn:1.1, nm:"ok",
+ {item:"1950733", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.1, nm:"ok",
   issue:"Clean (62.4k, Industrial).",
   action:"None."},
- {item:"1841165", name:"TBD", vendor:"TBD", status:"ideal", g20:true, ready:true, so:19.6, sn:1.3, nm:"ok",
+ {item:"1841165", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:19.6, sn:1.3, nm:"ok",
   issue:"Clean (75k, Industrial).",
   action:"None."},
- {item:"VA702349", name:"TBD", vendor:"TBD", status:"ideal", g20:true, ready:true, so:8.8, sn:4.0, nm:"ok",
+ {item:"VA702349", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:8.8, sn:4.0, nm:"ok",
   issue:"Clean (35.8k, Industrial).",
   action:"None."},
- {item:"522265", name:"TBD", vendor:"TBD", status:"issues", g20:true, ready:true, so:15.1, sn:9.5, nm:"drop '.glb' from asset name",
+ {item:"522265", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:15.1, sn:9.5, nm:"drop '.glb' from asset name",
   issue:"OVER 5 MB GOAL (9.5 MB): texture-heavy for 56k polys; Convert Only did not compress textures.",
   action:"Reprocess with texture compression (Preserve Meshes and UVs defaults) to get under 5 MB."},
- {item:"1752967", name:"Sectional sofa", vendor:"TBD", os:"wont", status:"ideal", g20:true, ready:true, so:11.0, sn:0.59, nm:"ok",
+ {item:"1752967", name:"Sectional sofa", vendor:"TBD", os:"vendor", status:"review", g20:true, ready:true, so:11.0, sn:0.59, nm:"ok",
   issue:"Was: floated in AR (stray Helper001 + Particle_View nodes).",
   action:"FIXED in Blender. Vendor rule: delete helpers before export."},
- {item:"648074", name:"TBD", vendor:"TBD", status:"ideal", g20:true, ready:true, so:2.4, sn:2.2, nm:"ok",
+ {item:"648074", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:2.4, sn:2.2, nm:"ok",
   issue:"Clean-ish (343k kept via Convert Only). Polys high but size fine.",
   action:"Optional optimization pass."},
- {item:"VA533070", name:"TBD", vendor:"TBD", status:"issues", g20:true, ready:true, so:6.6, sn:5.2, nm:"drop '.glb' from asset name",
+ {item:"VA533070", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:6.6, sn:5.2, nm:"drop '.glb' from asset name",
   issue:"JUST OVER the 5 MB goal (5.2 MB); Convert Only left textures uncompressed.",
   action:"Reprocess with texture compression to dip under 5 MB."},
- {item:"1321497", name:"Wine Enthusiast dual-zone wine + beverage cooler", vendor:"Same vendor as 1288769 (Blender, Chinese material names)", status:"ideal", g20:true, ready:true, ar:"ok 0.86 x 0.92 m tall; depth 0.80 m reads deep, verify vs PDP", so:41.1, sn:0.55, nm:"ok; desc: Wine Enthusiast Cava de Vinos y Enfriador de Bebidas (Derek adding)",
+ {item:"1321497", name:"Wine Enthusiast dual-zone wine + beverage cooler", vendor:"Same vendor as 1288769 (Blender, Chinese material names)", status:"review", g20:true, ready:true, ar:"ok 0.86 x 0.92 m tall; depth 0.80 m reads deep, verify vs PDP", so:41.1, sn:0.55, nm:"ok; desc: Wine Enthusiast Cava de Vinos y Enfriador de Bebidas (Derek adding)",
   issue:"Renders as an all-black cabinet with working glass doors and shelves: plausible IF the product colorway is black. Same 'Metal = black base + mirror' material pattern as 1288769, zero textures.",
   action:"Verify color vs PDP. If trim should be silver stainless: same quick Blender tint fix as 1288769."},
- {item:"702349-2", name:"Logitech G920 Xbox steering wheel (desc: LOGITECH BUNDLE VOLANTE Xbox)", vendor:"Logitech (own web-AR asset)", os:"issues", status:"issues", g20:true, ready:true, ar:"ok 0.35 x 0.42 x 0.34 m wheel unit", so:6.2, sn:2.9, nm:"VERIFY '-2' suffix vs VA702349",
+ {item:"702349-2", name:"Logitech G920 Xbox steering wheel (desc: LOGITECH BUNDLE VOLANTE Xbox)", vendor:"Logitech (own web-AR asset)", os:"repair", status:"repair", g20:true, ready:true, ar:"ok 0.35 x 0.42 x 0.34 m wheel unit", so:6.2, sn:2.9, nm:"VERIFY '-2' suffix vs VA702349",
   issue:"File is actually sharp (verified close-up render) but: (1) ran through 3D SCAN pipeline (wrong: scan smoothing on a CAD asset), (2) looks washed out in the viewer: default environment blows the silver-spoke speculars, (3) desc says BUNDLE but model is the WHEEL ONLY, no pedals.",
   action:"Derek: set hero scene preset (lower exposure) = most of the visual fix; reprocess original via Preserve Meshes and UVs; confirm bundle contents vs PDP."},
- {item:"4234400", name:"TBD", vendor:"TBD", status:"wont", g20:false, ready:false, so:59.1, sn:null, nm:"ok",
+ {item:"4234400", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:59.1, sn:null, nm:"ok",
   issue:"FAILED processing (Industrial, no output).",
   action:"Pull original for teardown: likely pre-compressed or source defect."},
- {item:"701961", name:"TBD", vendor:"TBD", status:"wont", g20:false, ready:false, so:4.5, sn:null, nm:"ok",
+ {item:"701961", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:4.5, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Small file + fail = likely pre-Draco'd GLB.",
   action:"Teardown; decompress + reprocess."},
- {item:"701252", name:"TBD", vendor:"TBD", status:"wont", g20:false, ready:false, so:0.56, sn:null, nm:"ok",
+ {item:"701252", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:0.56, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"697444", name:"TBD", vendor:"TBD", status:"wont", g20:false, ready:false, so:2.9, sn:null, nm:"ok",
+ {item:"697444", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.9, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"648099", name:"TBD", vendor:"TBD", status:"wont", g20:false, ready:false, so:3.3, sn:null, nm:"ok",
+ {item:"648099", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:3.3, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"697288", name:"TBD (possibly NordicTrack climber)", vendor:"TBD", status:"wont", g20:false, ready:false, so:2.1, sn:null, nm:"ok",
+ {item:"697288", name:"TBD (possibly NordicTrack climber)", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.1, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"1851051", name:"TBD", vendor:"TBD", status:"wont", g20:false, ready:false, so:2.3, sn:null, nm:"ok",
+ {item:"1851051", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.3, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output).",
   action:"Teardown."},
- {item:"704791", name:"TBD", vendor:"TBD", status:"wont", g20:false, ready:false, so:4.1, sn:null, nm:"ok",
+ {item:"704791", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:4.1, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output).",
   action:"Teardown."},
- {item:"704794", name:"TBD", vendor:"TBD", status:"wont", g20:false, ready:false, so:3.0, sn:null, nm:"ok",
+ {item:"704794", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:3.0, sn:null, nm:"ok",
   issue:"FAILED (3D Scan pipeline, no output). 3D Scan is for photogrammetry only.",
   action:"Teardown; retry Preserve Meshes and UVs."},
- {item:"675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"wont", g20:false, ready:false, so:1.6, sn:null, nm:"ok",
+ {item:"675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"vendor", g20:false, ready:false, so:1.6, sn:null, nm:"ok",
   issue:".3DS file: cannot embed textures; the 2 referenced PNGs were not sent; pre-PBR materials.",
   action:"Vendor re-exports GLB/FBX embedded, OR sends the PNGs and Derek rebuilds."},
- {item:"GAF858 (1).glb", name:"Air fryer Convert Only demo", vendor:"TBD", status:"issues", g20:false, ready:false, so:56.2, sn:45.8, nm:"demo: archive",
+ {item:"GAF858 (1).glb", name:"Air fryer Convert Only demo", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:45.8, nm:"demo: archive",
   issue:"Teaching demo of Convert Only pass-through. WAY over 5 MB by design.",
   action:"Archive (superseded by the fixed version)."},
- {item:"[COPY] 6232432", name:"Air fryer duplicate", vendor:"TBD", status:"wont", g20:false, ready:false, so:56.2, sn:null, nm:"duplicate: archive",
+ {item:"[COPY] 6232432", name:"Air fryer duplicate", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:null, nm:"duplicate: archive",
   issue:"Duplicate of the failed original (3D Scan).",
   action:"Archive/delete."},
- {item:"688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"issues", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
+ {item:"688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
   issue:"Identical to 'Lasso V44 Black' row: duplicates (same CAD viz-color source).",
   action:"Archive this one once the fixed Lasso V44 is uploaded under the proper item number."},
- {item:"Lasso V44 Black", name:"Lasso V44, black SKU (REAL product, item # TBD; duplicate of 688942)", vendor:"TBD (ID/INTENT design)", os:"wont", status:"issues", g20:false, ready:false, ar:"ok 1.18 x 0.16 x 0.11 m tube + bracket; VERIFY vs PDP", so:106.4, sn:0.92, nm:"NEEDS ITEM NUMBER + description",
+ {item:"Lasso V44 Black", name:"Lasso V44, black SKU (REAL product, item # TBD; duplicate of 688942)", vendor:"TBD (ID/INTENT design)", os:"vendor", status:"repair", g20:false, ready:false, ar:"ok 1.18 x 0.16 x 0.11 m tube + bracket; VERIFY vs PDP", so:106.4, sn:0.92, nm:"NEEDS ITEM NUMBER + description",
   issue:"Source is a raw CAD export wearing part-ID viz colors (pure green/yellow/cyan), zero textures: the 'green and weird' look. BLACK colorway never applied.",
   action:"FIX READY: Lasso_V44_BLACK_fixed_v2.glb in Downloads (10 viz materials recolored to black, hardware kept silver). Upload via Preserve Meshes and UVs; verify shape vs PDP; dedupe with 688942."},
- {item:"Cannes carver chair", name:"LifestyleGarden Cannes outdoor carver easy chair, white (item # TBD)", vendor:"LifestyleGarden", status:"wont", g20:false, ready:false, so:275.9, sn:null, nm:"NEEDS ITEM NUMBER + description (none provided)",
+ {item:"Cannes carver chair", name:"LifestyleGarden Cannes outdoor carver easy chair, white (item # TBD)", vendor:"LifestyleGarden", status:"vendor", g20:false, ready:false, so:275.9, sn:null, nm:"NEEDS ITEM NUMBER + description (none provided)",
   issue:".max is NOT A SUPPORTED UPLOAD FORMAT: the file never entered a pipeline (stored as an inert 275.9 MB attachment). Proprietary format; only 3ds Max can open it.",
   action:"Vendor (LifestyleGarden) must export from 3ds Max as GLB or FBX with embedded media. Item number from Daniela sheet / PDP."},
- {item:"Lasso Wall Mount", name:"Lasso wall mount rail (REAL product, item # TBD)", vendor:"TBD (ID/INTENT design)", status:"issues", g20:false, ready:false, ar:"ok 0.74 x 0.04 m wall rail", so:8.3, sn:0.09, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
+ {item:"Lasso Wall Mount", name:"Lasso wall mount rail (REAL product, item # TBD)", vendor:"TBD (ID/INTENT design)", status:"review", g20:false, ready:false, ar:"ok 0.74 x 0.04 m wall rail", so:8.3, sn:0.09, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
   issue:"File is clean: 30.5k tris, 94 KB, correct scale. Draft, no metadata.",
   action:"Derek: item number + description, publish, set hero-shot scene preset. No file work needed."},
- {item:"266345", name:"Table (asset currently named 'Table')", vendor:"TBD", status:"issues", g20:false, ready:true, ar:"ok 1.09 x 0.51 x 0.47 m, coffee table", so:1.6, sn:1.4, nm:"RENAME asset 'Table' to 266345 + description missing",
+ {item:"266345", name:"Table (asset currently named 'Table')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.09 x 0.51 x 0.47 m, coffee table", so:1.6, sn:1.4, nm:"RENAME asset 'Table' to 266345 + description missing",
   issue:"File itself is clean: 10.2k tris, 1.4 MB, correct real-world scale.",
   action:"Derek: rename to item number 266345 (from the 4K_266345 filename) and add description. No file work needed."},
- {item:"Rag Rug Chair", name:"Woven Marija rag rug chair (REAL product, item # TBD)", vendor:"TBD", status:"issues", g20:false, ready:true, ar:"ok 0.84 x 0.83 x 0.91 m, chair", so:4.5, sn:4.3, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
+ {item:"Rag Rug Chair", name:"Woven Marija rag rug chair (REAL product, item # TBD)", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 0.84 x 0.83 x 0.91 m, chair", so:4.5, sn:4.3, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
   issue:"File itself is clean: 10k tris, 4.3 MB (under goal), correct 0.84 x 0.91 m chair scale, world units right.",
   action:"Derek: rename asset to the Costco item number and add description. No file work needed."},
- {item:"1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", os:"wont", status:"issues", g20:false, ready:false, ar:"wrong WAS 158 m wide (inches as meters); fixed file ready: 4.01 x 1.93 x 0.81 m", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
+ {item:"1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", os:"vendor", status:"repair", g20:false, ready:false, ar:"wrong WAS 158 m wide (inches as meters); fixed file ready: 4.01 x 1.93 x 0.81 m", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
   issue:"TWO problems: (1) SCALE: authored in inches, world size 158 m wide (stadium-sized in AR). (2) 2.0M triangles kept by Convert Only: heavy on mobile.",
   action:"FIX READY: 1933950_fixed_v2.glb in Downloads (inches to meters: 4.01 x 1.93 x 0.81 m, un-Draco'd). Upload as new version via Preserve Meshes and UVs. Then set correct description."},
- {item:"Stove with Range", name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", os:"ideal", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
+ {item:"Stove with Range", name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", os:"review", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
   issue:"Derek-added demo asset, not part of the POC catalog.",
   action:"DELETED from workspace 10-20 (moved to discarded)."},
- {item:"264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"ideal", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
+ {item:"264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
   issue:"Clean: 75k tris, 1.5 MB, correct 1.87 m scale, materials good (verified in render 10-20).",
   action:"Rename on platform to item number; description MISSING (Daniela skipped it): Derek adding. Then done."}
 ];
@@ -221,10 +221,10 @@ function nmCell(r){
   return "<span style='color:var(--warn);font-weight:700;font-size:.72rem'>"+r.nm+"</span>";
 }
 function counts(){
-  var c={ideal:0,issues:0,wont:0,pending:0,discarded:0,total:DATA.length};
+  var c={shippable:0,review:0,repair:0,vendor:0,pending:0,discarded:0,total:DATA.length};
   DATA.forEach(function(r){c[r.status]++;});
   var el=document.getElementById("counts"); el.innerHTML="";
-  [["","All",c.total],["ideal","Ideal",c.ideal],["issues","Has issues",c.issues],["wont","Won't process",c.wont],["pending","Pending",c.pending],["discarded","Discarded",c.discarded]].forEach(function(x){
+  [["","All",c.total],["shippable","Shippable",c.shippable],["review","Costco review",c.review],["repair","In repair",c.repair],["vendor","Vendor action",c.vendor],["pending","Pending",c.pending],["discarded","Discarded",c.discarded]].forEach(function(x){
     var d=document.createElement("div"); d.className="count "+(x[0]||"all")+(state.status===x[0]?" active":"");
     d.innerHTML="<b>"+x[2]+"</b><span>"+x[1]+"</span>";
     d.onclick=function(){state.status=(state.status===x[0]?"":x[0]);render();};
@@ -245,7 +245,7 @@ function render(){
     return true;
   });
   rows.sort(function(a,b){if((a.status==="discarded")!==(b.status==="discarded"))return a.status==="discarded"?1:-1;var k=state.sort;var va=(a[k]||"")+"",vb=(b[k]||"")+"";return va<vb?-state.dir:va>vb?state.dir:0;});
-  var PILL={ideal:"Ideal",issues:"Has issues",wont:"Won't process",pending:"Pending",discarded:"Discarded"};
+  var PILL={shippable:"Shippable",review:"Costco review",repair:"In repair",vendor:"Vendor action",pending:"Pending",discarded:"Discarded"};
   var tb=document.getElementById("rows"); tb.innerHTML="";
   rows.forEach(function(r){
     var tr=document.createElement("tr"); if(r.status==="discarded")tr.className="disc";
