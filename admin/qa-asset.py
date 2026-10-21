@@ -264,6 +264,7 @@ def blender_checks(path, outdir, fix, expect, report):
             report.flag("scale-vs-expected", f"Dims {got} vs expected {sorted(expect)}: >15% off. Check units/orientation vs PDP.")
         else:
             report.ok("scale-vs-expected", "within 15% of PDP/brief dims")
+    report.info("PIVOT on upload", "Bottom Center (floor-standing default). Exceptions: wall-hung -> Back Center; hanging -> Top Center; eyewear -> Front Center; configurator part with authored anchor -> None.")
     if out.get("fix_file"):
         report.info("FIX EXPORTED", out["fix_file"])
     report.info("renders", f"{outdir}/qa_front.png, qa_side.png, qa_three4.png (side view shows lean/grounding against floor plane)")
