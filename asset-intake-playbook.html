@@ -127,7 +127,52 @@
 </ul>
 </div>
 
-<h2><span class="n">4</span>What to change: docs and platform punch list</h2>
+<h2><span class="n">4</span>The QA rig: what runs on every customer asset</h2>
+<p class="lede" style="padding-top:0">When a customer asset fails (or just looks wrong), Derek runs it through an automated battery BEFORE anyone burns time guessing: <code>vntana-store/admin/qa-asset.py file.glb [--usdz f] [--expect W D H] [--fix]</code>. It returns a verdict with per-check flags in about a minute, so the report back to the team is "here is the root cause" instead of "it fails." <b>Review ask (Jure + team):</b> this list below IS the rig. Check it against what the platform pipeline actually trips on: anything we should add, anything checked twice, and anything here the platform could absorb at ingest.</p>
+<div class="card">
+<h3>Stage 1: header forensics (seconds, no Blender)</h3>
+<p style="font-size:.86rem;color:#374151">Parses the GLB JSON chunk directly.</p>
+<ul>
+<li><b>extensionsRequired</b>: Draco, WebP, KTX2, texture transforms, or ANY unknown required extension (each one = the rejection class from section 1). This is the first check because it explains total failures instantly.</li>
+<li><b>Empty or rig-only export</b>: zero meshes (the J&amp;J camera rig and 132-byte scene cases).</li>
+<li><b>Viz-color materials</b>: pure CAD part-ID colors (green/yellow/cyan), with an exception for genuinely emissive parts.</li>
+<li><b>Black-metal</b>: black base color + metallic (the "stainless renders black" wine-cooler defect).</li>
+<li><b>Omitted metallicFactor</b> on materials named wood/fabric/plastic (glTF defaults it to 1.0 = gray metal).</li>
+<li><b>Stray nodes</b>: Helper*, Particle*, dummy, lux_root, leftover cameras, untranslated CAD names (floats-in-AR causes).</li>
+<li><b>Zero or negative scales</b> (mirrored or collapsed nodes).</li>
+<li><b>Tiny textures</b> (the KeyShot 250 px bake problem).</li>
+<li><b>Transmission glass</b> (renders opaque in AR Quick Look; needs alpha-blend conversion).</li>
+<li><b>Animation payload</b> size (the J&amp;J dense-baked-animation case).</li>
+<li><b>Generator string</b> for provenance (KeyShot, Blender, Max, VNTANA output).</li>
+</ul>
+</div>
+<div class="card">
+<h3>Stage 2: geometry truth (headless Blender import)</h3>
+<ul>
+<li><b>World dimensions + units sanity</b>, with an optional gate against the real product dims from the PDP (<code>--expect W D H</code>). Catches inches-as-meters and cm-as-meters instantly.</li>
+<li><b>Lean detector</b>: a minimal-bounding-box rotation search finds tilts baked into the geometry (the 13.3 and 7.1 degree wine coolers). Guard: if straightening shrinks the footprint less than 4 percent, it is shape-driven (TV slab with feet, curvy product) and reports as a note to confirm in the side render, not a flag.</li>
+<li><b>Grounding</b>: base must sit at z = 0 or it floats/clips in AR.</li>
+<li><b>Centering</b> of the model on origin.</li>
+<li><b>Three renders</b>: front, side against a visible floor plane (lean + grounding proof), and three-quarter.</li>
+</ul>
+</div>
+<div class="card">
+<h3>Stage 3: AR gate (USDZ, numeric)</h3>
+<ul>
+<li>Checks the generated USDZ with usd-core: <b>upAxis = Y</b>, <b>metersPerUnit</b> correct, <b>bounding-box min Y at 0</b> (grounded), <b>dimensions match the real product</b>. Numbers, not eyeballs: AR scale problems are caught before anyone opens a phone.</li>
+</ul>
+</div>
+<div class="card">
+<h3>Output</h3>
+<ul>
+<li><b>Verdict</b> (PASS / NEEDS WORK) with every flag naming its fix.</li>
+<li><b>Pivot recommendation</b> for the upload (Bottom Center / Back Center / Back Bottom Center / Top Center by product type).</li>
+<li><b><code>--fix</code> auto-repair</b>: exports a <code>_qafix.glb</code> that is straightened, grounded, centered, and decompressed, for the cases where the defect is mechanical.</li>
+<li>The workflow: asset fails on platform, Derek runs the battery, the team gets a root-cause report plus a ready file or settings recipe instead of a mystery.</li>
+</ul>
+</div>
+
+<h2><span class="n">5</span>What to change: docs and platform punch list</h2>
 <div class="card">
 <h3>Website / documentation</h3>
 <ul class="asks">
