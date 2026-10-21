@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>3D Asset Intake Playbook — VNTANA Internal</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#14161a;--line:#e4e6ea;--muted:#6b7280;--accent:#e21836;--ok:#1d9a4e;--warn:#d98a00;--bad:#d1293d;--blue:#2563eb}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f6f7f9;color:var(--ink);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 1.5rem}
+  header{background:#0d0f13;color:#fff;padding:1.1rem 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+  header .brand{font-weight:800;font-size:1.15rem}
+  header .brand span{color:var(--accent)}
+  .internal{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);color:#fff;padding:4px 10px;border-radius:10px}
+  .lede{padding:1.6rem 0 .4rem;color:#374151;max-width:860px}
+  .lede b{color:var(--ink)}
+  h2{font-size:1.05rem;font-weight:800;letter-spacing:-.01em;margin:2.2rem 0 .9rem;padding-top:.4rem;border-top:3px solid var(--ink)}
+  h2 .n{color:var(--accent);margin-right:.4rem}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:1rem}
+  .card h3{font-size:.95rem;margin-bottom:.45rem}
+  .card h3 .tag{display:inline-block;font-size:.58rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:9px;color:#fff;vertical-align:2px;margin-left:.5rem}
+  .tag.killer{background:var(--bad)} .tag.trap{background:var(--warn)} .tag.recipe{background:var(--ok)} .tag.surgery{background:var(--blue)} .tag.bug{background:#7c3aed}
+  .row{display:grid;grid-template-columns:120px 1fr;gap:.25rem .9rem;font-size:.86rem;margin:.55rem 0}
+  .row b{font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#9aa0a8;padding-top:2px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82em;background:#eef0f3;border-radius:4px;padding:1px 5px}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:.85rem}
+  th{font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#9aa0a8;text-align:left;padding:.6rem .75rem;border-bottom:2px solid var(--line);background:#fafbfc}
+  td{padding:.6rem .75rem;border-bottom:1px solid var(--line);vertical-align:top}
+  ul{margin:.4rem 0 .4rem 1.2rem}
+  li{margin:.25rem 0}
+  .foot{padding:2rem 0 3rem;font-size:.75rem;color:var(--muted)}
+  .pill-case{display:inline-block;font-size:.68rem;background:#eef0f3;border-radius:8px;padding:2px 8px;margin:2px 3px 2px 0;color:#374151}
+  .asks li{margin:.45rem 0}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">3D Asset <span>Intake Playbook</span></div><div class="internal">VNTANA internal only: names clients and open bugs</div></div></header>
+<div class="wrap">
+
+<p class="lede">Everything we learned triaging roughly <b>60 vendor-built assets across three client batches</b> (Costco Mexico POC, Accenture/LEGO, J&amp;J OTTAVA), distilled into: the failure classes, how to recognize each one in minutes, the proven fix, and <b>what the website docs and the platform should change</b>. Same taxonomy showed up in all three batches, so these are not client quirks, they are the industry's actual export habits.</p>
+
+<h2><span class="n">1</span>The failure taxonomy</h2>
+
+<div class="card">
+<h3>Required glTF extensions <span class="tag killer">the silent killer</span></h3>
+<div class="row"><b>Symptom</b><div>Every optimization pipeline fails with no output and no useful error. "It just fails no matter what I do." Convert Only may succeed, but see the trap below.</div></div>
+<div class="row"><b>Mechanics</b><div>glTF files can list extensions under <code>extensionsRequired</code>. The spec says a loader that does not support a required extension <b>must reject the file entirely</b>. Four members seen in the wild so far: <code>KHR_draco_mesh_compression</code>, <code>EXT_texture_webp</code>, <code>KHR_texture_basisu</code> (KTX2), and <code>KHR_texture_transform</code> (per-texture UV offset/scale/rotate).</div></div>
+<div class="row"><b>Cases</b><div><span class="pill-case">Costco: LG OLED 55C6 (Draco + texture_transform, the transforms were real: 6x tiled stand texture)</span> <span class="pill-case">Costco: air fryer GAF858 + ~6 more failed drafts suspected</span> <span class="pill-case">J&amp;J: WebP + KTX2 + Draco from their web-prep script</span> <span class="pill-case">Accenture: Vespa + sofa (Draco from Blender/Max export)</span></div></div>
+<div class="row"><b>Detect</b><div>Parse the GLB JSON chunk and read <code>extensionsRequired</code>. Takes 5 lines of Python. Also a tell: suspiciously small file (2 to 5 MB) for a complex product means it is already compressed.</div></div>
+<div class="row"><b>Fix</b><div>Decode in Blender (import decodes Draco; texture transforms become Mapping nodes, bake them into the mesh UVs per polygon before export), re-export raw GLB with Draco off and a new versioned filename, reprocess through standard optimization. Vendor guidance: export uncompressed; upload what goes INTO your web-prep script, not what comes out.</div></div>
+</div>
+
+<div class="card">
+<h3>The Convert Only trap <span class="tag trap">trap</span></h3>
+<div class="row"><b>Symptom</b><div>"It processed fine but it is 31 MB / 45 MB and none of the settings do anything." Or: a required-extension file that failed everywhere finally "works" on Convert Only.</div></div>
+<div class="row"><b>Mechanics</b><div>Convert Only is a pass-through. It tolerates required extensions by not looking at them, ships every triangle untouched, and <b>locks out all other options including Pivot Point Alignment</b>. So the output keeps the input's problems: no optimization, no grounding control, and any required extensions ride along into downstream conversions (USDZ).</div></div>
+<div class="row"><b>Cases</b><div><span class="pill-case">Costco: air fryer Convert Only = 45.8 MB, all 14M tris</span> <span class="pill-case">Costco: LG OLED Convert Only output = byte-for-byte problem pass-through, still floating 6.3 cm</span> <span class="pill-case">Costco: 1876771, 901k triangles kept, heavy GPU load on mobile despite 4.4 MB</span></div></div>
+<div class="row"><b>Rule</b><div>Convert Only is for assets that are ALREADY final web files needing zero changes. For everything else, fix the input so standard optimization can run. If you only need "Convert Only with options": Preserve Meshes and UVs with the Polygon Limit raised above the actual count and Max Resolution above the largest texture behaves like a pass-through that still honors pivot and compression settings.</div></div>
+</div>
+
+<div class="card">
+<h3>Settings inflation: "max quality" backfires <span class="tag trap">trap</span></h3>
+<div class="row"><b>Symptom</b><div>The optimized output is BIGGER than the input.</div></div>
+<div class="row"><b>Mechanics</b><div>Texture Compression Level 0 re-encodes already-efficient PNGs at lossless and grows them. Small Feature Baking ADDS new baked maps. Draco off ships geometry uncompressed. Stacking "best quality everywhere" settings is how a 22.5 MB input became a 29.2 MB output.</div></div>
+<div class="row"><b>Cases</b><div><span class="pill-case">Accenture: LEGO toucan 22.5 to 29.2 MB on max-quality settings; DEFAULTS produced 1.2 MB (24x smaller) with no visible difference in matched-camera close-ups</span></div></div>
+<div class="row"><b>Rule</b><div>Defaults first, always. Raise a setting only after a render proves the default lost something visible. Measured on photographic textures: Compression Level 1 vs 2 is nearly invisible (mean delta 6 to 8 per 255); Max Resolution loss is the visible cliff because detail is gone permanently.</div></div>
+</div>
+
+<div class="card">
+<h3>Scan-class assets: keep textures, give up polygons <span class="tag recipe">proven recipe</span></h3>
+<div class="row"><b>Recipe</b><div>Preserve Meshes and UVs + Max Resolution 4K + Compression Level 2 + Pivot Bottom Center. Settings only, zero file touching.</div></div>
+<div class="row"><b>Cases</b><div><span class="pill-case">Accenture: sofa scan 40.1 MB Convert Only to 6.5 MB, weave visually identical at thread-level zoom</span></div></div>
+<div class="row"><b>Why</b><div>On photogrammetry and scan assets the texture carries the realism and the mesh is bloated. Decimation is nearly free visually; resolution loss is not. The inverse of CAD assets.</div></div>
+</div>
+
+<div class="card">
+<h3>Source defects needing file surgery <span class="tag surgery">last resort</span></h3>
+<div class="row"><b>Doctrine</b><div>Platform settings first, decompress-and-reupload second, Blender surgery ONLY for defects no optimizer could infer. Always framed as VNTANA repairing the vendor's file, with export guidance sent back. Never imply going back to the source is the only fix.</div></div>
+<div class="row"><b>The list</b><div>
+<ul>
+<li><b>Baked leans:</b> the model is tilted in the geometry itself. Tell: a bloated bounding-box depth ("reads deep for a cooler" = lean signature). Found 13.3 and 7.1 degree leans on two wine coolers from the same vendor. Fix: minimal-bounding-box rotation solver, with a footprint-gain guard (under 4 percent improvement = shape-driven false positive, like a TV slab with feet).</li>
+<li><b>Wrong units:</b> inches or cm exported as meters. A 35.9-meter-tall stand mixer. Fix: rescale 0.0254x or 0.01x, reground.</li>
+<li><b>Viz-color / placeholder materials:</b> raw CAD exports wearing part-ID colors (pure green/yellow/cyan) or flat gray placeholders; "stainless renders black" = black base color + metallic 1 + roughness 0. Fix: retint against the product PDP.</li>
+<li><b>Omitted metallicFactor:</b> glTF defaults it to 1.0, so untextured wood/fabric renders as gray metal. Check material JSON, not just the viewport.</li>
+<li><b>Tiny baked textures:</b> KeyShot per-part bakes at 250 px make LCD digits and logos unrecoverable mush. Only the vendor's export settings can fix resolution; repainting is best-effort.</li>
+<li><b>Stray helper nodes:</b> Helper001, Particle_View, lux_root, leftover cameras. They inflate the bounding box and make the product float in AR. Delete before export.</li>
+<li><b>Transmission glass:</b> KHR_materials_transmission renders OPAQUE in AR Quick Look / USDZ. Fix: alpha-blend glass (alpha around 0.18, blend mode). Web viewer and USDZ both look right after.</li>
+</ul>
+</div></div>
+</div>
+
+<div class="card">
+<h3>Legacy and unsupported formats <span class="tag surgery">vendor action</span></h3>
+<div class="row"><b>Cases</b><div><span class="pill-case">.3ds cannot embed textures: the referenced PNGs never arrived, plus pre-PBR Phong materials</span> <span class="pill-case">.max is not a pipeline format at all: it sat as an inert 276 MB attachment and never entered processing</span></div></div>
+<div class="row"><b>Rule</b><div>Format preference to publish in docs: GLB, then FBX with embedded media, then OBJ zipped with textures, then STEP (geometry only). Anything older goes back to the vendor for re-export.</div></div>
+</div>
+
+<h2><span class="n">2</span>Intake decision table (pipeline by source)</h2>
+<table>
+<thead><tr><th>What arrived</th><th>Tell</th><th>Pipeline</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Raw CAD / DCC export (KeyShot, Blender, Max, Maya)</td><td>Large file, no required extensions</td><td>Preserve Meshes and UVs (or Industrial for heavy CAD)</td><td>Defaults first. Pivot Bottom Center for floor-standing.</td></tr>
+<tr><td>Pre-compressed GLB</td><td><code>extensionsRequired</code> non-empty, or suspiciously small file</td><td>Decode in Blender, re-export raw, THEN standard optimization</td><td>Never ship the Convert Only pass-through as the fix.</td></tr>
+<tr><td>Photogrammetry / scan</td><td>Huge textures, bloated organic mesh</td><td>Preserve Meshes and UVs + 4K + Compression Level 2</td><td>3D Scan pipeline is ONLY for this class.</td></tr>
+<tr><td>Already-final web asset</td><td>Vendor ships their own web-AR file, small and clean</td><td>Convert Only</td><td>Accept the pivot lockout; verify grounding in the file.</td></tr>
+<tr><td>CAD-born asset, any kind</td><td></td><td>NEVER 3D Scan</td><td>Scan smoothing destroys hard edges (Logitech wheel case).</td></tr>
+</tbody>
+</table>
+
+<h2><span class="n">3</span>Platform gotchas and open bugs</h2>
+<div class="card">
+<h3>Versioning rotation accumulation <span class="tag bug">open bug, confirmed</span></h3>
+<div class="row"><b>What</b><div>Rotations accumulate across versions on an asset record (confirmed by Neven and Fatima). Add rotation to a model, create versions, and every new version comes out differently mangled: flipped, tilted, flipped again. Repro pair preserved: broken asset <code>7e910ec2-bca7-4733-9d42-d9bcc1da45bf</code> vs clean <code>e3e67fe5-6a9d-44ce-bfb1-e3450bc2faed</code>, same byte-identical file, upside down vs correct.</div></div>
+<div class="row"><b>Workaround</b><div>Never adjust rotation in platform settings on an asset that will be re-versioned; orientation fixes go in the FILE. A contaminated asset cannot be cleaned: rebuild as a new asset and re-key any external UUID references.</div></div>
+</div>
+<div class="card">
+<h3>Smaller gotchas worth documenting</h3>
+<ul>
+<li><b>Convert Only locks out everything</b>, including Pivot Point Alignment. The workaround is Preserve Meshes and UVs with limits raised above the file's actual counts.</li>
+<li><b>Same-name re-upload silently keeps the old geometry.</b> Every re-export needs a new versioned filename (v2, v3).</li>
+<li><b>New versions drop to Draft:</b> re-publish after processing or the public link serves the old version.</li>
+<li><b>Pivot cheat sheet:</b> floor-standing = Bottom Center; wall-hung = Back Center; console-or-wall (soundbars) = Back Bottom Center; hanging = Top Center.</li>
+<li><b>Output can exceed input</b> with lossless texture settings and Small Feature Baking stacked on (see settings inflation above). No warning fires today.</li>
+</ul>
+</div>
+
+<h2><span class="n">4</span>What to change: docs and platform punch list</h2>
+<div class="card">
+<h3>Website / documentation</h3>
+<ul class="asks">
+<li>Publish the <b>intake decision table</b> (section 2) on the upload docs page: pipeline by source type is the single highest-leverage piece of guidance.</li>
+<li>Add a <b>"before you export" vendor checklist</b>: no Draco/WebP/KTX2 at export, no web-prep scripts before upload, delete helper nodes and cameras, embed textures, real PBR materials (set metallicFactor explicitly), 2048 px minimum textures (4096 where there is text), versioned filenames.</li>
+<li>Document <b>defaults first</b> with the toucan numbers: max-quality settings made the file bigger; defaults were 24x smaller with no visible difference.</li>
+<li>Document the <b>scan-asset recipe</b> (PMUV + 4K + Level 2) and the CAD-vs-scan intuition: scans give up polygons, CAD gives up texture resolution.</li>
+<li>State plainly that <b>Convert Only disables all optimization options including pivot</b>, and when that is acceptable.</li>
+</ul>
+</div>
+<div class="card">
+<h3>Platform asks</h3>
+<ul class="asks">
+<li><b>Detect <code>extensionsRequired</code> at upload</b> and show an actionable message ("this file requires Draco decoding / texture transform support; optimization pipelines will reject it; here is how to export without it"). Today the user gets a silent failure and blames the platform.</li>
+<li>Better: <b>decode Draco and bake texture transforms server-side at ingest</b>. Blender does both in one import; this entire failure class would disappear.</li>
+<li><b>Warn when output size exceeds input</b>: it always means the settings are fighting the optimizer.</li>
+<li><b>Fix the versioning rotation accumulation bug</b> (repro pair above; fix requested of the team).</li>
+<li>Consider allowing <b>Pivot Point Alignment on Convert Only</b>: grounding is the one thing pass-through users still need.</li>
+</ul>
+</div>
+
+<div class="foot">Maintained by Derek Cicero. Sources: Costco Mexico POC triage (42 assets, Oct 2026, <a href="costco-tracker.html">live tracker</a>), Accenture/LEGO batch (Andrej Tur, Oct 2026), J&amp;J OTTAVA batch (31 files, Oct 2026). Internal page: names clients and unreleased bug details, do not share externally.</div>
+</div>
+</body>
+</html>
