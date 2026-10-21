@@ -78,6 +78,9 @@
 var UPDATED = "2026-10-20";
 // status: ideal | issues | wont | pending.  g20: in the 20 go-live set.  ready: ready for Thursday beta.
 var DATA = [
+ {item:"p210436kp-k45ssob", pdp:"NONE", name:"KitchenAid Classic stand mixer K45SSOB (Whirlpool SKU, item # TBD)", vendor:"Whirlpool Mexico", os:"repair", status:"repair", g20:false, ready:false, ar:"ok 0.36 x 0.22 x 0.35 m mixer (after fix)", so:5.2, sn:5.2, nm:"NEEDS ITEM NUMBER + description (vendor SKU filename)",
+  issue:"Was 35.9 METERS tall: cm exported as meters (100x). Also floating 14 m below origin. Materials/geometry otherwise good.",
+  action:"FIX READY: k45ssob_mixer_fixed_v2.glb in Downloads (rescaled, grounded, QA renders clean). PIVOT: BOTTOM CENTER. Upload, then item number + description from Daniela."},
  {item:"697004", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"vendor", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
   issue:"Processes fine (9.5M to 256k) but LCD text + logo blur is BAKED INTO SOURCE (250px display texture).",
   action:"Vendor re-export from KeyShot: DPI 600+, Advanced materials. Live and usable meanwhile."},
