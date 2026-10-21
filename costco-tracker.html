@@ -78,6 +78,9 @@
 var UPDATED = "2026-10-20";
 // status: ideal | issues | wont | pending.  g20: in the 20 go-live set.  ready: ready for Thursday beta.
 var DATA = [
+ {item:"G920 (item # TBD)", name:"Logitech G920 Xbox steering wheel (desc: LOGITECH BUNDLE VOLANTE Xbox)", vendor:"Logitech (own web-AR asset)", status:"issues", g20:false, ready:true, ar:"ok 0.35 x 0.42 x 0.34 m wheel unit", so:2.9, sn:2.9, nm:"RENAME to item number (currently vendor slug filename)",
+  issue:"File is clean (71.8k tris, 2.9 MB, correct scale, good materials). FLAG: description says BUNDLE but the model shows the WHEEL ONLY, no pedals: verify vs PDP.",
+  action:"Derek: item number as name; confirm with Costco whether the bundle 3D should include pedals (vendor would have a pedals asset too)."},
  {item:"697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"issues", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
   issue:"Processes fine (9.5M to 256k) but LCD text + logo blur is BAKED INTO SOURCE (250px display texture).",
   action:"Vendor re-export from KeyShot: DPI 600+, Advanced materials. Live and usable meanwhile."},
