@@ -85,6 +85,10 @@ def header_checks(path, report):
                 report.flag("zero-scale", f"Node '{nm}' has scale 0: breaks processing. Fix transforms.")
             elif any(v < 0 for v in sc):
                 report.note("neg-scale", f"Node '{nm}' uses negative scale (mirroring): can invert normals after optimization.")
+    # transmission glass: opaque in AR (USDZ cannot represent it)
+    for m in j.get("materials", []):
+        if "KHR_materials_transmission" in (m.get("extensions") or {}):
+            report.flag("transmission-glass", f"Material '{m.get('name','?')}' uses transmission: renders OPAQUE in AR Quick Look. Convert to alpha-blend glass (alpha ~0.2, alphaMode BLEND).")
     if j.get("cameras"):
         report.note("cameras", f"{len(j['cameras'])} camera(s) in file: render-scene leftovers, strip before export.")
 
