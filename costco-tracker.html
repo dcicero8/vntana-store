@@ -78,9 +78,6 @@
 var UPDATED = "2026-10-20";
 // status: ideal | issues | wont | pending.  g20: in the 20 go-live set.  ready: ready for Thursday beta.
 var DATA = [
- {item:"p210436kp-k45ssob", pdp:"NONE", name:"KitchenAid Classic stand mixer K45SSOB (Whirlpool SKU, item # TBD)", vendor:"Whirlpool Mexico", os:"repair", status:"repair", g20:false, ready:false, ar:"ok 0.36 x 0.22 x 0.35 m mixer (after fix)", so:5.2, sn:5.2, nm:"NEEDS ITEM NUMBER + description (vendor SKU filename)",
-  issue:"Was 35.9 METERS tall: cm exported as meters (100x). Also floating 14 m below origin. Materials/geometry otherwise good.",
-  action:"FIX READY: k45ssob_mixer_fixed_v2.glb in Downloads (rescaled, grounded, QA renders clean). PIVOT: BOTTOM CENTER. Upload, then item number + description from Daniela."},
  {item:"697004", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"vendor", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
   issue:"Processes fine (9.5M to 256k) but LCD text + logo blur is BAKED INTO SOURCE (250px display texture).",
   action:"Vendor re-export from KeyShot: DPI 600+, Advanced materials. Live and usable meanwhile."},
@@ -132,9 +129,9 @@ var DATA = [
  {item:"648074", pdp:"https://www.costco.com.mx/p/648074", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:2.4, sn:2.2, nm:"ok",
   issue:"Clean-ish (343k kept via Convert Only). Polys high but size fine.",
   action:"Optional optimization pass."},
- {item:"VA533070", pdp:"https://www.costco.com.mx/p/VA533070", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:6.6, sn:5.2, nm:"drop '.glb' from asset name",
-  issue:"JUST OVER the 5 MB goal (5.2 MB); Convert Only left textures uncompressed.",
-  action:"Reprocess with texture compression to dip under 5 MB."},
+ {item:"VA533070", pdp:"https://www.costco.com.mx/p/VA533070", name:"KitchenAid K45 stand mixer (file p210436kp-k45ssob)", vendor:"Whirlpool/KitchenAid", status:"repair", g20:true, ready:true, so:6.6, sn:5.2, nm:"drop '.glb' from asset name",
+  issue:"= KitchenAid K45 stand mixer (uploaded file p210436kp-k45ssob.glb). Was 35.9 METERS tall (cm as meters) + floating 14 m below origin + 5.2 MB over size goal.",
+  action:"FIX READY: k45ssob_mixer_fixed_v2.glb in Downloads (rescaled to 0.36 m, grounded). Upload via Preserve Meshes and UVs. PIVOT: BOTTOM CENTER. Rename 'VA533070 (Production)'. Description TBD from Daniela (sheet row is blank)."},
  {item:"1321497", pdp:"https://www.costco.com.mx/p/1321497", name:"Wine Enthusiast dual-zone wine + beverage cooler", vendor:"Same vendor as 1288769 (Blender, Chinese material names)", os:"vendor", status:"shippable", g20:true, ready:true, ar:"ok 0.86 x 0.92 m tall; depth 0.80 m reads deep, verify vs PDP", so:41.1, sn:0.55, nm:"ok; desc: Wine Enthusiast Cava de Vinos y Enfriador de Bebidas (Derek adding)",
   issue:"Same vendor defect family as 1288769: 7.1 deg baked lean, floating base, black 'stainless', metallic wood, AR-opaque transmission glass. PDP confirms stainless french doors + black cabinet + wood shelves.",
   action:"DONE: new asset '1321497 (Production)' 43f15396-5d14-4ac5-848d-c2bb73207582, Live Asset tag, description set. Daniela: back-office UUID -> 43f15396. Old asset to archive."},
