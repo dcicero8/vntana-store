@@ -120,3 +120,5 @@ footer{color:var(--muted);font-size:13px;padding:28px 0 50px;text-align:center}
 .ph .cap{padding:10px 12px;font-size:13px;color:var(--muted)}
 .ph .cap b{color:var(--ink);display:block}
 .ph .cap .where{display:block;margin-top:4px;font-size:12px}
+
+footer .updated{color:#b8bdc4;font-size:11px;margin-top:6px}
