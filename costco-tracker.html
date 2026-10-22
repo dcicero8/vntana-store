@@ -269,7 +269,7 @@ function renderDash(){
   var GOAL=20;
   var sp=Math.min(ready/GOAL*100,100);
   document.getElementById("dash").innerHTML=
-   '<div class="dtile"><div class="big">'+lib+'</div><div class="lbl">In the library (tomorrow\'s review)</div><div class="sub">46 came in; the rest moved out (vendor re-exports, demos, duplicates)</div></div>'
+   '<div class="dtile"><div class="big">'+lib+'</div><div class="lbl">In the library (tomorrow\'s review)</div><div class="sub">42 vendor submissions came in; the rest moved out (vendor re-exports and duplicates; demo assets excluded)</div></div>'
   +'<div class="dtile"><div class="big" style="color:var(--ok)">'+ready+'</div><div class="lbl">Good to go</div><div class="sub">Daniela sign-off, then live</div></div>'
   +'<div class="dtile"><div class="big" style="color:var(--warn)">'+disc+'</div><div class="lbl">To discuss</div><div class="sub">known issues: decide together</div></div>'
   +'<div class="dtile goal"><div class="lbl">Go-live 20 readiness</div><div class="gbar"><div class="seg-ship" style="width:'+sp+'%"></div></div>'
