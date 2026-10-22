@@ -32,7 +32,7 @@
   .count b{display:block;font-size:1.25rem;letter-spacing:-.02em}
   .count span{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .count.active{outline:2px solid var(--ink)}
-  .count.ready b{color:var(--ok)} .count.discuss b{color:var(--warn)} .count.discarded b{color:var(--disc)}
+  .count.ready b{color:var(--ok)} .count.discuss b{color:var(--warn)} .count.out b{color:var(--disc)}
   .tools{margin-left:auto;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
   select,input[type=search]{font:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:7px;padding:.5rem .6rem;background:#fff}
   .golive-toggle{display:flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;color:#374151;background:#fff;border:1px solid var(--line);border-radius:7px;padding:.5rem .7rem;cursor:pointer;user-select:none}
@@ -58,7 +58,7 @@
   .uuidline{font-size:.64rem;color:#7c3aed;font-weight:700;margin-top:.3rem;cursor:pointer;user-select:none}
   .nmflag{font-size:.68rem;color:var(--warn);font-weight:700;margin-top:.3rem;max-width:230px}
   .pill{display:inline-block;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;color:#fff;white-space:nowrap}
-  .pill.ready{background:var(--ok)} .pill.discuss{background:var(--warn)} .pill.discarded{background:var(--disc)}
+  .pill.ready{background:var(--ok)} .pill.discuss{background:var(--warn)} .pill.out{background:var(--disc)}
   .was{display:block;font-size:.64rem;color:var(--muted);margin-top:.3rem}
   .size-ok{color:var(--ok);font-weight:700}.size-bad{color:var(--bad);font-weight:700}
   .was-size{display:block;font-size:.64rem;color:var(--muted)}
@@ -136,7 +136,7 @@ var DATA = [
   need:"Vendor: product-color materials + artwork (CAD shipped with placeholder plastic only). Daniela: review description + flip Live Public if the untextured look is acceptable for the pilot.",
   issue:"Raw SOLIDWORKS CAD: all 631 parts in placeholder plastic (renders white), originally 901k triangles through Convert Only. A VNTANA retint attempt was reverted by Derek's review (reference photos too limited for a faithful finish).",
   action:"CURRENT STATE 10-22: the original geometry optimized to 75k, grounded, true size, iOS AR verified: in its as-delivered colors. Vendor owes real materials/artwork for the final look."},
- {item:"p200962kx-krff300ebs-overlay", ic:[11, 16], u:"6889a37e-f238-4e7f-92ec-4d724c5fdb28", pdp:"https://www.costco.com.mx/p/522265", name:"KRFF300EBS door-panel overlay (partial of item 522265)", vendor:"Whirlpool/KitchenAid", status:"discarded", g20:false, ready:false, so:6.9, sn:3.8, nm:"deprecated",
+ {item:"p200962kx-krff300ebs-overlay", ic:[11, 16], u:"6889a37e-f238-4e7f-92ec-4d724c5fdb28", pdp:"https://www.costco.com.mx/p/522265", name:"KRFF300EBS door-panel overlay (partial of item 522265)", vendor:"Whirlpool/KitchenAid", status:"out", g20:false, ready:false, so:6.9, sn:3.8, nm:"deprecated",
   issue:"Identified 10-22: the model is only the fridge DOOR ASSEMBLY (0.76 x 0.15 x 1.73 m, no body): a vendor partial of the same KRFF300EBS fridge that item 522265 already covers with a full model. Unusable standalone in AR.",
   action:"Deprecated + Rejected tag 10-22; move to discarded-assets. Item 522265 (Production) is the real asset."},
  {item:"1950733", pd:"471.81 x 490.22 x ? cm (PDP)", ic:[1, 3], need:"Daniela: review description + flip Live Public.", t:"https://www.costco.com.mx/medias/sys_master/products/h41/hd0/473757011017758.jpg", u:"4204c39e-2db0-474c-a21c-ad21c58642a6", pdp:"https://www.costco.com.mx/p/1950733", name:"Backyard Discovery Centro de Juegos Montpelier", vendor:"TBD", status:"ready", g20:true, ready:true, ar:"ok; USDZ gate passed", so:5.2, sn:1.1, nm:"ok",
@@ -203,61 +203,61 @@ var DATA = [
   need:"Derek: publish + AR glance. Daniela: review description, archive deprecated d5ab6422, fix the sheet (704794 = LG 55-inch TV, the HP is 647947).",
   issue:"IDENTITY RESOLVED 10-22: Costco's own PDP says item 704794 = LG 55-inch OLED C6; the sheet wrongly mapped 704794 to the HP. The mystery 55-inch file was this item all along. The asset previously under this item was the broken Convert Only pass-through (required extensions, floating 35 cm): now deprecated.",
   action:"DONE 10-22: fixed 55 asset renamed 704794 (Production) - LG Pantalla 55\" OLED 4K Smart TV with description, PDP URL attribute, 4 PDP photos, Final Review tag. Pass-through asset renamed 704794 (Deprecated) + Rejected tag: Daniela archives."},
- {item:"647947", pd:"61 x 18 x 44 cm (PDP)", ic:[11, 15], pdp:"https://www.costco.com.mx/p/647947", name:"HP All-In-One 27-cr0350la 27\" Full HD Intel Core i5", vendor:"HP", status:"discuss", g20:false, ready:false, so:null, sn:null, nm:"NO MODEL on platform",
+ {item:"647947", pd:"61 x 18 x 44 cm (PDP)", ic:[11, 15], pdp:"https://www.costco.com.mx/p/647947", name:"HP All-In-One 27-cr0350la 27\" Full HD Intel Core i5", vendor:"HP", status:"out", g20:false, ready:false, so:null, sn:null, nm:"NO MODEL on platform",
   need:"Costco/HP: the file filed under item 704794 was actually the LG 55-inch TV (sheet mix-up). No HP model has ever been received.",
   issue:"Sheet mapped item 704794 to this HP product, but Costco's own PDP says 704794 is the LG 55-inch OLED. Net result: the HP All-In-One has NO 3D model.",
   action:"Ask Daniela/Costco whether the HP stays in the pilot; if yes, request the model from HP. Sheet correction owed (704794 = LG 55-inch, 647947 = HP)."},
- {item:"675531", pd:"81 x 150 x 213 cm (PDP)", ic:[11, 12], t:"https://www.costco.com.mx/medias/sys_master/products/h9a/ha9/135736348344350.jpg", u:"aa55f57c-aa00-4841-998e-5f3c77dde916", pdp:"https://www.costco.com.mx/p/675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"discuss", g20:false, ready:false, so:1.6, sn:null, nm:"ok",
+ {item:"675531", pd:"81 x 150 x 213 cm (PDP)", ic:[11, 12], t:"https://www.costco.com.mx/medias/sys_master/products/h9a/ha9/135736348344350.jpg", u:"aa55f57c-aa00-4841-998e-5f3c77dde916", pdp:"https://www.costco.com.mx/p/675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"out", g20:false, ready:false, so:1.6, sn:null, nm:"ok",
   issue:".3DS file: cannot embed textures; the 2 referenced PNGs were not sent; pre-PBR materials.",
   action:"Vendor re-exports GLB/FBX embedded, OR sends the PNGs and Derek rebuilds."},
- {item:"GAF858 (1).glb", pdp:null, name:"Air fryer Convert Only demo", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:45.8, nm:"demo: archive",
+ {item:"GAF858 (1).glb", pdp:null, name:"Air fryer Convert Only demo", vendor:"TBD", status:"out", g20:false, ready:false, so:56.2, sn:45.8, nm:"demo: archive",
   issue:"Teaching demo of Convert Only pass-through. WAY over 5 MB by design.",
   action:"Archive (superseded by the fixed version)."},
- {item:"[COPY] 6232432", t:"https://www.costco.com.mx/medias/sys_master/products/hab/hbe/242538472701982.jpg", pdp:"https://www.costco.com.mx/p/6232432", name:"Air fryer duplicate", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:null, nm:"duplicate: archive",
+ {item:"[COPY] 6232432", t:"https://www.costco.com.mx/medias/sys_master/products/hab/hbe/242538472701982.jpg", pdp:"https://www.costco.com.mx/p/6232432", name:"Air fryer duplicate", vendor:"TBD", status:"out", g20:false, ready:false, so:56.2, sn:null, nm:"duplicate: archive",
   issue:"Duplicate of the failed original (3D Scan).",
   action:"Archive/delete."},
- {item:"688942", need:"Daniela: update back-office UUID (c3c71c36) + flip Live Public.", u:"3a7bfcfb-e4a0-4164-bd2c-69c716edd6a3", pdp:"https://www.costco.com.mx/p/688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
+ {item:"688942", need:"Daniela: update back-office UUID (c3c71c36) + flip Live Public.", u:"3a7bfcfb-e4a0-4164-bd2c-69c716edd6a3", pdp:"https://www.costco.com.mx/p/688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"out", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
   issue:"Identical to 'Lasso V44 Black' row: duplicates (same CAD viz-color source).",
   action:"Archive this one once the fixed Lasso V44 is uploaded under the proper item number."},
  {item:"688942", ic:[6,14,15], u:"39b2fbb3-195c-47b2-88d8-3510e3a22c2c", pdp:"https://www.costco.com.mx/p/688942", name:"Sonos Arc Ultra Soundbar", vendor:"Sonos (ID/INTENT design)", os:"vendor", status:"ready", g20:false, ready:true, ar:"ok 1.18 x 0.16 x 0.11 m; USDZ gate passed after rebuild", so:106.4, sn:0.9, nm:"ok: 688942 (Production) - Sonos Arc Ultra Soundbar",
   need:"Daniela: update back-office UUID (39b2fbb3) + flip Live Public. Derek: AR glance.",
   issue:"Final QA caught the iOS AR file tilted and floating on the previous asset (processed before the frozen-transforms recipe). Web viewer was fine. Earlier history: raw CAD viz colors retinted to the black colorway.",
   action:"FIXED 10-22 per the new-asset rule: same file reprocessed with frozen transforms on a FRESH asset (39b2fbb3): web + iOS AR both verified grounded and matching. Old asset deprecated."},
- {item:"Cannes carver chair", ic:[12], pdp:"NONE", name:"LifestyleGarden Cannes outdoor carver easy chair, white (item # TBD)", vendor:"LifestyleGarden", status:"discuss", g20:false, ready:false, so:275.9, sn:null, nm:"NEEDS ITEM NUMBER + description (none provided)",
+ {item:"Cannes carver chair", ic:[12], pdp:"NONE", name:"LifestyleGarden Cannes outdoor carver easy chair, white (item # TBD)", vendor:"LifestyleGarden", status:"out", g20:false, ready:false, so:275.9, sn:null, nm:"NEEDS ITEM NUMBER + description (none provided)",
   issue:".max is NOT A SUPPORTED UPLOAD FORMAT: the file never entered a pipeline (stored as an inert 275.9 MB attachment). Proprietary format; only 3ds Max can open it.",
   action:"Vendor (LifestyleGarden) must export from 3ds Max as GLB or FBX with embedded media. Item number from Daniela sheet / PDP."},
  {item:"Lasso Wall Mount", ic:[15], u:"86b2e131-927c-4143-a3d9-a3f85f4c3fd4", pdp:"NONE", name:"Sonos Arc Ultra wall mount (no Costco item found)", vendor:"Sonos (ID/INTENT design)", status:"discuss", g20:false, ready:false, so:8.3, sn:0.09, nm:"NO ITEM NUMBER: not in the Costco MX catalog",
   need:"Costco/Daniela: confirm whether the mount is (or will be) a sellable item. If yes: item number + we finish it (pivot Back Center). If no: move to discarded assets.",
   issue:"The 3D file is clean (30.5k tris, 94 KB, correct 0.74 m rail). Catalog search 10-22 found NO matching Costco item (the Arc Ultra soundbar itself also is not live on the site yet).",
   action:"Renamed on platform with the decision flag. Parked pending the item-number answer: nothing else to fix."},
- {item:"266345", ic:[15], pdp:"NONE", name:"Table (VNTANA original demo asset)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:1.6, sn:1.4, nm:"demo asset",
+ {item:"266345", ic:[15], pdp:"NONE", name:"Table (VNTANA original demo asset)", vendor:"VNTANA demo", status:"out", g20:false, ready:false, so:1.6, sn:1.4, nm:"demo asset",
   issue:"One of the original demo assets VNTANA provided at pilot kickoff, not a vendor submission.",
   action:"Moved out of the pilot workspace 10-22. Excluded from the go-live math."},
- {item:"Rag Rug Chair", pdp:"NONE", name:"Woven rag rug chair (VNTANA original demo asset)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:4.5, sn:4.3, nm:"demo asset",
+ {item:"Rag Rug Chair", pdp:"NONE", name:"Woven rag rug chair (VNTANA original demo asset)", vendor:"VNTANA demo", status:"out", g20:false, ready:false, so:4.5, sn:4.3, nm:"demo asset",
   issue:"One of the original demo assets VNTANA provided at pilot kickoff, not a vendor submission.",
   action:"Moved out of the pilot workspace 10-22. Excluded from the go-live math."},
  {item:"1933950", pd:"220 x 84 x ? cm (PDP)", ard:"ok 10-21", ic:[5, 15], need:"Daniela: update back-office UUID (55966442) + flip Live Public.", t:"https://www.costco.com.mx/medias/sys_master/products/h97/h9c/450130406277150.jpg", u:"55966442", pdp:"https://www.costco.com.mx/p/1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", os:"vendor", status:"ready", g20:false, ready:false, ar:"ok AR verified on device 10-21", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
   issue:"TWO problems: (1) SCALE: authored in inches, world size 158 m wide (stadium-sized in AR). (2) 2.0M triangles kept by Convert Only: heavy on mobile.",
   action:"DONE: AR verified on device 10-21 (true patio-set size, grounded). Rename '1933950 (Production)' + Live Asset tag + description 'MoDe, Terressa Sala para Exterior de 4 piezas'."},
- {item:"Stove with Range", pdp:null, name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", os:"review", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
+ {item:"Stove with Range", pdp:null, name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", os:"review", status:"out", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
   issue:"Derek-added demo asset, not part of the POC catalog.",
   action:"DELETED from workspace 10-20 (moved to discarded)."},
- {item:"264883", ic:[1,3], pdp:"NONE", name:"Sofa (VNTANA original demo asset)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:2.2, sn:1.5, nm:"demo asset",
+ {item:"264883", ic:[1,3], pdp:"NONE", name:"Sofa (VNTANA original demo asset)", vendor:"VNTANA demo", status:"out", g20:false, ready:false, so:2.2, sn:1.5, nm:"demo asset",
   issue:"One of the original demo assets VNTANA provided at pilot kickoff, not a vendor submission. (It was also repaired along the way, which is why it appears in the fix history.)",
   action:"Moved out of the pilot workspace 10-22. Excluded from the go-live math."},
- {item:"Kettler Eden", ic:[11], pdp:"NONE", name:"Kettler Eden outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"discuss", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
+ {item:"Kettler Eden", ic:[11], pdp:"NONE", name:"Kettler Eden outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"out", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
   need:"Vendor (Kettler): re-export as a single binary GLB (or zip the .gltf WITH its _resources folder). Daniela: item numbers for all four.",
   issue:"Diagnosed 10-22: KeyShot exported a .gltf JSON manifest whose geometry (0.5 MB bin) and textures live in an external _resources folder that was never uploaded. Only the manifest reached the platform, so processing fails with no output. Same defect on all four Kettler outdoor items.",
   action:"VENDOR ACTION: one guidance email covers the batch: export as GLB (binary, embedded media) from KeyShot, or upload the .gltf zipped together with its _resources folder. Nothing to repair on our side: the geometry never left the vendor's machine."},
- {item:"Milano Outdoor", ic:[11], pdp:"NONE", name:"Kettler Milano outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"discuss", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
+ {item:"Milano Outdoor", ic:[11], pdp:"NONE", name:"Kettler Milano outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"out", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
   need:"Vendor (Kettler): re-export as a single binary GLB (or zip the .gltf WITH its _resources folder). Daniela: item numbers for all four.",
   issue:"Diagnosed 10-22: KeyShot exported a .gltf JSON manifest whose geometry (38 MB bin) and textures live in an external _resources folder that was never uploaded. Only the manifest reached the platform, so processing fails with no output. Same defect on all four Kettler outdoor items.",
   action:"VENDOR ACTION: one guidance email covers the batch: export as GLB (binary, embedded media) from KeyShot, or upload the .gltf zipped together with its _resources folder. Nothing to repair on our side: the geometry never left the vendor's machine."},
- {item:"Monaco Outdoor", ic:[11], pdp:"NONE", name:"Kettler Monaco outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"discuss", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
+ {item:"Monaco Outdoor", ic:[11], pdp:"NONE", name:"Kettler Monaco outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"out", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
   need:"Vendor (Kettler): re-export as a single binary GLB (or zip the .gltf WITH its _resources folder). Daniela: item numbers for all four.",
   issue:"Diagnosed 10-22: KeyShot exported a .gltf JSON manifest whose geometry (2 MB bin) and textures live in an external _resources folder that was never uploaded. Only the manifest reached the platform, so processing fails with no output. Same defect on all four Kettler outdoor items.",
   action:"VENDOR ACTION: one guidance email covers the batch: export as GLB (binary, embedded media) from KeyShot, or upload the .gltf zipped together with its _resources folder. Nothing to repair on our side: the geometry never left the vendor's machine."},
- {item:"Versa Outdoor", ic:[11], pdp:"NONE", name:"Kettler Versa outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"discuss", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
+ {item:"Versa Outdoor", ic:[11], pdp:"NONE", name:"Kettler Versa outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"out", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
   need:"Vendor (Kettler): re-export as a single binary GLB (or zip the .gltf WITH its _resources folder). Daniela: item numbers for all four.",
   issue:"Diagnosed 10-22: KeyShot exported a .gltf JSON manifest whose geometry (121 MB bin) and textures live in an external _resources folder that was never uploaded. Only the manifest reached the platform, so processing fails with no output. Same defect on all four Kettler outdoor items.",
   action:"VENDOR ACTION: one guidance email covers the batch: export as GLB (binary, embedded media) from KeyShot, or upload the .gltf zipped together with its _resources folder. Nothing to repair on our side: the geometry never left the vendor's machine."},
@@ -265,15 +265,15 @@ var DATA = [
 function renderDash(){
   var ready=DATA.filter(function(r){return r.status==="ready"}).length;
   var disc=DATA.filter(function(r){return r.status==="discuss"}).length;
-  var out=DATA.filter(function(r){return r.status==="discarded"}).length;
+  var lib=ready+disc;
   var GOAL=20;
   var sp=Math.min(ready/GOAL*100,100);
   document.getElementById("dash").innerHTML=
-   '<div class="dtile"><div class="big">'+DATA.length+'</div><div class="lbl">Came in</div><div class="sub">'+out+' demo assets / duplicates moved out</div></div>'
-  +'<div class="dtile"><div class="big" style="color:var(--ok)">'+ready+'</div><div class="lbl">Ready to go live</div><div class="sub">VNTANA-verified: Daniela sign-off, then live</div></div>'
-  +'<div class="dtile"><div class="big" style="color:var(--warn)">'+disc+'</div><div class="lbl">Needs discussion</div><div class="sub">known issues or missing vendor pieces</div></div>'
+   '<div class="dtile"><div class="big">'+lib+'</div><div class="lbl">In the library (tomorrow\'s review)</div><div class="sub">46 came in; the rest moved out (vendor re-exports, demos, duplicates)</div></div>'
+  +'<div class="dtile"><div class="big" style="color:var(--ok)">'+ready+'</div><div class="lbl">Good to go</div><div class="sub">Daniela sign-off, then live</div></div>'
+  +'<div class="dtile"><div class="big" style="color:var(--warn)">'+disc+'</div><div class="lbl">To discuss</div><div class="sub">known issues: decide together</div></div>'
   +'<div class="dtile goal"><div class="lbl">Go-live 20 readiness</div><div class="gbar"><div class="seg-ship" style="width:'+sp+'%"></div></div>'
-  +'<div class="gkey"><b style="color:var(--ok)">'+ready+' ready</b> of '+GOAL+' needed'+(ready>=GOAL?' &#10003; COVERED':' &middot; '+(GOAL-ready)+' short')+'</div></div>';
+  +'<div class="gkey"><b style="color:var(--ok)">'+ready+' ready</b> of '+GOAL+' needed'+(ready>=GOAL?' &#10003; COVERED':'')+'</div></div>';
 }
 var ISSUES={
  1:["Pre-compressed upload","The file arrived already compressed or was a previously optimized download, which the optimizer cannot accept. Decompressed and reprocessed."],
@@ -295,8 +295,8 @@ var ISSUES={
 };
 var LADDER=[
  {k:"ready",label:"Ready to go live",hint:"verified by VNTANA: Daniela signs off (description / UUID / publish) and they ship"},
- {k:"discuss",label:"Needs discussion",hint:"known issues or missing pieces: decide together before these go live"},
- {k:"discarded",label:"Discarded / moved out",hint:"demo assets, duplicates and superseded versions, kept for the record"}
+ {k:"discuss",label:"Needs discussion",hint:"in the library, but with a known issue to decide on together"},
+ {k:"out",label:"Out of the library",hint:"vendor re-exports pending, demo assets, duplicates and superseded versions: moved to the discarded-assets workspace"}
 ];
 var state={status:null,g20:false,vendor:"",q:""};
 function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;")}
@@ -319,7 +319,7 @@ function render(){
     var rows=DATA.filter(function(r){return r.status===s.k&&visible(r)});
     if(!rows.length)return;
     rows.sort(function(a,b){return (b.g20?1:0)-(a.g20?1:0)||String(a.item).localeCompare(String(b.item))});
-    var colors={ready:"var(--ok)",discuss:"var(--warn)",discarded:"var(--disc)"};
+    var colors={ready:"var(--ok)",discuss:"var(--warn)",out:"var(--disc)"};
     out+='<section><div class="sechead"><span class="dot" style="background:'+colors[s.k]+'"></span><h2>'+s.label+'</h2><span class="cnt" style="color:'+colors[s.k]+'">'+rows.length+'</span><span class="hint">'+s.hint+'</span></div>';
     out+='<table><thead><tr><th></th><th>Item</th><th>UUID</th><th>Status</th><th>Size</th><th class="hide-m">PDP size</th><th class="hide-m">AR QA &middot; VNTANA</th><th>AR QA &middot; Derek</th><th>Issue found</th><th class="hide-m">Action / next step</th><th>Thu</th></tr></thead><tbody>';
     rows.forEach(function(r){
@@ -333,7 +333,7 @@ function render(){
       var wsize=(r.so!=null&&r.sn!=null&&r.so!==r.sn)?'<span class="was-size">was '+r.so+' MB</span>':(r.sn==null&&r.so!=null?'<span class="was-size">upload '+r.so+' MB</span>':'');
       var ar=r.ar?('&#10003; '+esc(r.ar)):'<span style="color:var(--muted)">not checked</span>';
       var th=r.t?'<img class="thumb" loading="lazy" src="'+r.t+'">':'<div class="nothumb">no img</div>';
-      out+='<tr class="'+(s.k==="discarded"?"disc":"")+'" data-i="'+i+'">'
+      out+='<tr class="'+(s.k==="out"?"disc":"")+'" data-i="'+i+'">'
         +'<td style="width:62px">'+th+'</td>'
         +'<td><div class="item">'+esc(String(r.item))+(r.g20?'<span class="g20">GO-LIVE 20</span>':'')+'</div><div class="pname">'+esc(r.name||"")+'</div><div class="chips">'+chips+'</div></td>'
         +'<td>'+(r.u?'<div class="uuidline" title="click to copy the full UUID" onclick="navigator.clipboard.writeText(\''+r.u+'\');this.textContent=\'copied!\';">'+r.u.slice(0,8)+'&hellip;<br>copy</div>':'<span style="color:var(--muted)">-</span>')+'</td>'
