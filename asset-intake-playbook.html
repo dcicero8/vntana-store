@@ -44,9 +44,9 @@
 
 <h2><span class="n">1</span>What vendors actually send (the 16 failure types)</h2>
 <div class="card">
-<p style="font-size:.86rem;color:#374151;margin-bottom:.6rem">Counts are from the Costco batch alone. Median asset had 2-3 of these at once; only 2 of 42 arrived clean.</p>
+<p style="font-size:.86rem;color:#374151;margin-bottom:.6rem">Counts are from the Costco batch alone. Median asset had 2-3 of these at once; only ONE of the 42 arrived with nothing to fix.</p>
 <ul>
-<li><b>Floated in AR (25 assets).</b> Origin not at the base. One was LIVE and hovering 76 cm. Fix: Pivot Bottom Center. <i>Platform: default pivot to bottom-center, or warn when a model's base is far from y=0.</i></li>
+<li><b>Floated in AR (24 assets).</b> Origin not at the base. One was LIVE and hovering 76 cm. Fix: Pivot Bottom Center. <i>Platform: default pivot to bottom-center, or warn when a model's base is far from y=0.</i></li>
 <li><b>Pre-compressed uploads (11).</b> Draco'd files, including our own outputs re-uploaded as source. Optimization rejects them; Convert Only passes them through unfixed. Fix: decompress, reprocess. <i>Platform: detect and decompress at ingest.</i></li>
 <li><b>Required-extension exports (3 LG TVs).</b> extensionsRequired with Draco/texture_transform means the converter MUST reject the file: silent total failure, a week of mystery. Fix: bake transforms into UVs. <i>Platform: read extensionsRequired at upload and say so in the error.</i></li>
 <li><b>Incomplete uploads (7).</b> .gltf manifests without their _resources folder; naked USD files without textures (a black FoodSaver arrived white). The geometry never left the vendor's machine. <i>Platform: reject a .gltf whose buffer URIs are unresolvable, with a message naming the missing files.</i></li>
