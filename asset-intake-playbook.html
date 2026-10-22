@@ -95,8 +95,8 @@
 
 <div class="card">
 <h3>Legacy and unsupported formats <span class="tag surgery">vendor action</span></h3>
-<div class="row"><b>Cases</b><div><span class="pill-case">.3ds cannot embed textures: the referenced PNGs never arrived, plus pre-PBR Phong materials</span> <span class="pill-case">.max is not a pipeline format at all: it sat as an inert 276 MB attachment and never entered processing</span></div></div>
-<div class="row"><b>Rule</b><div>Format preference to publish in docs: GLB, then FBX with embedded media, then OBJ zipped with textures, then STEP (geometry only). Anything older goes back to the vendor for re-export.</div></div>
+<div class="row"><b>Cases</b><div><span class="pill-case">.3ds cannot embed textures: the referenced PNGs never arrived, plus pre-PBR Phong materials</span> <span class="pill-case">.max is not a pipeline format at all: it sat as an inert 276 MB attachment and never entered processing</span> <span class="pill-case">.gltf JSON uploaded WITHOUT its external _resources folder (bin + textures): only the manifest travels, processing fails with no output (4x Kettler outdoor, KeyShot export)</span></div></div>
+<div class="row"><b>Rule</b><div>Format preference to publish in docs: GLB, then FBX with embedded media, then OBJ zipped with textures, then STEP (geometry only). Anything older goes back to the vendor for re-export. And .gltf specifically: accept only as a zip containing the _resources folder, or better, binary GLB with embedded media.</div></div>
 </div>
 
 <h2><span class="n">2</span>Intake decision table (pipeline by source)</h2>
