@@ -37,172 +37,60 @@
 </style>
 </head>
 <body>
-<header><div class="wrap"><div class="brand">3D Asset <span>Intake Playbook</span></div><div class="internal">VNTANA internal only: names clients and open bugs</div></div></header>
+<header><div class="wrap"><div class="brand">3D Asset <span>Intake Playbook</span></div><div class="internal">VNTANA internal: names clients and open bugs</div></div></header>
 <div class="wrap">
 
-<p class="lede">Everything we learned triaging roughly <b>60 vendor-built assets across three client batches</b> (Costco Mexico POC, Accenture/LEGO, J&amp;J OTTAVA), distilled into: the failure classes, how to recognize each one in minutes, the proven fix, and <b>what the website docs and the platform should change</b>. Same taxonomy showed up in all three batches, so these are not client quirks, they are the industry's actual export habits.</p>
+<p class="lede">What we learned cleaning up the Costco Mexico pilot (42 vendor assets, two days, Oct 21-22) plus the Accenture and J&amp;J batches. End state: 27 of 42 verified ready for production. Everything below is a pattern we hit more than once, so it is what the platform and docs should absorb. Written for Jure + ModelOps.</p>
 
-<h2><span class="n">1</span>The failure taxonomy</h2>
-
+<h2><span class="n">1</span>What vendors actually send (the 16 failure types)</h2>
 <div class="card">
-<h3>Required glTF extensions <span class="tag killer">the silent killer</span></h3>
-<div class="row"><b>Symptom</b><div>Every optimization pipeline fails with no output and no useful error. "It just fails no matter what I do." Convert Only may succeed, but see the trap below.</div></div>
-<div class="row"><b>Mechanics</b><div>glTF files can list extensions under <code>extensionsRequired</code>. The spec says a loader that does not support a required extension <b>must reject the file entirely</b>. Four members seen in the wild so far: <code>KHR_draco_mesh_compression</code>, <code>EXT_texture_webp</code>, <code>KHR_texture_basisu</code> (KTX2), and <code>KHR_texture_transform</code> (per-texture UV offset/scale/rotate).</div></div>
-<div class="row"><b>Cases</b><div><span class="pill-case">Costco: LG OLED 55C6 (Draco + texture_transform, the transforms were real: 6x tiled stand texture)</span> <span class="pill-case">Costco: air fryer GAF858 + ~6 more failed drafts suspected</span> <span class="pill-case">J&amp;J: WebP + KTX2 + Draco from their web-prep script</span> <span class="pill-case">Accenture: Vespa + sofa (Draco from Blender/Max export)</span></div></div>
-<div class="row"><b>Detect</b><div>Parse the GLB JSON chunk and read <code>extensionsRequired</code>. Takes 5 lines of Python. Also a tell: suspiciously small file (2 to 5 MB) for a complex product means it is already compressed.</div></div>
-<div class="row"><b>Fix</b><div>Decode in Blender (import decodes Draco; texture transforms become Mapping nodes, bake them into the mesh UVs per polygon before export), re-export raw GLB with Draco off and a new versioned filename, reprocess through standard optimization. Vendor guidance: export uncompressed; upload what goes INTO your web-prep script, not what comes out.</div></div>
-</div>
-
-<div class="card">
-<h3>The Convert Only trap <span class="tag trap">trap</span></h3>
-<div class="row"><b>Symptom</b><div>"It processed fine but it is 31 MB / 45 MB and none of the settings do anything." Or: a required-extension file that failed everywhere finally "works" on Convert Only.</div></div>
-<div class="row"><b>Mechanics</b><div>Convert Only is a pass-through. It tolerates required extensions by not looking at them, ships every triangle untouched, and <b>locks out all other options including Pivot Point Alignment</b>. So the output keeps the input's problems: no optimization, no grounding control, and any required extensions ride along into downstream conversions (USDZ).</div></div>
-<div class="row"><b>Cases</b><div><span class="pill-case">Costco: air fryer Convert Only = 45.8 MB, all 14M tris</span> <span class="pill-case">Costco: LG OLED Convert Only output = byte-for-byte problem pass-through, still floating 6.3 cm</span> <span class="pill-case">Costco: 1876771, 901k triangles kept, heavy GPU load on mobile despite 4.4 MB</span></div></div>
-<div class="row"><b>Rule</b><div>Convert Only is for assets that are ALREADY final web files needing zero changes. For everything else, fix the input so standard optimization can run. If you only need "Convert Only with options": Preserve Meshes and UVs with the Polygon Limit raised above the actual count and Max Resolution above the largest texture behaves like a pass-through that still honors pivot and compression settings.</div></div>
-</div>
-
-<div class="card">
-<h3>Settings inflation: "max quality" backfires <span class="tag trap">trap</span></h3>
-<div class="row"><b>Symptom</b><div>The optimized output is BIGGER than the input.</div></div>
-<div class="row"><b>Mechanics</b><div>Texture Compression Level 0 re-encodes already-efficient PNGs at lossless and grows them. Small Feature Baking ADDS new baked maps. Draco off ships geometry uncompressed. Stacking "best quality everywhere" settings is how a 22.5 MB input became a 29.2 MB output.</div></div>
-<div class="row"><b>Cases</b><div><span class="pill-case">Accenture: LEGO toucan 22.5 to 29.2 MB on max-quality settings; DEFAULTS produced 1.2 MB (24x smaller) with no visible difference in matched-camera close-ups</span></div></div>
-<div class="row"><b>Rule</b><div>Defaults first, always. Raise a setting only after a render proves the default lost something visible. Measured on photographic textures: Compression Level 1 vs 2 is nearly invisible (mean delta 6 to 8 per 255); Max Resolution loss is the visible cliff because detail is gone permanently.</div></div>
-</div>
-
-<div class="card">
-<h3>Scan-class assets: keep textures, give up polygons <span class="tag recipe">proven recipe</span></h3>
-<div class="row"><b>Recipe</b><div>Preserve Meshes and UVs + Max Resolution 4K + Compression Level 2 + Pivot Bottom Center. Settings only, zero file touching.</div></div>
-<div class="row"><b>Cases</b><div><span class="pill-case">Accenture: sofa scan 40.1 MB Convert Only to 6.5 MB, weave visually identical at thread-level zoom</span></div></div>
-<div class="row"><b>Why</b><div>On photogrammetry and scan assets the texture carries the realism and the mesh is bloated. Decimation is nearly free visually; resolution loss is not. The inverse of CAD assets.</div></div>
-</div>
-
-<div class="card">
-<h3>Source defects needing file surgery <span class="tag surgery">last resort</span></h3>
-<div class="row"><b>Doctrine</b><div>Platform settings first, decompress-and-reupload second, Blender surgery ONLY for defects no optimizer could infer. Always framed as VNTANA repairing the vendor's file, with export guidance sent back. Never imply going back to the source is the only fix.</div></div>
-<div class="row"><b>The list</b><div>
+<p style="font-size:.86rem;color:#374151;margin-bottom:.6rem">Counts are from the Costco batch alone. Median asset had 2-3 of these at once; only 2 of 42 arrived clean.</p>
 <ul>
-<li><b>Baked leans:</b> the model is tilted in the geometry itself. Tell: a bloated bounding-box depth ("reads deep for a cooler" = lean signature). Found 13.3 and 7.1 degree leans on two wine coolers from the same vendor. Fix: minimal-bounding-box rotation solver, with a footprint-gain guard (under 4 percent improvement = shape-driven false positive, like a TV slab with feet).</li>
-<li><b>Wrong units:</b> inches or cm exported as meters. A 35.9-meter-tall stand mixer. Fix: rescale 0.0254x or 0.01x, reground.</li>
-<li><b>Viz-color / placeholder materials:</b> raw CAD exports wearing part-ID colors (pure green/yellow/cyan) or flat gray placeholders; "stainless renders black" = black base color + metallic 1 + roughness 0. Fix: retint against the product PDP.</li>
-<li><b>Omitted metallicFactor:</b> glTF defaults it to 1.0, so untextured wood/fabric renders as gray metal. Check material JSON, not just the viewport.</li>
-<li><b>Tiny baked textures:</b> KeyShot per-part bakes at 250 px make LCD digits and logos unrecoverable mush. Only the vendor's export settings can fix resolution; repainting is best-effort.</li>
-<li><b>Stray helper nodes:</b> Helper001, Particle_View, lux_root, leftover cameras. They inflate the bounding box and make the product float in AR. Delete before export.</li>
-<li><b>Degenerate sliver meshes:</b> CAD centerline/routing curves exported as 1-2 triangle, zero-width, meter-scale meshes. They inflate the bounding box silently, so the viewer's orbit center sits meters off the model ("rotating around a giant ball"), the dimensions readout is wrong, and AR scale breaks. Seen: satellite CAD with five 12.3 m fake cables making a 2 m model read 13.9 m tall. Detect: near-zero width in two axes plus large extent, or 2 triangles or fewer with large extent. Delete them.</li>
-<li><b>Transmission glass:</b> KHR_materials_transmission renders OPAQUE in AR Quick Look / USDZ. Fix: alpha-blend glass (alpha around 0.18, blend mode). Web viewer and USDZ both look right after.</li>
-</ul>
-</div></div>
-</div>
-
-<div class="card">
-<h3>Legacy and unsupported formats <span class="tag surgery">vendor action</span></h3>
-<div class="row"><b>Cases</b><div><span class="pill-case">.3ds cannot embed textures: the referenced PNGs never arrived, plus pre-PBR Phong materials</span> <span class="pill-case">.max is not a pipeline format at all: it sat as an inert 276 MB attachment and never entered processing</span> <span class="pill-case">.gltf JSON uploaded WITHOUT its external _resources folder (bin + textures): only the manifest travels, processing fails with no output (4x Kettler outdoor, KeyShot export)</span></div></div>
-<div class="row"><b>Rule</b><div>Format preference to publish in docs: GLB, then FBX with embedded media, then OBJ zipped with textures, then STEP (geometry only). Anything older goes back to the vendor for re-export. And .gltf specifically: accept only as a zip containing the _resources folder, or better, binary GLB with embedded media.</div></div>
-</div>
-
-<h2><span class="n">2</span>Intake decision table (pipeline by source)</h2>
-<table>
-<thead><tr><th>What arrived</th><th>Tell</th><th>Pipeline</th><th>Notes</th></tr></thead>
-<tbody>
-<tr><td>Raw CAD / DCC export (KeyShot, Blender, Max, Maya)</td><td>Large file, no required extensions</td><td>Preserve Meshes and UVs (or Industrial for heavy CAD)</td><td>Defaults first. Pivot Bottom Center for floor-standing.</td></tr>
-<tr><td>Pre-compressed GLB</td><td><code>extensionsRequired</code> non-empty, or suspiciously small file</td><td>Decode in Blender, re-export raw, THEN standard optimization</td><td>Never ship the Convert Only pass-through as the fix.</td></tr>
-<tr><td>Photogrammetry / scan</td><td>Huge textures, bloated organic mesh</td><td>Preserve Meshes and UVs + 4K + Compression Level 2</td><td>3D Scan pipeline is ONLY for this class.</td></tr>
-<tr><td>Already-final web asset</td><td>Vendor ships their own web-AR file, small and clean</td><td>Convert Only</td><td>Accept the pivot lockout; verify grounding in the file.</td></tr>
-<tr><td>CAD-born asset, any kind</td><td></td><td>NEVER 3D Scan</td><td>Scan smoothing destroys hard edges (Logitech wheel case).</td></tr>
-</tbody>
-</table>
-
-<h2><span class="n">3</span>Platform gotchas and open bugs</h2>
-<div class="card">
-<h3>Versioning rotation accumulation <span class="tag bug">open bug, confirmed</span></h3>
-<div class="row"><b>What</b><div>Rotations accumulate across versions on an asset record (confirmed by Neven and Fatima). Add rotation to a model, create versions, and every new version comes out differently mangled: flipped, tilted, flipped again. Repro pair preserved: broken asset <code>7e910ec2-bca7-4733-9d42-d9bcc1da45bf</code> vs clean <code>e3e67fe5-6a9d-44ce-bfb1-e3450bc2faed</code>, same byte-identical file, upside down vs correct.</div></div>
-<div class="row"><b>Workaround</b><div>Never adjust rotation in platform settings on an asset that will be re-versioned; orientation fixes go in the FILE. A contaminated asset cannot be cleaned: rebuild as a new asset and re-key any external UUID references.</div></div>
-</div>
-<div class="card">
-<h3>GLB-to-USDZ conversion mismatch <span class="tag bug">open bug, 3 repro pairs</span></h3>
-<div class="row"><b>What</b><div>On some assets the platform's generated USDZ does not match its own optimized GLB: the web GLB is grounded and true to size, but the USDZ comes out rotated (9 to 45 degrees) and floating below the AR floor. Found on three Costco fitness assets in one day (697288, 697444, 701252: all KeyShot-origin NordicTrack models processed via Preserve Meshes and UVs with Bottom Center pivot). A sibling asset (1851051) through the identical flow converts correctly.</div></div>
-<div class="row"><b>Detect</b><div>Numeric USDZ gate: compare the USDZ bounding box and min-Y against the GLB (qa-asset.py --usdz does this). Visually: the product tilts and sinks in iOS Quick Look while the web viewer looks perfect.</div></div>
-<div class="row"><b>Status</b><div>ModelOps ticket to file with the three GLB/USDZ repro pairs. Until fixed: web viewer is shippable, hold iOS AR sign-off on affected assets.</div></div>
-</div>
-<div class="card">
-<h3>Smaller gotchas worth documenting</h3>
-<ul>
-<li><b>Convert Only locks out everything</b>, including Pivot Point Alignment. The workaround is Preserve Meshes and UVs with limits raised above the file's actual counts.</li>
-<li><b>Same-name re-upload silently keeps the old geometry.</b> Every re-export needs a new versioned filename (v2, v3).</li>
-<li><b>New versions drop to Draft:</b> re-publish after processing or the public link serves the old version.</li>
-<li><b>Pivot cheat sheet:</b> floor-standing = Bottom Center; wall-hung = Back Center; console-or-wall (soundbars) = Back Bottom Center; hanging = Top Center.</li>
-<li><b>Output can exceed input</b> with lossless texture settings and Small Feature Baking stacked on (see settings inflation above). No warning fires today.</li>
+<li><b>Floated in AR (25 assets).</b> Origin not at the base. One was LIVE and hovering 76 cm. Fix: Pivot Bottom Center. <i>Platform: default pivot to bottom-center, or warn when a model's base is far from y=0.</i></li>
+<li><b>Pre-compressed uploads (11).</b> Draco'd files, including our own outputs re-uploaded as source. Optimization rejects them; Convert Only passes them through unfixed. Fix: decompress, reprocess. <i>Platform: detect and decompress at ingest.</i></li>
+<li><b>Required-extension exports (3 LG TVs).</b> extensionsRequired with Draco/texture_transform means the converter MUST reject the file: silent total failure, a week of mystery. Fix: bake transforms into UVs. <i>Platform: read extensionsRequired at upload and say so in the error.</i></li>
+<li><b>Incomplete uploads (7).</b> .gltf manifests without their _resources folder; naked USD files without textures (a black FoodSaver arrived white). The geometry never left the vendor's machine. <i>Platform: reject a .gltf whose buffer URIs are unresolvable, with a message naming the missing files.</i></li>
+<li><b>Colorless materials.</b> Materials named NEGRO (black) exported with NO baseColorFactor: glTF defaults that to white. Related: omitted metallicFactor defaults to 1.0 (gray-metal wood). <i>Validator-friendly checks.</i></li>
+<li><b>Render junk inside.</b> lux_root, Helper001, Particle_View, leftover cameras: inflates bounds, breaks AR placement. <i>Platform: strip empties/cameras/lights at ingest, or at least exclude them from bounds.</i></li>
+<li><b>Degenerate slivers.</b> 1-2 triangle, zero-width, meter-long CAD centerlines. Made a 2 m satellite read 13.9 m and orbit around air. <i>Cheap ingest check: near-zero width + large extent = drop it.</i></li>
+<li><b>Transmission glass.</b> Renders opaque in iOS Quick Look. Fix: alpha-blend. <i>Platform: convert on USDZ generation.</i></li>
+<li>Also seen: baked leans, wrong units (a 36 m stand mixer), too-heavy Convert Only pass-throughs (901k tris), wrong pipeline (3D Scan on CAD), unreadable baked text, unsupported formats (.max, .3DS), duplicates.</li>
 </ul>
 </div>
 
-<h2><span class="n">4</span>The QA rig: what runs on every customer asset</h2>
-<p class="lede" style="padding-top:0">When a customer asset fails (or just looks wrong), Derek runs it through an automated battery BEFORE anyone burns time guessing: <code>vntana-store/admin/qa-asset.py file.glb [--usdz f] [--expect W D H] [--fix]</code>. It returns a verdict with per-check flags in about a minute, so the report back to the team is "here is the root cause" instead of "it fails." <b>Review ask (Jure + team):</b> this list below IS the rig. Check it against what the platform pipeline actually trips on: anything we should add, anything checked twice, and anything here the platform could absorb at ingest.</p>
+<h2><span class="n">2</span>Two platform bugs with repro files in hand</h2>
 <div class="card">
-<h3>Stage 1: header forensics (seconds, no Blender)</h3>
-<p style="font-size:.86rem;color:#374151">Parses the GLB JSON chunk directly.</p>
-<ul>
-<li><b>extensionsRequired</b>: Draco, WebP, KTX2, texture transforms, or ANY unknown required extension (each one = the rejection class from section 1). This is the first check because it explains total failures instantly.</li>
-<li><b>Empty or rig-only export</b>: zero meshes (the J&amp;J camera rig and 132-byte scene cases).</li>
-<li><b>Viz-color materials</b>: pure CAD part-ID colors (green/yellow/cyan), with an exception for genuinely emissive parts.</li>
-<li><b>Black-metal</b>: black base color + metallic (the "stainless renders black" wine-cooler defect).</li>
-<li><b>Omitted metallicFactor</b> on materials named wood/fabric/plastic (glTF defaults it to 1.0 = gray metal).</li>
-<li><b>Stray nodes</b>: Helper*, Particle*, dummy, lux_root, leftover cameras, untranslated CAD names (floats-in-AR causes).</li>
-<li><b>Zero or negative scales</b> (mirrored or collapsed nodes).</li>
-<li><b>Tiny textures</b> (the KeyShot 250 px bake problem).</li>
-<li><b>Transmission glass</b> (renders opaque in AR Quick Look; needs alpha-blend conversion).</li>
-<li><b>Animation payload</b> size (the J&amp;J dense-baked-animation case).</li>
-<li><b>Generator string</b> for provenance (KeyShot, Blender, Max, VNTANA output).</li>
-</ul>
+<h3>Version contamination <span class="tag bug">confirmed, 2 repro pairs</span></h3>
+<p style="font-size:.86rem;color:#374151">Re-version an asset enough times (especially with rotations involved) and the record corrupts: a byte-identical GLB then converts straight on a fresh asset and comes out rotated 25 deg with inflated bounds on the churned one. Pairs: cooler 7e910ec2 vs e3e67fe5; sectional 2659200b vs 9f484215 (same file, same day). Workaround in use: never fix in place, always a fresh asset.</p>
 </div>
 <div class="card">
-<h3>Stage 2: geometry truth (headless Blender import)</h3>
-<ul>
-<li><b>World dimensions + units sanity</b>, with an optional gate against the real product dims from the PDP (<code>--expect W D H</code>). Catches inches-as-meters and cm-as-meters instantly.</li>
-<li><b>Lean detector</b>: a minimal-bounding-box rotation search finds tilts baked into the geometry (the 13.3 and 7.1 degree wine coolers). Guard: if straightening shrinks the footprint less than 4 percent, it is shape-driven (TV slab with feet, curvy product) and reports as a note to confirm in the side render, not a flag.</li>
-<li><b>Grounding</b>: base must sit at z = 0 or it floats/clips in AR.</li>
-<li><b>Centering</b> of the model on origin.</li>
-<li><b>Three renders</b>: front, side against a visible floor plane (lean + grounding proof), and three-quarter.</li>
-</ul>
+<h3>GLB-to-USDZ mismatch <span class="tag bug">root-caused, workaround shipping</span></h3>
+<p style="font-size:.86rem;color:#374151">Assets with unfrozen node transforms produce USDZ outputs rotated 9-45 deg and floating, while the web GLB is perfect (4 cases). Root cause: the USDZ path composes node transforms differently. Workaround: OPTIMIZATION.freezeTransforms=true cures it (now our default). Real fix: the converter should handle unfrozen transforms, or freeze should default on for static assets.</p>
 </div>
+
+<h2><span class="n">3</span>The QA rig (steal this for ingest)</h2>
 <div class="card">
-<h3>Stage 3: AR gate (USDZ, numeric)</h3>
+<p style="font-size:.86rem;color:#374151">One command (vntana-store/admin/qa-asset.py) runs any GLB through three stages and prints a verdict with the fix per flag. Every check exists because a real asset failed it this month. <b>Jure/ModelOps: this list IS the candidate ingest-validation spec.</b></p>
 <ul>
-<li>Checks the generated USDZ with usd-core: <b>upAxis = Y</b>, <b>metersPerUnit</b> correct, <b>bounding-box min Y at 0</b> (grounded), <b>dimensions match the real product</b>. Numbers, not eyeballs: AR scale problems are caught before anyone opens a phone.</li>
-</ul>
-</div>
-<div class="card">
-<h3>Output</h3>
-<ul>
-<li><b>Verdict</b> (PASS / NEEDS WORK) with every flag naming its fix.</li>
-<li><b>Pivot recommendation</b> for the upload (Bottom Center / Back Center / Back Bottom Center / Top Center by product type).</li>
-<li><b><code>--fix</code> auto-repair</b>: exports a <code>_qafix.glb</code> that is straightened, grounded, centered, and decompressed, for the cases where the defect is mechanical.</li>
-<li>The workflow: asset fails on platform, Derek runs the battery, the team gets a root-cause report plus a ready file or settings recipe instead of a mystery.</li>
+<li><b>Header (seconds):</b> extensionsRequired, empty/rig-only scenes, viz colors, black-metal, omitted factors, junk nodes, zero scales, tiny textures, transmission glass, animation payload, generator provenance.</li>
+<li><b>Geometry (Blender):</b> real-world dims vs the PDP, baked-lean solver with false-positive guard, grounding, centering, sliver detection, three renders.</li>
+<li><b>AR (USDZ):</b> up axis, metersPerUnit, grounded, dims match the GLB and the real product. This caught every phone-AR failure before a phone did.</li>
+<li><b>Bonus integration:</b> Costco's catalog API supplies official names, dimensions and photos per item (pdp-attach.py): names and reference data from the source of truth.</li>
 </ul>
 </div>
 
-<h2><span class="n">5</span>What to change: docs and platform punch list</h2>
+<h2><span class="n">4</span>What to build, in priority order</h2>
 <div class="card">
-<h3>Website / documentation</h3>
 <ul class="asks">
-<li>Publish the <b>intake decision table</b> (section 2) on the upload docs page: pipeline by source type is the single highest-leverage piece of guidance.</li>
-<li>Add a <b>"before you export" vendor checklist</b>: no Draco/WebP/KTX2 at export, no web-prep scripts before upload, delete helper nodes and cameras, embed textures, real PBR materials (set metallicFactor explicitly), 2048 px minimum textures (4096 where there is text), versioned filenames.</li>
-<li>Document <b>defaults first</b> with the toucan numbers: max-quality settings made the file bigger; defaults were 24x smaller with no visible difference.</li>
-<li>Document the <b>scan-asset recipe</b> (PMUV + 4K + Level 2) and the CAD-vs-scan intuition: scans give up polygons, CAD gives up texture resolution.</li>
-<li>State plainly that <b>Convert Only disables all optimization options including pivot</b>, and when that is acceptable.</li>
-</ul>
-</div>
-<div class="card">
-<h3>Platform asks</h3>
-<ul class="asks">
-<li><b>Detect <code>extensionsRequired</code> at upload</b> and show an actionable message ("this file requires Draco decoding / texture transform support; optimization pipelines will reject it; here is how to export without it"). Today the user gets a silent failure and blames the platform.</li>
-<li>Better: <b>decode Draco and bake texture transforms server-side at ingest</b>. Blender does both in one import; this entire failure class would disappear.</li>
-<li><b>Warn when output size exceeds input</b>: it always means the settings are fighting the optimizer.</li>
-<li><b>Flag or drop degenerate sliver meshes at ingest</b> (1-2 triangles, near-zero width, large extent): they are always CAD export artifacts and they silently break orbit centering, the dimensions readout, and AR scale.</li>
-<li><b>Fix the versioning rotation accumulation bug</b> (repro pair above; fix requested of the team).</li>
-<li>Consider allowing <b>Pivot Point Alignment on Convert Only</b>: grounding is the one thing pass-through users still need.</li>
+<li><b>1. Actionable upload errors.</b> extensionsRequired, unresolvable .gltf buffers, and empty scenes are all detectable in milliseconds at upload. Today they fail silently and the customer blames us.</li>
+<li><b>2. Freeze transforms by default</b> (or fix the USDZ composer). Kills the whole phone-AR mismatch class.</li>
+<li><b>3. Fix version contamination.</b> Repro pairs above; fix requested of Neven's team.</li>
+<li><b>4. Ingest hygiene pass:</b> decompress Draco inputs, strip render junk, drop slivers, warn on output-larger-than-input.</li>
+<li><b>5. Docs:</b> publish the pipeline-by-source intake table + the "before you export" vendor checklist (no pre-compression, embed textures, delete helpers, real PBR values, versioned filenames).</li>
 </ul>
 </div>
 
-<div class="foot">Maintained by Derek Cicero. Sources: Costco Mexico POC triage (42 assets, Oct 2026, <a href="costco-tracker.html">live tracker</a>), Accenture/LEGO batch (Andrej Tur, Oct 2026), J&amp;J OTTAVA batch (31 files, Oct 2026). Internal page: names clients and unreleased bug details, do not share externally.</div>
+<div class="foot">Maintained by Derek Cicero. Sources: Costco Mexico POC (42 assets, Oct 2026, <a href="costco-tracker.html">tracker</a>), Accenture/LEGO, J&amp;J OTTAVA. Internal only.</div>
 </div>
 </body>
 </html>
