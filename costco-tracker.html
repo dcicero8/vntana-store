@@ -17,30 +17,48 @@
   header .sub{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8b93a4}
   .bar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;padding:1.1rem 0}
   .counts{display:flex;gap:.6rem;flex-wrap:wrap}
-  .count{background:#fff;border:1px solid var(--line);border-radius:9px;padding:.55rem .9rem;text-align:center;cursor:pointer}
-  .count b{display:block;font-size:1.3rem;letter-spacing:-.02em}
-  .count span{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .count{background:#fff;border:1px solid var(--line);border-radius:9px;padding:.5rem .85rem;text-align:center;cursor:pointer}
+  .count b{display:block;font-size:1.25rem;letter-spacing:-.02em}
+  .count span{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .count.active{outline:2px solid var(--ink)}
   .count.shippable b{color:var(--ok)} .count.review b{color:var(--rev)} .count.repair b{color:var(--warn)} .count.vendor b{color:var(--bad)} .count.pending b{color:var(--pend)} .count.discarded b{color:var(--disc)}
   .tools{margin-left:auto;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
   select,input[type=search]{font:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:7px;padding:.5rem .6rem;background:#fff}
   .golive-toggle{display:flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;color:#374151;background:#fff;border:1px solid var(--line);border-radius:7px;padding:.5rem .7rem;cursor:pointer;user-select:none}
   .golive-toggle.on{border-color:var(--accent);color:var(--accent)}
+  section{margin-bottom:1.6rem}
+  .sechead{display:flex;align-items:baseline;gap:.7rem;margin:0 0 .55rem;padding-left:.15rem}
+  .sechead h2{font-size:1rem;font-weight:800;letter-spacing:-.01em}
+  .sechead .cnt{font-size:.95rem;font-weight:800}
+  .sechead .hint{font-size:.76rem;color:var(--muted)}
+  .sechead .dot{width:10px;height:10px;border-radius:50%;align-self:center}
   table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  th{font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#9aa0a8;text-align:left;padding:.6rem .7rem;border-bottom:2px solid var(--line);background:#fafbfc;cursor:pointer;white-space:nowrap}
-  td{padding:.6rem .7rem;border-bottom:1px solid var(--line);vertical-align:top;font-size:.82rem;line-height:1.45}
-  tr:hover td{background:#fafbfc}
+  th{font-size:.6rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#9aa0a8;text-align:left;padding:.5rem .65rem;border-bottom:2px solid var(--line);background:#fafbfc;white-space:nowrap}
+  td{padding:.55rem .65rem;border-bottom:1px solid var(--line);vertical-align:top;font-size:.8rem;line-height:1.45}
+  tbody tr{cursor:pointer}
+  tbody tr:hover td{background:#fafbfc}
   tr.disc td{opacity:.55}
-  .pill{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;color:#fff;white-space:nowrap}
+  .item{font-weight:800;white-space:nowrap;font-size:.86rem}
+  .g20{display:inline-block;font-size:.56rem;font-weight:800;background:#0d0f13;color:#fff;padding:2px 6px;border-radius:9px;margin-left:5px;vertical-align:1px}
+  .pname{color:#374151;font-size:.75rem;margin:.15rem 0 .3rem;max-width:230px}
+  .chips a{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.03em;text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:2px 8px;margin-right:4px;color:var(--rev);background:#fff}
+  .chips a:hover{border-color:var(--rev)}
+  .chips a.plat{color:#7c3aed}
+  .chips a.plat:hover{border-color:#7c3aed}
+  .nmflag{font-size:.68rem;color:var(--warn);font-weight:700;margin-top:.3rem;max-width:230px}
+  .pill{display:inline-block;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;color:#fff;white-space:nowrap}
   .pill.shippable{background:var(--ok)} .pill.review{background:var(--rev)} .pill.repair{background:var(--warn)} .pill.vendor{background:var(--bad)} .pill.pending{background:var(--pend)} .pill.discarded{background:var(--disc)}
-  .g20{display:inline-block;font-size:.58rem;font-weight:800;background:#0d0f13;color:#fff;padding:2px 7px;border-radius:9px;margin-left:5px;vertical-align:1px}
-  .item{font-weight:700;white-space:nowrap}
-  .nm{color:var(--muted);font-size:.74rem;display:block}
-  .vendor{white-space:nowrap}
-  .note{font-size:.76rem;color:#374151}
-  .next{font-size:.76rem;color:var(--muted)}
+  .was{display:block;font-size:.64rem;color:var(--muted);margin-top:.3rem}
+  .size-ok{color:var(--ok);font-weight:700}.size-bad{color:var(--bad);font-weight:700}
+  .was-size{display:block;font-size:.64rem;color:var(--muted)}
+  .clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#374151;font-size:.76rem}
+  tr.open .clamp{display:block;-webkit-line-clamp:unset;overflow:visible}
+  .more{font-size:.62rem;color:var(--rev);font-weight:700}
+  tr.open .more{display:none}
+  .thu{font-weight:800}
   .foot{padding:1.2rem 0 2.5rem;font-size:.72rem;color:var(--muted);line-height:1.5}
-  @media(max-width:860px){ .hide-m{display:none} }
+  .foot summary{cursor:pointer;font-weight:800;color:#374151;font-size:.8rem;padding:.4rem 0}
+  @media(max-width:900px){ .hide-m{display:none} .pname{max-width:none} }
 </style>
 </head>
 <body>
@@ -54,46 +72,30 @@
       <input type="search" id="q" placeholder="Search item / name / issue">
     </div>
   </div>
-  <table>
-    <thead><tr>
-      <th data-k="item">Item</th>
-      <th data-k="os">As uploaded</th>
-      <th data-k="status">Now</th>
-      <th data-k="vendor" class="hide-m">Vendor / Source</th>
-      <th data-k="sn">File size</th>
-      <th data-k="ar">AR scale</th>
-      <th data-k="nm" class="hide-m">Naming</th>
-      <th data-k="issue">Issue found</th>
-      <th data-k="action" class="hide-m">Action / Next step</th>
-      <th data-k="ready">Thu beta</th>
-    </tr></thead>
-    <tbody id="rows"></tbody>
-  </table>
-  <div class="foot">
-    <b>UUID RULE (do not forget):</b> assets already keyed into Costco's back office must be fixed IN PLACE via versioning (the UUID is what the app loads). Do not adjust rotation in platform settings on an asset that will be re-versioned; orientation fixes belong in the source file. If a reprocessed version comes in rotated wrong, stop: rebuild as a new asset, archive the old one, and flag the UUID change to Daniela. New versions drop to Draft: re-publish after processing.<br><b>Viewer presets:</b> Derek is also setting per-asset scene settings (hero-shot camera framing + lighting) during cleanup, so assets load looking right in the viewer.<br><b>As uploaded vs Now:</b> the left pill is the state the asset arrived in; the right pill is after VNTANA's cleanup (FIXED marks the ones Derek repaired: decompressed, rescaled, stray nodes removed, reprocessed).<br><b>AR scale column:</b> &#10003; = world dimensions measured in Blender and plausible for the product (AR will place it true to size); &#10007; = wrong units found; 'not checked' = not yet measured.<br><b>Fix hierarchy (the product story):</b> 1) platform settings first (pipeline, Max Resolution, Compression Level, Pivot): covers size, texture and grounding problems with zero file touching; 2) decompress-and-reupload only for inputs carrying REQUIRED glTF extensions (Draco, WebP, KTX2, texture transforms): optimization pipelines must reject these by spec, and Convert Only just passes them through unchanged (no optimization, no pivot control), so decode in Blender and re-export raw; 3) Blender surgery ONLY for source defects no optimizer could infer (baked leans, wrong units, placeholder materials, missing textures): logged as VNTANA repairing the vendor's file, with export guidance sent back to the vendor.<br><b>Tag convention (platform):</b> 'Live Asset' = fully done: AR-checked, renamed 'ITEM (Production)', description set, Live Public (maps to Shippable here). 'Final Review' = 3D ready but metadata incomplete (description / item number / naming: Daniela's queue; maps to Costco review here). Tags are mutually exclusive: swap Final Review for Live Asset in the same edit that completes the metadata. Where a new asset was created, Daniela updates the back-office UUID (so far: 1288769 -> e3e67fe5, 1321497 -> 43f15396).<br><b>Pivot rule:</b> floor-standing products upload with Pivot Point Alignment = Bottom Center; wall-hung = Back Center; hanging = Top Center. Every FIX READY row states its pivot.<br><b>Reference check:</b> every row links its Costco PDP for visual comparison (colors, finish, orientation, completeness). Rows marked NO REFERENCE need a PDP link or product photo before they can pass Costco review.<br><b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Shippable</b> = AR-checked and looks right, correct item-number name, description present: ready for members. <b>Costco review</b> = 3D work done; awaiting metadata (name/description: Daniela) and/or final visual sign-off in AR. <b>In repair</b> = VNTANA actively fixing (corrected file ready or reprocess pending). <b>Vendor action</b> = only the vendor can fix it (missing textures or geometry, unsupported format, low-res source). <b>Pending</b> = not reviewed. <b>Discarded</b> = removed from the workspace, kept for the record.<br>
-    Triage rules: see the Optimization Settings Guide + the triage order in the cleanup handoff. Fixed files stay in Mexico POC; originals move to the archive workspace. Asset name = item number; description = product name; UUID goes in Costco's back office; must be Live Public for the app.
-  </div>
+  <div id="sections"></div>
+  <div class="foot"><details><summary>Rules, conventions and the fix hierarchy (click to expand)</summary><div style="padding-top:.6rem"><b>UUID RULE (do not forget):</b> assets already keyed into Costco's back office must be fixed IN PLACE via versioning (the UUID is what the app loads). Do not adjust rotation in platform settings on an asset that will be re-versioned; orientation fixes belong in the source file. If a reprocessed version comes in rotated wrong, stop: rebuild as a new asset, archive the old one, and flag the UUID change to Daniela. New versions drop to Draft: re-publish after processing.<br><b>Viewer presets:</b> Derek is also setting per-asset scene settings (hero-shot camera framing + lighting) during cleanup, so assets load looking right in the viewer.<br><b>As uploaded vs Now:</b> the left pill is the state the asset arrived in; the right pill is after VNTANA's cleanup (FIXED marks the ones Derek repaired: decompressed, rescaled, stray nodes removed, reprocessed).<br><b>AR scale column:</b> &#10003; = world dimensions measured in Blender and plausible for the product (AR will place it true to size); &#10007; = wrong units found; 'not checked' = not yet measured.<br><b>Fix hierarchy (the product story):</b> 1) platform settings first (pipeline, Max Resolution, Compression Level, Pivot): covers size, texture and grounding problems with zero file touching; 2) decompress-and-reupload only for inputs carrying REQUIRED glTF extensions (Draco, WebP, KTX2, texture transforms): optimization pipelines must reject these by spec, and Convert Only just passes them through unchanged (no optimization, no pivot control), so decode in Blender and re-export raw; 3) Blender surgery ONLY for source defects no optimizer could infer (baked leans, wrong units, placeholder materials, missing textures): logged as VNTANA repairing the vendor's file, with export guidance sent back to the vendor.<br><b>Tag convention (platform):</b> 'Live Asset' = fully done: AR-checked, renamed 'ITEM (Production)', description set, Live Public (maps to Shippable here). 'Final Review' = 3D ready but metadata incomplete (description / item number / naming: Daniela's queue; maps to Costco review here). Tags are mutually exclusive: swap Final Review for Live Asset in the same edit that completes the metadata. Where a new asset was created, Daniela updates the back-office UUID (so far: 1288769 -> e3e67fe5, 1321497 -> 43f15396).<br><b>Pivot rule:</b> floor-standing products upload with Pivot Point Alignment = Bottom Center; wall-hung = Back Center; hanging = Top Center. Every FIX READY row states its pivot.<br><b>Reference check:</b> every row links its Costco PDP for visual comparison (colors, finish, orientation, completeness). Rows marked NO REFERENCE need a PDP link or product photo before they can pass Costco review.<br><b>Size goal: every delivered asset under 5 MB</b> (current size in red when over, green when under). Naming rule: asset name = Costco item number, description = product name.<br>Status legend: <b>Shippable</b> = AR-checked and looks right, correct item-number name, description present: ready for members. <b>Costco review</b> = 3D work done; awaiting metadata (name/description: Daniela) and/or final visual sign-off in AR. <b>In repair</b> = VNTANA actively fixing (corrected file ready or reprocess pending). <b>Vendor action</b> = only the vendor can fix it (missing textures or geometry, unsupported format, low-res source). <b>Pending</b> = not reviewed. <b>Discarded</b> = removed from the workspace, kept for the record.<br>
+    Triage rules: see the Optimization Settings Guide + the triage order in the cleanup handoff. Fixed files stay in Mexico POC; originals move to the archive workspace. Asset name = item number; description = product name; UUID goes in Costco's back office; must be Live Public for the app.</div></details></div>
 </div>
 <script>
-var UPDATED = "2026-10-20";
-// status: ideal | issues | wont | pending.  g20: in the 20 go-live set.  ready: ready for Thursday beta.
+// Fill in once: Costco org/workspace slugs, e.g. "https://platform.vntana.com/<org>/<workspace>/products/details/"
+var PLATFORM_BASE = "";
 var DATA = [
- {item:"697004", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"repair", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
+ {item:"697004", u:"be3daa53-b8d6-41a3-b4e2-cc5fb8b70682", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"repair", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
   issue:"Was: LCD/logo blur baked in (low-DPI KeyShot bakes) AND the pole assembled 14.8 deg off-perpendicular from the base (the AR lean): vendor source posed wrong.",
   action:"FIX READY: 697004_logofix_v6_straight.glb in Downloads (final: supersedes v2-v5): atlas repainted at 4x, pole straightened via socket-joint surgery, base flat, grounded (crisp OmniBreeze wordmark both hub caps, clean '80' display, buttons cleaned to unlabeled capacitive style). Upload via PRESERVE MESHES AND UVS with Polygon Limit 300,000 (file is 256k: no decimation) and Max Resolution 4K (protects the repainted 2048x4096 atlas). PIVOT: BOTTOM CENTER. (Convert Only would lock out the pivot setting.) Desc: 'OmniBreeze, Ventilador de Pedestal Blanco'. NOTE: reconstruction done WITHOUT reference images: none exist online for OmniBreeze (searched 10-21, incl. PDP + retail sites). This is best-effort from the blurry source; button icons omitted. Revisit only if the vendor or Costco supplies product photos."},
- {item:"1288769", pdp:"https://www.costco.com.mx/p/1288769", name:"Wine Enthusiast Cava de Vinos 150 Botellas Gris", vendor:"Wine Enthusiast (Stuart Diamond)", status:"shippable", g20:true, ready:true, ar:"ok 0.72 x 1.87 m tall; depth 1.15 m reads deep for a cooler, verify vs PDP", so:15.9, sn:0.32, nm:"ok",
+ {item:"1288769", u:"e3e67fe5-6a9d-44ce-bfb1-e3450bc2faed", pdp:"https://www.costco.com.mx/p/1288769", name:"Wine Enthusiast Cava de Vinos 150 Botellas Gris", vendor:"Wine Enthusiast (Stuart Diamond)", status:"shippable", g20:true, ready:true, ar:"ok 0.72 x 1.87 m tall; depth 1.15 m reads deep for a cooler, verify vs PDP", so:15.9, sn:0.32, nm:"ok",
   issue:"Had five source defects (black stainless, metallic wood shelves, 13.3 deg baked lean, floating base, AR-opaque glass). All repaired by VNTANA.",
   action:"DONE + AR VERIFIED on device 10-21 (<a href='assets/costco/1288769_ar_verified.webp' target='_blank'>photo</a>). Live asset: e3e67fe5. Old asset 7e910ec2 archived; Daniela updates back-office UUID to e3e67fe5."},
- {item:"GAF858_raw_v2", pdp:"https://www.costco.com.mx/p/6232432", name:"Gourmia air fryer (= item 6232432)", vendor:"TBD (KeyShot 15)", os:"vendor", status:"review", g20:true, ready:true, ar:"ok 0.30 x 0.40 x 0.30 m", so:56.2, sn:1.7, nm:"RENAME to 6232432",
+ {item:"GAF858_raw_v2", u:"bc33e9a0-28e1-4ffe-87c7-010a457fbfc8", pdp:"https://www.costco.com.mx/p/6232432", name:"Gourmia air fryer (= item 6232432)", vendor:"TBD (KeyShot 15)", os:"vendor", status:"review", g20:true, ready:true, ar:"ok 0.30 x 0.40 x 0.30 m", so:56.2, sn:1.7, nm:"RENAME to 6232432",
   issue:"Original was pre-Draco'd 14M tris (failed 3D Scan twice; Convert Only = 45.8 MB).",
   action:"FIXED via decompressed master + Preserve Meshes and UVs. Rename asset to the item number; archive failed originals."},
- {item:"697287", pdp:"https://www.costco.com.mx/p/697287", name:"Fitness (likely RW300 rower)", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.65 x 2.10 x 1.12 m, rower", so:3.7, sn:3.7, nm:"ok",
+ {item:"697287", u:"5f33a0aa-c791-4263-b64e-a14ab948cb88", pdp:"https://www.costco.com.mx/p/697287", name:"Fitness (likely RW300 rower)", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.65 x 2.10 x 1.12 m, rower", so:3.7, sn:3.7, nm:"ok",
   issue:"Clean (75k, Convert Only). Currently LIVE INTERNAL, not Public.",
   action:"Flip to Live Public."},
- {item:"1856726", pdp:"https://www.costco.com.mx/p/1856726", name:"Fitness (likely T Series 7 treadmill)", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.88 x 1.51 x 1.63 m, treadmill", so:2.6, sn:2.6, nm:"ok",
+ {item:"1856726", u:"3a91a341-3d10-4041-ba4a-481476377d70", pdp:"https://www.costco.com.mx/p/1856726", name:"Fitness (likely T Series 7 treadmill)", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.88 x 1.51 x 1.63 m, treadmill", so:2.6, sn:2.6, nm:"ok",
   issue:"Clean (112.2k, Convert Only). Currently LIVE INTERNAL, not Public.",
   action:"Flip to Live Public."},
- {item:"3583883", pdp:"https://www.costco.com.mx/p/3583883", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:350.3, sn:0.53, nm:"ok",
+ {item:"3583883", u:"f077a296-5089-4423-a906-a5911236c7bc", pdp:"https://www.costco.com.mx/p/3583883", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:350.3, sn:0.53, nm:"ok",
   issue:"None: 3.8M to 75k via Industrial. Textbook win.",
   action:"None."},
  {item:"VA701689", pdp:"https://www.costco.com.mx/p/VA701689", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.7, nm:"ok",
@@ -102,73 +104,73 @@ var DATA = [
  {item:"697416", pdp:"https://www.costco.com.mx/p/697416", name:"Refrigerator", vendor:"TBD", status:"review", g20:true, ready:true, so:2.0, sn:0.31, nm:"ok",
   issue:"Clean (56.4k, Preserve Meshes and UVs).",
   action:"None."},
- {item:"5248298", pdp:"https://www.costco.com.mx/p/5248298", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:0.61, sn:0.54, nm:"ok",
+ {item:"5248298", u:"f023d54d-b6a5-426c-ba45-3538218d446d", pdp:"https://www.costco.com.mx/p/5248298", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:0.61, sn:0.54, nm:"ok",
   issue:"Clean (44.1k, Industrial).",
   action:"None."},
- {item:"1876771", pdp:"https://www.costco.com.mx/p/1876771", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:42.0, sn:4.4, nm:"drop '.glb' from asset name",
+ {item:"1876771", u:"a636f5ca-5b60-4e11-84cf-f04223ae79f0", pdp:"https://www.costco.com.mx/p/1876771", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:42.0, sn:4.4, nm:"drop '.glb' from asset name",
   issue:"Convert Only kept 901k triangles. Heavy GPU load on mobile despite 4.4 MB.",
   action:"Reprocess through Preserve Meshes and UVs (decompress first if pre-Draco'd)."},
  {item:"p200962kx-krff300ebs-overlay", pdp:"NONE", name:"Fridge overlay (KRFF300)", vendor:"TBD", status:"review", g20:true, ready:true, so:6.9, sn:3.8, nm:"NEEDS ITEM NUMBER",
   issue:"Clean (30.4k, Convert Only).",
   action:"Rename to the Costco item number; vendor SKU string in description."},
- {item:"1950733", pdp:"https://www.costco.com.mx/p/1950733", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.1, nm:"ok",
+ {item:"1950733", u:"4204c39e-2db0-474c-a21c-ad21c58642a6", pdp:"https://www.costco.com.mx/p/1950733", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.1, nm:"ok",
   issue:"Clean (62.4k, Industrial).",
   action:"None."},
- {item:"1841165", pdp:"https://www.costco.com.mx/p/1841165", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:19.6, sn:1.3, nm:"ok",
+ {item:"1841165", u:"d15d08a5-2669-462c-a9c8-1f1cb1163412", pdp:"https://www.costco.com.mx/p/1841165", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:19.6, sn:1.3, nm:"ok",
   issue:"Clean (75k, Industrial).",
   action:"None."},
  {item:"VA702349", pdp:"https://www.costco.com.mx/p/VA702349", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:8.8, sn:4.0, nm:"ok",
   issue:"Clean (35.8k, Industrial).",
   action:"None."},
- {item:"522265", pdp:"https://www.costco.com.mx/p/522265", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:15.1, sn:9.5, nm:"drop '.glb' from asset name",
+ {item:"522265", u:"e2151477-42ab-4af6-ae94-e7344c9e59d9", pdp:"https://www.costco.com.mx/p/522265", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:15.1, sn:9.5, nm:"drop '.glb' from asset name",
   issue:"Was 9.5 MB: six LOSSLESS 4K PNGs (9.2 MB of textures on 56k polys). Black finish is CORRECT (KRFF300EBS Black Stainless colorway). Origin was mid-height.",
   action:"TRY PLATFORM-ONLY FIRST: reprocess the original with PMUV + Max Resolution 4K + Compression Level 2 + PIVOT BOTTOM CENTER (converts the lossless PNGs at full res, grounds it, expected ~4-5 MB, zero file touching). Fallback if output disappoints: 522265_tuned_v2.glb in Downloads (pre-tuned per-map) with Texture Compression Off. Then rename (Production)."},
- {item:"1752967", pdp:"https://www.costco.com.mx/p/1752967", name:"Sectional sofa", vendor:"TBD", os:"vendor", status:"review", g20:true, ready:true, so:11.0, sn:0.59, nm:"ok",
+ {item:"1752967", u:"2659200b-ee4e-4ffe-9a77-25198493ca8a", pdp:"https://www.costco.com.mx/p/1752967", name:"Sectional sofa", vendor:"TBD", os:"vendor", status:"review", g20:true, ready:true, so:11.0, sn:0.59, nm:"ok",
   issue:"Was: floated in AR (stray Helper001 + Particle_View nodes).",
   action:"FIXED in Blender. Vendor rule: delete helpers before export."},
- {item:"648074", pdp:"https://www.costco.com.mx/p/648074", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:2.4, sn:2.2, nm:"ok",
+ {item:"648074", u:"85afbb8b-f50b-4ce5-9f44-489e93d5ced8", pdp:"https://www.costco.com.mx/p/648074", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:2.4, sn:2.2, nm:"ok",
   issue:"File verified clean (QA 10-21): plumb, correct 115-inch dims (2.56 m wide), sharp screen content, Daniela's description in. 340k polys acceptable for a hero TV.",
   action:"One check: AR grounding (model origin is mid-height). If it floats on the phone: reprocess with PIVOT BOTTOM CENTER. Otherwise rename (Production) + Live Asset and done."},
- {item:"VA533070", pdp:"https://www.costco.com.mx/p/VA533070", name:"KitchenAid K45 stand mixer (file p210436kp-k45ssob)", vendor:"Whirlpool/KitchenAid", status:"review", g20:true, ready:true, so:6.6, sn:5.2, nm:"drop '.glb' from asset name",
+ {item:"VA533070", u:"e9d67b5d-69f5-4998-b6d9-ed2b18df30eb", pdp:"https://www.costco.com.mx/p/VA533070", name:"KitchenAid K45 stand mixer (file p210436kp-k45ssob)", vendor:"Whirlpool/KitchenAid", status:"review", g20:true, ready:true, so:6.6, sn:5.2, nm:"drop '.glb' from asset name",
   issue:"= KitchenAid K45 stand mixer (uploaded file p210436kp-k45ssob.glb). Was 35.9 METERS tall (cm as meters) + floating 14 m below origin + 5.2 MB over size goal.",
   action:"UPLOADED + AR VERIFIED on device 10-21. Tagged 'Final Review': description missing (sheet row blank, Daniela owes it). On description: add it, rename 'VA533070 (Production)', swap tag to 'Live Asset', promote to Shippable."},
- {item:"1321497", pdp:"https://www.costco.com.mx/p/1321497", name:"Wine Enthusiast dual-zone wine + beverage cooler", vendor:"Same vendor as 1288769 (Blender, Chinese material names)", os:"vendor", status:"shippable", g20:true, ready:true, ar:"ok 0.86 x 0.92 m tall; depth 0.80 m reads deep, verify vs PDP", so:41.1, sn:0.55, nm:"ok; desc: Wine Enthusiast Cava de Vinos y Enfriador de Bebidas (Derek adding)",
+ {item:"1321497", u:"43f15396-5d14-4ac5-848d-c2bb73207582", pdp:"https://www.costco.com.mx/p/1321497", name:"Wine Enthusiast dual-zone wine + beverage cooler", vendor:"Same vendor as 1288769 (Blender, Chinese material names)", os:"vendor", status:"shippable", g20:true, ready:true, ar:"ok 0.86 x 0.92 m tall; depth 0.80 m reads deep, verify vs PDP", so:41.1, sn:0.55, nm:"ok; desc: Wine Enthusiast Cava de Vinos y Enfriador de Bebidas (Derek adding)",
   issue:"Same vendor defect family as 1288769: 7.1 deg baked lean, floating base, black 'stainless', metallic wood, AR-opaque transmission glass. PDP confirms stainless french doors + black cabinet + wood shelves.",
   action:"DONE: new asset '1321497 (Production)' 43f15396-5d14-4ac5-848d-c2bb73207582, Live Asset tag, description set. Daniela: back-office UUID -> 43f15396. Old asset to archive."},
- {item:"702349-2", pdp:"NONE", name:"Logitech G920 Xbox steering wheel (desc: LOGITECH BUNDLE VOLANTE Xbox)", vendor:"Logitech (own web-AR asset)", os:"repair", status:"repair", g20:true, ready:true, ar:"ok 0.35 x 0.42 x 0.34 m wheel unit", so:6.2, sn:2.9, nm:"VERIFY '-2' suffix vs VA702349",
+ {item:"702349-2", u:"371762a5-e4fd-4680-a000-f90280e3e7c1", pdp:"NONE", name:"Logitech G920 Xbox steering wheel (desc: LOGITECH BUNDLE VOLANTE Xbox)", vendor:"Logitech (own web-AR asset)", os:"repair", status:"repair", g20:true, ready:true, ar:"ok 0.35 x 0.42 x 0.34 m wheel unit", so:6.2, sn:2.9, nm:"VERIFY '-2' suffix vs VA702349",
   issue:"File is actually sharp (verified close-up render) but: (1) ran through 3D SCAN pipeline (wrong: scan smoothing on a CAD asset), (2) looks washed out in the viewer: default environment blows the silver-spoke speculars, (3) desc says BUNDLE but model is the WHEEL ONLY, no pedals.",
   action:"Derek: set hero scene preset (lower exposure) = most of the visual fix; reprocess original via Preserve Meshes and UVs; confirm bundle contents vs PDP. A10 HEADSET (other bundle half) QA'd 10-21: CLEAN. 35.8k tris, 4.0 MB, true to size, plumb, sharp: vendor's own purpose-built web-AR asset, nothing to fix. Note: it grounds on the dangling cable tip (headset hangs above with cord touching), which is Astro's intended display pose: confirm it reads OK in the app's AR once."},
- {item:"4234400", pdp:"https://www.costco.com.mx/p/4234400", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:59.1, sn:null, nm:"ok",
+ {item:"4234400", u:"d35ee2ac-39b0-4eaf-9964-31c1fe2f43be", pdp:"https://www.costco.com.mx/p/4234400", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:59.1, sn:null, nm:"ok",
   issue:"FAILED processing (Industrial, no output).",
   action:"Pull original for teardown: likely pre-compressed or source defect."},
- {item:"701961", pdp:"https://www.costco.com.mx/p/701961", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:4.5, sn:null, nm:"ok",
+ {item:"701961", u:"0cbf2ee2-09ea-4307-a14d-b60cc0e1e9b1", pdp:"https://www.costco.com.mx/p/701961", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:4.5, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Small file + fail = likely pre-Draco'd GLB.",
   action:"Teardown; decompress + reprocess."},
- {item:"701252", pdp:"https://www.costco.com.mx/p/701252", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:0.56, sn:null, nm:"ok",
+ {item:"701252", u:"580d4c2e-c549-45ee-83db-c022777c47fd", pdp:"https://www.costco.com.mx/p/701252", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:0.56, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"697444", pdp:"https://www.costco.com.mx/p/697444", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.9, sn:null, nm:"ok",
+ {item:"697444", u:"04cf7c9d-c924-40ce-bde6-7b2d00dbc13f", pdp:"https://www.costco.com.mx/p/697444", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.9, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"648099", pdp:"https://www.costco.com.mx/p/648099", name:"LG 83-inch OLED (per vendor sheet)", vendor:"LG Electronics Mexico (Jose Vicente)", status:"repair", g20:false, ready:false, so:3.3, sn:null, nm:"ok",
+ {item:"648099", u:"30acca7e-3f6b-4656-86e0-96888c3b5d6e", pdp:"https://www.costco.com.mx/p/648099", name:"LG 83-inch OLED (per vendor sheet)", vendor:"LG Electronics Mexico (Jose Vicente)", status:"repair", g20:false, ready:false, so:3.3, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely same LG export family as the 55-inch C6: Draco + texture transforms marked REQUIRED in the file, which optimization pipelines must reject.",
   action:"Teardown: check extensionsRequired first (proven on the 55-inch C6). If confirmed: decode in Blender, bake texture transforms into UVs, re-export raw, reprocess via Preserve Meshes and UVs."},
- {item:"697288", pdp:"https://www.costco.com.mx/p/697288", name:"TBD (possibly NordicTrack climber)", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.1, sn:null, nm:"ok",
+ {item:"697288", u:"99d4c5b2-7976-4a56-8a23-9f36d4163426", pdp:"https://www.costco.com.mx/p/697288", name:"TBD (possibly NordicTrack climber)", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.1, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"1851051", pdp:"https://www.costco.com.mx/p/1851051", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.3, sn:null, nm:"ok",
+ {item:"1851051", u:"ef33906a-dabb-451e-8694-0ecea1cb762e", pdp:"https://www.costco.com.mx/p/1851051", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.3, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output).",
   action:"Teardown."},
- {item:"704791", pdp:"https://www.costco.com.mx/p/704791", name:"LG 65-inch OLED C6 (oled65c6pua)", vendor:"LG Electronics Mexico (Jose Vicente)", status:"repair", g20:false, ready:true, ar:"ok 1.56 x 0.23 x 0.88 m, 65-inch TV on stand", so:4.1, sn:4.1, nm:"rename to 704791 (Production) on upload",
+ {item:"704791", u:"e59dc204-7a77-4f95-bc85-32b73c36cac1", pdp:"https://www.costco.com.mx/p/704791", name:"LG 65-inch OLED C6 (oled65c6pua)", vendor:"LG Electronics Mexico (Jose Vicente)", status:"repair", g20:false, ready:true, ar:"ok 1.56 x 0.23 x 0.88 m, 65-inch TV on stand", so:4.1, sn:4.1, nm:"rename to 704791 (Production) on upload",
   issue:"CONFIRMED same root cause as the 55-inch C6: Draco AND texture transforms marked REQUIRED in the file, so every optimization pipeline rejected it (spec rule). Not a platform bug: an LG export-settings issue, same fix guidance goes back to LG.",
   action:"FIX READY: oled65c6pua_fixed_v2.glb in Downloads (Draco decoded, texture transforms baked into UVs, grounded; verified upright with intact screen + stand). Upload as NEW asset via PRESERVE MESHES AND UVS, Polygon Limit 75,000, Max Resolution 4K, Compression Level 2. PIVOT: BOTTOM CENTER. Desc: 65-inch OLED per sheet. Archive the failed draft."},
  {item:"oled55c6pua", pdp:"NONE", name:"LG 55-inch OLED C6 (item # TBD: sheet only lists LG 65-inch 704791 and 83-inch 648099)", vendor:"LG Electronics Mexico (Jose Vicente)", os:"repair", status:"repair", g20:false, ready:false, ar:"ok 1.22 x 0.23 x 0.76 m, 55-inch TV on stand", so:3.0, sn:3.0, nm:"NEEDS ITEM NUMBER: file is a 55-inch C6 but no LG 55-inch row exists on the sheet; confirm with Ian/Josemaria which item this covers (AR size would be wrong for a 65 or 83)",
   issue:"ROOT CAUSE FOUND for the LG failures: the file marks Draco AND texture transforms as REQUIRED glTF extensions. Optimization pipelines must reject such a file (spec rule), so every run failed. A later Convert Only run passed it through UNCHANGED: same size, zero optimization, still floating 6.3 cm, required extensions still inside, and Convert Only locks out the pivot setting.",
   action:"FIX READY: oled55c6pua_fixed_v2.glb in Downloads (Draco decoded, both texture transforms baked into the UVs, grounded; verified: stands plumb, crisp LG OLED logo on the stand). Upload as a NEW asset via PRESERVE MESHES AND UVS, Polygon Limit default 75,000, Max Resolution 4K, Compression Level 2. PIVOT: BOTTOM CENTER. Expected ~2-4 MB. Do NOT ship the Convert Only pass-through."},
- {item:"704794", pdp:"https://www.costco.com.mx/p/647947", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:3.0, sn:null, nm:"ok",
+ {item:"704794", u:"d5ab6422-ed78-4111-bb96-991c20d5e73b", pdp:"https://www.costco.com.mx/p/647947", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:3.0, sn:null, nm:"ok",
   issue:"FAILED (3D Scan pipeline, no output). 3D Scan is for photogrammetry only.",
   action:"Teardown; retry Preserve Meshes and UVs."},
- {item:"675531", pdp:"https://www.costco.com.mx/p/675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"vendor", g20:false, ready:false, so:1.6, sn:null, nm:"ok",
+ {item:"675531", u:"aa55f57c-aa00-4841-998e-5f3c77dde916", pdp:"https://www.costco.com.mx/p/675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"vendor", g20:false, ready:false, so:1.6, sn:null, nm:"ok",
   issue:".3DS file: cannot embed textures; the 2 referenced PNGs were not sent; pre-PBR materials.",
   action:"Vendor re-exports GLB/FBX embedded, OR sends the PNGs and Derek rebuilds."},
  {item:"GAF858 (1).glb", pdp:null, name:"Air fryer Convert Only demo", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:45.8, nm:"demo: archive",
@@ -177,7 +179,7 @@ var DATA = [
  {item:"[COPY] 6232432", pdp:"https://www.costco.com.mx/p/6232432", name:"Air fryer duplicate", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:null, nm:"duplicate: archive",
   issue:"Duplicate of the failed original (3D Scan).",
   action:"Archive/delete."},
- {item:"688942", pdp:"https://www.costco.com.mx/p/688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
+ {item:"688942", u:"3a7bfcfb-e4a0-4164-bd2c-69c716edd6a3", pdp:"https://www.costco.com.mx/p/688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
   issue:"Identical to 'Lasso V44 Black' row: duplicates (same CAD viz-color source).",
   action:"Archive this one once the fixed Lasso V44 is uploaded under the proper item number."},
  {item:"Lasso V44 Black", pdp:"https://www.costco.com.mx/p/688942", name:"Lasso V44, black SKU (REAL product, item # TBD; duplicate of 688942)", vendor:"TBD (ID/INTENT design)", os:"vendor", status:"repair", g20:false, ready:false, ar:"ok 1.18 x 0.16 x 0.11 m tube + bracket; VERIFY vs PDP", so:106.4, sn:0.92, nm:"NEEDS ITEM NUMBER + description",
@@ -195,7 +197,7 @@ var DATA = [
  {item:"Rag Rug Chair", pdp:"NONE", name:"Woven Marija rag rug chair (REAL product, item # TBD)", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 0.84 x 0.83 x 0.91 m, chair", so:4.5, sn:4.3, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
   issue:"File itself is clean: 10k tris, 4.3 MB (under goal), correct 0.84 x 0.91 m chair scale, world units right.",
   action:"Derek: rename asset to the Costco item number and add description. No file work needed."},
- {item:"1933950", pdp:"https://www.costco.com.mx/p/1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", os:"vendor", status:"shippable", g20:false, ready:false, ar:"ok AR verified on device 10-21", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
+ {item:"1933950", u:"f74c71b0-b865-45ad-9cd5-32100962ac4d", pdp:"https://www.costco.com.mx/p/1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", os:"vendor", status:"shippable", g20:false, ready:false, ar:"ok AR verified on device 10-21", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
   issue:"TWO problems: (1) SCALE: authored in inches, world size 158 m wide (stadium-sized in AR). (2) 2.0M triangles kept by Convert Only: heavy on mobile.",
   action:"DONE: AR verified on device 10-21 (true patio-set size, grounded). Rename '1933950 (Production)' + Live Asset tag + description 'MoDe, Terressa Sala para Exterior de 4 piezas'."},
  {item:"Stove with Range", pdp:null, name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", os:"review", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
@@ -205,76 +207,67 @@ var DATA = [
   issue:"3D clean: 75k tris, 1.5 MB, correct 1.87 m scale, materials good. Full battery 10-22 found ONE defect: processed without Bottom Center pivot, so the origin is mid-model and it floats 40 cm in AR.",
   action:"Settings-only fix: reprocess the original with PIVOT BOTTOM CENTER (PMUV, Polygon Limit 75,000, Max Res 4K, Compression Level 2). Reprocessed version drops to Draft: re-publish. Then rename to 264883 (Production), add description (Daniela skipped it), AR check, confirm white colorway vs PDP, Live Asset tag."}
 ];
-// ---- render ----
-var state={status:"",vendor:"",q:"",g20:false,sort:"item",dir:1};
-function pdpCell(r){
-  if(r.pdp===null||r.pdp===undefined) return "";
-  if(r.pdp==="NONE") return "<span style='display:block;font-size:.64rem;font-weight:800;color:var(--bad)'>NO REFERENCE: get PDP/photo</span>";
-  return "<a href='"+r.pdp+"' target='_blank' style='display:block;font-size:.68rem;font-weight:700;color:var(--rev);text-decoration:none'>PDP &#8599;</a>";
-}
-function sizeCell(r){
-  var now = r.sn===null ? "<span style='color:var(--bad);font-weight:700'>no output</span>"
-    : (r.sn>5 ? "<b style='color:var(--bad)'>"+r.sn+" MB</b>" : "<b style='color:var(--ok)'>"+r.sn+" MB</b>");
-  return "<td style='white-space:nowrap'><span style='color:var(--muted)'>"+r.so+" MB &rarr;</span> "+now+"</td>";
-}
-function arCell(r){
-  var v=r.ar||"";
-  if(v.indexOf("ok")===0) return "<td style='white-space:nowrap'><span style='color:var(--ok);font-weight:700;font-size:.72rem'>&#10003; "+v.slice(3)+"</span></td>";
-  if(v.indexOf("wrong")===0) return "<td><span style='color:var(--bad);font-weight:700;font-size:.72rem'>&#10007; "+v.slice(6)+"</span></td>";
-  return "<td><span style='color:var(--muted);font-size:.72rem'>not checked</span></td>";
-}
-function nmCell(r){
-  if(r.nm==="ok") return "<span style='color:var(--ok);font-weight:700;font-size:.72rem'>OK</span>";
-  if(r.nm.indexOf("n/a")===0) return "<span style='color:var(--muted);font-size:.72rem'>"+r.nm+"</span>";
-  return "<span style='color:var(--warn);font-weight:700;font-size:.72rem'>"+r.nm+"</span>";
-}
-function counts(){
-  var c={shippable:0,review:0,repair:0,vendor:0,pending:0,discarded:0,total:DATA.length};
-  DATA.forEach(function(r){c[r.status]++;});
-  var el=document.getElementById("counts"); el.innerHTML="";
-  [["","All",c.total],["shippable","Shippable",c.shippable],["review","Costco review",c.review],["repair","In repair",c.repair],["vendor","Vendor action",c.vendor],["pending","Pending",c.pending],["discarded","Discarded",c.discarded]].forEach(function(x){
-    var d=document.createElement("div"); d.className="count "+(x[0]||"all")+(state.status===x[0]?" active":"");
-    d.innerHTML="<b>"+x[2]+"</b><span>"+x[1]+"</span>";
-    d.onclick=function(){state.status=(state.status===x[0]?"":x[0]);render();};
-    el.appendChild(d);
-  });
+var LADDER=[
+ {k:"shippable",label:"Ready to ship",hint:"AR-checked, named, described: done"},
+ {k:"review",label:"Costco review",hint:"3D done: waiting on metadata (Daniela) or final AR sign-off"},
+ {k:"repair",label:"In repair at VNTANA",hint:"FIX READY rows are waiting on a Derek upload; the rest are in teardown"},
+ {k:"vendor",label:"Vendor action",hint:"only the vendor can fix these"},
+ {k:"pending",label:"Pending",hint:"not reviewed yet"},
+ {k:"discarded",label:"Discarded",hint:"removed from the workspace, kept for the record"}
+];
+var state={status:null,g20:false,vendor:"",q:""};
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function visible(r){
+  if(state.g20&&!r.g20)return false;
+  if(state.vendor&&r.vendor!==state.vendor)return false;
+  if(state.q){var q=state.q.toLowerCase();
+    if(((r.item||"")+" "+(r.name||"")+" "+(r.issue||"")+" "+(r.action||"")+" "+(r.vendor||"")).toLowerCase().indexOf(q)<0)return false;}
+  return true;
 }
 function render(){
-  counts();
-  document.getElementById("upd").textContent=UPDATED;
-  var vs={}; DATA.forEach(function(r){vs[r.vendor]=1;});
-  var sel=document.getElementById("vendorSel");
-  if(sel.options.length<2){Object.keys(vs).sort().forEach(function(v){var o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);});}
-  var rows=DATA.filter(function(r){
-    if(state.status&&r.status!==state.status)return false;
-    if(state.vendor&&r.vendor!==state.vendor)return false;
-    if(state.g20&&!r.g20)return false;
-    if(state.q){var h=(r.item+" "+r.name+" "+r.issue+" "+r.vendor).toLowerCase(); if(h.indexOf(state.q)<0)return false;}
-    return true;
+  var counts={all:0};LADDER.forEach(function(s){counts[s.k]=0});
+  DATA.forEach(function(r){if(visible(r)){counts.all++;counts[r.status]=(counts[r.status]||0)+1}});
+  var ch='<div class="count'+(state.status===null?" active":"")+'" data-s=""><b>'+counts.all+'</b><span>All</span></div>';
+  LADDER.forEach(function(s){ch+='<div class="count '+s.k+(state.status===s.k?" active":"")+'" data-s="'+s.k+'"><b>'+(counts[s.k]||0)+'</b><span>'+s.label+'</span></div>'});
+  document.getElementById("counts").innerHTML=ch;
+  var out="";
+  LADDER.forEach(function(s){
+    if(state.status&&state.status!==s.k)return;
+    var rows=DATA.filter(function(r){return r.status===s.k&&visible(r)});
+    if(!rows.length)return;
+    rows.sort(function(a,b){return (b.g20?1:0)-(a.g20?1:0)||String(a.item).localeCompare(String(b.item))});
+    var colors={shippable:"var(--ok)",review:"var(--rev)",repair:"var(--warn)",vendor:"var(--bad)",pending:"var(--pend)",discarded:"var(--disc)"};
+    out+='<section><div class="sechead"><span class="dot" style="background:'+colors[s.k]+'"></span><h2>'+s.label+'</h2><span class="cnt" style="color:'+colors[s.k]+'">'+rows.length+'</span><span class="hint">'+s.hint+'</span></div>';
+    out+='<table><thead><tr><th>Item</th><th>Status</th><th>Size</th><th class="hide-m">AR scale</th><th>Issue found</th><th class="hide-m">Action / next step</th><th>Thu</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      var i=DATA.indexOf(r);
+      var chips='';
+      if(r.pdp&&r.pdp!=="NONE"&&r.pdp!==null)chips+='<a href="'+r.pdp+'" target="_blank" onclick="event.stopPropagation()">PDP &#8599;</a>';
+      if(r.u&&PLATFORM_BASE)chips+='<a class="plat" href="'+PLATFORM_BASE+r.u+'" target="_blank" onclick="event.stopPropagation()">Platform &#8599;</a>';
+      var nm=(r.nm&&r.nm!=="ok")?'<div class="nmflag">&#9998; '+esc(r.nm)+'</div>':'';
+      var was=(r.os&&r.os!==r.status)?'<span class="was">FIXED &middot; was '+r.os+'</span>':'';
+      var size=r.sn==null?'<span style="color:var(--muted)">no output</span>':'<span class="'+(r.sn>5?"size-bad":"size-ok")+'">'+r.sn+' MB</span>';
+      var wsize=(r.so!=null&&r.sn!=null&&r.so!==r.sn)?'<span class="was-size">was '+r.so+' MB</span>':(r.sn==null&&r.so!=null?'<span class="was-size">upload '+r.so+' MB</span>':'');
+      var ar=r.ar?('&#10003; '+esc(r.ar)):'<span style="color:var(--muted)">not checked</span>';
+      out+='<tr class="'+(s.k==="discarded"?"disc":"")+'" data-i="'+i+'">'
+        +'<td><div class="item">'+esc(String(r.item))+(r.g20?'<span class="g20">GO-LIVE 20</span>':'')+'</div><div class="pname">'+esc(r.name||"")+'</div><div class="chips">'+chips+'</div>'+nm+'</td>'
+        +'<td><span class="pill '+r.status+'">'+s.label+'</span>'+was+'</td>'
+        +'<td>'+size+wsize+'</td>'
+        +'<td class="hide-m" style="font-size:.72rem;max-width:150px">'+ar+'</td>'
+        +'<td style="max-width:280px"><div class="clamp">'+r.issue+'</div><span class="more">more&hellip;</span></td>'
+        +'<td class="hide-m" style="max-width:300px"><div class="clamp">'+r.action+'</div><span class="more">more&hellip;</span></td>'
+        +'<td class="thu">'+(r.ready?'<span style="color:var(--ok)">&#10003;</span>':'<span style="color:var(--bad)">&#10007;</span>')+'</td></tr>';
+    });
+    out+='</tbody></table></section>';
   });
-  rows.sort(function(a,b){if((a.status==="discarded")!==(b.status==="discarded"))return a.status==="discarded"?1:-1;var k=state.sort;var va=(a[k]||"")+"",vb=(b[k]||"")+"";return va<vb?-state.dir:va>vb?state.dir:0;});
-  var PILL={shippable:"Shippable",review:"Costco review",repair:"In repair",vendor:"Vendor action",pending:"Pending",discarded:"Discarded"};
-  var tb=document.getElementById("rows"); tb.innerHTML="";
-  rows.forEach(function(r){
-    var tr=document.createElement("tr"); if(r.status==="discarded")tr.className="disc";
-    tr.innerHTML=
-      "<td><span class='item'>"+r.item+"</span>"+(r.g20?"<span class='g20'>GO-LIVE 20</span>":"")+"<span class='nm'>"+r.name+"</span>"+pdpCell(r)+"</td>"+
-      "<td><span class='pill "+(r.os||r.status)+"' style='opacity:.75'>"+PILL[r.os||r.status]+"</span></td>"+
-      "<td><span class='pill "+r.status+"'>"+PILL[r.status]+"</span>"+((r.os||r.status)!==r.status?" <span style='font-size:.62rem;font-weight:800;color:var(--ok)'>&larr; FIXED</span>":"")+"</td>"+
-      "<td class='vendor hide-m'>"+r.vendor+"</td>"+
-      sizeCell(r)+
-      arCell(r)+
-      "<td class='hide-m'>"+nmCell(r)+"</td>"+
-      "<td class='note'>"+r.issue+"</td>"+
-      "<td class='next hide-m'>"+r.action+"</td>"+
-      "<td>"+(r.ready?"&#9989;":"&#10060;")+"</td>";
-    tb.appendChild(tr);
-  });
+  document.getElementById("sections").innerHTML=out||'<p style="color:var(--muted);padding:2rem 0">Nothing matches the filters.</p>';
+  document.querySelectorAll("#counts .count").forEach(function(c){c.onclick=function(){var s=c.getAttribute("data-s");state.status=(s===""||state.status===s)?null:s;render()}});
+  document.querySelectorAll("tbody tr").forEach(function(tr){tr.onclick=function(){tr.classList.toggle("open")}});
 }
-document.getElementById("vendorSel").onchange=function(){state.vendor=this.value;render();};
-document.getElementById("q").oninput=function(){state.q=this.value.toLowerCase();render();};
-document.getElementById("g20toggle").onclick=function(){state.g20=!state.g20;this.classList.toggle("on",state.g20);render();};
-document.querySelectorAll("th").forEach(function(th){th.onclick=function(){var k=th.dataset.k;if(state.sort===k)state.dir*=-1;else{state.sort=k;state.dir=1;}render();};});
+document.getElementById("g20toggle").onclick=function(){state.g20=!state.g20;this.classList.toggle("on",state.g20);render()};
+document.getElementById("q").oninput=function(){state.q=this.value;render()};
+(function(){var vs={};DATA.forEach(function(r){if(r.vendor)vs[r.vendor]=1});var sel=document.getElementById("vendorSel");Object.keys(vs).sort().forEach(function(v){var o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o)});sel.onchange=function(){state.vendor=this.value;render()}})();
+document.getElementById("upd").textContent="2026-10-22";
 render();
 </script>
 </body>
