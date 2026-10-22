@@ -55,6 +55,7 @@
   .chips a:hover{border-color:var(--rev)}
   .chips a.plat{color:#7c3aed}
   .chips a.plat:hover{border-color:#7c3aed}
+  .uuidline{font-size:.64rem;color:#7c3aed;font-weight:700;margin-top:.3rem;cursor:pointer;user-select:none}
   .nmflag{font-size:.68rem;color:var(--warn);font-weight:700;margin-top:.3rem;max-width:230px}
   .pill{display:inline-block;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;color:#fff;white-space:nowrap}
   .pill.shippable{background:var(--ok)} .pill.review{background:var(--rev)} .pill.repair{background:var(--warn)} .pill.vendor{background:var(--bad)} .pill.pending{background:var(--pend)} .pill.discarded{background:var(--disc)}
@@ -157,21 +158,21 @@ var DATA = [
   need:"Derek: publish + AR glance. Daniela: review description.",
   issue:"Was: a VNTANA output re-uploaded as source (Draco required). Geometry healthy (treadmill-shape lean = solver false positive, side render flat).",
   action:"Fixed via API 10-22: decoded + replaced in place (PMUV / Bottom Center), renamed, description + PDP URL + 4 photos + Final Review. Battery AND USDZ gate both green (the USDZ bug does not hit this one)."},
- {item:"701252", u:"580d4c2e-c549-45ee-83db-c022777c47fd", pdp:"https://www.costco.com.mx/p/701252", name:"NordicTrack Caminadora T Series 16", vendor:"iFIT/NordicTrack (KeyShot)", os:"repair", status:"review", g20:false, ready:true, ar:"GLB grounded + true size BUT USDZ rotated + floating: THIRD case of the platform GLB-to-USDZ bug", so:0.56, sn:1.4, nm:"ok: 701252 (Production) - NordicTrack Caminadora T Series 16",
-  need:"ModelOps ticket covers this (3 repro pairs: 697288, 697444, 701252). Daniela: review description.",
+ {item:"701252", u:"580d4c2e-c549-45ee-83db-c022777c47fd", pdp:"https://www.costco.com.mx/p/701252", name:"NordicTrack Caminadora T Series 16", vendor:"iFIT/NordicTrack (KeyShot)", os:"repair", status:"review", g20:false, ready:true, ar:"GLB grounded + true size BUT the iOS AR file (USDZ) needs regeneration: VNTANA is correcting it", so:0.56, sn:1.4, nm:"ok: 701252 (Production) - NordicTrack Caminadora T Series 16",
+  need:"VNTANA: regenerate the iOS AR file (web viewer is fine). Daniela: review description.",
   issue:"Was: re-uploaded VNTANA output (Draco required) PLUS KeyShot junk inside (lux_root empty, 4 leftover cameras): all removed. Materials verified fine in render (black machine, blank console like the reference NordicTracks).",
-  action:"Fixed via API 10-22: decoded, junk nodes deleted, replaced in place (PMUV / Bottom Center), renamed, description + PDP URL + 4 photos + Final Review. Web GLB verified. iOS USDZ blocked on the conversion bug."},
- {item:"697444", u:"04cf7c9d-c924-40ce-bde6-7b2d00dbc13f", pdp:"https://www.costco.com.mx/p/697444", name:"NordicTrack Caminadora X16", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:false, ready:true, ar:"GLB grounded + true size (1.83 x 0.98 x 1.89 m) BUT USDZ rotated ~25 deg + floating 70 cm: same platform GLB-to-USDZ bug as 697288", so:2.9, sn:1.6, nm:"ok: 697444 (Production) - NordicTrack Caminadora X16",
-  need:"ModelOps ticket (repro pairs saved: 697288 + 697444). Derek: web viewer fine to publish; hold iOS AR sign-off. Daniela: review description.",
-  issue:"Was: a VNTANA output re-uploaded as source (Draco required). Geometry healthy (incline-trainer mast = solver false positive, side render plumb). SECOND case of the USDZ conversion bug.",
-  action:"Fixed via API 10-22: decode + replace in place (PMUV / Bottom Center), renamed, description + PDP URL + 4 photos + Final Review. Web GLB verified. iOS USDZ blocked on the platform conversion bug."},
+  action:"Fixed via API 10-22: decoded, junk nodes deleted, replaced in place (PMUV / Bottom Center), renamed, description + PDP URL + 4 photos + Final Review. Web GLB verified. iOS AR pending the regeneration pass."},
+ {item:"697444", u:"04cf7c9d-c924-40ce-bde6-7b2d00dbc13f", pdp:"https://www.costco.com.mx/p/697444", name:"NordicTrack Caminadora X16", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:false, ready:true, ar:"GLB grounded + true size (1.83 x 0.98 x 1.89 m) BUT the iOS AR file (USDZ) needs regeneration: VNTANA is correcting it", so:2.9, sn:1.6, nm:"ok: 697444 (Production) - NordicTrack Caminadora X16",
+  need:"VNTANA: regenerate the iOS AR file (web viewer is fine). Daniela: review description.",
+  issue:"Was: a VNTANA output re-uploaded as source (Draco required). Geometry healthy (incline-trainer mast = solver false positive, side render plumb). ",
+  action:"Fixed via API 10-22: decode + replace in place (PMUV / Bottom Center), renamed, description + PDP URL + 4 photos + Final Review. Web GLB verified. iOS AR pending the regeneration pass."},
  {item:"648099", need:"Derek: publish + confirm. Daniela: review pre-filled description; archive old failed draft 30acca7e.", ar:"ok 1.84 x 0.30 x 1.10 m; USDZ gate passed (grounded, true 83-inch)", t:"https://www.costco.com.mx/medias/sys_master/products/h71/h47/489216795213854.jpg", u:"7bb39f2c-de62-4683-b59f-63d63cb62023", pdp:"https://www.costco.com.mx/p/648099", name:"LG 83-inch OLED (per vendor sheet)", vendor:"LG Electronics Mexico (Jose Vicente)", status:"review", g20:false, ready:true, so:3.3, sn:1.7, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely same LG export family as the 55-inch C6: Draco + texture transforms marked REQUIRED in the file, which optimization pipelines must reject.",
   action:"DONE VIA API 10-22: same required-extensions fix as the 65 (transforms baked, grounded), NEW asset 7bb39f2c with PMUV / 75k / 4K / L2 / Bottom Center, processed, battery + USDZ gate passed, 4 PDP images + PDP URL attribute + description set, Final Review tag applied."},
- {item:"697288", u:"99d4c5b2-7976-4a56-8a23-9f36d4163426", pdp:"https://www.costco.com.mx/p/697288", name:"NordicTrack Eliptica Step Climber", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:false, ready:true, ar:"GLB grounded + true size BUT the USDZ comes out tilted ~9 deg and floating 20 cm: platform GLB-to-USDZ conversion bug, repro pair saved", so:2.1, sn:1.8, nm:"ok: 697288 (Production) - NordicTrack Eliptica Step Climber",
-  need:"Derek: phone AR check will show the tilt (iOS uses the USDZ); then ModelOps ticket with the repro pair. Daniela: review description.",
-  issue:"Was: a VNTANA output re-uploaded as source (Draco required). Geometry healthy (stands plumb; faces sideways by vendor design). NEW PLATFORM BUG FOUND: the regenerated USDZ does not match the grounded GLB (tilted + floating).",
-  action:"Fixed via API 10-22 (decode + replace in place, PMUV / Bottom Center, renamed, description + PDP URL + 4 photos + Final Review). Web viewer output verified good. iOS AR blocked on the USDZ conversion bug: ModelOps ticket to file."},
+ {item:"697288", u:"99d4c5b2-7976-4a56-8a23-9f36d4163426", pdp:"https://www.costco.com.mx/p/697288", name:"NordicTrack Eliptica Step Climber", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:false, ready:true, ar:"GLB grounded + true size BUT the iOS AR file (USDZ) needs regeneration: VNTANA is correcting it", so:2.1, sn:1.8, nm:"ok: 697288 (Production) - NordicTrack Eliptica Step Climber",
+  need:"VNTANA: regenerate the iOS AR file (web viewer is fine). Daniela: review description.",
+  issue:"Was: a VNTANA output re-uploaded as source (Draco required). Geometry healthy (stands plumb; faces sideways by vendor design). The iOS AR file needs one more regeneration pass (web viewer is correct).",
+  action:"Fixed via API 10-22 (decode + replace in place, PMUV / Bottom Center, renamed, description + PDP URL + 4 photos + Final Review). Web viewer output verified good. iOS AR pending the regeneration pass."},
  {item:"1851051", t:"https://www.costco.com.mx/medias/sys_master/products/hc1/h4b/456136417312798.jpg", u:"ef33906a-dabb-451e-8694-0ecea1cb762e", pdp:"https://www.costco.com.mx/p/1851051", name:"NordicTrack Caminadora T Series 9", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:false, ready:true, ar:"ok 0.88 x 1.93 x 1.52 m; USDZ gate passed (grounded, true size)", so:2.3, sn:1.9, nm:"ok: 1851051 (Production) - NordicTrack Caminadora T Series 9",
   need:"Derek: publish (DRAFT after reprocess) + AR glance. Daniela: review pre-filled description.",
   issue:"Was: a VNTANA output re-uploaded as the source (Draco required), so PMUV rejected it. Treadmill geometry itself is healthy (the 25 deg lean flag was the console mast baiting the solver: side render flat).",
@@ -299,7 +300,7 @@ function render(){
       var th=r.t?'<img class="thumb" loading="lazy" src="'+r.t+'">':'<div class="nothumb">no img</div>';
       out+='<tr class="'+(s.k==="discarded"?"disc":"")+'" data-i="'+i+'">'
         +'<td style="width:62px">'+th+'</td>'
-        +'<td><div class="item">'+esc(String(r.item))+(r.g20?'<span class="g20">GO-LIVE 20</span>':'')+'</div><div class="pname">'+esc(r.name||"")+'</div><div class="chips">'+chips+'</div>'+nm+'</td>'
+        +'<td><div class="item">'+esc(String(r.item))+(r.g20?'<span class="g20">GO-LIVE 20</span>':'')+'</div><div class="pname">'+esc(r.name||"")+'</div><div class="chips">'+chips+'</div>'+(r.u?'<div class="uuidline" title="click to copy the full UUID for the back office" onclick="navigator.clipboard.writeText(\''+r.u+'\');this.textContent=\'UUID copied!\';">UUID '+r.u.slice(0,8)+'&hellip; (click to copy)</div>':'')+nm+'</td>'
         +'<td><span class="pill '+r.status+'">'+s.label+'</span>'+was+'</td>'
         +'<td>'+size+wsize+'</td>'
         +'<td class="hide-m" style="font-size:.72rem;max-width:150px">'+ar+'</td>'
