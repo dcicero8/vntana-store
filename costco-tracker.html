@@ -15,7 +15,18 @@
   header .brand{font-weight:800}
   header .brand span{color:var(--accent)}
   header .sub{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8b93a4}
-  .bar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;padding:1.1rem 0}
+  .dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem;padding:1.2rem 0 .2rem}
+  .dtile{background:#fff;border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem}
+  .dtile .big{font-size:2rem;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .dtile .lbl{font-size:.64rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:.2rem}
+  .dtile .sub{font-size:.7rem;color:var(--muted);margin-top:.25rem}
+  .dtile.goal{grid-column:span 2;min-width:260px}
+  .gbar{height:12px;background:#eef0f3;border-radius:7px;overflow:hidden;margin:.55rem 0 .3rem;display:flex}
+  .gbar .seg-ship{background:var(--ok);height:100%}
+  .gbar .seg-dan{background:var(--rev);height:100%}
+  .gkey{font-size:.66rem;color:var(--muted)}
+  .gkey b{font-weight:800}
+  .bar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;padding:.8rem 0 1.1rem}
   .counts{display:flex;gap:.6rem;flex-wrap:wrap}
   .count{background:#fff;border:1px solid var(--line);border-radius:9px;padding:.5rem .85rem;text-align:center;cursor:pointer}
   .count b{display:block;font-size:1.25rem;letter-spacing:-.02em}
@@ -64,6 +75,7 @@
 <body>
 <header><div class="wrap"><div class="brand">Costco <span>Mexico POC</span> Asset Tracker</div><div class="sub">internal triage &middot; updated <span id="upd"></span></div></div></header>
 <div class="wrap">
+  <div class="dash" id="dash"></div>
   <div class="bar">
     <div class="counts" id="counts"></div>
     <div class="tools">
@@ -206,6 +218,19 @@ var DATA = [
   issue:"3D clean but floated 40 cm in AR (pivot was center) AND the stored original was itself a pre-optimized VNTANA file (Draco required), so Derek's PMUV reprocess FAILED.",
   action:"FIXED VIA API 10-22 (first direct fix in the Costco org): original decoded in Blender, replaced in place on the same asset, pivot corrected to BOTTOM CENTER, reprocessed through Derek's PMUV settings. Output verified: grounded, 0.9 MB. Remaining (Derek/Daniela): RE-PUBLISH the new version (drops to Draft), AR check on phone, description (Daniela), confirm white colorway vs PDP, then Live Asset tag."}
 ];
+function renderDash(){
+  var active=DATA.filter(function(r){return r.status!=="discarded"});
+  var ship=DATA.filter(function(r){return r.status==="shippable"}).length;
+  var dan=DATA.filter(function(r){return r.status==="review"}).length;
+  var GOAL=20, got=ship+dan;
+  var sp=Math.min(ship/GOAL*100,100), dp=Math.min(dan/GOAL*100,100-sp);
+  document.getElementById("dash").innerHTML=
+   '<div class="dtile"><div class="big">'+DATA.length+'</div><div class="lbl">Came in</div><div class="sub">'+active.length+' active, '+(DATA.length-active.length)+' discarded</div></div>'
+  +'<div class="dtile"><div class="big" style="color:var(--ok)">'+ship+'</div><div class="lbl">Ready to go live NOW</div><div class="sub">AR-checked, named, described</div></div>'
+  +'<div class="dtile"><div class="big" style="color:var(--rev)">'+dan+'</div><div class="lbl">Daniela review</div><div class="sub">3D done, needs description / metadata / sign-off</div></div>'
+  +'<div class="dtile goal"><div class="lbl">Go-live 20 readiness</div><div class="gbar"><div class="seg-ship" style="width:'+sp+'%"></div><div class="seg-dan" style="width:'+dp+'%"></div></div>'
+  +'<div class="gkey"><b style="color:var(--ok)">'+ship+' ready</b> + <b style="color:var(--rev)">'+dan+' with Daniela</b> = <b>'+got+'</b> of '+GOAL+' needed'+(got>=GOAL?' &#10003; COVERED':' &middot; '+(GOAL-got)+' short')+'</div></div>';
+}
 var LADDER=[
  {k:"shippable",label:"Ready to ship",hint:"AR-checked, named, described: done"},
  {k:"review",label:"Costco review",hint:"3D done: waiting on metadata (Daniela) or final AR sign-off"},
@@ -267,6 +292,7 @@ document.getElementById("g20toggle").onclick=function(){state.g20=!state.g20;thi
 document.getElementById("q").oninput=function(){state.q=this.value;render()};
 (function(){var vs={};DATA.forEach(function(r){if(r.vendor)vs[r.vendor]=1});var sel=document.getElementById("vendorSel");Object.keys(vs).sort().forEach(function(v){var o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o)});sel.onchange=function(){state.vendor=this.value;render()}})();
 document.getElementById("upd").textContent="2026-10-22";
+renderDash();
 render();
 </script>
 </body>
