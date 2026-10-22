@@ -69,7 +69,6 @@
   tr.open .cell-text.detail{display:block}
   .more{font-size:.62rem;color:var(--rev);font-weight:700;cursor:pointer}
   tr.open .more{display:none}
-  tbody tr{cursor:pointer}
   .legend-table{width:100%;border-collapse:collapse;margin:.6rem 0;background:#fff}
   .legend-table td{padding:.4rem .6rem;border-bottom:1px solid var(--line);font-size:.76rem;vertical-align:top}
   .legend-table td:first-child{font-weight:800;width:30px}
@@ -103,10 +102,10 @@
 <script>
 var PLATFORM_BASE = "https://platform.vntana.com/Costco/mexico-poc/products/details/";
 var DATA = [
- {item:"697004", ic:[4, 8, 9], t:"https://www.costco.com.mx/medias/sys_master/products/hd5/h4f/456136231616542.jpg", u:"502f77f9-5de1-42d1-b05b-b22d9fdc803d", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze Ventilador de Pedestal Blanco", vendor:"NINGBO SINGFUN (KeyShot)", os:"repair", status:"review", g20:true, ready:true, ar:"ok 0.48 x 0.45 x 1.33 m; straight (0.8 deg), grounded; USDZ gate passed", so:1024.0, sn:1.4, nm:"ok: 697004 (Production) - OmniBreeze Ventilador de Pedestal Blanco",
-  need:"Derek: AR glance (the long-running wonky one is finally upright). Daniela: review description.",
-  issue:"The vendor source had the pole assembled 23.7 deg off vertical plus a tilted base (and earlier, baked-in low-res text). Repainted logos were already delivered; the remaining wonk was the lean.",
-  action:"FIXED 10-22 (v8): whole model rotated so the pole is vertical, base disc flattened at the vertex level under the hub, junk nodes removed, replaced in place (PMUV / Bottom Center / frozen transforms). First PASS this asset has ever had: straight + grounded + iOS AR gate green."},
+ {item:"697004", ic:[4,8,9], t:"https://www.costco.com.mx/medias/sys_master/products/hd5/h4f/456136231616542.jpg", u:"502f77f9-5de1-42d1-b05b-b22d9fdc803d", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze Ventilador de Pedestal Blanco", vendor:"NINGBO SINGFUN (KeyShot)", os:"repair", status:"vendor", g20:true, ready:false, ar:"geometry verified straight and grounded in both web and AR files, but the assembled pose never fully satisfied review", so:1024.0, sn:1.4, nm:"ok: 697004 (Production)",
+  need:"VENDOR: re-export from a correctly assembled source (pole was built 24 deg off vertical). Current repaired version stays live meanwhile.",
+  issue:"The source was assembled wrong at the factory (pole 24 deg off vertical, tilted base, unreadable baked text). VNTANA repaired it repeatedly; the delivered files now measure straight and grounded, but the asset has consumed disproportionate effort.",
+  action:"DECISION 10-22: request a clean re-export from the vendor. The repaired v2 remains Live Public as the stand-in."},
  {item:"1288769", ic:[3, 4, 6, 7], t:"https://www.costco.com.mx/medias/sys_master/products/h55/h77/11570471370782.jpg", u:"e3e67fe5-6a9d-44ce-bfb1-e3450bc2faed", pdp:"https://www.costco.com.mx/p/1288769", name:"Wine Enthusiast Cava de Vinos 150 Botellas Gris", vendor:"Wine Enthusiast (Stuart Diamond)", status:"shippable", g20:true, ready:true, ar:"ok 0.72 x 1.87 m tall; depth 1.15 m reads deep for a cooler, verify vs PDP", so:15.9, sn:0.32, nm:"ok",
   issue:"Had five source defects (black stainless, metallic wood shelves, 13.3 deg baked lean, floating base, AR-opaque glass). All repaired by VNTANA.",
   action:"DONE + AR VERIFIED on device 10-21 (<a href='assets/costco/1288769_ar_verified.webp' target='_blank'>photo</a>). Live asset: e3e67fe5. Old asset 7e910ec2 archived; Daniela updates back-office UUID to e3e67fe5."},
@@ -225,21 +224,21 @@ var DATA = [
   need:"Costco/Daniela: confirm whether the mount is (or will be) a sellable item. If yes: item number + we finish it (pivot Back Center). If no: move to discarded assets.",
   issue:"The 3D file is clean (30.5k tris, 94 KB, correct 0.74 m rail). Catalog search 10-22 found NO matching Costco item (the Arc Ultra soundbar itself also is not live on the site yet).",
   action:"Renamed on platform with the decision flag. Parked pending the item-number answer: nothing else to fix."},
- {item:"266345", ic:[15], need:"Daniela: rename to 266345 + description. PDP DEAD: confirm item with Costco", pdp:"https://www.costco.com.mx/p/266345", name:"Table (asset currently named 'Table')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.09 x 0.51 x 0.47 m, coffee table", so:1.6, sn:1.4, nm:"RENAME asset 'Table' to 266345 + description missing",
-  issue:"File itself is clean: 10.2k tris, 1.4 MB, correct real-world scale.",
-  action:"Derek: rename to item number 266345 (from the 4K_266345 filename) and add description. No file work needed."},
- {item:"Rag Rug Chair", pdp:"NONE", name:"Woven Marija rag rug chair (example upload)", vendor:"VNTANA example", status:"discarded", g20:false, ready:false, so:4.5, sn:4.3, nm:"n/a",
-  issue:"Was uploaded as an example only, not a Costco pilot item.",
-  action:"Derek moved it out of the mexico-poc workspace 10-22. Off the pilot list."},
+ {item:"266345", ic:[15], pdp:"NONE", name:"Table (VNTANA original demo asset)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:1.6, sn:1.4, nm:"demo asset",
+  issue:"One of the original demo assets VNTANA provided at pilot kickoff, not a vendor submission.",
+  action:"Moved out of the pilot workspace 10-22. Excluded from the go-live math."},
+ {item:"Rag Rug Chair", pdp:"NONE", name:"Woven rag rug chair (VNTANA original demo asset)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:4.5, sn:4.3, nm:"demo asset",
+  issue:"One of the original demo assets VNTANA provided at pilot kickoff, not a vendor submission.",
+  action:"Moved out of the pilot workspace 10-22. Excluded from the go-live math."},
  {item:"1933950", ic:[5, 15], need:"DONE: new 1933950 (Production) Live Asset. Daniela: re-key back-office UUID, archive old draft.", t:"https://www.costco.com.mx/medias/sys_master/products/h97/h9c/450130406277150.jpg", u:"55966442", pdp:"https://www.costco.com.mx/p/1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", os:"vendor", status:"shippable", g20:false, ready:false, ar:"ok AR verified on device 10-21", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
   issue:"TWO problems: (1) SCALE: authored in inches, world size 158 m wide (stadium-sized in AR). (2) 2.0M triangles kept by Convert Only: heavy on mobile.",
   action:"DONE: AR verified on device 10-21 (true patio-set size, grounded). Rename '1933950 (Production)' + Live Asset tag + description 'MoDe, Terressa Sala para Exterior de 4 piezas'."},
  {item:"Stove with Range", pdp:null, name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", os:"review", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
   issue:"Derek-added demo asset, not part of the POC catalog.",
   action:"DELETED from workspace 10-20 (moved to discarded)."},
- {item:"264883", ic:[1, 3], need:"Derek: re-publish new version + AR check. Daniela: description. PDP DEAD: confirm item with Costco", u:"3f017a4b-affa-4e20-a76b-160793fe4dc0", pdp:"https://www.costco.com.mx/p/264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
-  issue:"3D clean but floated 40 cm in AR (pivot was center) AND the stored original was itself a pre-optimized VNTANA file (Draco required), so Derek's PMUV reprocess FAILED.",
-  action:"FIXED VIA API 10-22 (first direct fix in the Costco org): original decoded in Blender, replaced in place on the same asset, pivot corrected to BOTTOM CENTER, reprocessed through Derek's PMUV settings. Output verified: grounded, 0.9 MB. Remaining (Derek/Daniela): RE-PUBLISH the new version (drops to Draft), AR check on phone, description (Daniela), confirm white colorway vs PDP, then Live Asset tag."},
+ {item:"264883", ic:[1,3], pdp:"NONE", name:"Sofa (VNTANA original demo asset)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:2.2, sn:1.5, nm:"demo asset",
+  issue:"One of the original demo assets VNTANA provided at pilot kickoff, not a vendor submission. (It was also repaired along the way, which is why it appears in the fix history.)",
+  action:"Moved out of the pilot workspace 10-22. Excluded from the go-live math."},
  {item:"Kettler Eden", ic:[11], pdp:"NONE", name:"Kettler Eden outdoor furniture (item # TBD)", vendor:"Kettler (KeyShot)", status:"vendor", g20:false, ready:false, so:0.3, sn:null, nm:"NEEDS ITEM NUMBER",
   need:"Vendor (Kettler): re-export as a single binary GLB (or zip the .gltf WITH its _resources folder). Daniela: item numbers for all four.",
   issue:"Diagnosed 10-22: KeyShot exported a .gltf JSON manifest whose geometry (0.5 MB bin) and textures live in an external _resources folder that was never uploaded. Only the manifest reached the platform, so processing fails with no output. Same defect on all four Kettler outdoor items.",
@@ -337,15 +336,14 @@ function render(){
         +'<td><span class="pill '+r.status+'">'+s.label+'</span>'+was+'</td>'
         +'<td>'+size+wsize+'</td>'
         +'<td class="hide-m" style="font-size:.72rem;max-width:150px">'+ar+'</td>'
-        +'<td style="max-width:280px">'+((r.ic&&r.ic.length)?r.ic.map(function(c){return '<span class="icchip" title="'+esc(ISSUES[c][0])+'">'+c+'</span>'}).join(''):(r.ic?'<span class="icnone">none</span>':''))+'<div class="cell-text detail">'+r.issue+'</div><span class="more">details&hellip;</span></td>'
-        +'<td class="hide-m" style="max-width:320px">'+(r.need?'<div class="need">&#9654; '+esc(r.need)+'</div>':'')+'<div class="cell-text detail">'+r.action+'</div></td>'
+        +'<td style="max-width:280px">'+((r.ic&&r.ic.length)?r.ic.map(function(c){return '<span class="icchip" title="'+esc(ISSUES[c][0])+'">'+c+'</span>'}).join(''):(r.ic?'<span class="icnone">none</span>':''))+'</td>'
+        +'<td class="hide-m" style="max-width:320px">'+(r.need?'<div class="need">&#9654; '+esc(r.need)+'</div>':'')+'</td>'
         +'<td class="thu">'+(r.ready?'<span style="color:var(--ok)">&#10003;</span>':'<span style="color:var(--bad)">&#10007;</span>')+'</td></tr>';
     });
     out+='</tbody></table></section>';
   });
   document.getElementById("sections").innerHTML=out||'<p style="color:var(--muted);padding:2rem 0">Nothing matches the filters.</p>';
   document.querySelectorAll("#counts .count").forEach(function(c){c.onclick=function(){var s=c.getAttribute("data-s");state.status=(s===""||state.status===s)?null:s;render()}});
-  document.querySelectorAll("tbody tr").forEach(function(tr){tr.onclick=function(e){if(e.target.closest('a,.uuidline'))return;tr.classList.toggle("open")}});
 }
 document.getElementById("g20toggle").onclick=function(){state.g20=!state.g20;this.classList.toggle("on",state.g20);render()};
 document.getElementById("q").oninput=function(){state.q=this.value;render()};
