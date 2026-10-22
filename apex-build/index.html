@@ -54,11 +54,11 @@
   <div class="card">
     <div class="note"><b>Confidential:</b> all Apex files (CAD, reference images, this brief) are covered by the NDA. Do not share them outside your team or use them for anything else.</div>
     <ol class="qa">
-      <li><b>Render template.</b> Build the render template (section 6) and send it for approval. If you cannot build it, tell us and VNTANA will provide it.</li>
-      <li><b>Materials.</b> Build a material cube for each key material. Apex approves them. Approved materials go into the material library (section 5).</li>
-      <li><b>Build the model</b> from the VNTANA CAD, with library materials only: stowed, deployed, and the deploy animation (section 4).</li>
-      <li><b>Set up renders</b> with the approved render template.</li>
-      <li><b>Upload</b> to the Apex workspace on VNTANA, run the QA check, and tell us it is ready.</li>
+      <li><b>Materials.</b> Build a material cube for each key material and upload it. Apex approves each one in the VNTANA viewer against its reference photo. Approved materials go into the material library (section 5).</li>
+      <li><b>Build the model</b> from the VNTANA CAD, with library materials only: Deployed and Stowed first (section 4). Upload the GLBs to the Apex workspace and run the QA check.</li>
+      <li><b>Viewer review (VNTANA and Apex).</b> We review your GLBs with Apex in the VNTANA viewer, set the viewer settings (lighting) and pick the render views. We send you the settings and a screenshot of each view.</li>
+      <li><b>Render files.</b> Then build the Blender render setup to match those settings and views (section 6) and attach the .blend to each asset. Do not start this before step 3.</li>
+      <li><b>Animation.</b> Build the Animated asset last, once Deployed and Stowed are approved.</li>
       <li><b>Review:</b> Apex and VNTANA leave notes as annotations on the asset. Fix, re-upload as a new version.</li>
     </ol>
     <h3>Where files live</h3>
@@ -72,7 +72,7 @@
 <section>
   <h2><span class="n">3</span>Reference files (all platforms)</h2>
   <p class="lead">VNTANA shares these when the project starts. Gray boxes are placeholders until then.</p>
-  <div class="phs"><div class="ph"><div class="box"><span>TBD</span><small>BLEND</small></div><div class="cap"><b>Render template (.blend)</b>9 cameras, Studio + Dark Space environments, ACES 1.3. Your first deliverable (section 6).<span class="where">Lives in: Apex workspace &gt; asset "APEX_Render_Template"</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>HDRI</small></div><div class="cap"><b>Studio environment (HDRI)</b>Clean product lighting for catalog shots.<span class="where">Lives in: Apex workspace &gt; render template asset</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>HDRI</small></div><div class="cap"><b>Dark Space environment (HDRI)</b>Black background with a hard sun light.<span class="where">Lives in: Apex workspace &gt; render template asset</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>PHOTOS</small></div><div class="cap"><b>Material reference photos</b>Real finishes to match: solar cells, MLI, chromate, bare aluminum, paint.<span class="where">Lives in: Apex workspace &gt; "Reference" assets (tagged by material)</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>LIBRARY</small></div><div class="cap"><b>Approved material library</b>Approved MAT_ materials, ready to append into your files.<span class="where">Lives in: Apex workspace &gt; MAT_ assets</span></div></div></div>
+  <div class="phs"><div class="ph"><div class="box"><span>TBD</span><small>BLEND</small></div><div class="cap"><b>Render template (.blend)</b>9 cameras, 2 environments, ACES 1.3. Built after the viewer review with Apex (section 6); not needed to start.<span class="where">Lives in: Apex workspace &gt; asset "APEX_Render_Template"</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>HDRI</small></div><div class="cap"><b>Studio environment (HDRI)</b>Clean product lighting for catalog shots.<span class="where">Lives in: Apex workspace &gt; render template asset</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>HDRI</small></div><div class="cap"><b>Dark Space environment (HDRI)</b>Black background with a hard sun light.<span class="where">Lives in: Apex workspace &gt; render template asset</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>PHOTOS</small></div><div class="cap"><b>Material reference photos</b>Real finishes to match: solar cells, MLI, chromate, bare aluminum, paint.<span class="where">Lives in: Apex workspace &gt; "Reference" assets (tagged by material)</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>LIBRARY</small></div><div class="cap"><b>Approved material library</b>Approved MAT_ materials, ready to append into your files.<span class="where">Lives in: Apex workspace &gt; MAT_ assets</span></div></div></div>
 </section>
 
 <!-- 3 -->
@@ -89,7 +89,7 @@
     </tbody></table>
     <ul class="rules">
       <li>Example: <code>NOVA_Deployed</code>, <code>NOVA_Stowed</code>, <code>NOVA_Animated</code>.</li>
-      <li><b>Render setup:</b> every .blend uses the approved render template (section 6).</li>
+      <li><b>Render setup:</b> every .blend uses the render setup agreed after the viewer review (section 6). The GLBs come first; the .blend follows.</li>
       <li><b>Materials:</b> library materials only. Substance source files (.spp or .sbsar) for every new material.</li>
       <li>All textures packed in each .blend. One .blend attached per asset.</li>
     </ul>
@@ -123,8 +123,7 @@
     <h3>Material cube (for approval)</h3>
     <ul class="rules">
       <li>One beveled cube per material, 20 cm, with the texture at real-world scale.</li>
-      <li>Render it in the render template, in <b>both</b> environments (Studio and Dark Space), hero camera.</li>
-      <li>Upload each cube to the Apex workspace as an asset named <code>MAT_&lt;NAME&gt;_v1</code>, with the .blend attached and the reference photo it matches.</li>
+      <li>Upload each cube to the Apex workspace as an asset named <code>MAT_&lt;NAME&gt;_v1</code>, with its .blend attached and the reference photo it matches. Apex reviews it in the VNTANA viewer (Neutral environment).</li>
       <li>After approval, the material is locked. Use it as is. If a part needs a finish that is not in the library, make a new cube and get it approved first.</li>
     </ul>
   </div>
@@ -132,11 +131,12 @@
 
 <!-- 5 -->
 <section>
-  <h2><span class="n">6</span>Render template</h2>
+  <h2><span class="n">6</span>Render template (after the viewer review)</h2>
   <div class="card">
     <ul class="rules">
-      <li><b>You build the template first</b> and upload it as <code>APEX_Render_Template</code> for approval. If you cannot, tell us and VNTANA will provide it. After approval, start every file from it. Do not copy cameras into your own scene: the color settings do not come with them.</li>
-      <li><b>9 cameras:</b> 01_Hero, then 02 to 09 for the standard views (front, sides, back, top, bottom, detail).<span class="tbd">CONFIRM names</span></li>
+      <li><b>When:</b> only after VNTANA and Apex have reviewed your GLBs in the VNTANA viewer (section 2, step 3). We send you the agreed viewer settings and a screenshot of each render view. Build the render setup to match them.</li>
+      <li><b>How:</b> build it once as <code>APEX_Render_Template</code> and upload it for approval. After approval, start every render file from it. Do not copy cameras into your own scene: the color settings do not come with them.</li>
+      <li><b>9 cameras:</b> 01_Hero, then 02 to 09 for the standard views (front, sides, back, top, bottom, detail). Exact angles come from the screenshots.<span class="tbd">CONFIRM names</span></li>
       <li><b>2 environments,</b> packed in the file: <b>Studio</b> (clean product lighting) and <b>Dark Space</b> (black background, hard sun light).</li>
       <li>Cycles. Color Management: ACES 1.3, exposure 1.0. 2048 &times; 2048, transparent background. No extra lights.</li>
       <li>Renders run in VNTANA Advanced Renders from the attached .blend.</li>
