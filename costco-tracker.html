@@ -202,8 +202,8 @@ var DATA = [
   issue:"Derek-added demo asset, not part of the POC catalog.",
   action:"DELETED from workspace 10-20 (moved to discarded)."},
  {item:"264883", pdp:"https://www.costco.com.mx/p/264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
-  issue:"Clean: 75k tris, 1.5 MB, correct 1.87 m scale, materials good (verified in render 10-20).",
-  action:"Rename on platform to item number; description MISSING (Daniela skipped it): Derek adding. Then done."}
+  issue:"3D clean: 75k tris, 1.5 MB, correct 1.87 m scale, materials good. Full battery 10-22 found ONE defect: processed without Bottom Center pivot, so the origin is mid-model and it floats 40 cm in AR.",
+  action:"Settings-only fix: reprocess the original with PIVOT BOTTOM CENTER (PMUV, Polygon Limit 75,000, Max Res 4K, Compression Level 2). Reprocessed version drops to Draft: re-publish. Then rename to 264883 (Production), add description (Daniela skipped it), AR check, confirm white colorway vs PDP, Live Asset tag."}
 ];
 // ---- render ----
 var state={status:"",vendor:"",q:"",g20:false,sort:"item",dir:1};
