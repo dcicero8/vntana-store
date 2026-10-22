@@ -9,7 +9,7 @@
 </head>
 <body class="locked">
 <div class="site">
-<div class="top"><div class="wrap"><span class="tag">APEX &times; VNTANA</span><span>3D Build Brief</span><span class="sub">DRAFT &middot; Oct 20, 2026</span></div></div>
+<div class="top"><div class="wrap"><span class="tag">APEX &times; VNTANA</span><span>3D Build Brief</span><span class="sub">DRAFT &middot; updated Oct 22, 2026</span></div></div>
 
 <div class="head"><div class="wrap">
   <div class="crumbs"><a href="index.html">All platforms</a> / Nova</div>
@@ -34,24 +34,34 @@
       <tr><th>Propulsion</th><td>Hall-effect electric thruster (HET), up to 650 m/s</td></tr>
       <tr><th>Comms</th><td>S-band TT&amp;C (base); X-band Mission Data Link (option)</td></tr>
       <tr><th>Launch</th><td>SpaceX Falcon 9 (rideshare or dedicated), NSSL, others</td></tr>
-      <tr><th>Bus outer size</th><td>Not published. Use the CAD VNTANA sends you (outside only).<span class="tbd">CAD COMING</span></td></tr>
+      <tr><th>Bus outer size</th><td>About 965 &times; 720 &times; 1185 mm (from the CAD, without wings and separation ring)</td></tr>
+      <tr><th>Deployed size</th><td>15.65 m wing tip to wing tip &times; 0.72 m &times; 1.76 m</td></tr>
+      <tr><th>Stowed size</th><td>1.16 &times; 0.72 &times; 2.05 m (folded wings stick out past the bus ends)</td></tr>
+      <tr><th>Scale check</th><td>Payload deck plate = 935 &times; 1185 &times; 25.4 mm, exactly the published payload plate. If yours does not match, the scale is wrong.</td></tr>
     </tbody></table>
   </div>
-  <p class="lead">Source: <a href="https://www.apexspace.com/platforms/nova" target="_blank" rel="noopener">apexspace.com/platforms/nova</a>, read Oct 20, 2026.</p>
+  <p class="lead">Sources: <a href="https://www.apexspace.com/platforms/nova" target="_blank" rel="noopener">apexspace.com/platforms/nova</a> (read Oct 20, 2026) and the Nova CAD (received Oct 21, 2026). Sizes measured without the zero-width CAD lines described in section 2.</p>
 </section>
 
 <!-- 2 -->
 <section>
   <h2><span class="n">2</span>Reference</h2>
-  <p class="lead">VNTANA shares these when the project starts. Gray boxes are placeholders until then.</p>
-  <div class="phs"><div class="ph"><div class="box"><span>TBD</span><small>CAD</small></div><div class="cap"><b>Nova CAD (outside only)</b>Internals removed by VNTANA. Source for all sizes, positions, stowed and deployed layouts.<span class="where">Lives in: Apex workspace &gt; asset "NOVA_CAD_Reference"</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>PHOTOS</small></div><div class="cap"><b>Nova hardware photos</b>Real finishes and surface detail: isogrid, chromate, MLI, harness.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div><div class="ph"><div class="box" style="background:#dbeedd;color:#1f8a4c"><span>RECEIVED</span><small>3 PHOTOS</small></div><div class="cap"><b>Nova stowed reference</b>Nova 1, stowed, on a vibration test table (Oct 20). Shows the folded arrays, rails, and most finishes.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>IMAGE</small></div><div class="cap"><b>Nova deploy sequence</b>Order the parts move from stowed to deployed.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div></div>
+  <p class="lead">VNTANA shares these in the Apex workspace. Green = received; gray = still to come.</p>
+  <div class="phs"><div class="ph"><div class="box" style="background:#dbeedd;color:#1f8a4c"><span>RECEIVED</span><small>2 GLBs</small></div><div class="cap"><b>Nova CAD: deployed and stowed (outside only)</b>Received Oct 21. Internals removed by VNTANA. Source for all sizes, positions, stowed and deployed layouts.<span class="where">Lives in: Apex workspace &gt; assets "NOVA_CAD_Reference"</span></div></div><div class="ph"><div class="box" style="background:#dbeedd;color:#1f8a4c"><span>RECEIVED</span><small>PARTS MANIFEST</small></div><div class="cap"><b>Nova parts manifest</b>Every part group from the CAD with CAD part numbers, proposed names, material and detail level. Your modeling checklist.<span class="where">Lives in: Apex workspace (shared with you there)</span></div></div><div class="ph"><div class="box" style="background:#dbeedd;color:#1f8a4c"><span>RECEIVED</span><small>2 PHOTOS</small></div><div class="cap"><b>Nova hardware photos</b>Launch-side deck (separation ring, boxes, harness) and an isogrid panel close-up (chromate and bare aluminum).<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div><div class="ph"><div class="box"><span>REQUESTED</span><small>4 PHOTOS</small></div><div class="cap"><b>Close-up photos</b>Asked from Apex: solar cells straight on, the -X wall (radiator?), the payload deck, a real MLI blanket.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div><div class="ph"><div class="box" style="background:#dbeedd;color:#1f8a4c"><span>RECEIVED</span><small>3 PHOTOS</small></div><div class="cap"><b>Nova stowed reference</b>Nova 1, stowed, on a vibration test table (Oct 20). Shows the folded arrays, rails, and most finishes.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div><div class="ph"><div class="box"><span>TBD</span><small>IMAGE</small></div><div class="cap"><b>Nova deploy sequence</b>Order the parts move from stowed to deployed.<span class="where">Lives in: Apex workspace &gt; "Reference" assets tagged Nova</span></div></div></div>
   <div class="note"><b>Do not model test equipment.</b> The Nova 1 photos were taken on a vibration test table. Leave out the test table, the aluminum test feet the satellite sits on, loose blue and orange tape on the table, red tags, and loose test cables. Model only the satellite.</div>
   <div class="card">
     <ul class="rules">
-      <li><b>Inside-panel photos are for finishes only.</b> Some photos show the inside of a bus panel (harness routing, bags, zip ties). Do not model these: the CAD has no internals. Use them to match the chromate and bare aluminum.</li>
+      <li><b>The launch-side deck photo is the real outside.</b> It shows the separation ring, boxes and harness, all in the CAD: model them. Leave out what is only there for handling: silver protective bags, zip-tie tails, red tags.</li>
       <li><b>Stowed layout (from the photos):</b> the solar array folds flat against the side of the bus (4 panels in a row are visible), held under gold perforated rails with black spring stacks at the ends. Use the CAD for exact positions.</li>
-      <li><b>Reference images and CAD:</b> in the Apex workspace on VNTANA<span class="tbd">LINK TBD</span>. Hardware photos there show the real finishes (gold chromate isogrid, bare aluminum, MLI, harness). Use them for materials and surface detail.</li>
-      <li><b>CAD from VNTANA</b> (outside only, internals removed)<span class="tbd">COMING</span>: the source for all sizes, part positions, and the stowed and deployed layouts.</li>
+      <li><b>Reference images and CAD:</b> in the Apex workspace on VNTANA<span class="tbd">LINK TBD</span>. Use the photos for materials and surface detail, the CAD for every size and position.</li>
+    </ul>
+    <h3>How to use the two CAD files</h3>
+    <ul class="rules">
+      <li><b>The deployed file is the master.</b> VNTANA removed internals by deleting every part hidden from outside, separately in each file. So the stowed file is missing parts that only the folded wings hide, such as the solar array drive bodies. Build every part from the deployed file, and use the stowed file only for the stowed positions.</li>
+      <li><b>The animated asset needs every part from both poses.</b> Nothing may pop in or out while the wings unfold.</li>
+      <li><b>Line the files up.</b> The stowed file sits about 42 / -106 / -2 mm (X / Y / Z) away from the deployed one. Move both so the separation ring face is the shared origin (section 5).</li>
+      <li><b>Delete the zero-width lines.</b> The cable assembly on the +Z end plate contains lines 12.345 m long with no width (CAD leftovers). They do not render but make the bounding box 13.8 m tall and break framing.<span class="tbd">CONFIRM with Apex</span></li>
+      <li><b>Turn the model upright.</b> In the CAD the stack axis (separation ring to payload deck) points along the viewer's depth axis, not up. Rotate so +Z points from the separation ring face toward the payload deck.</li>
       <li><b>Product images:</b> the renders and line drawings on the <a href="https://www.apexspace.com/platforms/nova" target="_blank" rel="noopener">Nova page</a> show the overall shape and the two solar array wings.</li>
     </ul>
   </div>
@@ -76,23 +86,41 @@
 <section>
   <h2><span class="n">4</span>Parts to model</h2>
   <div class="card" style="padding:8px 14px">
-    <table class="t"><thead><tr><th>Part name</th><th>What it is</th></tr></thead><tbody>
-      <tr><td><code>NOVA_BUS</code></td><td>Main structure: isogrid panels, top and bottom decks</td></tr>
-      <tr><td><code>NOVA_MLI</code></td><td>Thermal blankets (MLI) on the bus</td></tr>
-      <tr><td><code>NOVA_RADIATOR</code></td><td>Radiator panels</td></tr>
-      <tr><td><code>NOVA_SEP_RING</code></td><td>Launch interface / separation ring</td></tr>
-      <tr><td><code>NOVA_SADA_L</code>, <code>NOVA_SADA_R</code></td><td>Solar array drives (rotate the wings to track the sun)</td></tr>
-      <tr><td><code>NOVA_YOKE_L</code>, <code>NOVA_YOKE_R</code></td><td>Arms from the SADA to the array</td></tr>
-      <tr><td><code>NOVA_ARRAY_L1..</code>, <code>NOVA_ARRAY_R1..</code></td><td>Solar array panels (one name per panel), with <code>NOVA_HINGE_*</code> between panels</td></tr>
-      <tr><td><code>NOVA_THRUSTER</code></td><td>Hall-effect electric thruster</td></tr>
-      <tr><td><code>NOVA_PROP_TANK</code></td><td>Xenon tank, if visible</td></tr>
-      <tr><td><code>NOVA_ANTENNA_SBAND_1..</code></td><td>S-band antennas</td></tr>
-      <tr><td><code>NOVA_STAR_TRACKER_1..</code></td><td>Star trackers</td></tr>
-      <tr><td><code>NOVA_PAYLOAD_DECK</code></td><td>Payload mounting deck</td></tr>
-      <tr><td><code>NOVA_HARNESS</code></td><td>Visible wiring harness</td></tr>
+    <table class="t"><thead><tr><th>Part name</th><th>What it is</th><th>Moves?</th><th>Detail</th></tr></thead><tbody>
+      <tr><td colspan="4"><b>Solar arrays</b> (one per side: <code>&lt;side&gt;</code> = <code>L</code> or <code>R</code>)</td></tr>
+      <tr><td><code>NOVA_ARRAY_L</code>, <code>NOVA_ARRAY_R</code></td><td>Each wing, 7.37 m long deployed</td><td>Deploys</td><td>Full</td></tr>
+      <tr><td><code>NOVA_ARRAY_&lt;side&gt;_PANEL_1..4</code>, <code>_PANEL_TIP</code></td><td>4 full panels and a half-width tip panel per wing, each a frame plus a backing panel. Panel heights step down 1101 &gt; 1073 &gt; 1044 &gt; 1016 mm</td><td>Deploys</td><td>Full</td></tr>
+      <tr><td><code>NOVA_ARRAY_&lt;side&gt;_CELLS_1..4</code></td><td>4 solar cell strings per wing, each 5.8 m &times; 397 mm</td><td>Deploys</td><td>Full</td></tr>
+      <tr><td><code>NOVA_YOKE_&lt;side&gt;</code></td><td>Diamond-shaped arms from the bus to the first panel, with a flat cable</td><td>Pivots at the bus</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_HINGE_&lt;side&gt;_*</code></td><td>Hinges between panels and latch blocks near the tip</td><td>Pivots on hinge axis</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_SADA_L</code>, <code>NOVA_SADA_R</code></td><td>Solar array drive on each side wall, where the yoke arms meet: round rotating flange, cable through the center. Take it from the deployed file<span class="tbd">CONFIRM</span></td><td>Rotates the wing</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_ARRAY_MOUNTS</code></td><td>Corner brackets and standoffs the folded wings latch to<span class="tbd">CONFIRM</span></td><td>Static</td><td>Normal</td></tr>
+      <tr><td colspan="4"><b>Bus</b></td></tr>
+      <tr><td><code>NOVA_PAYLOAD_DECK</code></td><td>Payload deck plate, 935 &times; 1185 mm, with thin film parts</td><td>Static</td><td>Full</td></tr>
+      <tr><td><code>NOVA_BUS_DECK_LOWER</code></td><td>Launch-side deck plate, 965 &times; 1185 mm, with silver film areas</td><td>Static</td><td>Full</td></tr>
+      <tr><td><code>NOVA_BUS_WALL_PX</code>, <code>_NX</code>, <code>_PZ</code>, <code>_NZ</code></td><td>Side and end walls with their covers. The -X wall may be the radiator<span class="tbd">CONFIRM</span></td><td>Static</td><td>Full / Normal</td></tr>
+      <tr><td><code>NOVA_SEP_RING</code></td><td>Round gold isogrid ring and square frame on the launch-side deck, with tube fittings and a valve<span class="tbd">CONFIRM</span></td><td>Static</td><td>Full</td></tr>
+      <tr><td><code>NOVA_CORNER_MECH_1..4</code></td><td>4 identical units at the launch-side deck corners<span class="tbd">CONFIRM</span></td><td>Static</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_AVIONICS_BOX_1..3</code></td><td>Box 1: large swirl-milled box on the launch-side deck. Box 2: tall narrow box. Box 3: box on a frame</td><td>Static</td><td>Full / Normal</td></tr>
+      <tr><td><code>NOVA_BUS_BRACKETS</code></td><td>Small brackets and clips</td><td>Static</td><td>Simple</td></tr>
+      <tr><td colspan="4"><b>Propulsion, sensors, harness</b></td></tr>
+      <tr><td><code>NOVA_THRUSTER</code></td><td>Assembly on the -Z end below the deck<span class="tbd">CONFIRM it is the Hall thruster</span></td><td>Static</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_CAMERA</code></td><td>Camera body and lens on the -X upper corner</td><td>Static</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_SENSOR_1</code></td><td>Sensor head on a bracket, -X upper corner<span class="tbd">CONFIRM star tracker or sun sensor</span></td><td>Static</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_ANTENNA_SBAND_1..</code></td><td>S-band antennas<span class="tbd">NOT FOUND IN CAD YET</span></td><td>Static</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_HARNESS</code></td><td>Wiring harness on the launch-side deck and out to the wings (white wrap, blue ties in the photos)</td><td>Static</td><td>Full</td></tr>
+      <tr><td><code>NOVA_CABLE_ASSY_PZ</code></td><td>Cable and connector assembly on the +Z end plate (delete the zero-width lines, section 2)</td><td>Static</td><td>Normal</td></tr>
+      <tr><td><code>NOVA_LABEL_PLATE</code></td><td>Thin plate near a launch-side deck corner<span class="tbd">CONFIRM</span></td><td>Static</td><td>Normal</td></tr>
     </tbody></table>
   </div>
-  <p class="lead">Starting list. Follow the CAD: if it shows more parts, add them with the same naming. Panel and part counts<span class="tbd">FROM CAD</span></p>
+  <div class="card">
+    <ul class="rules">
+      <li><b>Repeatable parts: model once, place copies.</b> 1,312 catalog screws, washers, nuts and connectors (84 part numbers). Model each part number once and place it as a linked copy (instance) everywhere it appears. A fix to one updates every copy.</li>
+      <li><b>Detail:</b> Full = large or seen up close, full detail. Normal = visible but smaller. Simple = small or hard to see, keep it light.</li>
+      <li><b>Do not model</b> the reaction wheels and bulkheads left inside the closed panel box.</li>
+      <li><b>Names are proposed.</b> Apex is reviewing the part IDs marked CONFIRM. The parts manifest (in the Apex workspace) has the CAD part numbers for every row. If the CAD shows a part this list misses, add it with the same naming and tell us.</li>
+    </ul>
+  </div>
 </section>
 
 <!-- 5 -->
@@ -100,8 +128,11 @@
   <h2><span class="n">5</span>Pre-delivery QA</h2>
   <div class="card">
     <ol class="qa">
-      <li>Real-world size from the VNTANA CAD, in meters.</li>
+      <li>Real-world size from the VNTANA CAD, in meters: deployed 15.65 &times; 0.72 &times; 1.76 m, stowed 1.16 &times; 0.72 &times; 2.05 m, payload deck 935 &times; 1185 mm.</li>
+      <li>Zero-width CAD lines deleted: the bounding box matches the sizes above (not 13.8 m tall).</li>
       <li>Every part named with <code>NOVA_</code>; options grouped under <code>OPT_</code> empties.</li>
+      <li>Repeatable parts are linked copies of one source per part number.</li>
+      <li>Parts hidden by the folded wings (solar array drives) are present in the stowed and animated assets.</li>
       <li>Hide each option group: nothing else disappears, nothing floats.</li>
       <li>Three assets uploaded: NOVA_Deployed, NOVA_Stowed, NOVA_Animated, each with its own GLB and .blend. Stowed fits the launch envelope in the CAD.</li>
       <li>NOVA_Animated: 10-second DEPLOY clip, stowed to deployed, no parts passing through each other; pivots on the real hinge and SADA axes.</li>
