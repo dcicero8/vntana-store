@@ -340,7 +340,7 @@ function render(){
         +'<td><span class="pill '+r.status+'">'+s.label+'</span>'+was+'</td>'
         +'<td>'+size+wsize+'</td>'
         +'<td class="hide-m" style="font-size:.72rem;max-width:120px">'+(r.pd?esc(r.pd):'<span style="color:var(--muted)">not stated</span>')+'</td>'
-        +'<td class="hide-m" style="font-size:.72rem;max-width:150px">'+ar+'</td>'
+        +'<td class="hide-m" style="text-align:center" title="'+esc(r.ar||'')+'">'+(r.ar?(/ok|passed/i.test(r.ar)&&!/BUT/i.test(r.ar)?'<span style="color:var(--ok);font-weight:800;font-size:1rem">&#10003;</span>':'<span style="color:var(--warn);font-weight:800">!</span>'):'<span style="color:var(--muted)">-</span>')+'</td>'
         +'<td style="font-size:.72rem">'+(r.ard?'<span style="color:var(--ok);font-weight:800">&#10003; '+esc(r.ard)+'</span>':((s.k==='shippable'||s.k==='review')?'<span style="color:var(--warn);font-weight:700">pending</span>':'<span style="color:var(--muted)">n/a</span>'))+'</td>'
         +'<td style="max-width:280px">'+((r.ic&&r.ic.length)?r.ic.map(function(c){return '<span class="icchip" title="'+esc(ISSUES[c][0])+'">'+c+'</span>'}).join(''):(r.ic?'<span class="icnone">none</span>':''))+'</td>'
         +'<td class="hide-m" style="max-width:320px">'+(r.need?'<div class="need">&#9654; '+esc(r.need)+'</div>':'')+'</td>'
