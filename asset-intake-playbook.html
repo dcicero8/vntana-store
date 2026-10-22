@@ -87,6 +87,7 @@
 <li><b>Omitted metallicFactor:</b> glTF defaults it to 1.0, so untextured wood/fabric renders as gray metal. Check material JSON, not just the viewport.</li>
 <li><b>Tiny baked textures:</b> KeyShot per-part bakes at 250 px make LCD digits and logos unrecoverable mush. Only the vendor's export settings can fix resolution; repainting is best-effort.</li>
 <li><b>Stray helper nodes:</b> Helper001, Particle_View, lux_root, leftover cameras. They inflate the bounding box and make the product float in AR. Delete before export.</li>
+<li><b>Degenerate sliver meshes:</b> CAD centerline/routing curves exported as 1-2 triangle, zero-width, meter-scale meshes. They inflate the bounding box silently, so the viewer's orbit center sits meters off the model ("rotating around a giant ball"), the dimensions readout is wrong, and AR scale breaks. Seen: satellite CAD with five 12.3 m fake cables making a 2 m model read 13.9 m tall. Detect: near-zero width in two axes plus large extent, or 2 triangles or fewer with large extent. Delete them.</li>
 <li><b>Transmission glass:</b> KHR_materials_transmission renders OPAQUE in AR Quick Look / USDZ. Fix: alpha-blend glass (alpha around 0.18, blend mode). Web viewer and USDZ both look right after.</li>
 </ul>
 </div></div>
@@ -189,6 +190,7 @@
 <li><b>Detect <code>extensionsRequired</code> at upload</b> and show an actionable message ("this file requires Draco decoding / texture transform support; optimization pipelines will reject it; here is how to export without it"). Today the user gets a silent failure and blames the platform.</li>
 <li>Better: <b>decode Draco and bake texture transforms server-side at ingest</b>. Blender does both in one import; this entire failure class would disappear.</li>
 <li><b>Warn when output size exceeds input</b>: it always means the settings are fighting the optimizer.</li>
+<li><b>Flag or drop degenerate sliver meshes at ingest</b> (1-2 triangles, near-zero width, large extent): they are always CAD export artifacts and they silently break orbit centering, the dimensions readout, and AR scale.</li>
 <li><b>Fix the versioning rotation accumulation bug</b> (repro pair above; fix requested of the team).</li>
 <li>Consider allowing <b>Pivot Point Alignment on Convert Only</b>: grounding is the one thing pass-through users still need.</li>
 </ul>
