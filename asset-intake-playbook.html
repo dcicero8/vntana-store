@@ -118,6 +118,12 @@
 <div class="row"><b>Workaround</b><div>Never adjust rotation in platform settings on an asset that will be re-versioned; orientation fixes go in the FILE. A contaminated asset cannot be cleaned: rebuild as a new asset and re-key any external UUID references.</div></div>
 </div>
 <div class="card">
+<h3>GLB-to-USDZ conversion mismatch <span class="tag bug">open bug, 3 repro pairs</span></h3>
+<div class="row"><b>What</b><div>On some assets the platform's generated USDZ does not match its own optimized GLB: the web GLB is grounded and true to size, but the USDZ comes out rotated (9 to 45 degrees) and floating below the AR floor. Found on three Costco fitness assets in one day (697288, 697444, 701252: all KeyShot-origin NordicTrack models processed via Preserve Meshes and UVs with Bottom Center pivot). A sibling asset (1851051) through the identical flow converts correctly.</div></div>
+<div class="row"><b>Detect</b><div>Numeric USDZ gate: compare the USDZ bounding box and min-Y against the GLB (qa-asset.py --usdz does this). Visually: the product tilts and sinks in iOS Quick Look while the web viewer looks perfect.</div></div>
+<div class="row"><b>Status</b><div>ModelOps ticket to file with the three GLB/USDZ repro pairs. Until fixed: web viewer is shippable, hold iOS AR sign-off on affected assets.</div></div>
+</div>
+<div class="card">
 <h3>Smaller gotchas worth documenting</h3>
 <ul>
 <li><b>Convert Only locks out everything</b>, including Pivot Point Alignment. The workaround is Preserve Meshes and UVs with limits raised above the file's actual counts.</li>
