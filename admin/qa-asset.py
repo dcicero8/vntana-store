@@ -152,16 +152,27 @@ src, outdir, do_fix, expect = argv[0], argv[1], argv[2]=="1", json.loads(argv[3]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=src)
 out = {}
-pts=[]
+pts=[]; sliver_pts=[]; out["slivers"]=[]
+from mathutils import Vector as _V
 for o in bpy.data.objects:
     if o.type!="MESH": continue
     me=o.data; n=len(me.vertices)
     if n==0: continue
+    bb=[o.matrix_world @ _V(c) for c in o.bound_box]
+    bd=sorted(max(p[i] for p in bb)-min(p[i] for p in bb) for i in range(3))
+    is_sliver=(bd[0]<0.002 and bd[1]<0.002 and bd[2]>0.5) or (len(me.polygons)<=2 and bd[2]>0.5)
     co=np.empty(n*3); me.vertices.foreach_get("co",co); co=co.reshape(-1,3)
     mw=np.array(o.matrix_world)
     w=(co @ mw[:3,:3].T) + mw[:3,3]
+    if is_sliver:
+        out["slivers"].append([o.name, round(bd[2],3), len(me.polygons)])
+        sliver_pts.append(w[::max(1,n//20000)])
+        continue
     pts.append(w[::max(1,n//20000)])
 P=np.vstack(pts) if pts else np.zeros((1,3))
+if sliver_pts:
+    PF=np.vstack([P]+sliver_pts)
+    out["full_dims_with_slivers"]=[float(PF[:,i].max()-PF[:,i].min()) for i in range(3)]
 dims=[float(P[:,i].max()-P[:,i].min()) for i in range(3)]
 out["aabb_dims"]=dims
 out["min_z"]=float(P[:,2].min())
@@ -185,7 +196,12 @@ out["lean_pitch_deg"]=degX; out["lean_roll_deg"]=degY
 out["straight_dims"]=[eX, eY, dims[2]]
 needs_fix = abs(degX)>1.0 or abs(degY)>1.0 or abs(out["min_z"])>0.02 or max(map(abs,out["center_xy"]))>0.05
 out["needs_geo_fix"]=bool(needs_fix)
+if out["slivers"]: needs_fix=True
+out["needs_geo_fix"]=bool(needs_fix)
 if do_fix and needs_fix:
+    sliver_names={s[0] for s in out["slivers"]}
+    for o in [x for x in bpy.data.objects if x.name in sliver_names]:
+        bpy.data.objects.remove(o, do_unlink=True)
     R=Matrix.Rotation(math.radians(degY),4,'Y') @ Qx
     for o in bpy.data.objects:
         if o.parent is None: o.matrix_world = R @ o.matrix_world
@@ -248,6 +264,10 @@ def blender_checks(path, outdir, fix, expect, report):
         return None
     d = out["aabb_dims"]
     report.info("world dims (m)", f'{d[0]:.2f} x {d[1]:.2f} x {d[2]:.2f}')
+    if out.get("slivers"):
+        fd = out.get("full_dims_with_slivers", d)
+        names = ", ".join(f"{s[0]} ({s[1]}m/{s[2]} tris)" for s in out["slivers"][:8])
+        report.flag("SLIVERS", f"{len(out['slivers'])} degenerate sliver mesh(es) (CAD centerline/routing artifacts): {names}. They inflate the bounding box to {fd[0]:.2f} x {fd[1]:.2f} x {fd[2]:.2f} m, so the viewer orbit center sits off the model (giant-ball rotation) and AR scale/dimensions read wrong. Delete them (--fix does it). Dims above are measured WITHOUT them.")
     if max(d) > 20 or max(d) < 0.03:
         report.flag("units", f"Implausible size ({max(d):.1f} m): wrong units at export (cm/inches as meters). Rescale.")
     pitch, roll = out["lean_pitch_deg"], out["lean_roll_deg"]
