@@ -46,7 +46,6 @@
   table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
   th{font-size:.6rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#9aa0a8;text-align:left;padding:.5rem .65rem;border-bottom:2px solid var(--line);background:#fafbfc;white-space:nowrap}
   td{padding:.55rem .65rem;border-bottom:1px solid var(--line);vertical-align:top;font-size:.8rem;line-height:1.45}
-  tbody tr{cursor:pointer}
   tbody tr:hover td{background:#fafbfc}
   tr.disc td{opacity:.55}
   .item{font-weight:800;white-space:nowrap;font-size:.86rem}
@@ -62,10 +61,10 @@
   .was{display:block;font-size:.64rem;color:var(--muted);margin-top:.3rem}
   .size-ok{color:var(--ok);font-weight:700}.size-bad{color:var(--bad);font-weight:700}
   .was-size{display:block;font-size:.64rem;color:var(--muted)}
-  .clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#374151;font-size:.76rem}
-  tr.open .clamp{display:block;-webkit-line-clamp:unset;overflow:visible}
-  .more{font-size:.62rem;color:var(--rev);font-weight:700}
-  tr.open .more{display:none}
+  .cell-text{color:#374151;font-size:.76rem}
+  .thumb{width:58px;height:58px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;display:block}
+  .nothumb{width:58px;height:58px;border:1px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#c3c8cf;font-size:.6rem}
+  .need{color:#b45309;font-weight:800;font-size:.73rem;margin-bottom:.3rem}
   .thu{font-weight:800}
   .foot{padding:1.2rem 0 2.5rem;font-size:.72rem;color:var(--muted);line-height:1.5}
   .foot summary{cursor:pointer;font-weight:800;color:#374151;font-size:.8rem;padding:.4rem 0}
@@ -91,103 +90,104 @@
 <script>
 var PLATFORM_BASE = "https://platform.vntana.com/Costco/mexico-poc/products/details/";
 var DATA = [
- {item:"697004", u:"be3daa53-b8d6-41a3-b4e2-cc5fb8b70682", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"repair", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
+ {item:"697004", t:"https://www.costco.com.mx/medias/sys_master/products/h68/ha9/383380879900702.jpg", u:"be3daa53-b8d6-41a3-b4e2-cc5fb8b70682", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze pedestal fan", vendor:"TBD (KeyShot)", status:"repair", g20:true, ready:true, ar:"ok 0.62 x 1.30 m, fan", so:1024.0, sn:0.92, nm:"ok",
   issue:"Was: LCD/logo blur baked in (low-DPI KeyShot bakes) AND the pole assembled 14.8 deg off-perpendicular from the base (the AR lean): vendor source posed wrong.",
   action:"FIX READY: 697004_logofix_v6_straight.glb in Downloads (final: supersedes v2-v5): atlas repainted at 4x, pole straightened via socket-joint surgery, base flat, grounded (crisp OmniBreeze wordmark both hub caps, clean '80' display, buttons cleaned to unlabeled capacitive style). Upload via PRESERVE MESHES AND UVS with Polygon Limit 300,000 (file is 256k: no decimation) and Max Resolution 4K (protects the repainted 2048x4096 atlas). PIVOT: BOTTOM CENTER. (Convert Only would lock out the pivot setting.) Desc: 'OmniBreeze, Ventilador de Pedestal Blanco'. NOTE: reconstruction done WITHOUT reference images: none exist online for OmniBreeze (searched 10-21, incl. PDP + retail sites). This is best-effort from the blurry source; button icons omitted. Revisit only if the vendor or Costco supplies product photos."},
- {item:"1288769", u:"e3e67fe5-6a9d-44ce-bfb1-e3450bc2faed", pdp:"https://www.costco.com.mx/p/1288769", name:"Wine Enthusiast Cava de Vinos 150 Botellas Gris", vendor:"Wine Enthusiast (Stuart Diamond)", status:"shippable", g20:true, ready:true, ar:"ok 0.72 x 1.87 m tall; depth 1.15 m reads deep for a cooler, verify vs PDP", so:15.9, sn:0.32, nm:"ok",
+ {item:"1288769", t:"https://www.costco.com.mx/medias/sys_master/products/h55/h77/11570471370782.jpg", u:"e3e67fe5-6a9d-44ce-bfb1-e3450bc2faed", pdp:"https://www.costco.com.mx/p/1288769", name:"Wine Enthusiast Cava de Vinos 150 Botellas Gris", vendor:"Wine Enthusiast (Stuart Diamond)", status:"shippable", g20:true, ready:true, ar:"ok 0.72 x 1.87 m tall; depth 1.15 m reads deep for a cooler, verify vs PDP", so:15.9, sn:0.32, nm:"ok",
   issue:"Had five source defects (black stainless, metallic wood shelves, 13.3 deg baked lean, floating base, AR-opaque glass). All repaired by VNTANA.",
   action:"DONE + AR VERIFIED on device 10-21 (<a href='assets/costco/1288769_ar_verified.webp' target='_blank'>photo</a>). Live asset: e3e67fe5. Old asset 7e910ec2 archived; Daniela updates back-office UUID to e3e67fe5."},
- {item:"GAF858_raw_v2", u:"bc33e9a0-28e1-4ffe-87c7-010a457fbfc8", pdp:"https://www.costco.com.mx/p/6232432", name:"Gourmia air fryer (= item 6232432)", vendor:"TBD (KeyShot 15)", os:"vendor", status:"review", g20:true, ready:true, ar:"ok 0.30 x 0.40 x 0.30 m", so:56.2, sn:1.7, nm:"RENAME to 6232432",
+ {item:"GAF858_raw_v2", need:"Derek: rename to 6232432 + archive failed originals. Daniela: description", t:"https://www.costco.com.mx/medias/sys_master/products/hab/hbe/242538472701982.jpg", u:"bc33e9a0-28e1-4ffe-87c7-010a457fbfc8", pdp:"https://www.costco.com.mx/p/6232432", name:"Gourmia air fryer (= item 6232432)", vendor:"TBD (KeyShot 15)", os:"vendor", status:"review", g20:true, ready:true, ar:"ok 0.30 x 0.40 x 0.30 m", so:56.2, sn:1.7, nm:"RENAME to 6232432",
   issue:"Original was pre-Draco'd 14M tris (failed 3D Scan twice; Convert Only = 45.8 MB).",
   action:"FIXED via decompressed master + Preserve Meshes and UVs. Rename asset to the item number; archive failed originals."},
- {item:"697287", u:"5f33a0aa-c791-4263-b64e-a14ab948cb88", pdp:"https://www.costco.com.mx/p/697287", name:"Fitness (likely RW300 rower)", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.65 x 2.10 x 1.12 m, rower", so:3.7, sn:3.7, nm:"ok",
+ {item:"697287", need:"Derek: flip Live Public", t:"https://www.costco.com.mx/medias/sys_master/products/h0b/h76/398628328079390.jpg", u:"5f33a0aa-c791-4263-b64e-a14ab948cb88", pdp:"https://www.costco.com.mx/p/697287", name:"NordicTrack Remadora RW300", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.65 x 2.10 x 1.12 m, rower", so:3.7, sn:3.7, nm:"ok",
   issue:"Clean (75k, Convert Only). Currently LIVE INTERNAL, not Public.",
   action:"Flip to Live Public."},
- {item:"1856726", u:"3a91a341-3d10-4041-ba4a-481476377d70", pdp:"https://www.costco.com.mx/p/1856726", name:"Fitness (likely T Series 7 treadmill)", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.88 x 1.51 x 1.63 m, treadmill", so:2.6, sn:2.6, nm:"ok",
+ {item:"1856726", need:"Derek: flip Live Public", t:"https://www.costco.com.mx/medias/sys_master/products/h59/hdc/472881201184798.jpg", u:"3a91a341-3d10-4041-ba4a-481476377d70", pdp:"https://www.costco.com.mx/p/1856726", name:"NordicTrack Caminadora T Series 7", vendor:"iFIT/NordicTrack", os:"repair", status:"review", g20:true, ready:false, ar:"ok 0.88 x 1.51 x 1.63 m, treadmill", so:2.6, sn:2.6, nm:"ok",
   issue:"Clean (112.2k, Convert Only). Currently LIVE INTERNAL, not Public.",
   action:"Flip to Live Public."},
- {item:"3583883", u:"f077a296-5089-4423-a906-a5911236c7bc", pdp:"https://www.costco.com.mx/p/3583883", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:350.3, sn:0.53, nm:"ok",
+ {item:"3583883", need:"Daniela: name + description", t:"https://www.costco.com.mx/medias/sys_master/products/h24/h76/431152955424798.jpg", u:"f077a296-5089-4423-a906-a5911236c7bc", pdp:"https://www.costco.com.mx/p/3583883", name:"Sharper Image, Masajeador de Percusión Portátil", vendor:"TBD", status:"review", g20:true, ready:true, so:350.3, sn:0.53, nm:"ok",
   issue:"None: 3.8M to 75k via Industrial. Textbook win.",
   action:"None."},
- {item:"VA701689", pdp:"https://www.costco.com.mx/p/VA701689", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.7, nm:"ok",
+ {item:"VA701689", need:"Daniela: metadata check", t:"https://www.costco.com.mx/medias/sys_master/products/h66/hbc/436354838888478.jpg", pdp:"https://www.costco.com.mx/p/VA701689", name:"Bose Soundlink Flex Generación 2 Bocina", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.7, nm:"ok",
   issue:"Clean (99.8k, Convert Only).",
   action:"None."},
- {item:"697416", pdp:"https://www.costco.com.mx/p/697416", name:"Refrigerator", vendor:"TBD", status:"review", g20:true, ready:true, so:2.0, sn:0.31, nm:"ok",
+ {item:"697416", need:"Daniela: metadata check", t:"https://www.costco.com.mx/medias/sys_master/products/h63/h78/415615273631774.jpg", pdp:"https://www.costco.com.mx/p/697416", name:"LG Refrigerador 31' French Door", vendor:"TBD", status:"review", g20:true, ready:true, so:2.0, sn:0.31, nm:"ok",
   issue:"Clean (56.4k, Preserve Meshes and UVs).",
   action:"None."},
- {item:"5248298", u:"f023d54d-b6a5-426c-ba45-3538218d446d", pdp:"https://www.costco.com.mx/p/5248298", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:0.61, sn:0.54, nm:"ok",
+ {item:"5248298", need:"Daniela: metadata check", t:"https://www.costco.com.mx/medias/sys_master/products/h9a/h87/487458950250526.jpg", u:"f023d54d-b6a5-426c-ba45-3538218d446d", pdp:"https://www.costco.com.mx/p/5248298", name:"FoodSaver, Sistema de Sellado al Vacío", vendor:"TBD", status:"review", g20:true, ready:true, so:0.61, sn:0.54, nm:"ok",
   issue:"Clean (44.1k, Industrial).",
   action:"None."},
- {item:"1876771", u:"a636f5ca-5b60-4e11-84cf-f04223ae79f0", pdp:"https://www.costco.com.mx/p/1876771", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:42.0, sn:4.4, nm:"drop '.glb' from asset name",
+ {item:"1876771", t:"https://www.costco.com.mx/medias/sys_master/products/h17/ha0/451072732561438.png", u:"a636f5ca-5b60-4e11-84cf-f04223ae79f0", pdp:"https://www.costco.com.mx/p/1876771", name:"Juego Arcade De Skee-Ball", vendor:"TBD", status:"repair", g20:true, ready:true, so:42.0, sn:4.4, nm:"drop '.glb' from asset name",
   issue:"Convert Only kept 901k triangles. Heavy GPU load on mobile despite 4.4 MB.",
   action:"Reprocess through Preserve Meshes and UVs (decompress first if pre-Draco'd)."},
- {item:"p200962kx-krff300ebs-overlay", pdp:"NONE", name:"Fridge overlay (KRFF300)", vendor:"TBD", status:"review", g20:true, ready:true, so:6.9, sn:3.8, nm:"NEEDS ITEM NUMBER",
+ {item:"p200962kx-krff300ebs-overlay", need:"Daniela: item number + rename", pdp:"NONE", name:"Fridge overlay (KRFF300)", vendor:"TBD", status:"review", g20:true, ready:true, so:6.9, sn:3.8, nm:"NEEDS ITEM NUMBER",
   issue:"Clean (30.4k, Convert Only).",
   action:"Rename to the Costco item number; vendor SKU string in description."},
- {item:"1950733", u:"4204c39e-2db0-474c-a21c-ad21c58642a6", pdp:"https://www.costco.com.mx/p/1950733", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.1, nm:"ok",
+ {item:"1950733", need:"Daniela: metadata check", t:"https://www.costco.com.mx/medias/sys_master/products/h41/hd0/473757011017758.jpg", u:"4204c39e-2db0-474c-a21c-ad21c58642a6", pdp:"https://www.costco.com.mx/p/1950733", name:"Backyard Discovery Centro de Juegos Montpelier", vendor:"TBD", status:"review", g20:true, ready:true, so:5.2, sn:1.1, nm:"ok",
   issue:"Clean (62.4k, Industrial).",
   action:"None."},
- {item:"1841165", u:"d15d08a5-2669-462c-a9c8-1f1cb1163412", pdp:"https://www.costco.com.mx/p/1841165", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:19.6, sn:1.3, nm:"ok",
+ {item:"1841165", need:"Daniela: metadata check", t:"https://www.costco.com.mx/medias/sys_master/products/h63/hfc/260888310415390.jpg", u:"d15d08a5-2669-462c-a9c8-1f1cb1163412", pdp:"https://www.costco.com.mx/p/1841165", name:"Backyard Discovery Centro de Juegos Timber Crossing", vendor:"TBD", status:"review", g20:true, ready:true, so:19.6, sn:1.3, nm:"ok",
   issue:"Clean (75k, Industrial).",
   action:"None."},
- {item:"VA702349", pdp:"https://www.costco.com.mx/p/VA702349", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:8.8, sn:4.0, nm:"ok",
+ {item:"VA702349", need:"Daniela: metadata check", t:"https://www.costco.com.mx/medias/sys_master/products/hdf/h74/438942430855198.jpg", pdp:"https://www.costco.com.mx/p/VA702349", name:"Logitech Volante + Headset", vendor:"TBD", status:"review", g20:true, ready:true, so:8.8, sn:4.0, nm:"ok",
   issue:"Clean (35.8k, Industrial).",
   action:"None."},
- {item:"522265", u:"e2151477-42ab-4af6-ae94-e7344c9e59d9", pdp:"https://www.costco.com.mx/p/522265", name:"TBD", vendor:"TBD", status:"repair", g20:true, ready:true, so:15.1, sn:9.5, nm:"drop '.glb' from asset name",
+ {item:"522265", t:"https://www.costco.com.mx/medias/sys_master/products/h9a/hc8/50494028611614.jpg", u:"e2151477-42ab-4af6-ae94-e7344c9e59d9", pdp:"https://www.costco.com.mx/p/522265", name:"KitchenAid Refrigerador 20' French Door", vendor:"TBD", status:"repair", g20:true, ready:true, so:15.1, sn:9.5, nm:"drop '.glb' from asset name",
   issue:"Was 9.5 MB: six LOSSLESS 4K PNGs (9.2 MB of textures on 56k polys). Black finish is CORRECT (KRFF300EBS Black Stainless colorway). Origin was mid-height.",
   action:"TRY PLATFORM-ONLY FIRST: reprocess the original with PMUV + Max Resolution 4K + Compression Level 2 + PIVOT BOTTOM CENTER (converts the lossless PNGs at full res, grounds it, expected ~4-5 MB, zero file touching). Fallback if output disappoints: 522265_tuned_v2.glb in Downloads (pre-tuned per-map) with Texture Compression Off. Then rename (Production)."},
- {item:"1752967", u:"2659200b-ee4e-4ffe-9a77-25198493ca8a", pdp:"https://www.costco.com.mx/p/1752967", name:"Sectional sofa", vendor:"TBD", os:"vendor", status:"review", g20:true, ready:true, so:11.0, sn:0.59, nm:"ok",
+ {item:"1752967", need:"Daniela: metadata check", t:"https://www.costco.com.mx/medias/sys_master/products/h76/hc7/327616589266974.jpg", u:"2659200b-ee4e-4ffe-9a77-25198493ca8a", pdp:"https://www.costco.com.mx/p/1752967", name:"Sectional sofa", vendor:"TBD", os:"vendor", status:"review", g20:true, ready:true, so:11.0, sn:0.59, nm:"ok",
   issue:"Was: floated in AR (stray Helper001 + Particle_View nodes).",
   action:"FIXED in Blender. Vendor rule: delete helpers before export."},
- {item:"648074", u:"85afbb8b-f50b-4ce5-9f44-489e93d5ced8", pdp:"https://www.costco.com.mx/p/648074", name:"TBD", vendor:"TBD", status:"review", g20:true, ready:true, so:2.4, sn:2.2, nm:"ok",
+ {item:"648074", need:"Derek: AR grounding check, then rename + Live Asset", t:"https://www.costco.com.mx/medias/sys_master/products/h32/h23/489216784531486.jpg", u:"85afbb8b-f50b-4ce5-9f44-489e93d5ced8", pdp:"https://www.costco.com.mx/p/648074", name:"LG Pantalla 115\" QNED Miniled 4K Smart TV 115QNED90BS", vendor:"TBD", status:"review", g20:true, ready:true, so:2.4, sn:2.2, nm:"ok",
   issue:"File verified clean (QA 10-21): plumb, correct 115-inch dims (2.56 m wide), sharp screen content, Daniela's description in. 340k polys acceptable for a hero TV.",
   action:"One check: AR grounding (model origin is mid-height). If it floats on the phone: reprocess with PIVOT BOTTOM CENTER. Otherwise rename (Production) + Live Asset and done."},
- {item:"VA533070", u:"e9d67b5d-69f5-4998-b6d9-ed2b18df30eb", pdp:"https://www.costco.com.mx/p/VA533070", name:"KitchenAid K45 stand mixer (file p210436kp-k45ssob)", vendor:"Whirlpool/KitchenAid", status:"review", g20:true, ready:true, so:6.6, sn:5.2, nm:"drop '.glb' from asset name",
+ {item:"VA533070", need:"Daniela: description, then Live Asset", t:"https://www.costco.com.mx/medias/sys_master/products/h3f/h95/31279825027102.jpg", u:"e9d67b5d-69f5-4998-b6d9-ed2b18df30eb", pdp:"https://www.costco.com.mx/p/VA533070", name:"KitchenAid K45 stand mixer (file p210436kp-k45ssob)", vendor:"Whirlpool/KitchenAid", status:"review", g20:true, ready:true, so:6.6, sn:5.2, nm:"drop '.glb' from asset name",
   issue:"= KitchenAid K45 stand mixer (uploaded file p210436kp-k45ssob.glb). Was 35.9 METERS tall (cm as meters) + floating 14 m below origin + 5.2 MB over size goal.",
   action:"UPLOADED + AR VERIFIED on device 10-21. Tagged 'Final Review': description missing (sheet row blank, Daniela owes it). On description: add it, rename 'VA533070 (Production)', swap tag to 'Live Asset', promote to Shippable."},
- {item:"1321497", u:"43f15396-5d14-4ac5-848d-c2bb73207582", pdp:"https://www.costco.com.mx/p/1321497", name:"Wine Enthusiast dual-zone wine + beverage cooler", vendor:"Same vendor as 1288769 (Blender, Chinese material names)", os:"vendor", status:"shippable", g20:true, ready:true, ar:"ok 0.86 x 0.92 m tall; depth 0.80 m reads deep, verify vs PDP", so:41.1, sn:0.55, nm:"ok; desc: Wine Enthusiast Cava de Vinos y Enfriador de Bebidas (Derek adding)",
+ {item:"1321497", t:"https://www.costco.com.mx/medias/sys_master/products/h4f/h6e/262419122749470.jpg", u:"43f15396-5d14-4ac5-848d-c2bb73207582", pdp:"https://www.costco.com.mx/p/1321497", name:"Wine Enthusiast dual-zone wine + beverage cooler", vendor:"Same vendor as 1288769 (Blender, Chinese material names)", os:"vendor", status:"shippable", g20:true, ready:true, ar:"ok 0.86 x 0.92 m tall; depth 0.80 m reads deep, verify vs PDP", so:41.1, sn:0.55, nm:"ok; desc: Wine Enthusiast Cava de Vinos y Enfriador de Bebidas (Derek adding)",
   issue:"Same vendor defect family as 1288769: 7.1 deg baked lean, floating base, black 'stainless', metallic wood, AR-opaque transmission glass. PDP confirms stainless french doors + black cabinet + wood shelves.",
   action:"DONE: new asset '1321497 (Production)' 43f15396-5d14-4ac5-848d-c2bb73207582, Live Asset tag, description set. Daniela: back-office UUID -> 43f15396. Old asset to archive."},
  {item:"702349-2", u:"371762a5-e4fd-4680-a000-f90280e3e7c1", pdp:"NONE", name:"Logitech G920 Xbox steering wheel (desc: LOGITECH BUNDLE VOLANTE Xbox)", vendor:"Logitech (own web-AR asset)", os:"repair", status:"repair", g20:true, ready:true, ar:"ok 0.35 x 0.42 x 0.34 m wheel unit", so:6.2, sn:2.9, nm:"VERIFY '-2' suffix vs VA702349",
   issue:"File is actually sharp (verified close-up render) but: (1) ran through 3D SCAN pipeline (wrong: scan smoothing on a CAD asset), (2) looks washed out in the viewer: default environment blows the silver-spoke speculars, (3) desc says BUNDLE but model is the WHEEL ONLY, no pedals.",
   action:"Derek: set hero scene preset (lower exposure) = most of the visual fix; reprocess original via Preserve Meshes and UVs; confirm bundle contents vs PDP. A10 HEADSET (other bundle half) QA'd 10-21: CLEAN. 35.8k tris, 4.0 MB, true to size, plumb, sharp: vendor's own purpose-built web-AR asset, nothing to fix. Note: it grounds on the dangling cable tip (headset hangs above with cord touching), which is Astro's intended display pose: confirm it reads OK in the app's AR once."},
- {item:"4234400", u:"d35ee2ac-39b0-4eaf-9964-31c1fe2f43be", pdp:"https://www.costco.com.mx/p/4234400", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:59.1, sn:null, nm:"ok",
+ {item:"4234400", t:"https://www.costco.com.mx/medias/sys_master/products/hd9/haf/273032033894430.jpg", u:"d35ee2ac-39b0-4eaf-9964-31c1fe2f43be", pdp:"https://www.costco.com.mx/p/4234400", name:"Gourmia, Horno Digital con Freidora de Aire", vendor:"TBD", status:"repair", g20:false, ready:false, so:59.1, sn:null, nm:"ok",
   issue:"FAILED processing (Industrial, no output).",
   action:"Pull original for teardown: likely pre-compressed or source defect."},
- {item:"701961", u:"0cbf2ee2-09ea-4307-a14d-b60cc0e1e9b1", pdp:"https://www.costco.com.mx/p/701961", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:4.5, sn:null, nm:"ok",
+ {item:"701961", t:"https://www.costco.com.mx/medias/sys_master/products/h24/h8c/433695505088542.jpg", u:"0cbf2ee2-09ea-4307-a14d-b60cc0e1e9b1", pdp:"https://www.costco.com.mx/p/701961", name:"ProForm Sport Caminadora", vendor:"TBD", status:"repair", g20:false, ready:false, so:4.5, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Small file + fail = likely pre-Draco'd GLB.",
   action:"Teardown; decompress + reprocess."},
- {item:"701252", u:"580d4c2e-c549-45ee-83db-c022777c47fd", pdp:"https://www.costco.com.mx/p/701252", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:0.56, sn:null, nm:"ok",
+ {item:"701252", t:"https://www.costco.com.mx/medias/sys_master/products/h87/h18/415106114093086.jpg", u:"580d4c2e-c549-45ee-83db-c022777c47fd", pdp:"https://www.costco.com.mx/p/701252", name:"NordicTrack Caminadora T Series 16", vendor:"TBD", status:"repair", g20:false, ready:false, so:0.56, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"697444", u:"04cf7c9d-c924-40ce-bde6-7b2d00dbc13f", pdp:"https://www.costco.com.mx/p/697444", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.9, sn:null, nm:"ok",
+ {item:"697444", t:"https://www.costco.com.mx/medias/sys_master/products/h67/h1b/399318115221534.jpg", u:"04cf7c9d-c924-40ce-bde6-7b2d00dbc13f", pdp:"https://www.costco.com.mx/p/697444", name:"NordicTrack Caminadora X16", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.9, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"648099", u:"30acca7e-3f6b-4656-86e0-96888c3b5d6e", pdp:"https://www.costco.com.mx/p/648099", name:"LG 83-inch OLED (per vendor sheet)", vendor:"LG Electronics Mexico (Jose Vicente)", status:"repair", g20:false, ready:false, so:3.3, sn:null, nm:"ok",
+ {item:"648099", t:"https://www.costco.com.mx/medias/sys_master/products/h71/h47/489216795213854.jpg", u:"30acca7e-3f6b-4656-86e0-96888c3b5d6e", pdp:"https://www.costco.com.mx/p/648099", name:"LG 83-inch OLED (per vendor sheet)", vendor:"LG Electronics Mexico (Jose Vicente)", status:"repair", g20:false, ready:false, so:3.3, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely same LG export family as the 55-inch C6: Draco + texture transforms marked REQUIRED in the file, which optimization pipelines must reject.",
   action:"Teardown: check extensionsRequired first (proven on the 55-inch C6). If confirmed: decode in Blender, bake texture transforms into UVs, re-export raw, reprocess via Preserve Meshes and UVs."},
- {item:"697288", u:"99d4c5b2-7976-4a56-8a23-9f36d4163426", pdp:"https://www.costco.com.mx/p/697288", name:"TBD (possibly NordicTrack climber)", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.1, sn:null, nm:"ok",
+ {item:"697288", t:"https://www.costco.com.mx/medias/sys_master/products/h99/haa/398628331094046.jpg", u:"99d4c5b2-7976-4a56-8a23-9f36d4163426", pdp:"https://www.costco.com.mx/p/697288", name:"TBD (possibly NordicTrack climber)", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.1, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output). Likely pre-Draco'd.",
   action:"Teardown + decompress/reprocess."},
- {item:"1851051", u:"ef33906a-dabb-451e-8694-0ecea1cb762e", pdp:"https://www.costco.com.mx/p/1851051", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.3, sn:null, nm:"ok",
+ {item:"1851051", t:"https://www.costco.com.mx/medias/sys_master/products/h2d/heb/273984350486558.jpg", u:"ef33906a-dabb-451e-8694-0ecea1cb762e", pdp:"https://www.costco.com.mx/p/1851051", name:"NordicTrack Caminadora T Series 9", vendor:"TBD", status:"repair", g20:false, ready:false, so:2.3, sn:null, nm:"ok",
   issue:"FAILED (Industrial, no output).",
   action:"Teardown."},
- {item:"704791", u:"e59dc204-7a77-4f95-bc85-32b73c36cac1", pdp:"https://www.costco.com.mx/p/704791", name:"LG 65-inch OLED C6 (oled65c6pua)", vendor:"LG Electronics Mexico (Jose Vicente)", status:"repair", g20:false, ready:true, ar:"ok 1.56 x 0.23 x 0.88 m, 65-inch TV on stand", so:4.1, sn:4.1, nm:"rename to 704791 (Production) on upload",
-  issue:"CONFIRMED same root cause as the 55-inch C6: Draco AND texture transforms marked REQUIRED in the file, so every optimization pipeline rejected it (spec rule). Not a platform bug: an LG export-settings issue, same fix guidance goes back to LG.",
-  action:"FIX READY: oled65c6pua_fixed_v2.glb in Downloads (Draco decoded, texture transforms baked into UVs, grounded; verified upright with intact screen + stand). Upload as NEW asset via PRESERVE MESHES AND UVS, Polygon Limit 75,000, Max Resolution 4K, Compression Level 2. PIVOT: BOTTOM CENTER. Desc: 65-inch OLED per sheet. Archive the failed draft."},
+ {item:"704791", t:"https://www.costco.com.mx/medias/sys_master/products/h27/h97/484393902768158.jpg", u:"da08a348-b2e7-4b45-b938-9d17d5155416", pdp:"https://www.costco.com.mx/p/704791", name:"LG Pantalla 65\" OLED EVO AI 4K Smart TV OLED65C6PSA", vendor:"LG Electronics Mexico (Jose Vicente)", os:"repair", status:"review", g20:false, ready:true, ar:"ok 1.44 x 0.23 x 0.88 m, USDZ gate passed (grounded, metersPerUnit 1, true 65-inch width)", so:4.1, sn:1.2, nm:"ok: named 704791 (Production) - LG Pantalla 65\" OLED...",
+  need:"Derek: publish + Live Asset tag. Daniela: review pre-filled description. Archive old failed draft e59dc204.",
+  issue:"Was: LG export marked Draco AND texture transforms as REQUIRED extensions, so every optimization pipeline rejected it (spec rule). LG export-settings issue; fix guidance goes back to LG.",
+  action:"DONE VIA API 10-22: Draco decoded + texture transforms baked into UVs + grounded in Blender, NEW asset created (da08a348) with PMUV / 75k / 4K / Level 2 / PIVOT BOTTOM CENTER, processed COMPLETED, output verified by battery + USDZ AR gate, 4 PDP images attached, PDP URL attribute set, description pre-filled from PDP."},
  {item:"oled55c6pua", pdp:"NONE", name:"LG 55-inch OLED C6 (item # TBD: sheet only lists LG 65-inch 704791 and 83-inch 648099)", vendor:"LG Electronics Mexico (Jose Vicente)", os:"repair", status:"repair", g20:false, ready:false, ar:"ok 1.22 x 0.23 x 0.76 m, 55-inch TV on stand", so:3.0, sn:3.0, nm:"NEEDS ITEM NUMBER: file is a 55-inch C6 but no LG 55-inch row exists on the sheet; confirm with Ian/Josemaria which item this covers (AR size would be wrong for a 65 or 83)",
   issue:"ROOT CAUSE FOUND for the LG failures: the file marks Draco AND texture transforms as REQUIRED glTF extensions. Optimization pipelines must reject such a file (spec rule), so every run failed. A later Convert Only run passed it through UNCHANGED: same size, zero optimization, still floating 6.3 cm, required extensions still inside, and Convert Only locks out the pivot setting.",
   action:"FIX READY: oled55c6pua_fixed_v2.glb in Downloads (Draco decoded, both texture transforms baked into the UVs, grounded; verified: stands plumb, crisp LG OLED logo on the stand). Upload as a NEW asset via PRESERVE MESHES AND UVS, Polygon Limit default 75,000, Max Resolution 4K, Compression Level 2. PIVOT: BOTTOM CENTER. Expected ~2-4 MB. Do NOT ship the Convert Only pass-through."},
- {item:"704794", u:"d5ab6422-ed78-4111-bb96-991c20d5e73b", pdp:"https://www.costco.com.mx/p/647947", name:"TBD", vendor:"TBD", status:"repair", g20:false, ready:false, so:3.0, sn:null, nm:"ok",
+ {item:"704794", t:"https://www.costco.com.mx/medias/sys_master/products/h61/he8/490591687507998.jpg", u:"d5ab6422-ed78-4111-bb96-991c20d5e73b", pdp:"https://www.costco.com.mx/p/647947", name:"HP All-In-One 27-cr0350la 27\" Full HD Intel Core i5-1335U 8GB 512GB SSD", vendor:"TBD", status:"repair", g20:false, ready:false, so:3.0, sn:null, nm:"ok",
   issue:"FAILED (3D Scan pipeline, no output). 3D Scan is for photogrammetry only.",
   action:"Teardown; retry Preserve Meshes and UVs."},
- {item:"675531", u:"aa55f57c-aa00-4841-998e-5f3c77dde916", pdp:"https://www.costco.com.mx/p/675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"vendor", g20:false, ready:false, so:1.6, sn:null, nm:"ok",
+ {item:"675531", t:"https://www.costco.com.mx/medias/sys_master/products/h9a/ha9/135736348344350.jpg", u:"aa55f57c-aa00-4841-998e-5f3c77dde916", pdp:"https://www.costco.com.mx/p/675531", name:"SCL835 stair climber", vendor:"TBD (ECD legacy)", status:"vendor", g20:false, ready:false, so:1.6, sn:null, nm:"ok",
   issue:".3DS file: cannot embed textures; the 2 referenced PNGs were not sent; pre-PBR materials.",
   action:"Vendor re-exports GLB/FBX embedded, OR sends the PNGs and Derek rebuilds."},
  {item:"GAF858 (1).glb", pdp:null, name:"Air fryer Convert Only demo", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:45.8, nm:"demo: archive",
   issue:"Teaching demo of Convert Only pass-through. WAY over 5 MB by design.",
   action:"Archive (superseded by the fixed version)."},
- {item:"[COPY] 6232432", pdp:"https://www.costco.com.mx/p/6232432", name:"Air fryer duplicate", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:null, nm:"duplicate: archive",
+ {item:"[COPY] 6232432", t:"https://www.costco.com.mx/medias/sys_master/products/hab/hbe/242538472701982.jpg", pdp:"https://www.costco.com.mx/p/6232432", name:"Air fryer duplicate", vendor:"TBD", status:"discarded", g20:false, ready:false, so:56.2, sn:null, nm:"duplicate: archive",
   issue:"Duplicate of the failed original (3D Scan).",
   action:"Archive/delete."},
  {item:"688942", u:"3a7bfcfb-e4a0-4164-bd2c-69c716edd6a3", pdp:"https://www.costco.com.mx/p/688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"discarded", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
@@ -199,22 +199,22 @@ var DATA = [
  {item:"Cannes carver chair", pdp:"NONE", name:"LifestyleGarden Cannes outdoor carver easy chair, white (item # TBD)", vendor:"LifestyleGarden", status:"vendor", g20:false, ready:false, so:275.9, sn:null, nm:"NEEDS ITEM NUMBER + description (none provided)",
   issue:".max is NOT A SUPPORTED UPLOAD FORMAT: the file never entered a pipeline (stored as an inert 275.9 MB attachment). Proprietary format; only 3ds Max can open it.",
   action:"Vendor (LifestyleGarden) must export from 3ds Max as GLB or FBX with embedded media. Item number from Daniela sheet / PDP."},
- {item:"Lasso Wall Mount", pdp:"NONE", name:"Lasso wall mount rail (REAL product, item # TBD)", vendor:"TBD (ID/INTENT design)", status:"review", g20:false, ready:false, ar:"ok 0.74 x 0.04 m wall rail", so:8.3, sn:0.09, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
+ {item:"Lasso Wall Mount", need:"Daniela: item number + description. Derek: pivot test", pdp:"NONE", name:"Lasso wall mount rail (REAL product, item # TBD)", vendor:"TBD (ID/INTENT design)", status:"review", g20:false, ready:false, ar:"ok 0.74 x 0.04 m wall rail", so:8.3, sn:0.09, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
   issue:"File is clean: 30.5k tris, 94 KB, correct scale. Draft, no metadata.",
   action:"PIVOT: Back Center (wall-hung product) IF the app supports wall placement; Bottom Center if floor-only AR. Test once on phone. Then item number + description, publish, hero preset."},
- {item:"266345", pdp:"https://www.costco.com.mx/p/266345", name:"Table (asset currently named 'Table')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.09 x 0.51 x 0.47 m, coffee table", so:1.6, sn:1.4, nm:"RENAME asset 'Table' to 266345 + description missing",
+ {item:"266345", need:"Daniela: rename to 266345 + description. PDP DEAD: confirm item with Costco", pdp:"https://www.costco.com.mx/p/266345", name:"Table (asset currently named 'Table')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.09 x 0.51 x 0.47 m, coffee table", so:1.6, sn:1.4, nm:"RENAME asset 'Table' to 266345 + description missing",
   issue:"File itself is clean: 10.2k tris, 1.4 MB, correct real-world scale.",
   action:"Derek: rename to item number 266345 (from the 4K_266345 filename) and add description. No file work needed."},
  {item:"Rag Rug Chair", pdp:"NONE", name:"Woven Marija rag rug chair (REAL product, item # TBD)", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 0.84 x 0.83 x 0.91 m, chair", so:4.5, sn:4.3, nm:"NEEDS ITEM NUMBER as asset name + description (both missing)",
   issue:"File itself is clean: 10k tris, 4.3 MB (under goal), correct 0.84 x 0.91 m chair scale, world units right.",
   action:"Derek: rename asset to the Costco item number and add description. No file work needed."},
- {item:"1933950", u:"f74c71b0-b865-45ad-9cd5-32100962ac4d", pdp:"https://www.costco.com.mx/p/1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", os:"vendor", status:"shippable", g20:false, ready:false, ar:"ok AR verified on device 10-21", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
+ {item:"1933950", t:"https://www.costco.com.mx/medias/sys_master/products/h97/h9c/450130406277150.jpg", u:"f74c71b0-b865-45ad-9cd5-32100962ac4d", pdp:"https://www.costco.com.mx/p/1933950", name:"Terrassa patio set (sofa + 2 chairs + table)", vendor:"TBD", os:"vendor", status:"shippable", g20:false, ready:false, ar:"ok AR verified on device 10-21", so:171.7, sn:3.4, nm:"description WRONG/MISSING: verify (pasted desc was 'Backyard Discovery Centro de Juegos Montpelier', a playset)",
   issue:"TWO problems: (1) SCALE: authored in inches, world size 158 m wide (stadium-sized in AR). (2) 2.0M triangles kept by Convert Only: heavy on mobile.",
   action:"DONE: AR verified on device 10-21 (true patio-set size, grounded). Rename '1933950 (Production)' + Live Asset tag + description 'MoDe, Terressa Sala para Exterior de 4 piezas'."},
  {item:"Stove with Range", pdp:null, name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", os:"review", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
   issue:"Derek-added demo asset, not part of the POC catalog.",
   action:"DELETED from workspace 10-20 (moved to discarded)."},
- {item:"264883", u:"3f017a4b-affa-4e20-a76b-160793fe4dc0", pdp:"https://www.costco.com.mx/p/264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
+ {item:"264883", need:"Derek: re-publish new version + AR check. Daniela: description. PDP DEAD: confirm item with Costco", u:"3f017a4b-affa-4e20-a76b-160793fe4dc0", pdp:"https://www.costco.com.mx/p/264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
   issue:"3D clean but floated 40 cm in AR (pivot was center) AND the stored original was itself a pre-optimized VNTANA file (Draco required), so Derek's PMUV reprocess FAILED.",
   action:"FIXED VIA API 10-22 (first direct fix in the Costco org): original decoded in Blender, replaced in place on the same asset, pivot corrected to BOTTOM CENTER, reprocessed through Derek's PMUV settings. Output verified: grounded, 0.9 MB. Remaining (Derek/Daniela): RE-PUBLISH the new version (drops to Draft), AR check on phone, description (Daniela), confirm white colorway vs PDP, then Live Asset tag."}
 ];
@@ -262,7 +262,7 @@ function render(){
     rows.sort(function(a,b){return (b.g20?1:0)-(a.g20?1:0)||String(a.item).localeCompare(String(b.item))});
     var colors={shippable:"var(--ok)",review:"var(--rev)",repair:"var(--warn)",vendor:"var(--bad)",pending:"var(--pend)",discarded:"var(--disc)"};
     out+='<section><div class="sechead"><span class="dot" style="background:'+colors[s.k]+'"></span><h2>'+s.label+'</h2><span class="cnt" style="color:'+colors[s.k]+'">'+rows.length+'</span><span class="hint">'+s.hint+'</span></div>';
-    out+='<table><thead><tr><th>Item</th><th>Status</th><th>Size</th><th class="hide-m">AR scale</th><th>Issue found</th><th class="hide-m">Action / next step</th><th>Thu</th></tr></thead><tbody>';
+    out+='<table><thead><tr><th></th><th>Item</th><th>Status</th><th>Size</th><th class="hide-m">AR scale</th><th>Issue found</th><th class="hide-m">Action / next step</th><th>Thu</th></tr></thead><tbody>';
     rows.forEach(function(r){
       var i=DATA.indexOf(r);
       var chips='';
@@ -273,20 +273,21 @@ function render(){
       var size=r.sn==null?'<span style="color:var(--muted)">no output</span>':'<span class="'+(r.sn>5?"size-bad":"size-ok")+'">'+r.sn+' MB</span>';
       var wsize=(r.so!=null&&r.sn!=null&&r.so!==r.sn)?'<span class="was-size">was '+r.so+' MB</span>':(r.sn==null&&r.so!=null?'<span class="was-size">upload '+r.so+' MB</span>':'');
       var ar=r.ar?('&#10003; '+esc(r.ar)):'<span style="color:var(--muted)">not checked</span>';
+      var th=r.t?'<img class="thumb" loading="lazy" src="'+r.t+'">':'<div class="nothumb">no img</div>';
       out+='<tr class="'+(s.k==="discarded"?"disc":"")+'" data-i="'+i+'">'
+        +'<td style="width:62px">'+th+'</td>'
         +'<td><div class="item">'+esc(String(r.item))+(r.g20?'<span class="g20">GO-LIVE 20</span>':'')+'</div><div class="pname">'+esc(r.name||"")+'</div><div class="chips">'+chips+'</div>'+nm+'</td>'
         +'<td><span class="pill '+r.status+'">'+s.label+'</span>'+was+'</td>'
         +'<td>'+size+wsize+'</td>'
         +'<td class="hide-m" style="font-size:.72rem;max-width:150px">'+ar+'</td>'
-        +'<td style="max-width:280px"><div class="clamp">'+r.issue+'</div><span class="more">more&hellip;</span></td>'
-        +'<td class="hide-m" style="max-width:300px"><div class="clamp">'+r.action+'</div><span class="more">more&hellip;</span></td>'
+        +'<td style="max-width:280px"><div class="cell-text">'+r.issue+'</div></td>'
+        +'<td class="hide-m" style="max-width:320px">'+(r.need?'<div class="need">&#9654; '+esc(r.need)+'</div>':'')+'<div class="cell-text">'+r.action+'</div></td>'
         +'<td class="thu">'+(r.ready?'<span style="color:var(--ok)">&#10003;</span>':'<span style="color:var(--bad)">&#10007;</span>')+'</td></tr>';
     });
     out+='</tbody></table></section>';
   });
   document.getElementById("sections").innerHTML=out||'<p style="color:var(--muted);padding:2rem 0">Nothing matches the filters.</p>';
   document.querySelectorAll("#counts .count").forEach(function(c){c.onclick=function(){var s=c.getAttribute("data-s");state.status=(s===""||state.status===s)?null:s;render()}});
-  document.querySelectorAll("tbody tr").forEach(function(tr){tr.onclick=function(){tr.classList.toggle("open")}});
 }
 document.getElementById("g20toggle").onclick=function(){state.g20=!state.g20;this.classList.toggle("on",state.g20);render()};
 document.getElementById("q").oninput=function(){state.q=this.value;render()};
