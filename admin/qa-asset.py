@@ -160,7 +160,7 @@ for o in bpy.data.objects:
     if n==0: continue
     bb=[o.matrix_world @ _V(c) for c in o.bound_box]
     bd=sorted(max(p[i] for p in bb)-min(p[i] for p in bb) for i in range(3))
-    is_sliver=(bd[0]<0.002 and bd[1]<0.002 and bd[2]>0.5) or (len(me.polygons)<=2 and bd[2]>0.5)
+    is_sliver=(bd[0]<0.002 and bd[1]<0.01 and bd[2]>0.5)
     co=np.empty(n*3); me.vertices.foreach_get("co",co); co=co.reshape(-1,3)
     mw=np.array(o.matrix_world)
     w=(co @ mw[:3,:3].T) + mw[:3,3]
