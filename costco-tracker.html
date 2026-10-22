@@ -214,7 +214,7 @@ var DATA = [
  {item:"Stove with Range", pdp:null, name:"Demo stove (not a Costco product)", vendor:"VNTANA demo", os:"review", status:"discarded", g20:false, ready:false, so:36.1, sn:0.96, nm:"n/a (demo)",
   issue:"Derek-added demo asset, not part of the POC catalog.",
   action:"DELETED from workspace 10-20 (moved to discarded)."},
- {item:"264883", pdp:"https://www.costco.com.mx/p/264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
+ {item:"264883", u:"3f017a4b-affa-4e20-a76b-160793fe4dc0", pdp:"https://www.costco.com.mx/p/264883", name:"Sofa (was asset name 'Sofa')", vendor:"TBD", status:"review", g20:false, ready:true, ar:"ok 1.87 x 0.86 x 0.85 m, sofa", so:2.2, sn:1.5, nm:"RENAME asset 'Sofa' to 264883",
   issue:"3D clean but floated 40 cm in AR (pivot was center) AND the stored original was itself a pre-optimized VNTANA file (Draco required), so Derek's PMUV reprocess FAILED.",
   action:"FIXED VIA API 10-22 (first direct fix in the Costco org): original decoded in Blender, replaced in place on the same asset, pivot corrected to BOTTOM CENTER, reprocessed through Derek's PMUV settings. Output verified: grounded, 0.9 MB. Remaining (Derek/Daniela): RE-PUBLISH the new version (drops to Draft), AR check on phone, description (Daniela), confirm white colorway vs PDP, then Live Asset tag."}
 ];
