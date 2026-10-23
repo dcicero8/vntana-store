@@ -248,6 +248,8 @@ var BUILT = {
 };
 // SKUs to flag with a NEW badge (just delivered this week)
 var NEWSET = {"003eP-F2":1,"003eP-SF2":1};
+// Per-SKU delivery ETA for products still in production
+var ETA = {"VT2218-HY1-4C1A00":"Oct 27","VT2218-HY2-FC1A00":"Oct 28"};
 // Family status for products not yet built: next | wait | none
 var FAMSTATUS = {"007e":"wait","0015e3":"wait","0018e":"wait","0034e+":"next","VT2218":"next","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
 /* ============================ */
@@ -264,7 +266,8 @@ FAMILIES.forEach(function(f){
     if(st==="ready")built++; else if(st==="next")next++; else if(st==="wait")wait++; else if(st==="mat")mat++;
     var l=LBL[st];
     var newb=NEWSET[v.sku]?' <span class="pill2 p-new">NEW</span>':'';
-    rows+='<tr><td><b>'+esc(v.sku)+'</b>'+newb+'</td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+l[1]+'</span></td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
+    var eta=ETA[v.sku]?' <span style="font-size:12px;color:var(--muted)">ETA '+esc(ETA[v.sku])+'</span>':'';
+    rows+='<tr><td><b>'+esc(v.sku)+'</b>'+newb+'</td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+l[1]+'</span>'+eta+'</td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
     if(u) cards+='<div class="rcard"><iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(u)+'"></iframe><div class="rh"><div><div class="sku">'+esc(v.sku)+newb+'</div><div class="meta">'+esc(v.body)+' &middot; '+esc(v.conn)+'</div></div><a class="btn ghost" href="'+PLAT(u)+'" target="_blank" rel="noopener">Platform &#8599;</a></div></div>';
   });
 });
