@@ -102,7 +102,6 @@ html.locked #gate{display:flex}
   <div class="bar">
     <div class="counts" id="counts"></div>
     <div class="tools">
-      <div class="golive-toggle" id="g20toggle">Go-live 20 only</div>
       <select id="vendorSel"><option value="">All vendors</option></select>
       <input type="search" id="q" placeholder="Search item / name / issue">
     </div>
@@ -117,7 +116,7 @@ html.locked #gate{display:flex}
 <script>
 var PLATFORM_BASE = "https://platform.vntana.com/Costco/mexico-poc/products/details/";
 var DATA = [
- {item:"697004", pd:"45 x 134 x 52 cm (PDP)", need:"Size is right, sits flat. The head is a bit off-center (baked into the vendor file). Fine for AR placement; vendor owes a clean re-export.", ic:[4,8,9], t:"https://www.costco.com.mx/medias/sys_master/products/h68/ha9/383380879900702.jpg", u:"502f77f9-5de1-42d1-b05b-b22d9fdc803d", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze Ventilador de Pedestal Blanco", vendor:"NINGBO SINGFUN (KeyShot)", os:"repair", status:"discuss", g20:true, ready:false, ar:"ok 0.48 x 0.45 x 1.33 m; grounded + true size; head slightly off-center (vendor assembly)", so:1024.0, sn:1.4, nm:"ok: 697004 (Production)",
+ {item:"697004", gl:"call", pd:"45 x 134 x 52 cm (PDP)", need:"Size is right, sits flat. The head is a bit off-center (baked into the vendor file). Fine for AR placement; vendor owes a clean re-export.", ic:[4,8,9], t:"https://www.costco.com.mx/medias/sys_master/products/h68/ha9/383380879900702.jpg", u:"502f77f9-5de1-42d1-b05b-b22d9fdc803d", pdp:"https://www.costco.com.mx/p/697004", name:"OmniBreeze Ventilador de Pedestal Blanco", vendor:"NINGBO SINGFUN (KeyShot)", os:"repair", status:"discuss", g20:true, ready:false, ar:"ok 0.48 x 0.45 x 1.33 m; grounded + true size; head slightly off-center (vendor assembly)", so:1024.0, sn:1.4, nm:"ok: 697004 (Production)",
   need:"VENDOR: re-export from a correctly assembled source (pole was built 24 deg off vertical). Current repaired version stays live meanwhile.",
   issue:"The source was assembled wrong at the factory (pole 24 deg off vertical, tilted base, unreadable baked text). VNTANA repaired it repeatedly; the delivered files now measure straight and grounded, but the asset has consumed disproportionate effort.",
   action:"DECISION 10-22: request a clean re-export from the vendor. The repaired v2 remains Live Public as the stand-in."},
@@ -146,7 +145,7 @@ var DATA = [
   need:"Daniela: sign off + publish.",
   issue:"The source was a bare USD file whose texture files were never uploaded, so the model rendered WHITE (the real product is black). Even the vendor's own black materials shipped with no color values.",
   action:"FIXED 10-22: all six materials retinted to the true black finish AND the FoodSaver wordmark lifted from the PDP photo and applied as a front decal. Replaced in place, battery + USDZ gate PASS. Remaining small print (button labels) would need vendor textures."},
- {item:"1876771", ard:"ok 10-23", arp:"costco-ar/1876771.webp", pd:"Dimensiones: 274.32cm X 60.96cm X 167.64cm (PDP)", ic:[6,10], t:"https://www.costco.com.mx/medias/sys_master/products/h17/ha0/451072732561438.png", u:"a636f5ca-5b60-4e11-84cf-f04223ae79f0", pdp:"https://www.costco.com.mx/p/1876771", name:"Juego Arcade de Skee-Ball", vendor:"Skee-Ball/Bay Tek (SOLIDWORKS)", os:"repair", status:"discuss", g20:false, ready:true, ar:"ok 0.61 x 2.74 x 1.66 m; grounded + true size; colors are placeholders", so:42.0, sn:0.9, nm:"ok: 1876771 (Production) - Juego Arcade de Skee-Ball",
+ {item:"1876771", gl:"call", ard:"ok 10-23", arp:"costco-ar/1876771.webp", pd:"Dimensiones: 274.32cm X 60.96cm X 167.64cm (PDP)", ic:[6,10], t:"https://www.costco.com.mx/medias/sys_master/products/h17/ha0/451072732561438.png", u:"a636f5ca-5b60-4e11-84cf-f04223ae79f0", pdp:"https://www.costco.com.mx/p/1876771", name:"Juego Arcade de Skee-Ball", vendor:"Skee-Ball/Bay Tek (SOLIDWORKS)", os:"repair", status:"discuss", g20:false, ready:true, ar:"ok 0.61 x 2.74 x 1.66 m; grounded + true size; colors are placeholders", so:42.0, sn:0.9, nm:"ok: 1876771 (Production) - Juego Arcade de Skee-Ball",
   need:"Vendor: product-color materials + artwork (CAD shipped with placeholder plastic only). Daniela: review description + flip Live Public if the untextured look is acceptable for the pilot.",
   issue:"Raw SOLIDWORKS CAD: all 631 parts in placeholder plastic (renders white), originally 901k triangles through Convert Only. A VNTANA retint attempt was reverted by Derek's review (reference photos too limited for a faithful finish).",
   action:"CURRENT STATE 10-22: the original geometry optimized to 75k, grounded, true size, iOS AR verified: in its as-delivered colors. Vendor owes real materials/artwork for the final look."},
@@ -179,7 +178,7 @@ var DATA = [
  {item:"1321497", ard:"ok 10-23", arp:"costco-ar/1321497.webp", pd:"76.5 x 64 x 86 cm (PDP)", need:"Daniela: update back-office UUID (43f15396) + flip Live Public.", ic:[3, 4, 6, 7], t:"https://www.costco.com.mx/medias/sys_master/products/h4f/h6e/262419122749470.jpg", u:"43f15396-5d14-4ac5-848d-c2bb73207582", pdp:"https://www.costco.com.mx/p/1321497", name:"Wine Enthusiast dual-zone wine + beverage cooler", vendor:"Same vendor as 1288769 (Blender, Chinese material names)", os:"vendor", status:"ready", g20:true, ready:true, ar:"ok 0.86 x 0.92 m tall; depth 0.80 m reads deep, verify vs PDP", so:41.1, sn:0.55, nm:"ok; desc: Wine Enthusiast Cava de Vinos y Enfriador de Bebidas (Derek adding)",
   issue:"Same vendor defect family as 1288769: 7.1 deg baked lean, floating base, black 'stainless', metallic wood, AR-opaque transmission glass. PDP confirms stainless french doors + black cabinet + wood shelves.",
   action:"DONE: new asset '1321497 (Production)' 43f15396-5d14-4ac5-848d-c2bb73207582, Live Asset tag, description set. Daniela: back-office UUID -> 43f15396. Old asset to archive."},
- {item:"702349-2", ard:"ok 10-23", arp:"costco-ar/702349-2.webp", ic:[3, 13], need:"Wheel model is sharp and true to size, but the bundle includes pedals + the A10 headset. This shows the wheel only.", u:"4314c98c-f12f-4740-836e-124e65011b3d", pdp:"NONE", name:"Logitech G920 Xbox steering wheel (desc: LOGITECH BUNDLE VOLANTE Xbox)", vendor:"Logitech (own web-AR asset)", os:"repair", status:"discuss", g20:true, ready:true, ar:"ok; USDZ gate passed; reprocessed via the correct pipeline (was 3D Scan)", so:6.2, sn:2.9, nm:"VERIFY '-2' suffix vs VA702349",
+ {item:"702349-2", gl:"call", ard:"ok 10-23", arp:"costco-ar/702349-2.webp", ic:[3, 13], need:"Wheel model is sharp and true to size, but the bundle includes pedals + the A10 headset. This shows the wheel only.", u:"4314c98c-f12f-4740-836e-124e65011b3d", pdp:"NONE", name:"Logitech G920 Xbox steering wheel (desc: LOGITECH BUNDLE VOLANTE Xbox)", vendor:"Logitech (own web-AR asset)", os:"repair", status:"discuss", g20:true, ready:true, ar:"ok; USDZ gate passed; reprocessed via the correct pipeline (was 3D Scan)", so:6.2, sn:2.9, nm:"VERIFY '-2' suffix vs VA702349",
   issue:"File is actually sharp (verified close-up render) but: (1) ran through 3D SCAN pipeline (wrong: scan smoothing on a CAD asset), (2) looks washed out in the viewer: default environment blows the silver-spoke speculars, (3) desc says BUNDLE but model is the WHEEL ONLY, no pedals.",
   action:"Repivoted via API 10-22 (Bottom Center + frozen transforms): battery + iOS AR gate passed, PDP photos + attribute attached, Final Review tag. Derek: set hero scene preset (lower exposure) = most of the visual fix; reprocess original via Preserve Meshes and UVs; confirm bundle contents vs PDP. A10 HEADSET (other bundle half) QA'd 10-21: CLEAN. 35.8k tris, 4.0 MB, true to size, plumb, sharp: vendor's own purpose-built web-AR asset, nothing to fix. Note: it grounds on the dangling cable tip (headset hangs above with cord touching), which is Astro's intended display pose: confirm it reads OK in the app's AR once."},
  {item:"4234400", ard:"ok 10-23", arp:"costco-ar/4234400.webp", t:"https://www.costco.com.mx/medias/sys_master/products/hd9/haf/273032033894430.jpg", pd:"47 x 54 x 31.83 cm (PDP)", need:"Daniela: sign off + publish.", ic:[1, 7, 8, 10], u:"d35ee2ac-39b0-4eaf-9964-31c1fe2f43be", pdp:"https://www.costco.com.mx/p/4234400", name:"Gourmia Horno Digital con Freidora de Aire", vendor:"Gourmia (KeyShot 15)", os:"repair", status:"ready", g20:false, ready:true, ar:"ok 0.55 x 0.48 x 0.32 m; USDZ gate passed (grounded, true size)", so:59.1, sn:3.1, nm:"ok: 4234400 (Production) - Gourmia Horno Digital con Freidora de Aire",
@@ -233,14 +232,14 @@ var DATA = [
  {item:"688942", need:"Model verified (web + AR), but no live Costco PDP exists for this item yet, same as its wall mount. Confirm the item is launching before it goes live.", u:"3a7bfcfb-e4a0-4164-bd2c-69c716edd6a3", pdp:"https://www.costco.com.mx/p/688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"out", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
   issue:"Identical to 'Lasso V44 Black' row: duplicates (same CAD viz-color source).",
   action:"Archive this one once the fixed Lasso V44 is uploaded under the proper item number."},
- {item:"688942", ic:[6,14,15], u:"39b2fbb3-195c-47b2-88d8-3510e3a22c2c", pdp:"https://www.costco.com.mx/p/688942", name:"Sonos Arc Ultra Soundbar", vendor:"Sonos (ID/INTENT design)", os:"vendor", status:"discuss", g20:false, ready:true, ar:"ok 1.18 x 0.16 x 0.11 m; USDZ gate passed after rebuild", so:106.4, sn:0.9, nm:"ok: 688942 (Production) - Sonos Arc Ultra Soundbar",
+ {item:"688942", gl:"no", ic:[6,14,15], u:"39b2fbb3-195c-47b2-88d8-3510e3a22c2c", pdp:"https://www.costco.com.mx/p/688942", name:"Sonos Arc Ultra Soundbar", vendor:"Sonos (ID/INTENT design)", os:"vendor", status:"discuss", g20:false, ready:true, ar:"ok 1.18 x 0.16 x 0.11 m; USDZ gate passed after rebuild", so:106.4, sn:0.9, nm:"ok: 688942 (Production) - Sonos Arc Ultra Soundbar",
   need:"Daniela: update back-office UUID (39b2fbb3) + flip Live Public. Derek: AR glance.",
   issue:"Final QA caught the iOS AR file tilted and floating on the previous asset (processed before the frozen-transforms recipe). Web viewer was fine. Earlier history: raw CAD viz colors retinted to the black colorway.",
   action:"FIXED 10-22 per the new-asset rule: same file reprocessed with frozen transforms on a FRESH asset (39b2fbb3): web + iOS AR both verified grounded and matching. Old asset deprecated."},
  {item:"Cannes carver chair", need:".max is NOT A SUPPORTED UPLOAD FORMAT: the file never entered a pipeline (stored as an inert 275.9 MB attachment).", ic:[12], pdp:"NONE", name:"LifestyleGarden Cannes outdoor carver easy chair, white (item # TBD)", vendor:"LifestyleGarden", status:"out", g20:false, ready:false, so:275.9, sn:null, nm:"NEEDS ITEM NUMBER + description (none provided)",
   issue:".max is NOT A SUPPORTED UPLOAD FORMAT: the file never entered a pipeline (stored as an inert 275.9 MB attachment). Proprietary format; only 3ds Max can open it.",
   action:"Vendor (LifestyleGarden) must export from 3ds Max as GLB or FBX with embedded media. Item number from Daniela sheet / PDP."},
- {item:"Lasso Wall Mount", ic:[15], u:"86b2e131-927c-4143-a3d9-a3f85f4c3fd4", pdp:"NONE", name:"Sonos Arc Ultra wall mount (no Costco item found)", vendor:"Sonos (ID/INTENT design)", status:"discuss", g20:false, ready:false, so:8.3, sn:0.09, nm:"NO ITEM NUMBER: not in the Costco MX catalog",
+ {item:"Lasso Wall Mount", gl:"no", ic:[15], u:"86b2e131-927c-4143-a3d9-a3f85f4c3fd4", pdp:"NONE", name:"Sonos Arc Ultra wall mount (no Costco item found)", vendor:"Sonos (ID/INTENT design)", status:"discuss", g20:false, ready:false, so:8.3, sn:0.09, nm:"NO ITEM NUMBER: not in the Costco MX catalog",
   need:"Costco/Daniela: confirm whether the mount is (or will be) a sellable item. If yes: item number + we finish it (pivot Back Center). If no: move to discarded assets.",
   issue:"The 3D file is clean (30.5k tris, 94 KB, correct 0.74 m rail). Catalog search 10-22 found NO matching Costco item (the Arc Ultra soundbar itself also is not live on the site yet).",
   action:"Renamed on platform with the decision flag. Parked pending the item-number answer: nothing else to fix."},
@@ -320,10 +319,10 @@ function render(){
     if(state.status&&state.status!==s.k)return;
     var rows=DATA.filter(function(r){return r.status===s.k&&visible(r)});
     if(!rows.length)return;
-    rows.sort(function(a,b){return (b.g20?1:0)-(a.g20?1:0)||String(a.item).localeCompare(String(b.item))});
+    rows.sort(function(a,b){return String(a.item).localeCompare(String(b.item))});
     var colors={ready:"var(--ok)",discuss:"var(--warn)",out:"var(--disc)"};
     out+='<section><div class="sechead"><span class="dot" style="background:'+colors[s.k]+'"></span><h2>'+s.label+'</h2><span class="cnt" style="color:'+colors[s.k]+'">'+rows.length+'</span><span class="hint">'+s.hint+'</span></div>';
-    out+='<table><thead><tr><th></th><th>Item</th><th>UUID</th><th>Status</th><th>Size</th><th class="hide-m">PDP size</th><th class="hide-m">AR QA &middot; VNTANA</th><th>AR QA &middot; Derek</th><th>Issue found</th><th class="hide-m">Action / next step</th><th>Thu</th></tr></thead><tbody>';
+    out+='<table><thead><tr><th></th><th>Item</th><th>UUID</th><th>Status</th><th>Size</th><th class="hide-m">PDP size</th><th class="hide-m">AR QA &middot; VNTANA</th><th>AR QA &middot; Derek</th><th>Issue found</th><th class="hide-m">Action / next step</th><th>Go live</th></tr></thead><tbody>';
     rows.forEach(function(r){
       var i=DATA.indexOf(r);
       var chips='';
@@ -337,7 +336,7 @@ function render(){
       var th=r.t?'<img class="thumb" loading="lazy" src="'+r.t+'">':'<div class="nothumb">no img</div>';
       out+='<tr class="'+(s.k==="out"?"disc":"")+'" data-i="'+i+'">'
         +'<td style="width:62px">'+th+'</td>'
-        +'<td><div class="item">'+esc(String(r.item))+(r.g20?'<span class="g20">GO-LIVE 20</span>':'')+'</div><div class="pname">'+esc(r.name||"")+'</div><div class="chips">'+chips+'</div></td>'
+        +'<td><div class="item">'+esc(String(r.item))+'</div><div class="pname">'+esc(r.name||"")+'</div><div class="chips">'+chips+'</div></td>'
         +'<td>'+(r.u?'<div class="uuidline" title="click to copy the full UUID" onclick="navigator.clipboard.writeText(\''+r.u+'\');this.textContent=\'copied!\';">'+r.u.slice(0,8)+'&hellip;<br>copy</div>':'<span style="color:var(--muted)">-</span>')+'</td>'
         +'<td><span class="pill '+r.status+'">'+s.label+'</span>'+was+'</td>'
         +'<td>'+size+wsize+'</td>'
@@ -346,14 +345,14 @@ function render(){
         +'<td style="font-size:.72rem">'+(r.ardr?'<span style="color:var(--warn);font-weight:800">redo: '+esc(r.ardr)+'</span>'+(r.arp?'<br><a href="'+r.arp+'" target="_blank"><img src="'+r.arp+'" alt="AR photo" loading="lazy" style="height:52px;margin-top:4px;border-radius:4px;border:1px solid var(--line)"></a>':''):(r.ard?'<span style="color:var(--ok);font-weight:800">&#10003; '+esc(r.ard)+'</span>'+(r.arp?'<br><a href="'+r.arp+'" target="_blank" title="Device AR photo (10 ft stick for scale)"><img src="'+r.arp+'" alt="AR photo" loading="lazy" style="height:52px;margin-top:4px;border-radius:4px;border:1px solid var(--line)"></a>':''):((s.k==='shippable'||s.k==='review')?'<span style="color:var(--warn);font-weight:700">pending</span>':'<span style="color:var(--muted)">n/a</span>')))+'</td>'
         +'<td style="max-width:280px">'+((r.ic&&r.ic.length)?r.ic.map(function(c){return '<span class="icchip" title="'+esc(ISSUES[c][0])+'">'+c+'</span>'}).join(''):(r.ic?'<span class="icnone">none</span>':''))+'</td>'
         +'<td class="hide-m" style="max-width:320px">'+(r.need?'<div class="need">&#9654; '+esc(r.need)+'</div>':'')+'</td>'
-        +'<td class="thu">'+(r.ready?'<span style="color:var(--ok)">&#10003;</span>':'<span style="color:var(--bad)">&#10007;</span>')+'</td></tr>';
+        +'<td class="thu">'+(r.gl==='call'?'<span style="color:var(--warn);font-size:.72rem">Costco\'s call</span>':r.gl==='no'?'<span style="color:var(--bad);font-size:.72rem">&#10007; no PDP</span>':r.status==='ready'?'<span style="color:var(--ok)">&#10003;</span>':'<span style="color:var(--muted)">&ndash;</span>')+'</td></tr>';
     });
     out+='</tbody></table></section>';
   });
   document.getElementById("sections").innerHTML=out||'<p style="color:var(--muted);padding:2rem 0">Nothing matches the filters.</p>';
   document.querySelectorAll("#counts .count").forEach(function(c){c.onclick=function(){var s=c.getAttribute("data-s");state.status=(s===""||state.status===s)?null:s;render()}});
 }
-document.getElementById("g20toggle").onclick=function(){state.g20=!state.g20;this.classList.toggle("on",state.g20);render()};
+
 document.getElementById("q").oninput=function(){state.q=this.value;render()};
 (function(){var vs={};DATA.forEach(function(r){if(r.vendor)vs[r.vendor]=1});var sel=document.getElementById("vendorSel");Object.keys(vs).sort().forEach(function(v){var o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o)});sel.onchange=function(){state.vendor=this.value;render()}})();
 document.getElementById("upd").textContent="2026-10-22";
