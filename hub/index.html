@@ -74,6 +74,12 @@
       <td class="u">No hardware photos or CAD on the site by design: reference files live in the Apex workspace on the platform (link TBD). Blockout images + GEO config PDF in refs/.</td>
       <td class="n">Do NOT send to the vendor until Derek confirms the NDA. Internals removed by Jure (obstructed-mesh removal); Apex confirming. CAD part numbers stay in the manifest Google Sheet / Apex workspace, not on the site. Open: triangle budget, due date, password confirm, Apex answers on CONFIRM items.</td></tr>
  <tr class="keep">
+      <td><a href="/_templates/cockpit-template.html" target="_blank">_templates/cockpit-template.html</a><div class="grp">Template</div></td>
+      <td><b>Reusable Client Program Cockpit template.</b> Generalized from taco-review: gated, brand-themed, live-3D client review page driven entirely by one <code>CONFIG</code> block (renderCockpit). Auto-builds stat tiles, status table, ready embeds, NEW/Approved badges, ETA dates, an optional material/spotlight block, and received/decisions/questions/next-steps sections. Spin up a new client in ~10 min: copy to <code>/&lt;client&gt;-review/index.html</code>, edit CONFIG, push. See <code>_templates/README.md</code> for the field cheat-sheet + how to pull product UUIDs (platform URL or dcicero8 admin API). Embeds need LIVE_PUBLIC.</td>
+      <td class="d">2026-10-23</td>
+      <td class="u">Self-contained (inlined CSS + render engine), no external stylesheet. Renders a 2-product sample out of the box. PLAT/EMBED URLs built from CONFIG.platform.orgSlug + workspaceSlug.</td>
+      <td class="n">Template only (noindex). Keep the styles + engine untouched; clients edit only the CONFIG call at the bottom. Soft password gate (plaintext compare, sessionStorage).</td></tr>
+ <tr class="keep">
       <td><a href="/taco-review/" target="_blank">taco-review/</a><div class="grp">Taco</div></td>
       <td><b>Taco-facing weekly review dashboard (Friday calls).</b> Password-gated (<code>taco2026</code>, separate from the build site taco2027). No build instructions, no vendor name. Sections: (1) Ready for review = live embeds + platform links of built products, (2) status table of all 32 SKUs (Ready / Next up / After faceplate art / Not started), (3) what we received from Taco with dates, (4) decisions log incl. proposed render-count rule, (5) open questions with owners, (6) next steps. Status is edited in the JS block at the bottom (BUILT map SKU->uuid, FAMSTATUS per family).</td>
       <td class="d">2026-10-15</td>
