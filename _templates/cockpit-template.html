@@ -61,6 +61,7 @@
   table.st tr.famrow td{background:#f7f9fb;font-weight:800;color:var(--brand2)}
   .pill2{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
   .p-approved{background:#15663a;color:#fff}
+  .p-approvedq{background:#f0a500;color:#3d2a00}
   .p-ready{background:#e6f6ec;color:#1f8a4c}
   .p-next{background:#eef4ff;color:#1f5fbf}
   .p-wait{background:#fff6e6;color:#a6620a}
@@ -138,29 +139,32 @@
     // links
     el('links').innerHTML=(C.links||[]).map(function(l){return '<a class="btn'+(l.ghost?' ghost':'')+'" href="'+esc(l.href)+'" target="_blank" rel="noopener">'+esc(l.label)+' &#8599;</a>';}).join("");
     // status maps
-    var BUILT=C.built||{}, APPROVED=C.approved||{}, NEWSET=C.newset||{}, ETA=C.eta||{}, FAM=C.famStatus||{};
+    var BUILT=C.built||{}, APPROVED=C.approved||{}, AQ=C.approvedPending||{}, NEWSET=C.newset||{}, ETA=C.eta||{}, FAM=C.famStatus||{};
     var LBL=Object.assign({approved:["p-approved","Approved"],ready:["p-ready","Ready for review"],next:["p-next","Next up"],wait:["p-wait","Waiting"],mat:["p-wait","Waiting on material"],none:["p-none","Not started"]}, C.statusLabels||{});
     var org=(C.platform&&C.platform.orgSlug)||"", ws=(C.platform&&C.platform.workspaceSlug)||"";
     var EMBED=function(u){return "https://embed.vntana.com/v2?productUuid="+u+"&clientSlug="+ws+"&organizationSlug="+org;};
     var PLAT=function(u){return "https://platform.vntana.com/"+org+"/"+ws+"/products/details/"+u;};
-    var counts={total:0,ready:0,approved:0,next:0,wait:0,mat:0,none:0}, rows="", cards="";
+    var counts={total:0,ready:0,approved:0,approvedq:0,next:0,wait:0,mat:0,none:0}, rows="", cards="";
     (C.families||[]).forEach(function(f){
       rows+='<tr class="famrow"><td colspan="5">'+esc(f.id)+'</td></tr>';
       (f.variants||[]).forEach(function(v){
         counts.total++; var u=BUILT[v.sku];
         var st=u?(APPROVED[v.sku]?"approved":"ready"):(FAM[f.id]||"none");
         counts[st]=(counts[st]||0)+1; if(st==="approved")counts.ready++;
+        if(AQ[v.sku])counts.approvedq++;
         var l=LBL[st]||LBL.none;
         var newb=NEWSET[v.sku]?' <span class="pill2 p-new">NEW</span>':'';
+        var aq=AQ[v.sku]?' <span class="pill2 p-approvedq">Approved?</span>':'';
         var eta=ETA[v.sku]?' <span style="font-size:12px;color:var(--muted)">ETA '+esc(ETA[v.sku])+'</span>':'';
-        rows+='<tr><td><b>'+esc(v.sku)+'</b>'+newb+'</td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+esc(l[1])+'</span>'+eta+'</td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
-        if(u) cards+='<div class="rcard"><iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(u)+'"></iframe><div class="rh"><div><div class="sku">'+esc(v.sku)+newb+'</div><div class="meta">'+esc(v.body)+' &middot; '+esc(v.conn)+'</div></div><a class="btn ghost" href="'+PLAT(u)+'" target="_blank" rel="noopener">Platform &#8599;</a></div></div>';
+        rows+='<tr><td><b>'+esc(v.sku)+'</b>'+newb+aq+'</td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+esc(l[1])+'</span>'+eta+'</td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
+        if(u) cards+='<div class="rcard"><iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(u)+'"></iframe><div class="rh"><div><div class="sku">'+esc(v.sku)+newb+aq+'</div><div class="meta">'+esc(v.body)+' &middot; '+esc(v.conn)+'</div></div><a class="btn ghost" href="'+PLAT(u)+'" target="_blank" rel="noopener">Platform &#8599;</a></div></div>';
       });
     });
     // stat tiles (auto: total + any status present)
     var tiles=[['total','Products in this set','']];
     if(counts.ready) tiles.push(['ready','Ready for review','on platform, renderable']);
     if(counts.approved) tiles.push(['approved','Approved by client','signed off']);
+    if(counts.approvedq) tiles.push(['approvedq','Approved?','to confirm in review']);
     if(counts.next) tiles.push(['next',LBL.next[1],'in production']);
     if(counts.wait) tiles.push(['wait',LBL.wait[1],'']);
     if(counts.mat) tiles.push(['mat',LBL.mat[1],'']);
@@ -193,6 +197,7 @@
     // 2 Status table
     var s2='<p class="lead">'+esc(C.statusLead||"")+'</p><div class="card" style="padding:8px 14px"><table class="st"><thead><tr><th>SKU</th><th>Body</th><th>Connection</th><th>Status</th><th>Platform</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
     var legend=[]; if(counts.approved)legend.push('<span class="pill2 p-approved">'+esc(LBL.approved[1])+'</span> signed off');
+    if(counts.approvedq)legend.push('<span class="pill2 p-approvedq">Approved?</span> confirming in review');
     legend.push('<span class="pill2 p-ready">'+esc(LBL.ready[1])+'</span> on platform');
     if(counts.next)legend.push('<span class="pill2 p-next">'+esc(LBL.next[1])+'</span> in production');
     if(counts.wait)legend.push('<span class="pill2 p-wait">'+esc(LBL.wait[1])+'</span>');
@@ -267,7 +272,8 @@ renderCockpit({
     ] }
   ],
   built:    { "A-001":"dd44df80-5f24-42d4-827b-729e8d89b101", "A-002":"f7e86c19-ef61-47cd-a3ec-76d690d10fd0" },
-  approved: { "A-002":1 },
+  approved: { },                 // solid Approved pile (locked / confirmed sign-off)
+  approvedPending: { "A-002":1 },// amber "Approved?" badge (marked, confirm in the meeting)
   newset:   { "A-001":1 },
   eta:      { "B-001":"Oct 28" },
   famStatus:{ "Family B":"next" },

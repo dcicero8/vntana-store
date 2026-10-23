@@ -30,7 +30,8 @@ a password gate. This is the generalized version of the Taco weekly review page.
 | `checkin.questions[]` | The "is it working?" questions above the embeds. |
 | `families[]` | `{id, variants:[{sku, body, conn}]}`. Drives the status table. |
 | `built{sku:uuid}` | Any SKU here renders a **live embed** + "Ready". Asset must be **LIVE_PUBLIC**. |
-| `approved{sku:1}` | Moves a built SKU into the **Approved** pile (dark-green pill + stat). |
+| `approved{sku:1}` | Moves a built SKU into the **Approved** pile (dark-green pill + stat). Locked / confirmed. |
+| `approvedPending{sku:1}` | Amber **Approved?** badge (marked approved but not yet confirmed). Stays "Ready for review" until you confirm, then move it to `approved`. |
 | `newset{sku:1}` | **NEW** badge. |
 | `eta{sku:"Oct 28"}` | Date next to the status pill for un-built items. |
 | `famStatus{famId:"next\|wait\|mat\|none"}` | Status for families with no built SKUs. |
