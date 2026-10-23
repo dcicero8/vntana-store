@@ -229,10 +229,10 @@ var DATA = [
  {item:"[COPY] 6232432", need:"Duplicate of the failed original (3D Scan).", t:"https://www.costco.com.mx/medias/sys_master/products/hab/hbe/242538472701982.jpg", pdp:"https://www.costco.com.mx/p/6232432", name:"Air fryer duplicate", vendor:"TBD", status:"out", g20:false, ready:false, so:56.2, sn:null, nm:"duplicate: archive",
   issue:"Duplicate of the failed original (3D Scan).",
   action:"Archive/delete."},
- {item:"688942", need:"Model verified (web + AR), but no live Costco PDP exists for this item yet, same as its wall mount. Confirm the item is launching before it goes live.", u:"3a7bfcfb-e4a0-4164-bd2c-69c716edd6a3", pdp:"https://www.costco.com.mx/p/688942", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"out", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
+ {item:"688942", need:"Model verified (web + AR), but no live Costco PDP exists for this item yet, same as its wall mount. Confirm the item is launching before it goes live.", u:"3a7bfcfb-e4a0-4164-bd2c-69c716edd6a3", pdp:"NONE", name:"Lasso V44 Black (duplicate pair)", vendor:"VNTANA demo", status:"out", g20:false, ready:false, so:106.4, sn:0.92, nm:"ok",
   issue:"Identical to 'Lasso V44 Black' row: duplicates (same CAD viz-color source).",
   action:"Archive this one once the fixed Lasso V44 is uploaded under the proper item number."},
- {item:"688942", gl:"no", ic:[6,14,15], u:"39b2fbb3-195c-47b2-88d8-3510e3a22c2c", pdp:"https://www.costco.com.mx/p/688942", name:"Sonos Arc Ultra Soundbar", vendor:"Sonos (ID/INTENT design)", os:"vendor", status:"discuss", g20:false, ready:true, ar:"ok 1.18 x 0.16 x 0.11 m; USDZ gate passed after rebuild", so:106.4, sn:0.9, nm:"ok: 688942 (Production) - Sonos Arc Ultra Soundbar",
+ {item:"688942", gl:"no", ic:[6,14,15], u:"39b2fbb3-195c-47b2-88d8-3510e3a22c2c", pdp:"NONE", name:"Sonos Arc Ultra Soundbar", vendor:"Sonos (ID/INTENT design)", os:"vendor", status:"discuss", g20:false, ready:true, ar:"ok 1.18 x 0.16 x 0.11 m; USDZ gate passed after rebuild", so:106.4, sn:0.9, nm:"ok: 688942 (Production) - Sonos Arc Ultra Soundbar",
   need:"Daniela: update back-office UUID (39b2fbb3) + flip Live Public. Derek: AR glance.",
   issue:"Final QA caught the iOS AR file tilted and floating on the previous asset (processed before the frozen-transforms recipe). Web viewer was fine. Earlier history: raw CAD viz colors retinted to the black colorway.",
   action:"FIXED 10-22 per the new-asset rule: same file reprocessed with frozen transforms on a FRESH asset (39b2fbb3): web + iOS AR both verified grounded and matching. Old asset deprecated."},
@@ -329,6 +329,7 @@ function render(){
       var i=DATA.indexOf(r);
       var chips='';
       if(r.pdp&&r.pdp!=="NONE"&&r.pdp!==null)chips+='<a href="'+r.pdp+'" target="_blank" onclick="event.stopPropagation()">PDP &#8599;</a>';
+      else if(r.pdp==="NONE")chips+='<span style="color:var(--muted);font-size:.72rem;border:1px solid var(--line);border-radius:8px;padding:1px 6px">No PDP</span>';
       if(r.u&&PLATFORM_BASE&&r.status!=='out')chips+='<a class="plat" href="'+PLATFORM_BASE+r.u+'" target="_blank" onclick="event.stopPropagation()">Platform &#8599;</a>';
       var nm=(r.nm&&r.nm!=="ok")?'<div class="nmflag">&#9998; '+esc(r.nm)+'</div>':'';
       var was=(r.os&&r.os!==r.status)?'<span class="was">FIXED &middot; was '+r.os+'</span>':'';
