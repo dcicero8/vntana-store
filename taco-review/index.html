@@ -114,7 +114,7 @@
           <li><b>Color &mdash; warm it up.</b> The swatch reads dark olive-bronze; the real part is a warmer, lighter yellow-gold brass.</li>
           <li><b>Two finish zones.</b> The cast body is matte, but the machined parts (drain plug threads, top air-vent nipple, port faces) are brighter and more polished. A single uniform finish will look wrong; we plan a polished variant for machined surfaces.</li>
         </ul>
-        <div class="note" style="margin-top:10px"><b>Ken:</b> does this match the part on your bench? Sign off, or tell us what to change, and we apply it to the separators (next swatch rev targeted Monday).</div>
+        <div class="note" style="margin-top:10px"><b>Plan (agreed Oct 23):</b> surface is good, color is off. VNTANA is updating the bronze to the lighter "hero" tone and adding a <b>machined finish</b> (the smoother look on machined areas vs the rough cast body). Re-delivering Tue/Wed next week; once Ken signs off, we apply it to all the separators.</div>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px">
@@ -136,7 +136,6 @@
     <table class="st"><thead><tr><th>SKU</th><th>Body</th><th>Connection</th><th>Status</th><th>Platform</th></tr></thead><tbody id="status"></tbody></table>
   </div>
   <p style="font-size:13px;color:var(--muted)">
-    <span class="pill2 p-approvedq">Approved?</span> marked approved, confirming in review &nbsp;
     <span class="pill2 p-ready">Ready for review</span> built and on platform &nbsp;
     <span class="pill2 p-next">Next up</span> in production now &nbsp;
     <span class="pill2 p-wait">After faceplate art</span> waiting on final faceplate design &nbsp;
@@ -161,6 +160,7 @@
       <tr><td class="d">Oct 9</td><td>Stainless sample photos (Ken)</td><td>Stainless material check</td></tr>
       <tr><td class="d">Oct 16</td><td>File naming proposal (Excel, Jess and Jai)</td><td>Render file names in Advanced Renders</td></tr>
       <tr><td class="d">Oct 21</td><td>Separator reference photos (bronze, 5 angles, 49-100T-2)</td><td>Matching the bronze material (see Bronze review above)</td></tr>
+      <tr><td class="d">Oct 23</td><td>Faceplate design approved (internal)</td><td>Building the 007e / 0015e3 / 0018e faceplate assets</td></tr>
     </tbody></table>
   </div>
 </section>
@@ -184,6 +184,14 @@
       <tr><td class="d">Oct 16</td><td><b>Scope:</b> finish this list of 32 before new STEP files are sent.</td></tr>
       <tr><td class="d">Oct 16</td><td><b>Lighting:</b> use the environment in the Blender file for now. The other environments in Advanced Renders are not tested yet.</td></tr>
       <tr><td class="d">Oct 16</td><td><b>Weekly review</b> moves to Fridays, 1:30 to 2:30 pm ET.</td></tr>
+      <tr><td class="d">Oct 23</td><td><b>Faceplate design approved.</b> VNTANA builds the 3 faceplate assets next: 007e, 0015e3, 0018e.</td></tr>
+      <tr><td class="d">Oct 23</td><td><b>Bronze direction:</b> surface/texture is good; color is off. Match the lighter "hero" tone, and do <b>two finishes</b> (rough cast body + smoother machined areas). Re-deliver Tue/Wed next week.</td></tr>
+      <tr><td class="d">Oct 23</td><td><b>Geometry check:</b> trust the current geometry for now. Derek to book a ~1-hour visual review with Nate on the 3 unique geometries (0026e, 0034e, 0034e+). F2 and SF2 share the same meshes, so only 3 to sign off.</td></tr>
+      <tr><td class="d">Oct 23</td><td><b>Exploded views = phase 2/3</b> (training + replacement parts). Optional toggle, not blocking. Renaming parts is free; only merging/splitting meshes would be a small change order later.</td></tr>
+      <tr><td class="d">Oct 23</td><td><b>Separator labels:</b> Taco is updating the green/white labels with the vendor and will send hi-res art (Illustrator or PNG) to the 3D Toolkit. Placement should be consistent: one start/end point, the same on every SKU.</td></tr>
+      <tr><td class="d">Oct 23</td><td><b>Digital readout</b> ("34" on the 0034e+, and the VT2218 screen): added by VNTANA. Pick a hero number/state with Nate. A true per-number chooser would need a configurator (later phase); separate on/off display variants are easy if wanted.</td></tr>
+      <tr><td class="d">Oct 23</td><td><b>0026e-SF2 "Approved" was set by accident</b> on the platform, not a real sign-off. Badge cleared.</td></tr>
+      <tr><td class="d">Oct 23</td><td><b>Timeline:</b> targeting late November / early December. Final production schedule once the bronze is moving.</td></tr>
     </tbody></table>
   </div>
 </section>
@@ -194,14 +202,13 @@
   <p class="lead">Please send answers by the next review on Friday, October 30.</p>
   <div class="card">
     <ol class="q">
-      <li><b>"Approved" = good to go?</b> 0026e-SF2 (304 Stainless, Flanged) is marked Approved. Please confirm this means final sign-off so we move it to the Approved pile and treat it as locked. If other products are also approved, flag them and we move those too.<span class="who">Taco / Ken</span></li>
-      <li><b>Materials review:</b> stainless, cast iron and black plastic on the 4 ready products. Please leave notes as annotations (tag @Derek).<span class="who">Ken, next week</span></li>
-      <li><b>Bronze sign-off:</b> the bronze example ball is on your platform now and your reference photos are in (thank you). Please review the Bronze material section above and sign off, or tell us the changes (warmer color, polished machined parts). We apply it to the separators once you approve.<span class="who">Ken</span></li>
-      <li><b>Side label content:</b> the current label on 0034e/0026e was built for another circulator and may not match this product (made by Taco Italia). Options: a correct label per model, one generic label with placeholder values (for example "XX AMPS"), or no label. The sooner we know, the fewer delivered products we change.<span class="who">Liz, Sara, sales</span></li>
-      <li><b>Part names and meshes:</b> Taco is checking the 0034e parts against the replacement parts list (with Nate). Names are easy to change. Parts that must be split or joined take more work, so please flag those first.<span class="who">Liz, Nate</span></li>
-      <li><b>File naming:</b> Taco's simplified naming from the Oct 16 sheet (angle number, quality as DPI at the end; PNG = transparent, JPG = solid background). VNTANA is checking with the dev team how to build it from the product name.<span class="who">Jess, Jai, VNTANA</span></li>
-      <li><b>Technical Drawings:</b> please test the outline settings (silhouette, border, crease, material boundary, width) and send examples: what you got, what you want.<span class="who">Ken, Jess</span></li>
-      <li><b>Faceplate art:</b> date and format for the final faceplates, after the internal review.<span class="who">Liz</span></li>
+      <li><b>Textures sign-off:</b> take a closer look at the materials on the ready products and send any feedback. Early read is they look good (cast iron, stainless, Taco green).<span class="who">Ken</span></li>
+      <li><b>Bronze sign-off:</b> VNTANA is re-delivering a lighter "hero" color + a machined finish Tue/Wed next week. Sign off on that and we apply it to all the separators.<span class="who">Ken</span></li>
+      <li><b>Geometry check:</b> Derek to book a ~1-hour visual review with Nate on the 3 unique geometries (0026e, 0034e, 0034e+). Trusting the geometry in the meantime.<span class="who">Derek, Nate</span></li>
+      <li><b>Separator labels:</b> send the updated hi-res label art (Illustrator or PNG) to the 3D Toolkit, and confirm a consistent start/end placement around the band.<span class="who">Liz</span></li>
+      <li><b>Digital readout:</b> pick the hero number/state for the "34" readout (and the VT2218 screen) with Nate; decide whether you also want a display-off variant.<span class="who">Nate, Ken</span></li>
+      <li><b>Side label content (circulators):</b> the current 0034e/0026e side label was built for another circulator. Correct label per model, one generic placeholder, or none?<span class="who">Liz, sales</span></li>
+      <li><b>File naming:</b> Taco's simplified naming from the Oct 16 sheet. VNTANA is checking with the dev team how to build it from the product name.<span class="who">Jess, Jai, VNTANA</span></li>
       <li><b>Composite union:</b> the part number for the black composite union casing.<span class="who">Liz</span></li>
       <li><b>007e cover:</b> smooth cover (007e-2F2) or the cover with the raised knob (other 007e variants)?<span class="who">Ken</span></li>
       <li><b>Separators:</b> are 49-150 Press and 49-200 Sweat/Press missing from the list, or not made?<span class="who">Liz</span></li>
@@ -215,14 +222,13 @@
   <h2><span class="n">6</span>Next steps</h2>
   <div class="card">
     <ul class="clean">
-      <li><b>VNTANA:</b> 0034e+ and VT2218 in production. Revised delivery: 003eP-F2 Oct 23, 003eP-SF2 Oct 26, VT2218-HY1-4C1A00 Oct 27, VT2218-HY2-FC1A00 Oct 28 (all by Oct 28).</li>
-      <li><b>VNTANA:</b> bronze example ball delivered; next swatch rev (warmer color, polished machined variant) targeted Monday for Ken's sign-off. Separators start after bronze sign-off.</li>
-      <li><b>VNTANA:</b> clean up the older review assets in Advanced Renders next week. Use the top 4 products for now.</li>
-      <li><b>VNTANA:</b> check file naming options with the dev team; send the new Friday invite.</li>
-      <li><b>Taco:</b> review the materials and leave annotations; test Technical Drawings and send examples.</li>
-      <li><b>Taco:</b> answers on side labels, part names, and faceplate art.</li>
+      <li><b>VNTANA:</b> 0034e+ (003eP-F2 / SF2) delivered and live. VT2218 (4C, FC) coming Tue/Wed next week.</li>
+      <li><b>VNTANA:</b> update the bronze to the lighter "hero" color + a machined finish, post to platform and send over Tue/Wed. Separators follow once Ken signs off.</li>
+      <li><b>VNTANA:</b> build the 3 faceplate assets (007e, 0015e3, 0018e) now that the faceplate design is approved.</li>
+      <li><b>Derek:</b> book a ~1-hour visual geometry review with Nate (0026e, 0034e, 0034e+).</li>
+      <li><b>Taco:</b> Ken to send texture feedback; send updated hi-res label art to the 3D Toolkit; remove the accidental "Approved" status on 0026e-SF2.</li>
       <li><b>Links:</b> use this page and cycles.vntana.com only. Old links with "railway" in the address are an old demo; please delete those bookmarks.</li>
-      <li><b>Timeline:</b> the 32 products through the end of the year; e-series faceplate models follow the final faceplate art.</li>
+      <li><b>Timeline:</b> targeting late November / early December; final production schedule once the bronze is moving.</li>
     </ul>
   </div>
 </section>
@@ -255,8 +261,8 @@ var BUILT = {
 var NEWSET = {"003eP-F2":1,"003eP-SF2":1};
 // Per-SKU delivery ETA for products still in production
 var ETA = {"VT2218-HY1-4C1A00":"Oct 27","VT2218-HY2-FC1A00":"Oct 28"};
-// SKUs provisionally approved (Approved? badge) pending confirmation in the meeting
-var APPROVEDQ = {"0026e-SF2":1};
+// SKUs provisionally approved (Approved? badge). 0026e-SF2's approval Oct 23 was accidental -> cleared.
+var APPROVEDQ = {};
 // Family status for products not yet built: next | wait | none
 var FAMSTATUS = {"007e":"wait","0015e3":"wait","0018e":"wait","0034e+":"next","VT2218":"next","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
 /* ============================ */
@@ -285,7 +291,7 @@ document.getElementById("ready").innerHTML=cards;
 document.getElementById("stats").innerHTML=
   '<div class="stat"><div class="k">Products in this set</div><div class="v">'+total+'</div><div class="s">12 families</div></div>'+
   '<div class="stat"><div class="k">Ready for review</div><div class="v">'+built+'</div><div class="s">on platform, renderable</div></div>'+
-  '<div class="stat"><div class="k">Approved?</div><div class="v">'+approvedq+'</div><div class="s">to confirm in review</div></div>'+
+  (approvedq?'<div class="stat"><div class="k">Approved?</div><div class="v">'+approvedq+'</div><div class="s">to confirm in review</div></div>':'')+
   '<div class="stat"><div class="k">Next up</div><div class="v">'+next+'</div><div class="s">in production</div></div>'+
   '<div class="stat"><div class="k">After bronze sign-off</div><div class="v">'+mat+'</div><div class="s">air &amp; dirt separators</div></div>'+
   '<div class="stat"><div class="k">After faceplate art</div><div class="v">'+wait+'</div><div class="s">e-series faceplates</div></div>';
