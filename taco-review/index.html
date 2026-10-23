@@ -44,6 +44,7 @@
   .p-none{background:#f0f2f5;color:#5b6b7a}
   .p-new{background:#2f8a3e;color:#fff}
   .p-approved{background:#15663a;color:#fff}
+  .p-approvedq{background:#f0a500;color:#3d2a00}
 
   ul.clean{margin:6px 0 0;padding-left:20px} ul.clean li{margin:6px 0}
   table.log{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
@@ -135,7 +136,7 @@
     <table class="st"><thead><tr><th>SKU</th><th>Body</th><th>Connection</th><th>Status</th><th>Platform</th></tr></thead><tbody id="status"></tbody></table>
   </div>
   <p style="font-size:13px;color:var(--muted)">
-    <span class="pill2 p-approved">Approved</span> signed off by Taco &nbsp;
+    <span class="pill2 p-approvedq">Approved?</span> marked approved, confirming in review &nbsp;
     <span class="pill2 p-ready">Ready for review</span> built and on platform &nbsp;
     <span class="pill2 p-next">Next up</span> in production now &nbsp;
     <span class="pill2 p-wait">After faceplate art</span> waiting on final faceplate design &nbsp;
@@ -254,8 +255,8 @@ var BUILT = {
 var NEWSET = {"003eP-F2":1,"003eP-SF2":1};
 // Per-SKU delivery ETA for products still in production
 var ETA = {"VT2218-HY1-4C1A00":"Oct 27","VT2218-HY2-FC1A00":"Oct 28"};
-// SKUs Taco has formally approved (the approved pile)
-var APPROVED = {"0026e-SF2":1};
+// SKUs provisionally approved (Approved? badge) pending confirmation in the meeting
+var APPROVEDQ = {"0026e-SF2":1};
 // Family status for products not yet built: next | wait | none
 var FAMSTATUS = {"007e":"wait","0015e3":"wait","0018e":"wait","0034e+":"next","VT2218":"next","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
 /* ============================ */
@@ -264,17 +265,19 @@ var EMBED=function(u){return "https://embed.vntana.com/v2?productUuid="+u+"&clie
 var PLAT=function(u){return "https://platform.vntana.com/taco/products/products/details/"+u;};
 var LBL={approved:["p-approved","Approved"],ready:["p-ready","Ready for review"],next:["p-next","Next up"],wait:["p-wait","After faceplate art"],mat:["p-wait","After bronze sign-off"],none:["p-none","Not started"]};
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
-var total=0,built=0,approved=0,next=0,wait=0,mat=0,rows="",cards="";
+var total=0,built=0,approvedq=0,next=0,wait=0,mat=0,rows="",cards="";
 FAMILIES.forEach(function(f){
   rows+='<tr class="famrow"><td colspan="5">'+esc(f.id)+'</td></tr>';
   f.variants.forEach(function(v){
-    total++; var u=BUILT[v.sku]; var st=u?(APPROVED[v.sku]?"approved":"ready"):(FAMSTATUS[f.id]||"none");
-    if(st==="approved"){built++;approved++;} else if(st==="ready")built++; else if(st==="next")next++; else if(st==="wait")wait++; else if(st==="mat")mat++;
+    total++; var u=BUILT[v.sku]; var st=u?"ready":(FAMSTATUS[f.id]||"none");
+    if(st==="ready")built++; else if(st==="next")next++; else if(st==="wait")wait++; else if(st==="mat")mat++;
+    if(APPROVEDQ[v.sku])approvedq++;
     var l=LBL[st];
     var newb=NEWSET[v.sku]?' <span class="pill2 p-new">NEW</span>':'';
+    var aq=APPROVEDQ[v.sku]?' <span class="pill2 p-approvedq">Approved?</span>':'';
     var eta=ETA[v.sku]?' <span style="font-size:12px;color:var(--muted)">ETA '+esc(ETA[v.sku])+'</span>':'';
-    rows+='<tr><td><b>'+esc(v.sku)+'</b>'+newb+'</td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+l[1]+'</span>'+eta+'</td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
-    if(u) cards+='<div class="rcard"><iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(u)+'"></iframe><div class="rh"><div><div class="sku">'+esc(v.sku)+newb+'</div><div class="meta">'+esc(v.body)+' &middot; '+esc(v.conn)+'</div></div><a class="btn ghost" href="'+PLAT(u)+'" target="_blank" rel="noopener">Platform &#8599;</a></div></div>';
+    rows+='<tr><td><b>'+esc(v.sku)+'</b>'+newb+aq+'</td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+l[1]+'</span>'+eta+'</td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
+    if(u) cards+='<div class="rcard"><iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(u)+'"></iframe><div class="rh"><div><div class="sku">'+esc(v.sku)+newb+aq+'</div><div class="meta">'+esc(v.body)+' &middot; '+esc(v.conn)+'</div></div><a class="btn ghost" href="'+PLAT(u)+'" target="_blank" rel="noopener">Platform &#8599;</a></div></div>';
   });
 });
 document.getElementById("status").innerHTML=rows;
@@ -282,7 +285,7 @@ document.getElementById("ready").innerHTML=cards;
 document.getElementById("stats").innerHTML=
   '<div class="stat"><div class="k">Products in this set</div><div class="v">'+total+'</div><div class="s">12 families</div></div>'+
   '<div class="stat"><div class="k">Ready for review</div><div class="v">'+built+'</div><div class="s">on platform, renderable</div></div>'+
-  '<div class="stat"><div class="k">Approved by Taco</div><div class="v">'+approved+'</div><div class="s">signed off</div></div>'+
+  '<div class="stat"><div class="k">Approved?</div><div class="v">'+approvedq+'</div><div class="s">to confirm in review</div></div>'+
   '<div class="stat"><div class="k">Next up</div><div class="v">'+next+'</div><div class="s">in production</div></div>'+
   '<div class="stat"><div class="k">After bronze sign-off</div><div class="v">'+mat+'</div><div class="s">air &amp; dirt separators</div></div>'+
   '<div class="stat"><div class="k">After faceplate art</div><div class="v">'+wait+'</div><div class="s">e-series faceplates</div></div>';
