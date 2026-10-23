@@ -40,51 +40,51 @@
 <header><div class="wrap"><div class="brand">3D Asset <span>Intake Playbook</span></div><div class="internal">VNTANA internal: names clients and open bugs</div></div></header>
 <div class="wrap">
 
-<p class="lede">What we learned cleaning up the Costco Mexico pilot (42 vendor assets, two days, Oct 21-22) plus the Accenture and J&amp;J batches. End state: 27 of 42 verified ready for production. Everything below is a pattern we hit more than once, so it is what the platform and docs should absorb. Written for Jure + ModelOps.</p>
+<p class="lede">What we learned cleaning up the Costco Mexico pilot (42 vendor assets, two days, Oct 21-22) plus the Accenture and J&amp;J batches. End state: 26 of 42 verified ready for production. Everything below is a pattern we hit more than once, written up as observations and ideas for Jure + ModelOps to review: what we saw, what we think caused it, and what might help.</p>
 
 <h2><span class="n">1</span>What vendors actually send (the 16 failure types)</h2>
 <div class="card">
 <p style="font-size:.86rem;color:#374151;margin-bottom:.6rem">Counts are from the Costco batch alone. Median asset had 2-3 of these at once; only ONE of the 42 arrived with nothing to fix.</p>
 <ul>
-<li><b>Floated in AR (24 assets).</b> Origin not at the base. One was LIVE and hovering 76 cm. Fix: Pivot Bottom Center. <i>Platform: default pivot to bottom-center, or warn when a model's base is far from y=0.</i></li>
-<li><b>Pre-compressed uploads (11).</b> Draco'd files, including our own outputs re-uploaded as source. Optimization rejects them; Convert Only passes them through unfixed. Fix: decompress, reprocess. <i>Platform: detect and decompress at ingest.</i></li>
-<li><b>Required-extension exports (3 LG TVs).</b> extensionsRequired with Draco/texture_transform means the converter MUST reject the file: silent total failure, a week of mystery. Fix: bake transforms into UVs. <i>Platform: read extensionsRequired at upload and say so in the error.</i></li>
-<li><b>Incomplete uploads (7).</b> .gltf manifests without their _resources folder; naked USD files without textures (a black FoodSaver arrived white). The geometry never left the vendor's machine. <i>Platform: reject a .gltf whose buffer URIs are unresolvable, with a message naming the missing files.</i></li>
+<li><b>Floated in AR (24 assets).</b> Origin not at the base. One was LIVE and hovering 76 cm. Fix: Pivot Bottom Center. <i>Idea: default pivot to bottom-center, or warn when a model's base is far from y=0.</i></li>
+<li><b>Pre-compressed uploads (11).</b> Draco'd files, including our own outputs re-uploaded as source. Optimization rejects them; Convert Only passes them through unfixed. Fix: decompress, reprocess. <i>Idea: detect and decompress at ingest.</i></li>
+<li><b>Required-extension exports (3 LG TVs).</b> extensionsRequired with Draco/texture_transform means the converter must reject the file by spec, and it failed with no explanation. Fix: bake transforms into UVs. <i>Idea: read extensionsRequired at upload and say so in the error.</i></li>
+<li><b>Incomplete uploads (7).</b> .gltf manifests without their _resources folder; naked USD files without textures (a black FoodSaver arrived white). The geometry never left the vendor's machine. <i>Idea: reject a .gltf whose buffer URIs are unresolvable, with a message naming the missing files.</i></li>
 <li><b>Colorless materials.</b> Materials named NEGRO (black) exported with NO baseColorFactor: glTF defaults that to white. Related: omitted metallicFactor defaults to 1.0 (gray-metal wood). <i>Validator-friendly checks.</i></li>
-<li><b>Render junk inside.</b> lux_root, Helper001, Particle_View, leftover cameras: inflates bounds, breaks AR placement. <i>Platform: strip empties/cameras/lights at ingest, or at least exclude them from bounds.</i></li>
+<li><b>Render junk inside.</b> lux_root, Helper001, Particle_View, leftover cameras: inflates bounds, breaks AR placement. <i>Idea: strip empties/cameras/lights at ingest, or at least exclude them from bounds.</i></li>
 <li><b>Degenerate slivers.</b> 1-2 triangle, zero-width, meter-long CAD centerlines. Made a 2 m satellite read 13.9 m and orbit around air. <i>Cheap ingest check: near-zero width + large extent = drop it.</i></li>
-<li><b>Transmission glass.</b> Renders opaque in iOS Quick Look. Fix: alpha-blend. <i>Platform: convert on USDZ generation.</i></li>
+<li><b>Transmission glass.</b> Renders opaque in iOS Quick Look. Fix: alpha-blend. <i>Idea: convert on USDZ generation.</i></li>
 <li>Also seen: baked leans, wrong units (a 36 m stand mixer), too-heavy Convert Only pass-throughs (901k tris), wrong pipeline (3D Scan on CAD), unreadable baked text, unsupported formats (.max, .3DS), duplicates.</li>
 </ul>
 </div>
 
-<h2><span class="n">2</span>Two platform bugs with repro files in hand</h2>
+<h2><span class="n">2</span>Two possible platform bugs (repro files available)</h2>
 <div class="card">
-<h3>Version contamination <span class="tag bug">confirmed, 2 repro pairs</span></h3>
-<p style="font-size:.86rem;color:#374151">Re-version an asset enough times (especially with rotations involved) and the record corrupts: a byte-identical GLB then converts straight on a fresh asset and comes out rotated 25 deg with inflated bounds on the churned one. Pairs: cooler 7e910ec2 vs e3e67fe5; sectional 2659200b vs 9f484215 (same file, same day). Workaround in use: never fix in place, always a fresh asset.</p>
+<h3>Version contamination <span class="tag bug">2 repro pairs</span></h3>
+<p style="font-size:.86rem;color:#374151">What we saw: after an asset was re-versioned many times (especially with rotations involved), its output went wrong: a byte-identical GLB then converts straight on a fresh asset and comes out rotated 25 deg with inflated bounds on the churned one. Pairs: cooler 7e910ec2 vs e3e67fe5; sectional 2659200b vs 9f484215 (same file, same day). Workaround we used: fix on a fresh asset instead of in place.</p>
 </div>
 <div class="card">
-<h3>GLB-to-USDZ mismatch <span class="tag bug">root-caused, workaround shipping</span></h3>
-<p style="font-size:.86rem;color:#374151">Assets with unfrozen node transforms produce USDZ outputs rotated 9-45 deg and floating, while the web GLB is perfect (4 cases). Root cause: the USDZ path composes node transforms differently. Workaround: OPTIMIZATION.freezeTransforms=true cures it (now our default). Real fix: the converter should handle unfrozen transforms, or freeze should default on for static assets.</p>
+<h3>GLB-to-USDZ mismatch <span class="tag bug">likely cause found, workaround in use</span></h3>
+<p style="font-size:.86rem;color:#374151">Assets with unfrozen node transforms produce USDZ outputs rotated 9-45 deg and floating, while the web GLB is perfect (4 cases). Likely cause: the USDZ path seems to compose node transforms differently. Workaround: OPTIMIZATION.freezeTransforms=true cleared it in every case we tried (now our default). A possible fix: have the converter handle unfrozen transforms, or default freeze on for static assets.</p>
 </div>
 
-<h2><span class="n">3</span>The QA rig (steal this for ingest)</h2>
+<h2><span class="n">3</span>The QA rig (a possible starting point for ingest checks)</h2>
 <div class="card">
-<p style="font-size:.86rem;color:#374151">One command (vntana-store/admin/qa-asset.py) runs any GLB through three stages and prints a verdict with the fix per flag. Every check exists because a real asset failed it this month. <b>Jure/ModelOps: this list IS the candidate ingest-validation spec.</b></p>
+<p style="font-size:.86rem;color:#374151">One command (vntana-store/admin/qa-asset.py) runs any GLB through three stages and prints a verdict with the fix per flag. Every check exists because a real asset failed it this month. <b>Jure/ModelOps: this list could be a starting point for ingest validation.</b></p>
 <ul>
 <li><b>Header (seconds):</b> extensionsRequired, empty/rig-only scenes, viz colors, black-metal, omitted factors, junk nodes, zero scales, tiny textures, transmission glass, animation payload, generator provenance.</li>
 <li><b>Geometry (Blender):</b> real-world dims vs the PDP, baked-lean solver with false-positive guard, grounding, centering, sliver detection, three renders.</li>
-<li><b>AR (USDZ):</b> up axis, metersPerUnit, grounded, dims match the GLB and the real product. This caught every phone-AR failure before a phone did.</li>
+<li><b>AR (USDZ):</b> up axis, metersPerUnit, grounded, dims match the GLB and the real product. In the Costco batch, every asset that passed it also passed Derek's on-device AR check.</li>
 <li><b>Bonus integration:</b> Costco's catalog API supplies official names, dimensions and photos per item (pdp-attach.py): names and reference data from the source of truth.</li>
 </ul>
 </div>
 
-<h2><span class="n">4</span>What to build, in priority order</h2>
+<h2><span class="n">4</span>What we could build (suggestions, roughly by impact)</h2>
 <div class="card">
 <ul class="asks">
-<li><b>1. Actionable upload errors.</b> extensionsRequired, unresolvable .gltf buffers, and empty scenes are all detectable in milliseconds at upload. Today they fail silently and the customer blames us.</li>
+<li><b>1. Actionable upload errors.</b> extensionsRequired, unresolvable .gltf buffers, and empty scenes are all detectable in milliseconds at upload. Today they fail without an explanation, so the customer cannot tell a source-file problem from a platform one.</li>
 <li><b>2. Freeze transforms by default</b> (or fix the USDZ composer). Kills the whole phone-AR mismatch class.</li>
-<li><b>3. Fix version contamination.</b> Repro pairs above; fix requested of Neven's team.</li>
+<li><b>3. Look into version contamination.</b> Repro pairs above.</li>
 <li><b>4. Ingest hygiene pass:</b> decompress Draco inputs, strip render junk, drop slivers, warn on output-larger-than-input.</li>
 <li><b>5. Docs:</b> publish the pipeline-by-source intake table + the "before you export" vendor checklist (no pre-compression, embed textures, delete helpers, real PBR values).</li>
 </ul>
