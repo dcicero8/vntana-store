@@ -42,6 +42,7 @@
   .p-next{background:#eef4ff;color:#1f5fbf}
   .p-wait{background:#fff6e6;color:#a6620a}
   .p-none{background:#f0f2f5;color:#5b6b7a}
+  .p-new{background:#2f8a3e;color:#fff}
 
   ul.clean{margin:6px 0 0;padding-left:20px} ul.clean li{margin:6px 0}
   table.log{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
@@ -94,6 +95,7 @@
     </ul>
   </div>
   <div class="ready" id="ready"></div>
+  <div class="note" style="background:#f0f9f1;border:1px solid #bfe3c5"><b>New this week:</b> the <b>0034e Plus</b> pair (003eP-F2 cast iron, 003eP-SF2 stainless) just landed, marked <span class="pill2 p-new">NEW</span>. Both look production-ready: clean part breakdown, correct body materials (cast iron vs stainless), branded faceplates (the stainless carries the white faceplate + NSF mark).</div>
   <div class="note"><b>Placeholders:</b> faceplate art on these models is a placeholder until the final faceplate design arrives. The side label uses your new label layout as a sticker.</div>
 
   <h2 style="margin-top:26px"><span class="n">1b</span>Bronze material review</h2>
@@ -240,8 +242,12 @@ var BUILT = {
   "0034e-F2":"dd44df80-5f24-42d4-827b-729e8d89b101",
   "0034e-SF2":"f7e86c19-ef61-47cd-a3ec-76d690d10fd0",
   "0026e-F2":"4fa95e8e-e1d6-4467-937b-7b01d7f06ce5",
-  "0026e-SF2":"e65196f8-be2a-49c6-a562-47467f51c153"
+  "0026e-SF2":"e65196f8-be2a-49c6-a562-47467f51c153",
+  "003eP-F2":"87e9ad07-c815-4a32-9cf1-d934698386d8",
+  "003eP-SF2":"a62e0550-7c4d-454c-9a6f-51777502d3d3"
 };
+// SKUs to flag with a NEW badge (just delivered this week)
+var NEWSET = {"003eP-F2":1,"003eP-SF2":1};
 // Family status for products not yet built: next | wait | none
 var FAMSTATUS = {"007e":"wait","0015e3":"wait","0018e":"wait","0034e+":"next","VT2218":"next","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
 /* ============================ */
@@ -257,8 +263,9 @@ FAMILIES.forEach(function(f){
     total++; var u=BUILT[v.sku]; var st=u?"ready":(FAMSTATUS[f.id]||"none");
     if(st==="ready")built++; else if(st==="next")next++; else if(st==="wait")wait++; else if(st==="mat")mat++;
     var l=LBL[st];
-    rows+='<tr><td><b>'+esc(v.sku)+'</b></td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+l[1]+'</span></td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
-    if(u) cards+='<div class="rcard"><iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(u)+'"></iframe><div class="rh"><div><div class="sku">'+esc(v.sku)+'</div><div class="meta">'+esc(v.body)+' &middot; '+esc(v.conn)+'</div></div><a class="btn ghost" href="'+PLAT(u)+'" target="_blank" rel="noopener">Platform &#8599;</a></div></div>';
+    var newb=NEWSET[v.sku]?' <span class="pill2 p-new">NEW</span>':'';
+    rows+='<tr><td><b>'+esc(v.sku)+'</b>'+newb+'</td><td>'+esc(v.body)+'</td><td>'+esc(v.conn)+'</td><td><span class="pill2 '+l[0]+'">'+l[1]+'</span></td><td>'+(u?'<a href="'+PLAT(u)+'" target="_blank" rel="noopener">Open &#8599;</a>':'')+'</td></tr>';
+    if(u) cards+='<div class="rcard"><iframe loading="lazy" allow="xr-spatial-tracking; fullscreen" src="'+EMBED(u)+'"></iframe><div class="rh"><div><div class="sku">'+esc(v.sku)+newb+'</div><div class="meta">'+esc(v.body)+' &middot; '+esc(v.conn)+'</div></div><a class="btn ghost" href="'+PLAT(u)+'" target="_blank" rel="noopener">Platform &#8599;</a></div></div>';
   });
 });
 document.getElementById("status").innerHTML=rows;
