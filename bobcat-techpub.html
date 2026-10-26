@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Bobcat × VNTANA · Interactive Technical Publication</title>
+<style>
+  :root{--ink:#14171a;--muted:#5b6670;--line:#e3e6ea;--bg:#ffffff;--panel:#f5f6f8;--black:#111314;--orange:#ec5505;--orange-d:#c74704;--green:#1f8a4c}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  header.top{background:var(--black);color:#fff}
+  header.top .wrap{display:flex;align-items:center;gap:16px;height:64px}
+  .brand{font-weight:800;letter-spacing:.04em;font-size:1.05rem;text-transform:uppercase}
+  .brand b{color:var(--orange)}
+  .top .sub{margin-left:auto;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#aab1b8}
+  .hero{background:var(--panel);border-bottom:1px solid var(--line);padding:22px 0}
+  .hero .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--orange-d);font-weight:800}
+  .hero h1{font-size:1.55rem;font-weight:800;margin:4px 0 6px}
+  .hero p{color:var(--muted);max-width:760px;font-size:.95rem}
+  .demo{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;padding:30px 0}
+  .viewer{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .viewer .frame{aspect-ratio:4/3;width:100%}
+  .viewer iframe{width:100%;height:100%;border:0;display:block}
+  .viewer .cap{font-size:.72rem;color:var(--muted);padding:9px 12px;border-top:1px solid var(--line);text-transform:uppercase;letter-spacing:.05em}
+  h2{font-size:1.15rem;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+  h2 .bar{width:28px;height:4px;background:var(--orange);border-radius:2px}
+  .lead{color:var(--muted);font-size:.88rem;margin:2px 0 12px}
+  /* walkthrough */
+  .steps{list-style:none;display:grid;gap:8px}
+  .steps li{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px 13px;cursor:pointer;transition:border-color .15s}
+  .steps li:hover{border-color:#c6ccd2}
+  .steps li.active{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+  .steps .num{flex:none;width:24px;height:24px;border-radius:50%;background:var(--black);color:#fff;font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center}
+  .steps li.active .num{background:var(--orange)}
+  .steps .t{font-weight:700;font-size:.92rem}
+  .steps .d{font-size:.82rem;color:var(--muted)}
+  .nowview{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-top:12px;font-size:.86rem;min-height:64px}
+  .nowview b{color:var(--orange-d)}
+  /* label style sample */
+  .section{padding:26px 0;border-top:1px solid var(--line)}
+  .labsample{position:relative;background:#fff;border:1px solid var(--line);border-radius:10px;padding:26px;display:flex;gap:30px;flex-wrap:wrap;align-items:center;justify-content:center}
+  .pin{position:relative;display:inline-flex;align-items:center;gap:8px}
+  .pin .dot{width:16px;height:16px;border-radius:50%;background:var(--orange);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);flex:none}
+  .pin .lbl{background:rgba(17,19,20,.92);color:#fff;border-radius:5px;padding:4px 9px;font-size:.72rem;font-weight:600;white-space:nowrap}
+  .pin.sm .lbl{font-size:.6rem;padding:2px 6px}
+  .pin.num .lbl{background:var(--orange);font-weight:800;padding:3px 8px;border-radius:50%;font-size:.7rem}
+  .sampnote{font-size:.78rem;color:var(--muted);text-align:center;margin-top:12px}
+  /* Q&A */
+  .qa{display:grid;gap:12px}
+  .qa .q{background:#fff;border:1px solid var(--line);border-radius:9px;padding:14px 16px}
+  .qa .q h3{font-size:.95rem;font-weight:800;margin-bottom:5px;display:flex;gap:8px}
+  .qa .q h3 .mk{flex:none;width:22px;height:22px;border-radius:5px;background:#eef1f4;color:var(--orange-d);font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .qa .q p{font-size:.88rem;color:#39424b}
+  .qa .q .yes{display:inline-block;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#15663a;background:#d7f0e0;padding:2px 7px;border-radius:5px;margin-left:6px}
+  .qa .q .chk{color:var(--orange-d);background:#fbe6da}
+  footer{background:#0b0d0e;color:#8a939b;font-size:.78rem;padding:22px 0}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  @media(max-width:820px){.demo{grid-template-columns:1fr}}
+  /* gate */
+  #gate{position:fixed;inset:0;z-index:1000;background:var(--black);display:flex;align-items:center;justify-content:center;padding:24px}
+  #gate .card{background:#fff;max-width:380px;width:100%;padding:34px 30px;text-align:center;border-radius:12px}
+  #gate .tag{font-weight:800;color:var(--orange-d);letter-spacing:.06em;text-transform:uppercase;font-size:.72rem;margin-bottom:8px}
+  #gate h1{font-size:1.2rem;margin:0 0 6px}
+  #gate p{font-size:.84rem;color:var(--muted);margin:0 0 16px}
+  #gate input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line);border-radius:8px;text-align:center;font-family:inherit}
+  #gate button{margin-top:12px;width:100%;background:var(--orange);color:#fff;border:0;padding:13px;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit}
+  #gate .err{color:#b4232c;font-size:.8rem;margin-top:10px;min-height:1em}
+  body.locked{overflow:hidden} body.locked .site{filter:blur(7px);pointer-events:none}
+</style>
+</head>
+<body class="locked">
+
+<div id="gate"><div class="card">
+  <div class="tag">Bobcat × VNTANA</div>
+  <h1>Concept Preview</h1>
+  <p>Private preview for the Bobcat team. Enter the access code.</p>
+  <input id="pw" type="password" placeholder="Access code" autocomplete="off">
+  <button id="unlock" type="button">Enter</button>
+  <div class="err" id="err"></div>
+</div></div>
+
+<div class="site">
+<header class="top"><div class="wrap">
+  <div class="brand">BOBCAT <b>×</b> VNTANA</div>
+  <div class="sub">Technical Publication · Concept</div>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <div class="eyebrow">Interactive Parts Walkthrough</div>
+  <h1>3D Technical Publication: Concept</h1>
+  <p>A quick look at how a VNTANA 3D model can drive an interactive parts walkthrough for Technical Publications: numbered callouts, small always-on labels, and a guided step-through. The model below is live 3D (spin, zoom, AR). Parts and labels here are placeholder content to show the idea.</p>
+</div></div>
+
+<div class="wrap">
+  <div class="demo">
+    <div class="viewer">
+      <div class="frame">
+        <iframe src="https://embed.vntana.com/v2?productUuid=ff38841a-0683-497c-8163-21fdba6c2309&clientSlug=bobcat&organizationSlug=DCicero" allow="fullscreen; xr-spatial-tracking" loading="lazy" title="Bobcat 3D"></iframe>
+      </div>
+      <div class="cap">Live VNTANA 3D · drag to rotate · zoom · view in AR</div>
+    </div>
+
+    <div>
+      <h2><span class="bar"></span>Parts Walkthrough</h2>
+      <p class="lead">A guided sequence a technician or customer steps through. Click a step.</p>
+      <ol class="steps" id="steps">
+        <li data-d="The lift arms raise and lower the attachment. Callout labels can mark each pivot pin and grease point for service reference."><span class="num">1</span><div><div class="t">Lift Arms &amp; Pivot Pins</div><div class="d">Service points &amp; grease fittings</div></div></li>
+        <li data-d="The Bob-Tach mounting system locks attachments in place. A walkthrough can show the engage/disengage motion and label the wedges and levers."><span class="num">2</span><div><div class="t">Bob-Tach Coupler</div><div class="d">Attachment mounting system</div></div></li>
+        <li data-d="Hydraulic lines and couplers route flow to the attachment. Labels can call out each quick-coupler and pressure port."><span class="num">3</span><div><div class="t">Hydraulic Couplers</div><div class="d">Auxiliary flow connections</div></div></li>
+        <li data-d="Operator cab and ROPS/FOPS structure. Labels can identify controls, the display, and safety-rated components."><span class="num">4</span><div><div class="t">Cab &amp; ROPS</div><div class="d">Operator station</div></div></li>
+        <li data-d="Drive motors and final drives transfer power to the tracks or wheels. A walkthrough can isolate this assembly and label replacement parts."><span class="num">5</span><div><div class="t">Drive Motor</div><div class="d">Final drive assembly</div></div></li>
+      </ol>
+      <div class="nowview" id="nowview"><b>Pick a step</b> to see how its callouts and notes would read in a live technical publication.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="bar"></span>Label Styles: Your Text, Your CSS</h2>
+    <p class="lead">Because the hotspots are rendered through our embeddable web component, the label is your own HTML. That means any size, any style, and always-on if you want it. A few examples:</p>
+    <div class="labsample">
+      <div class="pin num"><span class="dot"></span><span class="lbl">1</span></div>
+      <div class="pin"><span class="dot"></span><span class="lbl">Hydraulic Coupler</span></div>
+      <div class="pin sm"><span class="dot"></span><span class="lbl">Grease point A-3</span></div>
+      <div class="pin num"><span class="dot"></span><span class="lbl">4</span></div>
+      <div class="pin sm"><span class="dot"></span><span class="lbl">P/N 7301420</span></div>
+    </div>
+    <div class="sampnote">Numbered callouts, full-text labels, and small part-number labels, all always-visible. Styling is controlled with CSS, exactly as Mike suspected.</div>
+  </div>
+
+  <div class="section">
+    <h2><span class="bar"></span>Your Questions: Quick Answers</h2>
+    <div class="qa">
+      <div class="q">
+        <h3><span class="mk">1</span>Can hotspot text boxes be sized for small labels?<span class="yes">Yes</span></h3>
+        <p>In the no-code platform embed, hotspot styling is fixed, which is why Mike couldn't find a setting. When you embed with our <b>web component</b>, each hotspot's label is your own HTML element, so you control size, font, and width entirely with CSS. Small labels like the samples above are straightforward.</p>
+      </div>
+      <div class="q">
+        <h3><span class="mk">2</span>Can hotspot text be always visible?<span class="yes">Yes</span></h3>
+        <p>By default a label opens on click, but since you own the label markup in the web component, you can render it always-on. The numbered callouts and labels above are all always-visible.</p>
+      </div>
+      <div class="q">
+        <h3><span class="mk">3</span>Is there a GLB file-size limit?<span class="yes chk">Let's check it</span></h3>
+        <p>There's a practical upload ceiling, and KeyShot GLBs are usually the culprit: KeyShot exports uncompressed, with very large textures and no mesh compression, so even a simple model can balloon to hundreds of MB. Our pipeline is built to optimize that (mesh compression + texture optimization). Quickest path: send us the file that's failing and the KeyShot export settings, and we'll pinpoint the issue and the exact export settings to use.</p>
+      </div>
+      <div class="q">
+        <h3><span class="mk">4</span>How do we retain KeyShot decal labels?<span class="yes chk">Bake to texture</span></h3>
+        <p>Decals aren't a glTF concept, so they don't export as separate decal objects. They need to be <b>baked into the material's color texture</b> on export (flatten decals to texture). Once the labels live in the GLB's textures, VNTANA preserves them. We can share the KeyShot bake-to-texture steps.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="wrap">
+  <div>Bobcat × VNTANA · interactive technical publication concept</div>
+  <div>Concept demo · placeholder parts &amp; labels · 3D by VNTANA</div>
+</div></footer>
+</div>
+
+<script>
+  (function(){
+    var PW="bobcat2026", KEY="bobcatTechpub";
+    function unlock(){try{sessionStorage.setItem(KEY,'1');}catch(e){}document.getElementById('gate').style.display='none';document.body.classList.remove('locked');}
+    try{if(sessionStorage.getItem(KEY)==='1')unlock();}catch(e){}
+    function tryPw(){var v=(document.getElementById('pw').value||'').trim().toLowerCase();if(v===PW){unlock();}else{document.getElementById('err').textContent='Incorrect code.';}}
+    document.getElementById('unlock').addEventListener('click',tryPw);
+    document.getElementById('pw').addEventListener('keydown',function(e){if(e.key==='Enter')tryPw();});
+    // walkthrough
+    var steps=[].slice.call(document.querySelectorAll('#steps li')), nv=document.getElementById('nowview');
+    steps.forEach(function(li){li.addEventListener('click',function(){
+      steps.forEach(function(x){x.classList.remove('active');});li.classList.add('active');
+      var t=li.querySelector('.t').textContent, n=li.querySelector('.num').textContent;
+      nv.innerHTML='<b>Step '+n+' · '+t+'</b><br>'+li.getAttribute('data-d');
+    });});
+  })();
+</script>
+</body>
+</html>
