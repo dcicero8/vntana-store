@@ -60,7 +60,7 @@
 
 <h2><span class="n">2</span>Two possible platform bugs (repro files available)</h2>
 <div class="card">
-<h3>Version contamination <span class="tag bug">fixed on dev (Oct 26), pending production</span></h3>
+<h3>Version contamination <span class="tag bug">fixed on dev, retest passed Oct 26; pending production</span></h3>
 <p style="font-size:.86rem;color:#374151">What we saw: after an asset was re-versioned many times (especially with rotations involved), its output went wrong: a byte-identical GLB then converts straight on a fresh asset and comes out rotated 25 deg with inflated bounds on the churned one. Pairs: cooler 7e910ec2 vs e3e67fe5; sectional 2659200b vs 9f484215 (same file, same day). Workaround we used: fix on a fresh asset instead of in place. Update Oct 26: the platform team has fixed this on dev; keep using the workaround until the fix reaches production.</p>
 </div>
 <div class="card">
