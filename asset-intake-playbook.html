@@ -60,8 +60,8 @@
 
 <h2><span class="n">2</span>Two possible platform bugs (repro files available)</h2>
 <div class="card">
-<h3>Version contamination <span class="tag bug">2 repro pairs</span></h3>
-<p style="font-size:.86rem;color:#374151">What we saw: after an asset was re-versioned many times (especially with rotations involved), its output went wrong: a byte-identical GLB then converts straight on a fresh asset and comes out rotated 25 deg with inflated bounds on the churned one. Pairs: cooler 7e910ec2 vs e3e67fe5; sectional 2659200b vs 9f484215 (same file, same day). Workaround we used: fix on a fresh asset instead of in place.</p>
+<h3>Version contamination <span class="tag bug">fixed on dev (Oct 26), pending production</span></h3>
+<p style="font-size:.86rem;color:#374151">What we saw: after an asset was re-versioned many times (especially with rotations involved), its output went wrong: a byte-identical GLB then converts straight on a fresh asset and comes out rotated 25 deg with inflated bounds on the churned one. Pairs: cooler 7e910ec2 vs e3e67fe5; sectional 2659200b vs 9f484215 (same file, same day). Workaround we used: fix on a fresh asset instead of in place. Update Oct 26: the platform team has fixed this on dev; keep using the workaround until the fix reaches production.</p>
 </div>
 <div class="card">
 <h3>GLB-to-USDZ mismatch <span class="tag bug">likely cause found, workaround in use</span></h3>
@@ -84,7 +84,7 @@
 <ul class="asks">
 <li><b>1. Actionable upload errors.</b> extensionsRequired, unresolvable .gltf buffers, and empty scenes are all detectable in milliseconds at upload. Today they fail without an explanation, so the customer cannot tell a source-file problem from a platform one.</li>
 <li><b>2. Freeze transforms by default</b> (or fix the USDZ composer). Kills the whole phone-AR mismatch class.</li>
-<li><b>3. Look into version contamination.</b> Repro pairs above.</li>
+<li><b>3. Version contamination:</b> fixed on dev (Oct 26). Next: confirm in production with the repro pairs above.</li>
 <li><b>4. Ingest hygiene pass:</b> decompress Draco inputs, strip render junk, drop slivers, warn on output-larger-than-input.</li>
 <li><b>5. Docs:</b> publish the pipeline-by-source intake table + the "before you export" vendor checklist (no pre-compression, embed textures, delete helpers, real PBR values).</li>
 </ul>
