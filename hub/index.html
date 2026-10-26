@@ -74,6 +74,12 @@
       <td class="u">No hardware photos or CAD on the site by design: reference files live in the Apex workspace on the platform (link TBD). Blockout images + GEO config PDF in refs/.</td>
       <td class="n">Do NOT send to the vendor until Derek confirms the NDA. Internals removed by Jure (obstructed-mesh removal); Apex confirming. CAD part numbers stay in the manifest Google Sheet / Apex workspace, not on the site. Open: triangle budget, due date, password confirm, Apex answers on CONFIRM items.</td></tr>
  <tr class="keep">
+      <td><a href="/fluent.html" target="_blank">fluent.html</a><div class="grp">Fluent Conveyors</div></td>
+      <td><b>Fluent Conveyors PDP mockup with VNTANA 3D swapped in.</b> Recreates their 4-bolt flange bearings replacement-parts page (Eurostile-style Saira font, #ff9933 yellow "Locate a Dealer" button, black UI) with the 3D viewer in place of the static product image. Embed: productUuid f7f7892d-e9ce-4e8e-845f-293da0c295b1, clientSlug=fluent, org=DCicero. Specs/materials are plausible demo content.</td>
+      <td class="d">2026-10-26</td>
+      <td class="u">Single self-contained file. Source page: fluentconveyors.com/replacement-parts/bearings/flange-bearings/4-bolt-flange-bearings. Asset must be LIVE_PUBLIC for the embed.</td>
+      <td class="n">Pitch mockup (noindex). Not a real Fluent page.</td></tr>
+ <tr class="keep">
       <td><a href="/_templates/cockpit-template.html" target="_blank">_templates/cockpit-template.html</a><div class="grp">Template</div></td>
       <td><b>Reusable Client Program Cockpit template.</b> Generalized from taco-review: gated, brand-themed, live-3D client review page driven entirely by one <code>CONFIG</code> block (renderCockpit). Auto-builds stat tiles, status table, ready embeds, NEW/Approved badges, ETA dates, an optional material/spotlight block, and received/decisions/questions/next-steps sections. Spin up a new client in ~10 min: copy to <code>/&lt;client&gt;-review/index.html</code>, edit CONFIG, push. See <code>_templates/README.md</code> for the field cheat-sheet + how to pull product UUIDs (platform URL or dcicero8 admin API). Embeds need LIVE_PUBLIC.</td>
       <td class="d">2026-10-23</td>
