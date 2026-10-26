@@ -90,14 +90,14 @@
 <div class="hero"><div class="wrap">
   <div class="eyebrow">Interactive Parts Walkthrough</div>
   <h1>3D Technical Publication: Concept</h1>
-  <p>A quick look at how a VNTANA 3D model can drive an interactive parts walkthrough for Technical Publications: numbered callouts, small always-on labels, and a guided step-through. The model below is live 3D (spin, zoom, AR). Parts and labels here are placeholder content to show the idea.</p>
+  <p>A quick look at how a VNTANA 3D model can drive an interactive parts walkthrough for Technical Publications: numbered callouts, small always-on part-number labels, and a guided step-through. The model below is Mike's Hydraulic X-Change Coupler, live in 3D (spin, zoom, AR). The walkthrough steps and labels here are placeholder content to show the idea.</p>
 </div></div>
 
 <div class="wrap">
   <div class="demo">
     <div class="viewer">
       <div class="frame">
-        <iframe src="https://embed.vntana.com/v2?productUuid=ff38841a-0683-497c-8163-21fdba6c2309&clientSlug=bobcat&organizationSlug=DCicero" allow="fullscreen; xr-spatial-tracking" loading="lazy" title="Bobcat 3D"></iframe>
+        <iframe src="https://embed.vntana.com/v2?productUuid=eef7de0c-d2a8-4fff-a126-c6b80616ea5b&clientSlug=bobcat&organizationSlug=DCicero" allow="fullscreen; xr-spatial-tracking" loading="lazy" title="Bobcat Hydraulic X-Change Coupler 3D"></iframe>
       </div>
       <div class="cap">Live VNTANA 3D · drag to rotate · zoom · view in AR</div>
     </div>
@@ -106,11 +106,11 @@
       <h2><span class="bar"></span>Parts Walkthrough</h2>
       <p class="lead">A guided sequence a technician or customer steps through. Click a step.</p>
       <ol class="steps" id="steps">
-        <li data-d="The lift arms raise and lower the attachment. Callout labels can mark each pivot pin and grease point for service reference."><span class="num">1</span><div><div class="t">Lift Arms &amp; Pivot Pins</div><div class="d">Service points &amp; grease fittings</div></div></li>
-        <li data-d="The Bob-Tach mounting system locks attachments in place. A walkthrough can show the engage/disengage motion and label the wedges and levers."><span class="num">2</span><div><div class="t">Bob-Tach Coupler</div><div class="d">Attachment mounting system</div></div></li>
-        <li data-d="Hydraulic lines and couplers route flow to the attachment. Labels can call out each quick-coupler and pressure port."><span class="num">3</span><div><div class="t">Hydraulic Couplers</div><div class="d">Auxiliary flow connections</div></div></li>
-        <li data-d="Operator cab and ROPS/FOPS structure. Labels can identify controls, the display, and safety-rated components."><span class="num">4</span><div><div class="t">Cab &amp; ROPS</div><div class="d">Operator station</div></div></li>
-        <li data-d="Drive motors and final drives transfer power to the tracks or wheels. A walkthrough can isolate this assembly and label replacement parts."><span class="num">5</span><div><div class="t">Drive Motor</div><div class="d">Final drive assembly</div></div></li>
+        <li data-d="The charcoal-painted manifold block routes hydraulic flow. Each port can carry its own always-on part-number callout for service reference."><span class="num">1</span><div><div class="t">Coupler Manifold Block</div><div class="d">Charcoal painted metal body</div></div></li>
+        <li data-d="Flat-face quick-connect couplers join the attachment lines. Each coupler can show its own part number (for example 6686679) as a small always-visible label."><span class="num">2</span><div><div class="t">Quick-Connect Couplers</div><div class="d">Flat-face hydraulic fittings</div></div></li>
+        <li data-d="The X-Change hose bundle (CL4_HYD_XCH_HOSES_ASM) carries flow to the attachment. Labels can identify each hose run, its rating, and its part number."><span class="num">3</span><div><div class="t">Hydraulic Hose Assembly</div><div class="d">Nylon-weave sleeved hoses</div></div></li>
+        <li data-d="Threaded fittings and adapters (e.g. 23JM1055, 7417698) connect the hoses to the block. Small always-on part-number labels keep a busy drawing readable."><span class="num">4</span><div><div class="t">Fittings &amp; Adapters</div><div class="d">Threaded connections</div></div></li>
+        <li data-d="A sensor/electrical lead is routed alongside the hydraulics. Callouts can flag connection points and the harness part number."><span class="num">5</span><div><div class="t">Cable &amp; Sensor Lead</div><div class="d">Electrical routing</div></div></li>
       </ol>
       <div class="nowview" id="nowview"><b>Pick a step</b> to see how its callouts and notes would read in a live technical publication.</div>
     </div>
@@ -121,10 +121,10 @@
     <p class="lead">Because the hotspots are rendered through our embeddable web component, the label is your own HTML. That means any size, any style, and always-on if you want it. A few examples:</p>
     <div class="labsample">
       <div class="pin num"><span class="dot"></span><span class="lbl">1</span></div>
-      <div class="pin"><span class="dot"></span><span class="lbl">Hydraulic Coupler</span></div>
-      <div class="pin sm"><span class="dot"></span><span class="lbl">Grease point A-3</span></div>
-      <div class="pin num"><span class="dot"></span><span class="lbl">4</span></div>
-      <div class="pin sm"><span class="dot"></span><span class="lbl">P/N 7301420</span></div>
+      <div class="pin"><span class="dot"></span><span class="lbl">Quick-Connect Coupler</span></div>
+      <div class="pin sm"><span class="dot"></span><span class="lbl">P/N 6686679</span></div>
+      <div class="pin num"><span class="dot"></span><span class="lbl">2</span></div>
+      <div class="pin sm"><span class="dot"></span><span class="lbl">P/N 23JM1055</span></div>
     </div>
     <div class="sampnote">Numbered callouts, full-text labels, and small part-number labels, all always-visible. Styling is controlled with CSS, exactly as Mike suspected.</div>
   </div>
