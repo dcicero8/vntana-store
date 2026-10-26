@@ -141,12 +141,12 @@
         <p>By default a label opens on click, but since you own the label markup in the web component, you can render it always-on. The numbered callouts and labels above are all always-visible.</p>
       </div>
       <div class="q">
-        <h3><span class="mk">3</span>Is there a GLB file-size limit?<span class="yes chk">Let's check it</span></h3>
-        <p>There's a practical upload ceiling, and KeyShot GLBs are usually the culprit: KeyShot exports uncompressed, with very large textures and no mesh compression, so even a simple model can balloon to hundreds of MB. Our pipeline is built to optimize that (mesh compression + texture optimization). Quickest path: send us the file that's failing and the KeyShot export settings, and we'll pinpoint the issue and the exact export settings to use.</p>
+        <h3><span class="mk">3</span>Is there a GLB file-size limit?<span class="yes chk">Skip the GLB export</span></h3>
+        <p>There's a practical upload ceiling, and KeyShot GLB exports are usually the culprit: they come out uncompressed, with very large textures and no mesh compression, so even a simple model can balloon to hundreds of MB. The easiest fix is to <b>not export the GLB from KeyShot at all</b>. Send us the KeyShot file and we convert and optimize it into a lean, web-ready GLB for you. That is exactly what our pipeline is built to do.</p>
       </div>
       <div class="q">
-        <h3><span class="mk">4</span>How do we retain KeyShot decal labels?<span class="yes chk">Bake to texture</span></h3>
-        <p>Decals aren't a glTF concept, so they don't export as separate decal objects. They need to be <b>baked into the material's color texture</b> on export (flatten decals to texture). Once the labels live in the GLB's textures, VNTANA preserves them. We can share the KeyShot bake-to-texture steps.</p>
+        <h3><span class="mk">4</span>How do we retain KeyShot decal labels?<span class="yes chk">Send the KeyShot file</span></h3>
+        <p>Same approach solves this. When you export a GLB from KeyShot, decals do not carry over (they are not a glTF concept). If you <b>send us the KeyShot file instead</b>, we convert it with the decals in place, so you do not have to bake or flatten anything yourself.</p>
       </div>
     </div>
   </div>
