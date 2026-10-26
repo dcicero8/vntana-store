@@ -40,7 +40,14 @@
   .viewer .frame{aspect-ratio:1/1;width:100%;position:relative}
   .viewer iframe,.viewer video,.viewer img.stage{width:100%;height:100%;border:0;display:block}
   .viewer video{object-fit:cover;background:#fff}
-  .viewer img.stage{object-fit:contain;background:#fff}
+  .viewer img.stage{object-fit:contain;background:#fff;cursor:zoom-in}
+  /* lightbox */
+  #lb{position:fixed;inset:0;z-index:2000;background:rgba(8,10,12,.93);display:none;align-items:center;justify-content:center;padding:24px}
+  #lb.open{display:flex}
+  #lb img{max-width:94%;max-height:90%;object-fit:contain;cursor:zoom-in;transition:transform .08s ease-out;will-change:transform}
+  #lb img.zoom{cursor:zoom-out}
+  #lb .close{position:absolute;top:14px;right:22px;color:#fff;font-size:34px;line-height:1;background:none;border:0;cursor:pointer;font-family:inherit}
+  #lb .lbhint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#c6ccd2;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em}
   .thumbs{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);flex-wrap:wrap}
   .thumbs .th{width:62px;height:62px;flex:none;border:2px solid var(--line);border-radius:6px;overflow:hidden;cursor:pointer;background:#fff;padding:0;display:flex;align-items:center;justify-content:center;font-family:inherit;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
   .thumbs .th img{width:100%;height:100%;object-fit:cover;display:block}
@@ -180,6 +187,8 @@
   <div>Demo page · 3D by VNTANA</div>
 </div></footer>
 
+<div id="lb"><button class="close" id="lbclose" type="button" aria-label="Close">&times;</button><img id="lbimg" alt="Enlarged render"><div class="lbhint">Click image to zoom · Esc to close</div></div>
+
 <script>
   (function(){
     var i3d=document.getElementById('v3d'), vid=document.getElementById('vturn'), img=document.getElementById('vimg'), tag=document.getElementById('vtag');
@@ -200,6 +209,22 @@
         show(b.dataset.m, b.dataset.src);
       });
     });
+
+    // lightbox zoom for the render images
+    var lb=document.getElementById('lb'), lbimg=document.getElementById('lbimg');
+    function openLB(src){ lbimg.src=src; lbimg.classList.remove('zoom'); lbimg.style.transform=''; lb.classList.add('open'); }
+    function closeLB(){ lb.classList.remove('open'); lbimg.classList.remove('zoom'); lbimg.style.transform=''; }
+    function setOrigin(e){ var r=lbimg.getBoundingClientRect(); lbimg.style.transformOrigin=((e.clientX-r.left)/r.width*100)+'% '+((e.clientY-r.top)/r.height*100)+'%'; }
+    img.addEventListener('click', function(){ if(img.style.display!=='none') openLB(img.src); });
+    document.getElementById('lbclose').addEventListener('click', closeLB);
+    lb.addEventListener('click', function(e){ if(e.target===lb) closeLB(); });
+    lbimg.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(lbimg.classList.contains('zoom')){ lbimg.classList.remove('zoom'); lbimg.style.transform=''; }
+      else { setOrigin(e); lbimg.classList.add('zoom'); lbimg.style.transform='scale(2.4)'; }
+    });
+    lbimg.addEventListener('mousemove', function(e){ if(lbimg.classList.contains('zoom')) setOrigin(e); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLB(); });
   })();
 </script>
 </body>
