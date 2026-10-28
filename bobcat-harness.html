@@ -234,31 +234,24 @@
     const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); if(p.length<3||p.some(isNaN)){h._hitDone=true;return;}
     if(!ALL.length) collectAll();
     let best=null, sawGeo=false;
-    for(const u of ALL){ const bb=leafCenter(u); if(!bb)continue; sawGeo=true; if(bb.sz>0.25)continue;
+    for(const u of ALL){ const bb=leafCenter(u); if(!bb)continue; sawGeo=true; if(bb.sz>0.5)continue; // skip only the big wire bundle
       const dd=Math.hypot(p[0]-bb.c[0],p[1]-bb.c[1],p[2]-bb.c[2]); if(!best||dd<best.dd) best={dd,u,sz:bb.sz}; }
     if(!sawGeo) return;                    // scene not ready yet: don't cache, retry next click
     h._hitDone=true;
-    if(best && best.dd<=0.07){ h.hit=best.u; h.hitSize=best.sz; }
+    if(best && best.dd<=0.22){ h.hit=best.u; h.hitSize=best.sz; } // branch-mounted connectors sit a bit off the tip
   }
-  // Walk highlight: dim the whole harness, and paint the current connector's mesh bright orange.
-  // We paint the material directly (reliable in every build) instead of trusting a glow effect.
-  let painted=[];   // [{mesh, mat}] to restore
-  const ORANGE="#ED6D26";
-  function restorePaint(){ painted.forEach(x=>{ try{ x.mesh.material=x.mat; }catch(_){} }); painted=[]; }
-  function paintHit(u){ const o=viewer.scene&&viewer.scene.getObjectByProperty('uuid',u); if(!o||!o.traverse)return false; let did=false;
-    o.traverse(m=>{ if(m.isMesh&&m.material){ const base=Array.isArray(m.material)?m.material[0]:m.material; painted.push({mesh:m,mat:m.material});
-      const nm=base.clone(); try{ nm.color&&nm.color.set(ORANGE); }catch(_){} try{ if(nm.emissive){ nm.emissive.set(ORANGE); nm.emissiveIntensity=0.9; } }catch(_){}
-      nm.transparent=false; nm.opacity=1; nm.metalness!==undefined&&(nm.metalness=0.1); nm.roughness!==undefined&&(nm.roughness=0.5);
-      m.material=nm; did=true; } });
-    return did; }
+  // Walk highlight: dim the whole harness, outline+highlight the current connector.
+  // This is exactly how the VNTANA platform highlights a selected node in this build:
+  // setEffect(uuid,"outline","highlight"), and it MUST flag needsRender or nothing redraws.
   function highlightStep(h){ try{
     clearFx();
     if(!ALL.length) collectAll();
     if(h) findHit(h);
     for(const u of ALL){ if(h && u===h.hit) continue; viewer.setEffect(u,"dim"); } // dim everything but the connector
-    if(h && h.hit) paintHit(h.hit);                                                  // paint the connector orange
+    if(h && h.hit) viewer.setEffect(h.hit,"outline","highlight");                    // the selected-node look
+    viewer.needsRender=true;                                                         // force a redraw
   }catch(_){} }
-  function clearFx(){ restorePaint(); try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(_){} }
+  function clearFx(){ try{ ["dim","outline","highlight","glow"].forEach(e=>viewer.clearEffect(e)); viewer.needsRender=true; }catch(_){} }
   const stripHtml=(s)=>(s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim();
   const parse=(x)=>{ if(x==null)return {}; if(typeof x==="object")return x; try{return JSON.parse(x);}catch(_){return {};} };
   async function loadHotspots(){
@@ -337,7 +330,7 @@
     applyCam(h.cam);    // keep Derek's authored target + viewing angle for this connector
     // authored distance is a wide shot (~2r); pull in to actually frame THIS connector.
     // meters, scaled to the connector's own size so small terminals get a tight close-up.
-    try{ const m=Math.max((h.hitSize||0.06)*7, 0.18); viewer.cameraDistance=`${m.toFixed(2)}m`; }catch(_){}
+    try{ const m=Math.min(Math.max((h.hitSize||0.06)*7, 0.18), 0.85); viewer.cameraDistance=`${m.toFixed(2)}m`; }catch(_){}
     panel.innerHTML=`<b>Connector ${h.id}</b><br>${descFor(h)}`;
     [...listEl.children].forEach((li,j)=>li.classList.toggle("active", j===i));
     prevB.disabled=(i===0); nextB.textContent=(i===HS.length-1?"Done":"Next");
