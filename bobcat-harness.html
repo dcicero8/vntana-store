@@ -240,15 +240,25 @@
     h._hitDone=true;
     if(best && best.dd<=0.07){ h.hit=best.u; h.hitSize=best.sz; }
   }
-  // Walk highlight: dim the whole harness, glow the current connector's mesh (if we mapped one).
+  // Walk highlight: dim the whole harness, and paint the current connector's mesh bright orange.
+  // We paint the material directly (reliable in every build) instead of trusting a glow effect.
+  let painted=[];   // [{mesh, mat}] to restore
+  const ORANGE="#ED6D26";
+  function restorePaint(){ painted.forEach(x=>{ try{ x.mesh.material=x.mat; }catch(_){} }); painted=[]; }
+  function paintHit(u){ const o=viewer.scene&&viewer.scene.getObjectByProperty('uuid',u); if(!o||!o.traverse)return false; let did=false;
+    o.traverse(m=>{ if(m.isMesh&&m.material){ const base=Array.isArray(m.material)?m.material[0]:m.material; painted.push({mesh:m,mat:m.material});
+      const nm=base.clone(); try{ nm.color&&nm.color.set(ORANGE); }catch(_){} try{ if(nm.emissive){ nm.emissive.set(ORANGE); nm.emissiveIntensity=0.9; } }catch(_){}
+      nm.transparent=false; nm.opacity=1; nm.metalness!==undefined&&(nm.metalness=0.1); nm.roughness!==undefined&&(nm.roughness=0.5);
+      m.material=nm; did=true; } });
+    return did; }
   function highlightStep(h){ try{
     clearFx();
     if(!ALL.length) collectAll();
     if(h) findHit(h);
     for(const u of ALL){ if(h && u===h.hit) continue; viewer.setEffect(u,"dim"); } // dim everything but the connector
-    if(h && h.hit) viewer.setEffect(h.hit,"glow","outline");                        // glow + outline the connector
+    if(h && h.hit) paintHit(h.hit);                                                  // paint the connector orange
   }catch(_){} }
-  function clearFx(){ try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(_){} }
+  function clearFx(){ restorePaint(); try{ ["glow","outline","dim"].forEach(e=>viewer.clearEffect(e)); }catch(_){} }
   const stripHtml=(s)=>(s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim();
   const parse=(x)=>{ if(x==null)return {}; if(typeof x==="object")return x; try{return JSON.parse(x);}catch(_){return {};} };
   async function loadHotspots(){
