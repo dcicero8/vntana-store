@@ -35,10 +35,13 @@
   .conn{display:flex;align-items:center;transform:translate(-50%,-50%);white-space:nowrap}
   .conn .dot{width:11px;height:11px;flex:none;background:var(--orange);border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.45)}
   .conn .lbl{font:800 13px/1 Arial,sans-serif;letter-spacing:.02em;color:#fff;background:rgba(17,19,20,.94);padding:5px 9px;border-radius:5px;margin-left:6px;box-shadow:0 2px 6px rgba(0,0,0,.4)}
-  vntana-hotspot.hide{opacity:0}
-  /* label visibility by mode */
+  vntana-hotspot.hide{opacity:.5}                /* stay visible (faded) when rotated behind, don't vanish */
+  .conn .lbl{pointer-events:auto;cursor:pointer}
+  vntana-hotspot.sel .lbl{background:var(--orange);color:#fff}
+  vntana-hotspot.sel .dot{background:#fff;border-color:var(--orange)}
+  /* walk mode: show only the current label */
   .labels-hidden vntana-hotspot{display:none}
-  .labels-hidden vntana-hotspot.current{display:block}
+  .labels-hidden vntana-hotspot.current{display:block;opacity:1}
   .labels-hidden vntana-hotspot.current .lbl{font-size:15px;background:var(--orange);color:#fff}
   .labels-hidden vntana-hotspot.current .dot{background:#fff;border-color:var(--orange)}
   .show2d vntana-hotspot{display:none}
@@ -140,6 +143,9 @@
           <li><b>Tight boxes</b> sized to the text.</li>
         </ul>
         <div class="note" id="labelsPending" style="display:none;background:#fff7e9;border-color:#f3dca6;color:#7a4e08">No hotspots found on this asset yet.</div>
+        <p class="lead" style="margin-top:14px">Click a connector to see what it is:</p>
+        <ol class="steps" id="labelSteps"></ol>
+        <div class="panel" id="labelPanel">Pick a connector above (or click its label on the model) to read its details.</div>
       </div>
 
       <div class="pane" id="paneWalk">
@@ -184,6 +190,19 @@
 
   // authored hotspots -> ordered list {id, pos, normal, cam, el}
   let HS=[]; let homeCam=null, cur=-1;
+  const ALL=[];   // all primitive uuids, for ghosting
+  // placeholder connector descriptions (Service fills these in, or edit the hotspot text)
+  const DESC={
+    T14:"Alternator B+ output terminal.", T12:"Alternator field / regulator lead.",
+    T11:"Alternator sense / reference lead.", T43:"Alternator auxiliary terminal.",
+    C111:"Starter control connector.", C101:"Starter signal / interlock connector.",
+    T9:"Starter solenoid (S) terminal.", T7:"Starter main battery (B+) terminal.",
+    T21:"Starter ground / return.", T10:"Auxiliary / spare lead."
+  };
+  const descFor=(h)=>DESC[h.id]||"Service notes for this connector go here.";
+  function collectAll(){ const root=viewer.sceneGraph; if(!root)return; ALL.length=0; (function w(n){ if(n.type==="primitive")ALL.push(n.uuid); (n.children||[]).forEach(w); })(root); }
+  const ghostAll=()=>{ try{ for(const u of ALL) viewer.setEffect(u,"dim"); }catch(_){} };
+  const clearGhost=()=>{ try{ viewer.clearEffect("dim"); }catch(_){} };
   const stripHtml=(s)=>(s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim();
   const parse=(x)=>{ if(x==null)return {}; if(typeof x==="object")return x; try{return JSON.parse(x);}catch(_){return {};} };
   async function loadHotspots(){
@@ -226,8 +245,22 @@
       w.innerHTML=`<span class="dot"></span><span class="lbl">${h.id}</span>`;
       el.appendChild(w); viewer.appendChild(el);
       h.el=el;
+      w.querySelector(".lbl").addEventListener("click",(e)=>{ e.stopPropagation();
+        if(mode==="walk"){ showStep(HS.indexOf(h)); } else { setMode("labels"); showInfo(h.id); } });
     });
-    renderSteps();
+    renderSteps(); renderLabelList();
+  }
+  function renderLabelList(){
+    const el=document.getElementById("labelSteps"); el.innerHTML="";
+    HS.forEach((h,i)=>{ const li=document.createElement("li"); li.dataset.id=h.id;
+      li.innerHTML=`<span class="no">${i+1}</span><div class="t">${h.id}</div>`;
+      li.addEventListener("click",()=>showInfo(h.id)); el.appendChild(li); });
+  }
+  function showInfo(id){
+    const h=HS.find(x=>x.id===id); if(!h)return;
+    HS.forEach(x=>x.el&&x.el.classList.remove("sel")); if(h.el)h.el.classList.add("sel");
+    document.getElementById("labelPanel").innerHTML=`<b>${id}</b> , ${descFor(h)}`;
+    [...document.getElementById("labelSteps").children].forEach(li=>li.classList.toggle("active",li.dataset.id===id));
   }
 
   // walkthrough: zoom to each connector, isolate its label
@@ -236,10 +269,11 @@
     cur=i; const h=HS[i];
     HS.forEach(x=>x.el&&x.el.classList.remove("current"));
     if(h.el) h.el.classList.add("current");
+    ghostAll();   // ghost the whole harness so the current connector stands out
     applyCam(h.cam);
     // the authored cameras sit at the default distance; pull in to actually zoom on the connector
     try{ viewer.cameraDistance="1.15r"; }catch(_){}
-    panel.innerHTML=`<b>Connector ${h.id}</b><br>Zoomed in on the harness. In a finished version its description, mating part and service notes would appear here.`;
+    panel.innerHTML=`<b>Connector ${h.id}</b><br>${descFor(h)}`;
     [...listEl.children].forEach((li,j)=>li.classList.toggle("active", j===i));
     prevB.disabled=(i===0); nextB.textContent=(i===HS.length-1?"Done":"Next");
     counter.textContent=`Connector ${i+1} of ${HS.length}`;
@@ -268,6 +302,7 @@
     document.getElementById("paneWalk").classList.toggle("show", m==="walk");
     stage.classList.toggle("show2d", m==="2d");
     stage.classList.toggle("labels-hidden", m==="walk");
+    if(m!=="walk") clearGhost();
     if(m==="labels"){
       cur=-1; HS.forEach(x=>x.el&&x.el.classList.remove("current"));
       [...listEl.children].forEach(x=>x.classList.remove("active"));
@@ -290,6 +325,7 @@
     if(ready) return; ready=true;
     loading.classList.add("hidden");
     try{ homeCam={cameraTarget:viewer.cameraTarget,cameraDistance:viewer.cameraDistance,cameraRotation:viewer.cameraRotation,fieldOfView:viewer.fieldOfView}; }catch(_){}
+    collectAll();
     await loadHotspots();
     placeLabels();
   }
