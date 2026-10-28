@@ -126,6 +126,7 @@
           <li><b>Tight boxes</b> sized to the text.</li>
         </ul>
         <div class="note">This is the embeddable <b>viewer component</b>, not the no-code hotspot editor , that's why the font, size, and always-on behavior are all under your control here.</div>
+        <div class="note" id="labelsPending" style="display:none;background:#fff7e9;border-color:#f3dca6;color:#7a4e08">Labels appear here once connector hotspots are added to this asset in the platform. Set each hotspot's text to the connector ID (for example B104); this page reads them and renders the styled labels automatically.</div>
       </div>
 
       <!-- WALK PANE -->
@@ -167,29 +168,60 @@
         stage=document.getElementById("stage"), cap=document.getElementById("cap"),
         listEl=document.getElementById("steps"), panel=document.getElementById("panel"),
         prevB=document.getElementById("prev"), nextB=document.getElementById("next"), counter=document.getElementById("counter");
-  const BASE="https://api.vntana.com", ORG="MikeCAD", WS="test", UUID="908b77ff-4a19-441a-b8ba-384f74108643";
+  const BASE="https://api.vntana.com", ORG="DCicero", WS="bobcat", UUID="a4632f8b-facc-47ba-91db-44363eded105";
 
-  // connector world centroids (raw glTF coords; model loads at origin, scale 1). Tweak SHIFT to nudge all.
-  const SHIFT=[0,0,0];
   const CONN=[
-    { id:"B307",    pos:[0.182,-0.106,-0.105], match:/B307/i,    body:"Harness connector B307. In a finished version this is where the mating part, pinout and service notes appear." },
-    { id:"B204",    pos:[-0.079,0.155,0.188],  match:/B204/i,    body:"Harness connector B204. Placeholder note, Service supplies the real function and replacement part reference." },
-    { id:"B104",    pos:[0.119,-0.06,-0.096],  match:/B104/i,    body:"Harness connector B104. Placeholder note, Service supplies the real function and replacement part reference." },
-    { id:"7405398", pos:[0.001,0.044,0.023],   match:/7405398/i, body:"Component 7405398. Placeholder note; its description and part reference would live here." },
+    { id:"B307",    match:/B307/i,    body:"Harness connector B307. In a finished version this is where the mating part, pinout and service notes appear." },
+    { id:"B204",    match:/B204/i,    body:"Harness connector B204. Placeholder note, Service supplies the real function and replacement part reference." },
+    { id:"B104",    match:/B104/i,    body:"Harness connector B104. Placeholder note, Service supplies the real function and replacement part reference." },
+    { id:"7405398", match:/7405398/i, body:"Component 7405398. Placeholder note; its description and part reference would live here." },
   ];
 
-  // ---- always-on labels (Labels tab) ----
+  // authored hotspots (set in the platform): HS[id] = {pos, normal, cam, text}
+  const HS={};
+  const stripHtml=(s)=>(s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim();
+  async function loadHotspots(){
+    for(const pg of [0,1]){
+      try{
+        const r=await fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`,
+          {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({productUuid:UUID,page:pg,size:50})}).then(r=>r.json());
+        const grid=r.response?.grid||[];
+        grid.forEach(h=>{
+          let cfg={}; try{cfg=typeof h.config==="string"?JSON.parse(h.config):(h.config||{});}catch(_){}
+          let dims={}; try{dims=typeof cfg.dimensions==="string"?JSON.parse(cfg.dimensions):(cfg.dimensions||{});}catch(_){}
+          let cam=cfg.camera; try{cam=typeof cam==="string"?JSON.parse(cam):cam;}catch(_){cam=null;}
+          const text=stripHtml(h.text||h.title||"");
+          const m=(text.match(/B\d{3}|7405398|STARTER/i)||[])[0];
+          if(m){ HS[m.toUpperCase().replace(/STARTER.*/i,"STARTER")]={pos:dims.position,normal:dims.normal,cam,text}; }
+        });
+        if(grid.length) break;
+      }catch(e){}
+    }
+  }
+  const applyCam=(c)=>{ if(!c)return; try{
+    if(c.cameraTarget!==undefined) viewer.cameraTarget=c.cameraTarget;
+    if(c.cameraDistance!==undefined) viewer.cameraDistance=c.cameraDistance;
+    if(c.cameraRotation!==undefined) viewer.cameraRotation=c.cameraRotation;
+    if(c.fieldOfView!==undefined) viewer.fieldOfView=c.fieldOfView;
+  }catch(_){} };
+
+  // ---- always-on labels (Labels tab) : from authored hotspot positions ----
   let labelsPlaced=false;
   function placeLabels(){
     if(labelsPlaced) return;
-    CONN.forEach(c=>{
-      const x=c.pos[0]+SHIFT[0], y=c.pos[1]+SHIFT[1], z=c.pos[2]+SHIFT[2];
+    const have=Object.keys(HS).filter(k=>HS[k].pos);
+    if(!have.length){
+      document.getElementById("labelsPending").style.display="block";
+      labelsPlaced=true; return;
+    }
+    document.getElementById("labelsPending").style.display="none";
+    have.forEach(id=>{
+      const h=HS[id];
       const el=document.createElement("vntana-hotspot");
-      el.setAttribute("position", `${x}m ${y}m ${z}m`);
-      const l=Math.hypot(x,y,z)||1;
-      el.setAttribute("normal", `${x/l}m ${y/l}m ${z/l}m`);
+      el.setAttribute("position", h.pos);
+      if(h.normal) el.setAttribute("normal", h.normal);
       const w=document.createElement("div"); w.className="conn";
-      w.innerHTML=`<span class="dot"></span><span class="lbl">${c.id}</span>`;
+      w.innerHTML=`<span class="dot"></span><span class="lbl">${id}</span>`;
       el.appendChild(w); viewer.appendChild(el);
     });
     labelsPlaced=true;
@@ -197,9 +229,9 @@
 
   // ---- walkthrough (Walk tab) ----
   const GROUP={}, UUID_C={}, ALL=[]; CONN.forEach(c=>GROUP[c.id]=[]);
-  let tries=0, built=false, cur=-1;
+  let tries=0, built=false, cur=-1, hsLoaded=false;
   const matchFor=(nm)=>{ const c=CONN.find(c=>c.match.test(nm||"")); return c?c.id:null; };
-  function buildGroups(){
+  async function buildGroups(){
     if(built) return;
     const root=viewer.sceneGraph; let prims=0;
     if(root){ (function c(n){ if(n.type==="primitive")prims++; (n.children||[]).forEach(c); })(root); }
@@ -210,6 +242,7 @@
       if(n.type==="primitive"){ ALL.push(n.uuid); if(c&&GROUP[c]){ GROUP[c].push(n.uuid); UUID_C[n.uuid]=c; } }
       (n.children||[]).forEach(ch=>walk(ch,c));
     })(root,null);
+    if(!hsLoaded){ await loadHotspots(); hsLoaded=true; }
     built=true; loading.classList.add("hidden"); placeLabels(); renderSteps();
   }
   const clearFx=()=>{ ["outline","glow","dim"].forEach(e=>{try{viewer.clearEffect(e);}catch(_){}}); };
@@ -219,7 +252,7 @@
     clearFx();
     const sel=new Set(GROUP[c.id]);
     for(const u of ALL){ if(sel.has(u)) viewer.setEffect(u,"outline","glow"); else viewer.setEffect(u,"dim"); }
-    try{ if(GROUP[c.id][0]) viewer.focus(GROUP[c.id][0]); }catch(_){}
+    applyCam(HS[c.id]?.cam);   // zoom to the connector's authored camera (once hotspots are set)
     panel.innerHTML=`<b>${c.id}</b><br>${c.body}`;
     [...listEl.children].forEach((li,j)=>li.classList.toggle("active", j===i));
     prevB.disabled=(i===0); nextB.textContent=(i===CONN.length-1?"Done":"Next");
