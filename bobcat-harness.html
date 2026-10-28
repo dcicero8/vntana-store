@@ -202,11 +202,17 @@
   const ALL=[];   // all primitive uuids, for ghosting
   // placeholder connector descriptions (Service fills these in, or edit the hotspot text)
   const DESC={
-    T14:"Alternator B+ output terminal.", T12:"Alternator field / regulator lead.",
-    T11:"Alternator sense / reference lead.", T43:"Alternator auxiliary terminal.",
-    C111:"Starter control connector.", C101:"Starter signal / interlock connector.",
-    T9:"Starter solenoid (S) terminal.", T7:"Starter main battery (B+) terminal.",
-    T21:"Starter ground / return.", T10:"Auxiliary / spare lead."
+    T14:"Alternator B+ (BAT) output stud. Main charge lead back to the battery positive and the fuse block. Keep torqued; a loose B+ reads as a no-charge fault.",
+    T12:"Alternator field / regulator lead (small blade). Carries the excitation / voltage-regulator signal from the key switch side. Check here first for an intermittent charge.",
+    T11:"Alternator sense lead. Voltage reference the regulator uses to set output. Corrosion here drifts charging voltage.",
+    T43:"Alternator auxiliary / lamp terminal. Drives the dash charge indicator and any aux sense circuit.",
+    C111:"Start-control connector. Feeds the solenoid control circuit from the key switch through the neutral / seat interlock.",
+    C11:"Interlock / safety connector. Series tie into the start circuit (seat bar, neutral, parking brake). Open interlock = no crank.",
+    C101:"Start-signal connector. Carries the switched crank command toward the starter solenoid.",
+    T9:"Starter solenoid (S) terminal. The switched trigger that pulls the solenoid in. No click here means the signal stops upstream.",
+    T7:"Starter battery (B+) terminal. Heavy main cable from the battery positive. Load-test under crank for voltage drop.",
+    T21:"Starter / engine ground return. The ground path for the crank circuit; a bad ground mimics a weak battery.",
+    T10:"Auxiliary / spare lead. Capped feed reserved for an accessory tap; not used on the base harness."
   };
   const descFor=(h)=>DESC[h.id]||"Service notes for this connector go here.";
   function collectAll(){ const root=viewer.sceneGraph; if(!root)return; ALL.length=0; (function w(n){ if(n.type==="primitive")ALL.push(n.uuid); (n.children||[]).forEach(w); })(root); }
