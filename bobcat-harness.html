@@ -96,16 +96,7 @@
   body.locked{overflow:hidden} body.locked .site{filter:blur(7px);pointer-events:none}
 </style>
 </head>
-<body class="locked">
-
-<div id="gate"><div class="card">
-  <div class="tag">Bobcat × VNTANA</div>
-  <h1>Concept Preview</h1>
-  <p>Private preview for the Bobcat team. Enter the access code.</p>
-  <input id="pw" type="password" placeholder="Access code" autocomplete="off">
-  <button id="unlock" type="button">Enter</button>
-  <div class="err" id="err"></div>
-</div></div>
+<body>
 
 <div class="site">
 <header class="top"><div class="wrap">
@@ -178,16 +169,6 @@
 </div></footer>
 </div>
 
-<script>
-  (function(){
-    var PW="bobcat2026", KEY="bobcatTechpub";
-    function unlock(){try{sessionStorage.setItem(KEY,'1');}catch(e){}document.getElementById('gate').style.display='none';document.body.classList.remove('locked');}
-    try{if(sessionStorage.getItem(KEY)==='1')unlock();}catch(e){}
-    function tryPw(){var v=(document.getElementById('pw').value||'').trim().toLowerCase();if(v===PW){unlock();}else{document.getElementById('err').textContent='Incorrect code.';}}
-    document.getElementById('unlock').addEventListener('click',tryPw);
-    document.getElementById('pw').addEventListener('keydown',function(e){if(e.key==='Enter')tryPw();});
-  })();
-</script>
 
 <script type="module" src="vendor/viewer-test/dist/index.js"></script>
 <script type="module">
