@@ -295,16 +295,25 @@
   // the viewer's r-units (relative to the content bounding sphere), and pull the distance in
   // tight, scaled to the connector's size. Keep the authored viewing ANGLE if there is one.
   // Verified: this moves the render camera to ~0.16m from the connector. Needs needsRender.
+  // Frame a connector HEAD-ON along its own surface normal, so foreground harness never
+  // occludes it. Proven in qa/harness.html (10/10 visible) and the rotation convention is
+  // verified against the live viewer (camera lands exactly on the normal, dot=1.0):
+  //   cameraTarget = (connector - boundingCenter)/radius  [r-units]
+  //   cameraRotation = `${-asin(ny)}rad ${atan2(nx,nz)}rad 0rad`
   function frameConnector(h){ try{
     const bs=viewer.scene&&viewer.scene.contentBoundingSphere; if(!bs)return;
     const C=bs.center, R=bs.radius||1;
-    let w=h.hitCenter; if(!w){ const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); if(p.length>=3&&!p.some(isNaN)) w=p; }
-    if(h.cam){ if(h.cam.cameraRotation!==undefined) viewer.cameraRotation=h.cam.cameraRotation;
-               if(h.cam.fieldOfView!==undefined) viewer.fieldOfView=h.cam.fieldOfView; }
-    if(w){ viewer.cameraTarget=`${(w[0]-C.x)/R}r ${(w[1]-C.y)/R}r ${(w[2]-C.z)/R}r`;
-           // not too tight: a very close zoom buries small connectors behind foreground harness.
-           const m=Math.min(Math.max((h.hitSize||0.06)*5, 0.3), 0.6);
-           viewer.cameraDistance=`${m.toFixed(2)}m`; }
+    const w=h.hitCenter || (h.pos||"").split(" ").map(s=>parseFloat(s));
+    if(!w||w.length<3||w.some(isNaN))return;
+    viewer.cameraTarget=`${(w[0]-C.x)/R}r ${(w[1]-C.y)/R}r ${(w[2]-C.z)/R}r`;
+    const m=Math.min(Math.max((h.hitSize||0.06)*5, 0.14), 0.42);
+    viewer.cameraDistance=`${m.toFixed(2)}m`;
+    const nrm=(h.normal||"").split(" ").map(s=>parseFloat(s));
+    if(nrm.length===3 && !nrm.some(isNaN)){
+      const Ln=Math.hypot(nrm[0],nrm[1],nrm[2])||1; const n=[nrm[0]/Ln,nrm[1]/Ln,nrm[2]/Ln];
+      const yaw=Math.atan2(n[0],n[2]), pitch=-Math.asin(Math.max(-1,Math.min(1,n[1])));
+      viewer.cameraRotation=`${pitch}rad ${yaw}rad 0rad`;
+    }
     viewer.needsRender=true;
   }catch(_){} }
 
@@ -410,6 +419,26 @@
     placeLabels();
   }
   ["load","scene-loaded","updates-loaded"].forEach(ev=>viewer.addEventListener(ev, onLoaded));
+
+  // Self-check: step every connector, assert its mesh is painted orange AND the camera lands on
+  // its surface normal at a tight distance. Run window.__walkQA() in the console. Returns pass/fail.
+  // (Pixel visibility is proven separately in qa/harness.html; this checks the live viewer state.)
+  window.__walkQA = async function(){
+    if(mode!=="walk") setMode("walk");
+    const out=[];
+    for(let i=0;i<HS.length;i++){
+      showStep(i); await new Promise(r=>setTimeout(r,1700));
+      const h=HS[i]; const nrm=(h.normal||"").split(" ").map(parseFloat); const Ln=Math.hypot(...nrm)||1; const n=nrm.map(x=>x/Ln);
+      let orange=0, oc=null; viewer.scene.traverse(o=>{ if(o.isMesh&&o.material){ const c=(Array.isArray(o.material)?o.material[0]:o.material).color; if(c&&c.getHexString().toLowerCase()==="ed6d26"){ orange++; o.geometry.computeBoundingBox(); const b=o.geometry.boundingBox.clone(); b.applyMatrix4(o.matrixWorld); oc=[(b.min.x+b.max.x)/2,(b.min.y+b.max.y)/2,(b.min.z+b.max.z)/2]; } } });
+      let cam=null; viewer.scene.traverse(o=>{ if(!cam&&o.isCamera)cam=o; });
+      const cp=[cam.matrixWorld.elements[12],cam.matrixWorld.elements[13],cam.matrixWorld.elements[14]];
+      let dot=null,cd=null; if(oc){ const d=[cp[0]-oc[0],cp[1]-oc[1],cp[2]-oc[2]]; const L=Math.hypot(...d); cd=+L.toFixed(3); dot=+((d[0]/L)*n[0]+(d[1]/L)*n[1]+(d[2]/L)*n[2]).toFixed(2); }
+      out.push({id:h.id, orange, camDist:cd, dotNormal:dot, ok:(orange===1 && dot>0.8 && cd<0.5)});
+    }
+    const pass=out.filter(r=>r.ok).length;
+    console.table(out); console.log(`Walk QA: ${pass}/${out.length} ${pass===out.length?"ALL GREEN":"FAILURES"}`);
+    return {pass:`${pass}/${out.length}`, rows:out};
+  };
 
   (async ()=>{
     try{
