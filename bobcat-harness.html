@@ -221,25 +221,19 @@
     h._hitDone=true;
     if(best && best.dd<=0.22){ h.hit=best.u; h.hitSize=best.sz; h.hitCenter=best.c; } // branch-mounted connectors sit a bit off the tip
   }
-  // Walk highlight: dim the whole harness, and paint the current connector bright orange.
-  // Painting the mesh material is the only highlight that RELIABLY renders in this build
-  // (the outline/highlight effects do not paint in the embed); we add the effect too, harmless.
-  // Every effect/material change needs needsRender=true or the canvas won't repaint.
-  let painted=[]; const ORANGE="#ED6D26";
-  function restorePaint(){ painted.forEach(x=>{ try{ x.mesh.material=x.mat; }catch(_){} }); painted=[]; }
-  function paintHit(u){ const o=viewer.scene&&viewer.scene.getObjectByProperty('uuid',u); if(!o||!o.traverse)return;
-    o.traverse(m=>{ if(m.isMesh&&m.material){ const base=Array.isArray(m.material)?m.material[0]:m.material; painted.push({mesh:m,mat:m.material});
-      const nm=base.clone(); try{ nm.color&&nm.color.set(ORANGE); }catch(_){} try{ if(nm.emissive){ nm.emissive.set(ORANGE); nm.emissiveIntensity=0.85; } }catch(_){}
-      nm.transparent=false; nm.opacity=1; m.material=nm; } }); }
+  // Walk highlight: dim the whole harness, outline+highlight the current connector.
+  // Per Neven: use the viewer's EFFECT system (not manual mesh.material edits — the viewer can
+  // replace materials on its own). setEffect takes the sceneGraph node uuid, same source the
+  // platform's own scene-graph panel uses for select. needsRender after every change.
   function highlightStep(h){ try{
     clearFx();
     if(!ALL.length) collectAll();
     if(h) findHit(h);
     for(const u of ALL){ if(h && u===h.hit) continue; viewer.setEffect(u,"dim"); } // dim everything but the connector
-    if(h && h.hit){ paintHit(h.hit); try{ viewer.setEffect(h.hit,"outline","highlight"); }catch(_){} }
-    viewer.needsRender=true;                                                         // force a redraw
+    if(h && h.hit) viewer.setEffect(h.hit,"outline","highlight");                    // the selected-node look
+    viewer.needsRender=true;
   }catch(_){} }
-  function clearFx(){ restorePaint(); try{ ["dim","outline","highlight","glow"].forEach(e=>viewer.clearEffect(e)); viewer.needsRender=true; }catch(_){} }
+  function clearFx(){ try{ ["dim","outline","highlight","glow"].forEach(e=>viewer.clearEffect(e)); viewer.needsRender=true; }catch(_){} }
   const stripHtml=(s)=>(s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim();
   const parse=(x)=>{ if(x==null)return {}; if(typeof x==="object")return x; try{return JSON.parse(x);}catch(_){return {};} };
   async function loadHotspots(){
@@ -265,10 +259,11 @@
   }
 
   const applyCam=(c)=>{ if(!c)return; try{
-    if(c.cameraTarget!==undefined) viewer.cameraTarget=c.cameraTarget;
-    if(c.cameraDistance!==undefined) viewer.cameraDistance=c.cameraDistance;
-    if(c.cameraRotation!==undefined) viewer.cameraRotation=c.cameraRotation;
-    if(c.fieldOfView!==undefined) viewer.fieldOfView=c.fieldOfView;
+    if(c.cameraTarget!==undefined) viewer.setCameraTarget(c.cameraTarget);
+    if(c.cameraDistance!==undefined) viewer.setCameraDistance(c.cameraDistance);
+    if(c.cameraRotation!==undefined) viewer.setCameraRotation(c.cameraRotation);
+    if(c.fieldOfView!==undefined) viewer.setFieldOfView(c.fieldOfView);
+    viewer.needsRender=true;
   }catch(_){} };
 
   // Frame a single connector. The authored hotspot cameras all target the model CENTER (so they
@@ -286,14 +281,16 @@
     const C=bs.center, R=bs.radius||1;
     const w=h.hitCenter || (h.pos||"").split(" ").map(s=>parseFloat(s));
     if(!w||w.length<3||w.some(isNaN))return;
-    viewer.cameraTarget=`${(w[0]-C.x)/R}r ${(w[1]-C.y)/R}r ${(w[2]-C.z)/R}r`;
+    // Per Neven: the cameraTarget/Distance/Rotation PROPERTIES are only initial/center values;
+    // to actually move the live camera use the setCamera* METHODS (this is why zoom never worked).
+    viewer.setCameraTarget(`${(w[0]-C.x)/R}r ${(w[1]-C.y)/R}r ${(w[2]-C.z)/R}r`);
     const m=Math.min(Math.max((h.hitSize||0.06)*5, 0.14), 0.42);
-    viewer.cameraDistance=`${m.toFixed(2)}m`;
+    viewer.setCameraDistance(`${m.toFixed(2)}m`);
     const nrm=(h.normal||"").split(" ").map(s=>parseFloat(s));
     if(nrm.length===3 && !nrm.some(isNaN)){
       const Ln=Math.hypot(nrm[0],nrm[1],nrm[2])||1; const n=[nrm[0]/Ln,nrm[1]/Ln,nrm[2]/Ln];
       const yaw=Math.atan2(n[0],n[2]), pitch=-Math.asin(Math.max(-1,Math.min(1,n[1])));
-      viewer.cameraRotation=`${pitch}rad ${yaw}rad 0rad`;
+      viewer.setCameraRotation(`${pitch}rad ${yaw}rad 0rad`);
     }
     viewer.needsRender=true;
   }catch(_){} }
@@ -394,27 +391,29 @@
   async function onLoaded(){
     if(ready) return; ready=true;
     loading.classList.add("hidden");
-    try{ homeCam={cameraTarget:viewer.cameraTarget,cameraDistance:viewer.cameraDistance,cameraRotation:viewer.cameraRotation,fieldOfView:viewer.fieldOfView}; }catch(_){}
+    try{ homeCam={cameraTarget:viewer.getCameraTarget(),cameraDistance:viewer.getCameraDistance?.(),cameraRotation:viewer.getCameraRotation?.(),fieldOfView:viewer.getFieldOfView?.()}; }catch(_){}
     collectAll();
     await loadHotspots();
     placeLabels();
   }
   ["load","scene-loaded","updates-loaded"].forEach(ev=>viewer.addEventListener(ev, onLoaded));
 
-  // Self-check: step every connector, assert its mesh is painted orange AND the camera lands on
+  // Self-check: step every connector, assert its highlight effect is applied AND the camera lands on
   // its surface normal at a tight distance. Run window.__walkQA() in the console. Returns pass/fail.
   // (Pixel visibility is proven separately in qa/harness.html; this checks the live viewer state.)
   window.__walkQA = async function(){
     if(mode!=="walk") setMode("walk");
     const out=[];
     for(let i=0;i<HS.length;i++){
-      showStep(i); await new Promise(r=>setTimeout(r,1700));
+      showStep(i); await new Promise(r=>setTimeout(r,2200));
       const h=HS[i]; const nrm=(h.normal||"").split(" ").map(parseFloat); const Ln=Math.hypot(...nrm)||1; const n=nrm.map(x=>x/Ln);
-      let orange=0, oc=null; viewer.scene.traverse(o=>{ if(o.isMesh&&o.material){ const c=(Array.isArray(o.material)?o.material[0]:o.material).color; if(c&&c.getHexString().toLowerCase()==="ed6d26"){ orange++; o.geometry.computeBoundingBox(); const b=o.geometry.boundingBox.clone(); b.applyMatrix4(o.matrixWorld); oc=[(b.min.x+b.max.x)/2,(b.min.y+b.max.y)/2,(b.min.z+b.max.z)/2]; } } });
-      let cam=null; viewer.scene.traverse(o=>{ if(!cam&&o.isCamera)cam=o; });
+      // highlight applied? check the uuid landed in the viewer's highlight effect set
+      let hl=false; try{ viewer.selection.highlight.forEach(x=>{ const u=(typeof x==="string")?x:(x&&(x.uuid||(x.node&&x.node.uuid))); if(u===h.hit) hl=true; }); }catch(_){}
+      // camera on the connector's normal?
+      const oc=h.hitCenter; let cam=null; viewer.scene.traverse(o=>{ if(!cam&&o.isCamera)cam=o; });
       const cp=[cam.matrixWorld.elements[12],cam.matrixWorld.elements[13],cam.matrixWorld.elements[14]];
       let dot=null,cd=null; if(oc){ const d=[cp[0]-oc[0],cp[1]-oc[1],cp[2]-oc[2]]; const L=Math.hypot(...d); cd=+L.toFixed(3); dot=+((d[0]/L)*n[0]+(d[1]/L)*n[1]+(d[2]/L)*n[2]).toFixed(2); }
-      out.push({id:h.id, orange, camDist:cd, dotNormal:dot, ok:(orange===1 && dot>0.8 && cd<0.5)});
+      out.push({id:h.id, hit:!!h.hit, highlighted:hl, camDist:cd, dotNormal:dot, ok:(!!h.hit && hl && dot>0.8 && cd<0.5)});
     }
     const pass=out.filter(r=>r.ok).length;
     console.table(out); console.log(`Walk QA: ${pass}/${out.length} ${pass===out.length?"ALL GREEN":"FAILURES"}`);
