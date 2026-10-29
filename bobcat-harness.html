@@ -316,7 +316,9 @@
     // Per Neven: the cameraTarget/Distance/Rotation PROPERTIES are only initial/center values;
     // to actually move the live camera use the setCamera* METHODS (this is why zoom never worked).
     viewer.setCameraTarget(`${(w[0]-C.x)/R}r ${(w[1]-C.y)/R}r ${(w[2]-C.z)/R}r`);
-    const m=Math.min(Math.max((h.hitSize||0.06)*5, 0.14), 0.42);
+    // Consistent framing: highlightable connectors frame tight (~a connector fills the view);
+    // zoom-only ones (merged into a big part) sit a bit wider so you can see the component.
+    const m = h.zoomOnly ? 0.34 : Math.min(Math.max((h.hitSize||0.03)*4, 0.14), 0.20);
     viewer.setCameraDistance(`${m.toFixed(2)}m`);
     const nrm=(h.normal||"").split(" ").map(s=>parseFloat(s));
     if(nrm.length===3 && !nrm.some(isNaN)){
@@ -384,7 +386,7 @@
     frameConnector(h);  // point the camera AT the connector and pull in tight
     // show the service notes inline, UNDER the active connector's button (not a separate panel)
     [...listEl.children].forEach((li,j)=>{ const on=(j===i); li.classList.toggle("active", on);
-      const wd=li.querySelector(".wdesc"); if(wd) wd.innerHTML = on ? (descFor(h)+(NOGEO.has(h.id)?`<div class="pnote">⚠ ${NOGEO_NOTE}</div>`:"")) : ""; });
+      const wd=li.querySelector(".wdesc"); if(wd) wd.innerHTML = on ? descFor(h) : ""; });  // note already shows under the number
     const al=listEl.children[i]; if(al) al.scrollIntoView({block:"nearest"});
     prevB.disabled=(i===0); nextB.textContent=(i===HS.length-1?"Done":"Next");
     counter.textContent=`Connector ${i+1} of ${HS.length}`;
