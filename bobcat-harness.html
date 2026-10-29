@@ -66,6 +66,10 @@
   .steps li:hover{border-color:#c6ccd2}
   .steps li.active{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
   .steps .no{flex:none;width:23px;height:23px;border-radius:50%;background:var(--black);color:#fff;font-weight:800;font-size:.76rem;display:flex;align-items:center;justify-content:center}
+  #steps li{flex-direction:column;align-items:stretch}
+  #steps li .srow{display:flex;gap:11px;align-items:center}
+  #steps li .snote{font-size:.7rem;line-height:1.3;color:#9a6a1a;margin-top:5px;padding-left:34px}
+  .pnote{margin-top:8px;font-size:.78rem;line-height:1.35;color:#9a6a1a;background:#fff5e8;border:1px solid #f0d8b4;border-radius:6px;padding:7px 9px}
   .steps li.active .no{background:var(--orange)}
   .steps .t{font-weight:800;font-size:.92rem;font-variant-numeric:tabular-nums}
   /* accordion rows: click a connector, its notes expand underneath it */
@@ -203,6 +207,10 @@
     T11:"B204_PRT_NEW_20_19", T9:"7405398_PRT_NEW_24_23",
     T7:"B104_PRT_NEW_1_2", T21:"B104_PRT_NEW_1_2", T10:"B307_PRT_3",
     C111:"mesh_10_1", C101:"mesh_10_1" };
+  // Connectors with no separate geometry yet (fused into the 0.4m cable mesh_10_1): zoom+label
+  // only, with an inline note. Remove an id here once the GLB splits that connector into its own mesh.
+  const NOGEO=new Set(["C111","C101"]);
+  const NOGEO_NOTE="No separate 3D part yet — fused into the cable, so it can't be highlighted on its own. Shown by location.";
   // All mesh uuids (three.js scene = same uuids setEffect uses), for dimming.
   function collectAll(){ ALL.length=0; if(!viewer.scene)return; viewer.scene.traverse(o=>{ if(o.isMesh&&o.geometry) ALL.push(o.uuid); }); }
   function leafCenter(u){ const o=viewer.scene&&viewer.scene.getObjectByProperty('uuid',u); if(!o||!o.traverse)return null;
@@ -369,7 +377,7 @@
     pinsOnlyCurrent(h.el);   // hide every other connector's pin while walking
     highlightStep(h);   // dim the harness, highlight this connector (also sets h.hitCenter)
     frameConnector(h);  // point the camera AT the connector and pull in tight
-    panel.innerHTML=`<b>Connector ${h.id}</b><br>${descFor(h)}`;
+    panel.innerHTML=`<b>Connector ${h.id}</b><br>${descFor(h)}`+(NOGEO.has(h.id)?`<div class="pnote">⚠ ${NOGEO_NOTE}</div>`:"");
     [...listEl.children].forEach((li,j)=>li.classList.toggle("active", j===i));
     prevB.disabled=(i===0); nextB.textContent=(i===HS.length-1?"Done":"Next");
     counter.textContent=`Connector ${i+1} of ${HS.length}`;
@@ -378,7 +386,8 @@
     listEl.innerHTML="";
     HS.forEach((h,i)=>{
       const li=document.createElement("li");
-      li.innerHTML=`<span class="no">${i+1}</span><div class="t">${h.id}</div>`;
+      const note=NOGEO.has(h.id)?`<div class="snote">⚠ No separate 3D part yet — shown by location only</div>`:"";
+      li.innerHTML=`<div class="srow"><span class="no">${i+1}</span><div class="t">${h.id}</div></div>${note}`;
       li.addEventListener("click",()=>{ setMode("walk"); showStep(i); });
       listEl.appendChild(li);
     });
