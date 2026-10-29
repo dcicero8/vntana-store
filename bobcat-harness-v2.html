@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Bobcat × VNTANA · Engine-Start Harness</title>
+<link rel="stylesheet" href="vendor/viewer-test/styles/viewer.css">
+<style>
+  :root{--ink:#14171a;--muted:#5b6670;--line:#e3e6ea;--bg:#ffffff;--panel:#f5f6f8;--black:#111314;--orange:#ec5505;--orange-d:#c74704}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+  header.top{background:var(--black);color:#fff}
+  header.top .wrap{display:flex;align-items:center;gap:16px;height:62px}
+  .brand{font-weight:800;letter-spacing:.04em;font-size:1.05rem;text-transform:uppercase}
+  .brand b{color:var(--orange)}
+  .top .sub{margin-left:auto;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#aab1b8}
+  .hero{background:var(--panel);border-bottom:1px solid var(--line);padding:22px 0}
+  .hero .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--orange-d);font-weight:800}
+  .hero h1{font-size:1.55rem;font-weight:800;margin:4px 0 6px}
+  .hero p{color:var(--muted);max-width:760px;font-size:.95rem}
+  .main{display:grid;grid-template-columns:1.2fr .8fr;gap:30px;padding:26px 0}
+  .stage{position:sticky;top:18px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .stage .frame{aspect-ratio:4/3;width:100%;position:relative;background:#fff}
+  vntana-viewer{width:100%;height:100%;display:block;background:#fff}
+  .stage .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem;background:#fff;z-index:9}
+  .stage .loading.hidden{display:none}
+  .stage .diagram{position:absolute;inset:0;background:#fff;display:none;align-items:center;justify-content:center;z-index:8}
+  .stage.show2d .diagram{display:flex}
+  .stage .diagram img{max-width:100%;max-height:100%;object-fit:contain}
+  .stage .cap{font-size:.72rem;color:var(--muted);padding:9px 12px;border-top:1px solid var(--line);text-transform:uppercase;letter-spacing:.05em}
+  /* GLOBAL connector-label style */
+  vntana-hotspot{--hotspot-size:0px;pointer-events:none}
+  /* one tight callout: the label sits right on the hotspot point (small notch anchors it) */
+  .conn{display:flex;align-items:center;transform:translate(-50%,-50%);white-space:nowrap}
+  .conn .dot{display:none}
+  .conn .lbl{position:relative;font:800 12px/1 Arial,sans-serif;letter-spacing:.02em;color:#fff;background:rgba(17,19,20,.94);padding:5px 8px;border-radius:5px;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  .conn .lbl::after{content:"";position:absolute;left:50%;bottom:-4px;width:7px;height:7px;background:inherit;transform:translateX(-50%) rotate(45deg)}
+  vntana-hotspot.hide{opacity:.5}                /* stay visible (faded) when rotated behind, don't vanish */
+  .conn .lbl{pointer-events:auto;cursor:pointer}
+  vntana-hotspot.sel .lbl{background:var(--orange);color:#fff}
+  vntana-hotspot.sel .dot{background:#fff;border-color:var(--orange)}
+  /* walk mode: show only the current label */
+  .labels-hidden vntana-hotspot{display:none}
+  .labels-hidden vntana-hotspot.current{display:block;opacity:1}
+  .labels-hidden vntana-hotspot.current .lbl{font-size:16px;padding:7px 11px;background:var(--orange);color:#fff;box-shadow:0 0 0 4px rgba(237,109,38,.35),0 3px 10px rgba(0,0,0,.45);animation:pin 1.4s ease-in-out infinite}
+  @keyframes pin{0%,100%{box-shadow:0 0 0 4px rgba(237,109,38,.35),0 3px 10px rgba(0,0,0,.45)}50%{box-shadow:0 0 0 9px rgba(237,109,38,0),0 3px 10px rgba(0,0,0,.45)}}
+  .labels-hidden vntana-hotspot.current .dot{background:#fff;border-color:var(--orange)}
+  .show2d vntana-hotspot{display:none}
+  /* tabs */
+  .tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;margin-bottom:14px}
+  .tabs button{flex:1;font:inherit;font-weight:700;font-size:.82rem;border:0;background:none;border-radius:7px;padding:10px 6px;cursor:pointer;color:var(--muted)}
+  .tabs button.active{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .pane{display:none} .pane.show{display:block}
+  h2{font-size:1.1rem;font-weight:800;margin:0 0 6px;display:flex;align-items:center;gap:9px}
+  h2 .bar{width:26px;height:4px;background:var(--orange);border-radius:2px}
+  .lead{color:var(--muted);font-size:.88rem;margin:0 0 12px}
+  .chk{list-style:none;display:grid;gap:7px;margin:4px 0 0}
+  .chk li{display:flex;gap:9px;font-size:.9rem;color:#333c44}
+  .chk li::before{content:"✓";color:#1f8a4c;font-weight:800;flex:none}
+  .note{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px 14px;font-size:.86rem;color:#39424b;margin-top:12px}
+  .note b{color:var(--orange-d)}
+  .steps{list-style:none;display:grid;gap:7px}
+  .steps li{display:flex;gap:11px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;cursor:pointer;transition:border-color .15s}
+  .steps li:hover{border-color:#c6ccd2}
+  .steps li.active{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+  .steps .no{flex:none;width:23px;height:23px;border-radius:50%;background:var(--black);color:#fff;font-weight:800;font-size:.76rem;display:flex;align-items:center;justify-content:center}
+  #steps li{flex-direction:column;align-items:stretch}
+  #steps li .srow{display:flex;gap:11px;align-items:center}
+  #steps li .snote{font-size:.7rem;line-height:1.3;color:#9a6a1a;margin-top:5px;padding-left:34px}
+  #steps li .wdesc{display:none}
+  #steps li.active .wdesc{display:block;margin-top:8px;padding-left:34px;font-size:.84rem;line-height:1.4;color:#39424b}
+  #paneWalk > .panel{display:none}  /* description now lives inline under the active button */
+  .pnote{margin-top:8px;font-size:.78rem;line-height:1.35;color:#9a6a1a;background:#fff5e8;border:1px solid #f0d8b4;border-radius:6px;padding:7px 9px}
+  .steps li.active .no{background:var(--orange)}
+  .steps .t{font-weight:800;font-size:.92rem;font-variant-numeric:tabular-nums}
+  /* accordion rows: click a connector, its notes expand underneath it */
+  .steps li.acc{flex-direction:column;align-items:stretch;gap:0;padding:0;overflow:hidden}
+  .steps li.acc .row{display:flex;gap:11px;align-items:center;padding:10px 12px}
+  .steps li.acc .desc{max-height:0;opacity:0;padding:0 12px 0 46px;font-size:.86rem;color:#39424b;transition:max-height .2s,opacity .2s,padding .2s}
+  .steps li.acc.open{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+  .steps li.acc.open .no{background:var(--orange)}
+  .steps li.acc.open .desc{max-height:160px;opacity:1;padding-top:2px;padding-bottom:11px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:13px 15px;margin-top:12px;min-height:72px;font-size:.9rem;color:#39424b}
+  .panel b{color:var(--ink)}
+  .nav{display:flex;gap:8px;margin-top:12px;align-items:center}
+  .nav button{font:inherit;font-weight:700;font-size:.84rem;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 16px;cursor:pointer}
+  .nav button.primary{background:var(--orange);color:#fff;border-color:var(--orange)}
+  .nav button:disabled{opacity:.45;cursor:default}
+  .counter{font-size:.76rem;color:var(--muted);margin-left:auto}
+  footer{background:#0b0d0e;color:#8a939b;font-size:.78rem;padding:22px 0;margin-top:14px}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  @media(max-width:820px){.main{grid-template-columns:1fr}.stage{position:static}}
+  #gate{position:fixed;inset:0;z-index:1000;background:var(--black);display:flex;align-items:center;justify-content:center;padding:24px}
+  #gate .card{background:#fff;max-width:380px;width:100%;padding:34px 30px;text-align:center;border-radius:12px}
+  #gate .tag{font-weight:800;color:var(--orange-d);letter-spacing:.06em;text-transform:uppercase;font-size:.72rem;margin-bottom:8px}
+  #gate h1{font-size:1.2rem;margin:0 0 6px}
+  #gate p{font-size:.84rem;color:var(--muted);margin:0 0 16px}
+  #gate input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line);border-radius:8px;text-align:center;font-family:inherit}
+  #gate button{margin-top:12px;width:100%;background:var(--orange);color:#fff;border:0;padding:13px;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit}
+  #gate .err{color:#b4232c;font-size:.8rem;margin-top:10px;min-height:1em}
+  body.locked{overflow:hidden} body.locked .site{filter:blur(7px);pointer-events:none}
+</style>
+</head>
+<body class="locked">
+
+<div id="gate"><div class="card">
+  <div class="tag">Bobcat × VNTANA</div>
+  <h1>Concept Preview</h1>
+  <p>Private preview for the Bobcat team. Enter the access code.</p>
+  <input id="pw" type="password" placeholder="Access code" autocomplete="off">
+  <button id="unlock" type="button">Enter</button>
+  <div class="err" id="err"></div>
+</div></div>
+
+<div class="site">
+<header class="top"><div class="wrap">
+  <div class="brand">BOBCAT <b>×</b> VNTANA</div>
+  <div class="sub">Service · Connector ID</div>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <div class="eyebrow">Technical Publication · Connector Identification</div>
+  <h1>Engine-Start Harness (7361320)</h1>
+  <p>Where Service starts today: a flat 2D illustration with callout arrows. Here it is as live 3D, with the same connector IDs as always-on labels and a guided walk that zooms to each one. Start on <b>2D Diagram</b> to see the before, then <b>Labels</b> and <b>Walk the harness</b> for the 3D version.</p>
+</div></div>
+
+<div class="wrap">
+  <div class="main">
+    <div class="stage" id="stage">
+      <div class="frame">
+        <div class="loading" id="loading">Loading harness 3D…</div>
+        <div class="diagram"><img src="assets/bobcat/harness-2d.png" alt="2D engine-start harness diagram"></div>
+        <vntana-viewer id="viewer" picking="true" min-camera-distance="0.08m" dim-opacity="0.12" environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment/Indoor_Studio_2.hdr"></vntana-viewer>
+      </div>
+      <div class="cap" id="cap">Live VNTANA 3D · drag to orbit · zoom</div>
+    </div>
+
+    <div>
+      <div class="tabs">
+        <button id="tab2d" type="button">2D Diagram</button>
+        <button id="tabLabels" class="active" type="button">Labels</button>
+        <button id="tabWalk" type="button">Walk the harness</button>
+      </div>
+
+      <div class="pane" id="pane2d">
+        <h2><span class="bar"></span>What Service uses today</h2>
+        <p class="lead">The 2D engine-start harness illustration, built and maintained by hand. Every connector is a static callout. This is the starting point we rebuilt in 3D.</p>
+        <div class="note">Same connectors, same IDs. The 3D version (Labels and Walk) keeps the familiar callouts but lets a technician orbit, zoom, and isolate any connector.</div>
+      </div>
+
+      <div class="pane show" id="paneLabels">
+        <h2><span class="bar"></span>All connectors labeled</h2>
+        <p class="lead">Every connector carries an always-on label with its real ID, placed exactly where you set the hotspot. Orbit the harness and they track.</p>
+        <ul class="chk">
+          <li>Real <b>connector IDs</b> (T14, T12, C101, …), not 1, 2, 3.</li>
+          <li><b>Always visible</b>, no clicking.</li>
+          <li><b>One global style</b> set once in CSS.</li>
+          <li><b>Tight boxes</b> sized to the text.</li>
+        </ul>
+        <div class="note" id="labelsPending" style="display:none;background:#fff7e9;border-color:#f3dca6;color:#7a4e08">No hotspots found on this asset yet.</div>
+        <p class="lead" style="margin-top:14px">Click a connector to see what it is:</p>
+        <ol class="steps" id="labelSteps"></ol>
+      </div>
+
+      <div class="pane" id="paneWalk">
+        <h2><span class="bar"></span>Walk the harness</h2>
+        <p class="lead">Step through each connector. The view zooms to it and its label pops. Back/Next, or click a connector.</p>
+        <ol class="steps" id="steps"></ol>
+        <div class="panel" id="panel"><b>Press Start</b> to begin, or pick a connector.</div>
+        <div class="nav">
+          <button id="prev" type="button" disabled>Back</button>
+          <button id="next" class="primary" type="button">Start</button>
+          <span class="counter" id="counter"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="wrap">
+  <div>Bobcat × VNTANA · engine-start harness · connector identification concept</div>
+  <div>Concept demo · Mike's harness · 3D by VNTANA</div>
+</div></footer>
+</div>
+
+
+<script type="module" src="vendor/viewer-test/dist/index.js"></script>
+<script type="module">
+  const viewer=document.getElementById("viewer"), loading=document.getElementById("loading"),
+        stage=document.getElementById("stage"), cap=document.getElementById("cap"),
+        listEl=document.getElementById("steps"), panel=document.getElementById("panel"),
+        prevB=document.getElementById("prev"), nextB=document.getElementById("next"), counter=document.getElementById("counter");
+  const BASE="https://api.vntana.com", ORG="DCicero", WS="bobcat", UUID="a4632f8b-facc-47ba-91db-44363eded105";
+
+  // authored hotspots -> ordered list {id, pos, normal, cam, el}
+  let HS=[]; let homeCam=null, cur=-1;
+  const ALL=[];   // all primitive uuids, for ghosting
+  // placeholder connector descriptions (Service fills these in, or edit the hotspot text)
+  const DESC={
+    T14:"Alternator B+ (BAT) output stud. Main charge lead back to the battery positive and the fuse block. Keep torqued; a loose B+ reads as a no-charge fault.",
+    T12:"Alternator field / regulator lead (small blade). Carries the excitation / voltage-regulator signal from the key switch side. Check here first for an intermittent charge.",
+    T11:"Alternator sense lead. Voltage reference the regulator uses to set output. Corrosion here drifts charging voltage.",
+    T43:"Alternator auxiliary / lamp terminal. Drives the dash charge indicator and any aux sense circuit.",
+    C111:"Start-control connector. Feeds the solenoid control circuit from the key switch through the neutral / seat interlock.",
+    C11:"Interlock / safety connector. Series tie into the start circuit (seat bar, neutral, parking brake). Open interlock = no crank.",
+    C101:"Start-signal connector. Carries the switched crank command toward the starter solenoid.",
+    T9:"Starter solenoid (S) terminal. The switched trigger that pulls the solenoid in. No click here means the signal stops upstream.",
+    T7:"Starter battery (B+) terminal. Heavy main cable from the battery positive. Load-test under crank for voltage drop.",
+    T21:"Starter / engine ground return. The ground path for the crank circuit; a bad ground mimics a weak battery.",
+    T10:"Auxiliary / spare lead. Capped feed reserved for an accessory tap; not used on the base harness."
+  };
+  const descFor=(h)=>DESC[h.id]||"Service notes for this connector go here.";
+  // Connectors with no separate geometry yet (fused into the 0.4m cable mesh_10_1): zoom+label
+  // only, with an inline note. Remove an id here once the GLB splits that connector into its own mesh.
+  // The VNTANA viewer merges meshes by material, so these connectors fall on a big material-merged
+  // blob (cable / starter / alternator body) rather than their own part — zoom + label only until
+  // the GLB is re-exported with each connector as its own object AND its own material. (Verified in
+  // qa/viewer-test.html against the real viewer, 2026-10-29.)
+  const NOGEO=new Set(["T43","C111","C101","T7","T21","T10"]);
+  const NOGEO_NOTE="Merged into a larger part in this file, so it can't highlight on its own yet. Shown by location.";
+  // All mesh uuids (three.js scene = same uuids setEffect uses), for dimming.
+  function collectAll(){ ALL.length=0; if(!viewer.scene)return; viewer.scene.traverse(o=>{ if(o.isMesh&&o.geometry) ALL.push(o.uuid); }); }
+  function leafCenter(u){ const o=viewer.scene&&viewer.scene.getObjectByProperty('uuid',u); if(!o||!o.traverse)return null;
+    let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9],has=false;
+    o.traverse(m=>{ if(m.isMesh&&m.geometry){ has=true; m.geometry.computeBoundingBox(); const b=m.geometry.boundingBox.clone(); b.applyMatrix4(m.matrixWorld);
+      mn=[Math.min(mn[0],b.min.x),Math.min(mn[1],b.min.y),Math.min(mn[2],b.min.z)]; mx=[Math.max(mx[0],b.max.x),Math.max(mx[1],b.max.y),Math.max(mx[2],b.max.z)]; }});
+    if(!has)return null; return {c:[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2], sz:Math.max(mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2])}; }
+  // Resolve a connector to the mesh(es) to highlight + a world bbox for the camera.
+  // Robust/hybrid: find the nearest mesh BY POSITION (verified to work on the live viewer), then
+  // highlight the whole same-NAMED part (so merged connectors light up fully); fall back to the
+  // single mesh if names aren't present. Lazy, at click time (scene is populated by then).
+  function bboxOf(o){ o.geometry.computeBoundingBox(); const b=o.geometry.boundingBox.clone(); b.applyMatrix4(o.matrixWorld);
+    return {c:[(b.min.x+b.max.x)/2,(b.min.y+b.max.y)/2,(b.min.z+b.max.z)/2], sz:Math.max(b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z), b}; }
+  // Use the VIEWER'S OWN closestMeshToPoint to resolve a hotspot to its mesh. This matters because
+  // the viewer MERGES meshes by material (verified in qa/viewer-test.html) and hides a hotspot's
+  // label when the mesh nearest it is dimmed. Matching the viewer's own pick guarantees the label
+  // shows, and tells us honestly whether the connector is its own small mesh (highlightable) or
+  // part of a big material-merged blob (zoom + label only).
+  function findHit(h){
+    if(h._hitDone) return; h.hit=null; h.hitUuids=[]; h.hitSize=null; h.hitCenter=null; h.pinMesh=null; h.zoomOnly=false;
+    if(!viewer.scene || !viewer.scene.closestMeshToPoint) return;
+    const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); if(p.length<3||p.some(isNaN)){h._hitDone=true;return;}
+    let cm=null; try{ const V=viewer.camera&&viewer.camera.position&&viewer.camera.position.constructor;
+      cm=viewer.scene.closestMeshToPoint(V?new V(p[0],p[1],p[2]):{x:p[0],y:p[1],z:p[2]}); }catch(_){}
+    if(!cm){ return; }                     // scene not populated yet: don't cache, retry next click
+    h._hitDone=true;
+    h.pinMesh=cm.uuid;                      // keep un-dimmed so the label always shows (viewer hides it otherwise)
+    const bb=bboxOf(cm);
+    if(bb.sz>0.15){ h.zoomOnly=true; h.hitCenter=p; h.hitSize=0.06; return; } // big material blob: zoom + label only
+    h.hitUuids=[cm.uuid]; h.hit=cm.uuid; h.hitCenter=bb.c; h.hitSize=bb.sz;
+  }
+  // Walk highlight: dim the whole harness, outline+highlight the current connector.
+  // Per Neven: use the viewer's EFFECT system (not manual mesh.material edits — the viewer can
+  // replace materials on its own). setEffect takes the sceneGraph node uuid, same source the
+  // platform's own scene-graph panel uses for select. needsRender after every change.
+  function highlightStep(h){ try{
+    clearFx();
+    if(!ALL.length) collectAll();
+    if(h) findHit(h);
+    const hit=new Set((h&&h.hitUuids)||[]);
+    if(h&&h.pinMesh) hit.add(h.pinMesh);   // keep the hotspot's own nearest mesh un-dimmed, or the viewer hides its label
+    for(const u of ALL){ if(hit.has(u)) continue; viewer.setEffect(u,"dim"); }          // dim everything but the connector
+    for(const u of ((h&&h.hitUuids)||[])) viewer.setEffect(u,"outline","highlight");    // highlight all of the connector's meshes
+    viewer.needsRender=true;
+  }catch(_){} }
+  function clearFx(){ try{ ["dim","outline","highlight","glow"].forEach(e=>viewer.clearEffect(e)); viewer.needsRender=true; }catch(_){} }
+  const stripHtml=(s)=>(s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim();
+  const parse=(x)=>{ if(x==null)return {}; if(typeof x==="object")return x; try{return JSON.parse(x);}catch(_){return {};} };
+  async function loadHotspots(){
+    for(const pg of [1,0]){
+      try{
+        const r=await fetch(`${BASE}/hotspots/search/organizations/${ORG}/clients/${WS}`,
+          {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({productUuid:UUID,page:pg,size:100})}).then(r=>r.json());
+        const grid=r.response?.grid||[];
+        if(grid.length){
+          grid.forEach(h=>{
+            const cfg=parse(h.config), dims=parse(cfg.dimensions);
+            let cam=cfg.camera; if(typeof cam==="string"){ try{cam=JSON.parse(cam);}catch(_){cam=null;} }
+            const id=stripHtml(h.text||h.title||"");
+            if(id && dims.position) HS.push({id, pos:dims.position, normal:dims.normal, cam});
+          });
+          break;
+        }
+      }catch(e){}
+    }
+    // order: alternator group, then mid, then starter group (fallback alpha)
+    const ord=["T14","T12","T11","T43","C111","C11","C101","T9","T7","T21","T10"];
+    HS.sort((a,b)=>{const ia=ord.indexOf(a.id),ib=ord.indexOf(b.id);return (ia<0?99:ia)-(ib<0?99:ib)||a.id.localeCompare(b.id);});
+  }
+
+  const applyCam=(c)=>{ if(!c)return; try{
+    if(c.cameraTarget!==undefined) viewer.setCameraTarget(c.cameraTarget);
+    if(c.cameraDistance!==undefined) viewer.setCameraDistance(c.cameraDistance);
+    if(c.cameraRotation!==undefined) viewer.setCameraRotation(c.cameraRotation);
+    if(c.fieldOfView!==undefined) viewer.setFieldOfView(c.fieldOfView);
+    viewer.needsRender=true;
+  }catch(_){} };
+
+  // Frame a single connector. The authored hotspot cameras all target the model CENTER (so they
+  // never zoom to a connector). We instead target the connector's own world point, converted to
+  // the viewer's r-units (relative to the content bounding sphere), and pull the distance in
+  // tight, scaled to the connector's size. Keep the authored viewing ANGLE if there is one.
+  // Verified: this moves the render camera to ~0.16m from the connector. Needs needsRender.
+  // Frame a connector HEAD-ON along its own surface normal, so foreground harness never
+  // occludes it. Proven in qa/harness.html (10/10 visible) and the rotation convention is
+  // verified against the live viewer (camera lands exactly on the normal, dot=1.0):
+  //   cameraTarget = (connector - boundingCenter)/radius  [r-units]
+  //   cameraRotation = `${-asin(ny)}rad ${atan2(nx,nz)}rad 0rad`
+  function frameConnector(h){ try{
+    const bs=viewer.scene&&viewer.scene.contentBoundingSphere; if(!bs)return;
+    const C=bs.center, R=bs.radius||1;
+    const w=h.hitCenter || (h.pos||"").split(" ").map(s=>parseFloat(s));
+    if(!w||w.length<3||w.some(isNaN))return;
+    // Per Neven: the cameraTarget/Distance/Rotation PROPERTIES are only initial/center values;
+    // to actually move the live camera use the setCamera* METHODS (this is why zoom never worked).
+    viewer.setCameraTarget(`${(w[0]-C.x)/R}r ${(w[1]-C.y)/R}r ${(w[2]-C.z)/R}r`);
+    // Consistent framing: highlightable connectors frame tight (~a connector fills the view);
+    // zoom-only ones (merged into a big part) sit a bit wider so you can see the component.
+    const m = h.zoomOnly ? 0.34 : Math.min(Math.max((h.hitSize||0.03)*4, 0.14), 0.20);
+    viewer.setCameraDistance(`${m.toFixed(2)}m`);
+    const nrm=(h.normal||"").split(" ").map(s=>parseFloat(s));
+    if(nrm.length===3 && !nrm.some(isNaN)){
+      const Ln=Math.hypot(nrm[0],nrm[1],nrm[2])||1; const n=[nrm[0]/Ln,nrm[1]/Ln,nrm[2]/Ln];
+      const yaw=Math.atan2(n[0],n[2]), pitch=-Math.asin(Math.max(-1,Math.min(1,n[1])));
+      viewer.setCameraRotation(`${pitch}rad ${yaw}rad 0rad`);
+    }
+    viewer.needsRender=true;
+  }catch(_){} }
+
+  function placeLabels(){
+    if(!HS.length){ document.getElementById("labelsPending").style.display="block"; renderSteps(); return; }
+    HS.forEach(h=>{
+      const el=document.createElement("vntana-hotspot");
+      el.setAttribute("position", h.pos);
+      if(h.normal) el.setAttribute("normal", h.normal);
+      el.dataset.id=h.id;
+      const w=document.createElement("div"); w.className="conn";
+      w.innerHTML=`<span class="dot"></span><span class="lbl">${h.id}</span>`;
+      el.appendChild(w); viewer.appendChild(el);
+      h.el=el;
+      w.querySelector(".lbl").addEventListener("click",(e)=>{ e.stopPropagation();
+        if(mode==="walk"){ showStep(HS.indexOf(h)); } else { setMode("labels"); showInfo(h.id); } });
+    });
+    renderSteps(); renderLabelList();
+  }
+  function renderLabelList(){
+    const el=document.getElementById("labelSteps"); el.innerHTML="";
+    HS.forEach((h,i)=>{ const li=document.createElement("li"); li.dataset.id=h.id; li.className="acc";
+      li.innerHTML=`<div class="row"><span class="no">${i+1}</span><div class="t">${h.id}</div></div><div class="desc">${descFor(h)}</div>`;
+      li.querySelector(".row").addEventListener("click",()=>toggleInfo(h.id)); el.appendChild(li); });
+  }
+  function markSel(id){ HS.forEach(x=>x.el&&x.el.classList.remove("sel")); const h=HS.find(x=>x.id===id); if(h&&h.el)h.el.classList.add("sel"); }
+  function toggleInfo(id){ // list click: expand this row's notes, collapse the rest
+    const kids=[...document.getElementById("labelSteps").children];
+    const li=kids.find(x=>x.dataset.id===id); if(!li)return;
+    const open=!li.classList.contains("open");
+    kids.forEach(x=>x.classList.remove("open"));
+    if(open){ li.classList.add("open"); markSel(id); } else { HS.forEach(x=>x.el&&x.el.classList.remove("sel")); }
+  }
+  function showInfo(id){ // model-label click: force the row open and scroll to it
+    const kids=[...document.getElementById("labelSteps").children];
+    const li=kids.find(x=>x.dataset.id===id); if(!li)return;
+    kids.forEach(x=>x.classList.remove("open")); li.classList.add("open"); markSel(id);
+    li.scrollIntoView({block:"nearest"});
+  }
+
+  // The viewer draws a marker pin on the canvas for every <vntana-hotspot> in its DOM; CSS can't
+  // hide those. So in Walk mode we DETACH all hotspots except the current one (only its pin+label
+  // shows), and re-attach them all when leaving Walk.
+  function pinsOnlyCurrent(curEl){ HS.forEach(h=>{ if(!h.el)return;
+    if(h.el===curEl){ if(h.el.parentNode!==viewer) viewer.appendChild(h.el); }
+    else if(h.el.parentNode===viewer){ viewer.removeChild(h.el); } });
+    viewer.needsRender=true; }
+  function pinsAll(){ HS.forEach(h=>{ if(h.el && h.el.parentNode!==viewer) viewer.appendChild(h.el); }); viewer.needsRender=true; }
+
+  // walkthrough: zoom to each connector, isolate its label
+  function showStep(i){
+    if(i<0||i>=HS.length) return;
+    cur=i; const h=HS[i];
+    HS.forEach(x=>x.el&&x.el.classList.remove("current"));
+    if(h.el) h.el.classList.add("current");
+    pinsOnlyCurrent(h.el);   // hide every other connector's pin while walking
+    highlightStep(h);   // dim the harness, highlight this connector (also sets h.hitCenter)
+    frameConnector(h);  // point the camera AT the connector and pull in tight
+    // show the service notes inline, UNDER the active connector's button (not a separate panel)
+    [...listEl.children].forEach((li,j)=>{ const on=(j===i); li.classList.toggle("active", on);
+      const wd=li.querySelector(".wdesc"); if(wd) wd.innerHTML = on ? descFor(h) : ""; });  // note already shows under the number
+    const al=listEl.children[i]; if(al) al.scrollIntoView({block:"nearest"});
+    prevB.disabled=(i===0); nextB.textContent=(i===HS.length-1?"Done":"Next");
+    counter.textContent=`Connector ${i+1} of ${HS.length}`;
+  }
+  function renderSteps(){
+    listEl.innerHTML="";
+    HS.forEach((h,i)=>{
+      const li=document.createElement("li");
+      const note=NOGEO.has(h.id)?`<div class="snote">⚠ No separate 3D part yet — shown by location only</div>`:"";
+      li.innerHTML=`<div class="srow"><span class="no">${i+1}</span><div class="t">${h.id}</div></div>${note}<div class="wdesc"></div>`;
+      li.addEventListener("click",()=>{ setMode("walk"); showStep(i); });
+      listEl.appendChild(li);
+    });
+  }
+  nextB.addEventListener("click",()=>{ if(cur<HS.length-1) showStep(cur+1); else { showStep(0); listEl.scrollIntoView({block:"nearest"}); } }); // "Done" loops back to the top
+  prevB.addEventListener("click",()=>showStep(cur-1));
+
+  // ---- tabs ----
+  let mode="labels";
+  function setMode(m){
+    mode=m;
+    document.getElementById("tab2d").classList.toggle("active", m==="2d");
+    document.getElementById("tabLabels").classList.toggle("active", m==="labels");
+    document.getElementById("tabWalk").classList.toggle("active", m==="walk");
+    document.getElementById("pane2d").classList.toggle("show", m==="2d");
+    document.getElementById("paneLabels").classList.toggle("show", m==="labels");
+    document.getElementById("paneWalk").classList.toggle("show", m==="walk");
+    stage.classList.toggle("show2d", m==="2d");
+    stage.classList.toggle("labels-hidden", m==="walk");
+    if(m!=="walk"){ clearFx(); pinsAll(); }
+    if(m==="labels"){
+      cur=-1; HS.forEach(x=>x.el&&x.el.classList.remove("current"));
+      [...listEl.children].forEach(x=>x.classList.remove("active"));
+      if(homeCam) applyCam(homeCam);
+      cap.textContent="Live VNTANA 3D · all connectors labeled · drag to orbit";
+    } else if(m==="walk"){
+      cap.textContent="Live VNTANA 3D · the view zooms to each connector · drag to orbit";
+      if(HS.length) showStep(cur>=0?cur:0); else panel.innerHTML="<b>Pick a connector</b> to begin.";
+    } else {
+      cap.textContent="The 2D illustration Service maintains by hand today";
+    }
+  }
+  document.getElementById("tab2d").addEventListener("click",()=>setMode("2d"));
+  document.getElementById("tabLabels").addEventListener("click",()=>setMode("labels"));
+  document.getElementById("tabWalk").addEventListener("click",()=>setMode("walk"));
+
+  // ---- load ----
+  let ready=false;
+  async function onLoaded(){
+    if(ready) return; ready=true;
+    loading.classList.add("hidden");
+    try{ homeCam={cameraTarget:viewer.getCameraTarget(),cameraDistance:viewer.getCameraDistance?.(),cameraRotation:viewer.getCameraRotation?.(),fieldOfView:viewer.getFieldOfView?.()}; }catch(_){}
+    collectAll();
+    await loadHotspots();
+    placeLabels();
+  }
+  ["load","scene-loaded","updates-loaded"].forEach(ev=>viewer.addEventListener(ev, onLoaded));
+
+  // Self-check: step every connector, assert its highlight effect is applied AND the camera lands on
+  // its surface normal at a tight distance. Run window.__walkQA() in the console. Returns pass/fail.
+  // (Pixel visibility is proven separately in qa/harness.html; this checks the live viewer state.)
+  window.__walkQA = async function(){
+    if(mode!=="walk") setMode("walk");
+    const out=[];
+    for(let i=0;i<HS.length;i++){
+      showStep(i); await new Promise(r=>setTimeout(r,2200));
+      const h=HS[i]; const nrm=(h.normal||"").split(" ").map(parseFloat); const Ln=Math.hypot(...nrm)||1; const n=nrm.map(x=>x/Ln);
+      // highlight applied? check the uuid landed in the viewer's highlight effect set
+      let hl=false; try{ viewer.selection.highlight.forEach(x=>{ const u=(typeof x==="string")?x:(x&&(x.uuid||(x.node&&x.node.uuid))); if(u===h.hit) hl=true; }); }catch(_){}
+      // camera on the connector's normal?
+      const oc=h.hitCenter; let cam=null; viewer.scene.traverse(o=>{ if(!cam&&o.isCamera)cam=o; });
+      const cp=[cam.matrixWorld.elements[12],cam.matrixWorld.elements[13],cam.matrixWorld.elements[14]];
+      let dot=null,cd=null; if(oc){ const d=[cp[0]-oc[0],cp[1]-oc[1],cp[2]-oc[2]]; const L=Math.hypot(...d); cd=+L.toFixed(3); dot=+((d[0]/L)*n[0]+(d[1]/L)*n[1]+(d[2]/L)*n[2]).toFixed(2); }
+      out.push({id:h.id, hit:!!h.hit, highlighted:hl, camDist:cd, dotNormal:dot, ok:(!!h.hit && hl && dot>0.8 && cd<0.5)});
+    }
+    const pass=out.filter(r=>r.ok).length;
+    console.table(out); console.log(`Walk QA: ${pass}/${out.length} ${pass===out.length?"ALL GREEN":"FAILURES"}`);
+    return {pass:`${pass}/${out.length}`, rows:out};
+  };
+
+  (async ()=>{
+    try{
+      const p=await fetch(`${BASE}/products/${UUID}/organizations/${ORG}/clients/${WS}`).then(r=>r.json());
+      const { asset }=p.response;
+      const blobId=asset.models.find(m=>(m.conversionFormat??m.type)==="GLB")?.modelBlobId || asset.models[0].modelBlobId;
+      viewer.src=`${BASE}/assets/products/${UUID}/organizations/${ORG}/clients/${WS}/${blobId}`;
+    }catch(err){ loading.textContent="Could not load the harness."; console.error(err); }
+  })();
+</script>
+
+<script>
+  (function(){
+    var PW="bobcat2026", KEY="bobcatTechpub";
+    function unlock(){try{sessionStorage.setItem(KEY,'1');}catch(e){}document.getElementById('gate').style.display='none';document.body.classList.remove('locked');}
+    try{if(sessionStorage.getItem(KEY)==='1')unlock();}catch(e){}
+    function tryPw(){var v=(document.getElementById('pw').value||'').trim().toLowerCase();if(v===PW){unlock();}else{document.getElementById('err').textContent='Incorrect code.';}}
+    document.getElementById('unlock').addEventListener('click',tryPw);
+    document.getElementById('pw').addEventListener('keydown',function(e){if(e.key==='Enter')tryPw();});
+  })();
+</script>
+</body>
+</html>
