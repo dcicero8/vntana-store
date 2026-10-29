@@ -228,17 +228,20 @@
   function bboxOf(o){ o.geometry.computeBoundingBox(); const b=o.geometry.boundingBox.clone(); b.applyMatrix4(o.matrixWorld);
     return {c:[(b.min.x+b.max.x)/2,(b.min.y+b.max.y)/2,(b.min.z+b.max.z)/2], sz:Math.max(b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z), b}; }
   function findHit(h){
-    if(h._hitDone) return; h.hit=null; h.hitUuids=[]; h.hitSize=null; h.hitCenter=null;
+    if(h._hitDone) return; h.hit=null; h.hitUuids=[]; h.hitSize=null; h.hitCenter=null; h.pinMesh=null;
     if(!viewer.scene) return;
     const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); if(p.length<3||p.some(isNaN)){h._hitDone=true;return;}
     const pref=PARTMAP[h.id];              // preferred part name from the crawl, if any
-    let best=null, sawGeo=false;
-    viewer.scene.traverse(o=>{ if(!o.isMesh||!o.geometry)return; sawGeo=true; const bb=bboxOf(o); if(bb.sz>0.5)return; // skip the big cable blob for the nearest pick
+    let best=null, pin=null, sawGeo=false;
+    viewer.scene.traverse(o=>{ if(!o.isMesh||!o.geometry)return; sawGeo=true; const bb=bboxOf(o);
       const d=Math.hypot(p[0]-bb.c[0],p[1]-bb.c[1],p[2]-bb.c[2]);
+      if(!pin || d<pin.d) pin={d,uuid:o.uuid};   // absolute nearest mesh — the viewer hides the label if THIS is dimmed
+      if(bb.sz>0.5)return;                        // skip the big cable blob for the nearest HIGHLIGHT pick
       const pri=(pref && o.name===pref)?0:1;   // prefer the mapped name when it is right at the hotspot
       if(!best || pri<best.pri || (pri===best.pri && d<best.d)) best={pri,d,o,name:o.name}; });
     if(!sawGeo) return;                    // scene not loaded yet: don't cache, retry next click
     h._hitDone=true;
+    h.pinMesh = pin && pin.uuid;           // keep this un-dimmed so the connector's label always shows
     // No clean connector geometry here (e.g. C111/C101 fall on the 0.4m cable). Zoom to the
     // hotspot + show the label, but DON'T light up the whole cable — that reads as broken.
     if(!best || best.d>0.25 || bboxOf(best.o).sz>0.15){ h.hitCenter=p; h.hitSize=0.06; return; }
@@ -259,6 +262,7 @@
     if(!ALL.length) collectAll();
     if(h) findHit(h);
     const hit=new Set((h&&h.hitUuids)||[]);
+    if(h&&h.pinMesh) hit.add(h.pinMesh);   // keep the hotspot's own nearest mesh un-dimmed, or the viewer hides its label
     for(const u of ALL){ if(hit.has(u)) continue; viewer.setEffect(u,"dim"); }          // dim everything but the connector
     for(const u of ((h&&h.hitUuids)||[])) viewer.setEffect(u,"outline","highlight");    // highlight all of the connector's meshes
     viewer.needsRender=true;
