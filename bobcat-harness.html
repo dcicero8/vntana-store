@@ -351,13 +351,23 @@
     li.scrollIntoView({block:"nearest"});
   }
 
+  // The viewer draws a marker pin on the canvas for every <vntana-hotspot> in its DOM; CSS can't
+  // hide those. So in Walk mode we DETACH all hotspots except the current one (only its pin+label
+  // shows), and re-attach them all when leaving Walk.
+  function pinsOnlyCurrent(curEl){ HS.forEach(h=>{ if(!h.el)return;
+    if(h.el===curEl){ if(h.el.parentNode!==viewer) viewer.appendChild(h.el); }
+    else if(h.el.parentNode===viewer){ viewer.removeChild(h.el); } });
+    viewer.needsRender=true; }
+  function pinsAll(){ HS.forEach(h=>{ if(h.el && h.el.parentNode!==viewer) viewer.appendChild(h.el); }); viewer.needsRender=true; }
+
   // walkthrough: zoom to each connector, isolate its label
   function showStep(i){
     if(i<0||i>=HS.length) return;
     cur=i; const h=HS[i];
     HS.forEach(x=>x.el&&x.el.classList.remove("current"));
     if(h.el) h.el.classList.add("current");
-    highlightStep(h);   // dim the harness, paint this connector orange (also sets h.hitCenter)
+    pinsOnlyCurrent(h.el);   // hide every other connector's pin while walking
+    highlightStep(h);   // dim the harness, highlight this connector (also sets h.hitCenter)
     frameConnector(h);  // point the camera AT the connector and pull in tight
     panel.innerHTML=`<b>Connector ${h.id}</b><br>${descFor(h)}`;
     [...listEl.children].forEach((li,j)=>li.classList.toggle("active", j===i));
@@ -373,7 +383,7 @@
       listEl.appendChild(li);
     });
   }
-  nextB.addEventListener("click",()=>{ if(cur<HS.length-1) showStep(cur+1); });
+  nextB.addEventListener("click",()=>{ if(cur<HS.length-1) showStep(cur+1); else { showStep(0); listEl.scrollIntoView({block:"nearest"}); } }); // "Done" loops back to the top
   prevB.addEventListener("click",()=>showStep(cur-1));
 
   // ---- tabs ----
@@ -388,15 +398,15 @@
     document.getElementById("paneWalk").classList.toggle("show", m==="walk");
     stage.classList.toggle("show2d", m==="2d");
     stage.classList.toggle("labels-hidden", m==="walk");
-    if(m!=="walk") clearFx();
+    if(m!=="walk"){ clearFx(); pinsAll(); }
     if(m==="labels"){
       cur=-1; HS.forEach(x=>x.el&&x.el.classList.remove("current"));
       [...listEl.children].forEach(x=>x.classList.remove("active"));
       if(homeCam) applyCam(homeCam);
       cap.textContent="Live VNTANA 3D · all connectors labeled · drag to orbit";
     } else if(m==="walk"){
-      panel.innerHTML="<b>Press Start</b> to begin, or pick a connector.";
       cap.textContent="Live VNTANA 3D · the view zooms to each connector · drag to orbit";
+      if(HS.length) showStep(cur>=0?cur:0); else panel.innerHTML="<b>Pick a connector</b> to begin.";
     } else {
       cap.textContent="The 2D illustration Service maintains by hand today";
     }
