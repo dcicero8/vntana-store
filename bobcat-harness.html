@@ -230,28 +230,35 @@
   // Compute the connector mesh for one hotspot, lazily, at the moment it's needed (scene is
   // fully populated by then). Nearest small leaf to the authored position, within 0.07m.
   function findHit(h){
-    if(h._hitDone) return; h.hit=null; h.hitSize=null;
+    if(h._hitDone) return; h.hit=null; h.hitSize=null; h.hitCenter=null;
     const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); if(p.length<3||p.some(isNaN)){h._hitDone=true;return;}
     if(!ALL.length) collectAll();
     let best=null, sawGeo=false;
     for(const u of ALL){ const bb=leafCenter(u); if(!bb)continue; sawGeo=true; if(bb.sz>0.5)continue; // skip only the big wire bundle
-      const dd=Math.hypot(p[0]-bb.c[0],p[1]-bb.c[1],p[2]-bb.c[2]); if(!best||dd<best.dd) best={dd,u,sz:bb.sz}; }
+      const dd=Math.hypot(p[0]-bb.c[0],p[1]-bb.c[1],p[2]-bb.c[2]); if(!best||dd<best.dd) best={dd,u,sz:bb.sz,c:bb.c}; }
     if(!sawGeo) return;                    // scene not ready yet: don't cache, retry next click
     h._hitDone=true;
-    if(best && best.dd<=0.22){ h.hit=best.u; h.hitSize=best.sz; } // branch-mounted connectors sit a bit off the tip
+    if(best && best.dd<=0.22){ h.hit=best.u; h.hitSize=best.sz; h.hitCenter=best.c; } // branch-mounted connectors sit a bit off the tip
   }
-  // Walk highlight: dim the whole harness, outline+highlight the current connector.
-  // This is exactly how the VNTANA platform highlights a selected node in this build:
-  // setEffect(uuid,"outline","highlight"), and it MUST flag needsRender or nothing redraws.
+  // Walk highlight: dim the whole harness, and paint the current connector bright orange.
+  // Painting the mesh material is the only highlight that RELIABLY renders in this build
+  // (the outline/highlight effects do not paint in the embed); we add the effect too, harmless.
+  // Every effect/material change needs needsRender=true or the canvas won't repaint.
+  let painted=[]; const ORANGE="#ED6D26";
+  function restorePaint(){ painted.forEach(x=>{ try{ x.mesh.material=x.mat; }catch(_){} }); painted=[]; }
+  function paintHit(u){ const o=viewer.scene&&viewer.scene.getObjectByProperty('uuid',u); if(!o||!o.traverse)return;
+    o.traverse(m=>{ if(m.isMesh&&m.material){ const base=Array.isArray(m.material)?m.material[0]:m.material; painted.push({mesh:m,mat:m.material});
+      const nm=base.clone(); try{ nm.color&&nm.color.set(ORANGE); }catch(_){} try{ if(nm.emissive){ nm.emissive.set(ORANGE); nm.emissiveIntensity=0.85; } }catch(_){}
+      nm.transparent=false; nm.opacity=1; m.material=nm; } }); }
   function highlightStep(h){ try{
     clearFx();
     if(!ALL.length) collectAll();
     if(h) findHit(h);
     for(const u of ALL){ if(h && u===h.hit) continue; viewer.setEffect(u,"dim"); } // dim everything but the connector
-    if(h && h.hit) viewer.setEffect(h.hit,"outline","highlight");                    // the selected-node look
+    if(h && h.hit){ paintHit(h.hit); try{ viewer.setEffect(h.hit,"outline","highlight"); }catch(_){} }
     viewer.needsRender=true;                                                         // force a redraw
   }catch(_){} }
-  function clearFx(){ try{ ["dim","outline","highlight","glow"].forEach(e=>viewer.clearEffect(e)); viewer.needsRender=true; }catch(_){} }
+  function clearFx(){ restorePaint(); try{ ["dim","outline","highlight","glow"].forEach(e=>viewer.clearEffect(e)); viewer.needsRender=true; }catch(_){} }
   const stripHtml=(s)=>(s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim();
   const parse=(x)=>{ if(x==null)return {}; if(typeof x==="object")return x; try{return JSON.parse(x);}catch(_){return {};} };
   async function loadHotspots(){
@@ -282,6 +289,23 @@
     if(c.cameraRotation!==undefined) viewer.cameraRotation=c.cameraRotation;
     if(c.fieldOfView!==undefined) viewer.fieldOfView=c.fieldOfView;
   }catch(_){} };
+
+  // Frame a single connector. The authored hotspot cameras all target the model CENTER (so they
+  // never zoom to a connector). We instead target the connector's own world point, converted to
+  // the viewer's r-units (relative to the content bounding sphere), and pull the distance in
+  // tight, scaled to the connector's size. Keep the authored viewing ANGLE if there is one.
+  // Verified: this moves the render camera to ~0.16m from the connector. Needs needsRender.
+  function frameConnector(h){ try{
+    const bs=viewer.scene&&viewer.scene.contentBoundingSphere; if(!bs)return;
+    const C=bs.center, R=bs.radius||1;
+    let w=h.hitCenter; if(!w){ const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); if(p.length>=3&&!p.some(isNaN)) w=p; }
+    if(h.cam){ if(h.cam.cameraRotation!==undefined) viewer.cameraRotation=h.cam.cameraRotation;
+               if(h.cam.fieldOfView!==undefined) viewer.fieldOfView=h.cam.fieldOfView; }
+    if(w){ viewer.cameraTarget=`${(w[0]-C.x)/R}r ${(w[1]-C.y)/R}r ${(w[2]-C.z)/R}r`;
+           const m=Math.min(Math.max((h.hitSize||0.06)*5, 0.15), 0.6);
+           viewer.cameraDistance=`${m.toFixed(2)}m`; }
+    viewer.needsRender=true;
+  }catch(_){} }
 
   function placeLabels(){
     if(!HS.length){ document.getElementById("labelsPending").style.display="block"; renderSteps(); return; }
@@ -326,11 +350,8 @@
     cur=i; const h=HS[i];
     HS.forEach(x=>x.el&&x.el.classList.remove("current"));
     if(h.el) h.el.classList.add("current");
-    highlightStep(h);   // dim the harness, glow this connector's mesh
-    applyCam(h.cam);    // keep Derek's authored target + viewing angle for this connector
-    // authored distance is a wide shot (~2r); pull in to actually frame THIS connector.
-    // meters, scaled to the connector's own size so small terminals get a tight close-up.
-    try{ const m=Math.min(Math.max((h.hitSize||0.06)*7, 0.18), 0.85); viewer.cameraDistance=`${m.toFixed(2)}m`; }catch(_){}
+    highlightStep(h);   // dim the harness, paint this connector orange (also sets h.hitCenter)
+    frameConnector(h);  // point the camera AT the connector and pull in tight
     panel.innerHTML=`<b>Connector ${h.id}</b><br>${descFor(h)}`;
     [...listEl.children].forEach((li,j)=>li.classList.toggle("active", j===i));
     prevB.disabled=(i===0); nextB.textContent=(i===HS.length-1?"Done":"Next");
