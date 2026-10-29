@@ -212,17 +212,14 @@
     T10:"Auxiliary / spare lead. Capped feed reserved for an accessory tap; not used on the base harness."
   };
   const descFor=(h)=>DESC[h.id]||"Service notes for this connector go here.";
-  // Explicit connector -> closest named mesh, from the GLB crawl. Deterministic for the demo.
-  // KNOWN GEOMETRY ISSUES (fix later with a renamed/split GLB): T12+T43 share one mesh, T7+T21
-  // share one mesh, and C111+C101 have no distinct geometry (they fall on the big cable mesh_10_1).
-  const PARTMAP={ T14:"B204_PRT_3", T12:"7405398_PRT_3", T43:"7405398_PRT_3",
-    T11:"B204_PRT_NEW_20_19", T9:"7405398_PRT_NEW_24_23",
-    T7:"B104_PRT_NEW_1_2", T21:"B104_PRT_NEW_1_2", T10:"B307_PRT_3",
-    C111:"mesh_10_1", C101:"mesh_10_1" };
   // Connectors with no separate geometry yet (fused into the 0.4m cable mesh_10_1): zoom+label
   // only, with an inline note. Remove an id here once the GLB splits that connector into its own mesh.
-  const NOGEO=new Set(["C111","C101"]);
-  const NOGEO_NOTE="No separate 3D part yet — fused into the cable, so it can't be highlighted on its own. Shown by location.";
+  // The VNTANA viewer merges meshes by material, so these connectors fall on a big material-merged
+  // blob (cable / starter / alternator body) rather than their own part — zoom + label only until
+  // the GLB is re-exported with each connector as its own object AND its own material. (Verified in
+  // qa/viewer-test.html against the real viewer, 2026-10-29.)
+  const NOGEO=new Set(["T43","C111","C101","T7","T21","T10"]);
+  const NOGEO_NOTE="Merged into a larger part in this file, so it can't highlight on its own yet. Shown by location.";
   // All mesh uuids (three.js scene = same uuids setEffect uses), for dimming.
   function collectAll(){ ALL.length=0; if(!viewer.scene)return; viewer.scene.traverse(o=>{ if(o.isMesh&&o.geometry) ALL.push(o.uuid); }); }
   function leafCenter(u){ const o=viewer.scene&&viewer.scene.getObjectByProperty('uuid',u); if(!o||!o.traverse)return null;
@@ -236,31 +233,23 @@
   // single mesh if names aren't present. Lazy, at click time (scene is populated by then).
   function bboxOf(o){ o.geometry.computeBoundingBox(); const b=o.geometry.boundingBox.clone(); b.applyMatrix4(o.matrixWorld);
     return {c:[(b.min.x+b.max.x)/2,(b.min.y+b.max.y)/2,(b.min.z+b.max.z)/2], sz:Math.max(b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z), b}; }
+  // Use the VIEWER'S OWN closestMeshToPoint to resolve a hotspot to its mesh. This matters because
+  // the viewer MERGES meshes by material (verified in qa/viewer-test.html) and hides a hotspot's
+  // label when the mesh nearest it is dimmed. Matching the viewer's own pick guarantees the label
+  // shows, and tells us honestly whether the connector is its own small mesh (highlightable) or
+  // part of a big material-merged blob (zoom + label only).
   function findHit(h){
-    if(h._hitDone) return; h.hit=null; h.hitUuids=[]; h.hitSize=null; h.hitCenter=null; h.pinMesh=null;
-    if(!viewer.scene) return;
+    if(h._hitDone) return; h.hit=null; h.hitUuids=[]; h.hitSize=null; h.hitCenter=null; h.pinMesh=null; h.zoomOnly=false;
+    if(!viewer.scene || !viewer.scene.closestMeshToPoint) return;
     const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); if(p.length<3||p.some(isNaN)){h._hitDone=true;return;}
-    const pref=PARTMAP[h.id];              // preferred part name from the crawl, if any
-    let best=null, pin=null, sawGeo=false;
-    viewer.scene.traverse(o=>{ if(!o.isMesh||!o.geometry)return; sawGeo=true; const bb=bboxOf(o);
-      const d=Math.hypot(p[0]-bb.c[0],p[1]-bb.c[1],p[2]-bb.c[2]);
-      if(!pin || d<pin.d) pin={d,uuid:o.uuid};   // absolute nearest mesh — the viewer hides the label if THIS is dimmed
-      if(bb.sz>0.5)return;                        // skip the big cable blob for the nearest HIGHLIGHT pick
-      const pri=(pref && o.name===pref)?0:1;   // prefer the mapped name when it is right at the hotspot
-      if(!best || pri<best.pri || (pri===best.pri && d<best.d)) best={pri,d,o,name:o.name}; });
-    if(!sawGeo) return;                    // scene not loaded yet: don't cache, retry next click
+    let cm=null; try{ const V=viewer.camera&&viewer.camera.position&&viewer.camera.position.constructor;
+      cm=viewer.scene.closestMeshToPoint(V?new V(p[0],p[1],p[2]):{x:p[0],y:p[1],z:p[2]}); }catch(_){}
+    if(!cm){ return; }                     // scene not populated yet: don't cache, retry next click
     h._hitDone=true;
-    h.pinMesh = pin && pin.uuid;           // keep this un-dimmed so the connector's label always shows
-    // No clean connector geometry here (e.g. C111/C101 fall on the 0.4m cable). Zoom to the
-    // hotspot + show the label, but DON'T light up the whole cable — that reads as broken.
-    if(!best || best.d>0.25 || bboxOf(best.o).sz>0.15){ h.hitCenter=p; h.hitSize=0.06; return; }
-    const uuids=[]; let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
-    const take=(o)=>{ const bb=bboxOf(o); uuids.push(o.uuid); mn=[Math.min(mn[0],bb.b.min.x),Math.min(mn[1],bb.b.min.y),Math.min(mn[2],bb.b.min.z)]; mx=[Math.max(mx[0],bb.b.max.x),Math.max(mx[1],bb.b.max.y),Math.max(mx[2],bb.b.max.z)]; };
-    if(best.name){ viewer.scene.traverse(o=>{ if(o.isMesh&&o.geometry&&o.name===best.name) take(o); }); }
-    else take(best.o);
-    h.hitUuids=uuids; h.hit=uuids[0];
-    h.hitCenter=[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2];
-    h.hitSize=Math.max(mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]);
+    h.pinMesh=cm.uuid;                      // keep un-dimmed so the label always shows (viewer hides it otherwise)
+    const bb=bboxOf(cm);
+    if(bb.sz>0.15){ h.zoomOnly=true; h.hitCenter=p; h.hitSize=0.06; return; } // big material blob: zoom + label only
+    h.hitUuids=[cm.uuid]; h.hit=cm.uuid; h.hitCenter=bb.c; h.hitSize=bb.sz;
   }
   // Walk highlight: dim the whole harness, outline+highlight the current connector.
   // Per Neven: use the viewer's EFFECT system (not manual mesh.material edits — the viewer can
