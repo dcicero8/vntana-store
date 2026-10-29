@@ -192,7 +192,7 @@
         stage=document.getElementById("stage"), cap=document.getElementById("cap"),
         listEl=document.getElementById("steps"), panel=document.getElementById("panel"),
         prevB=document.getElementById("prev"), nextB=document.getElementById("next"), counter=document.getElementById("counter");
-  const BASE="https://api.vntana.com", ORG="DCicero", WS="bobcat", UUID="a4632f8b-facc-47ba-91db-44363eded105";
+  const BASE="https://api.vntana.com", ORG="DCicero", WS="bobcat", UUID="8f793099-5e26-4350-8a78-a1cdaa3a76d1";
 
   // authored hotspots -> ordered list {id, pos, normal, cam, el}
   let HS=[]; let homeCam=null, cur=-1;
@@ -218,7 +218,7 @@
   // blob (cable / starter / alternator body) rather than their own part — zoom + label only until
   // the GLB is re-exported with each connector as its own object AND its own material. (Verified in
   // qa/viewer-test.html against the real viewer, 2026-10-29.)
-  const NOGEO=new Set(["T43","C111","C101","T7","T21","T10"]);
+  const NOGEO=new Set();  // v2: every connector has its own mat_<id> mesh — all 10 highlight, none zoom-only
   const NOGEO_NOTE="Merged into a larger part in this file, so it can't highlight on its own yet. Shown by location.";
   // All mesh uuids (three.js scene = same uuids setEffect uses), for dimming.
   function collectAll(){ ALL.length=0; if(!viewer.scene)return; viewer.scene.traverse(o=>{ if(o.isMesh&&o.geometry) ALL.push(o.uuid); }); }
@@ -233,23 +233,21 @@
   // single mesh if names aren't present. Lazy, at click time (scene is populated by then).
   function bboxOf(o){ o.geometry.computeBoundingBox(); const b=o.geometry.boundingBox.clone(); b.applyMatrix4(o.matrixWorld);
     return {c:[(b.min.x+b.max.x)/2,(b.min.y+b.max.y)/2,(b.min.z+b.max.z)/2], sz:Math.max(b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z), b}; }
-  // Use the VIEWER'S OWN closestMeshToPoint to resolve a hotspot to its mesh. This matters because
-  // the viewer MERGES meshes by material (verified in qa/viewer-test.html) and hides a hotspot's
-  // label when the mesh nearest it is dimmed. Matching the viewer's own pick guarantees the label
-  // shows, and tells us honestly whether the connector is its own small mesh (highlightable) or
-  // part of a big material-merged blob (zoom + label only).
+  // v2 asset (8f793099): the Blender re-prep gave each connector its OWN render mesh named
+  // `mat_<connectorID>` (unique material). The BOLD highlight attaches to the render mesh, so we
+  // resolve by that name — verified all 10 highlight boldly in qa/viewer-test-v2.html.
   function findHit(h){
     if(h._hitDone) return; h.hit=null; h.hitUuids=[]; h.hitSize=null; h.hitCenter=null; h.pinMesh=null; h.zoomOnly=false;
-    if(!viewer.scene || !viewer.scene.closestMeshToPoint) return;
-    const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); if(p.length<3||p.some(isNaN)){h._hitDone=true;return;}
-    let cm=null; try{ const V=viewer.camera&&viewer.camera.position&&viewer.camera.position.constructor;
-      cm=viewer.scene.closestMeshToPoint(V?new V(p[0],p[1],p[2]):{x:p[0],y:p[1],z:p[2]}); }catch(_){}
-    if(!cm){ return; }                     // scene not populated yet: don't cache, retry next click
+    if(!viewer.scene || !viewer.scene.getObjectByName) return;
+    const mesh=viewer.scene.getObjectByName("mat_"+h.id);
+    if(!mesh){ return; }                    // scene not populated yet: don't cache, retry next click
     h._hitDone=true;
-    h.pinMesh=cm.uuid;                      // keep un-dimmed so the label always shows (viewer hides it otherwise)
-    const bb=bboxOf(cm);
-    if(bb.sz>0.15){ h.zoomOnly=true; h.hitCenter=p; h.hitSize=0.06; return; } // big material blob: zoom + label only
-    h.hitUuids=[cm.uuid]; h.hit=cm.uuid; h.hitCenter=bb.c; h.hitSize=bb.sz;
+    const bb=bboxOf(mesh);
+    h.hitUuids=[mesh.uuid]; h.hit=mesh.uuid; h.hitCenter=bb.c; h.hitSize=bb.sz;
+    // The viewer hides a hotspot's label when the mesh NEAREST it (its own closestMeshToPoint)
+    // is dimmed — which isn't always our mat_ mesh. Keep that one un-dimmed too so the label shows.
+    try{ const p=(h.pos||"").split(" ").map(s=>parseFloat(s)); const V=viewer.camera&&viewer.camera.position&&viewer.camera.position.constructor;
+      if(p.length>=3&&!p.some(isNaN)&&viewer.scene.closestMeshToPoint){ const cm=viewer.scene.closestMeshToPoint(V?new V(p[0],p[1],p[2]):{x:p[0],y:p[1],z:p[2]}); if(cm) h.pinMesh=cm.uuid; } }catch(_){}
   }
   // Walk highlight: dim the whole harness, outline+highlight the current connector.
   // Per Neven: use the viewer's EFFECT system (not manual mesh.material edits — the viewer can
