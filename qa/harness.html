@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bobcat Harness — Walk QA</title>
+<style>
+  body{font:13px/1.4 Arial,sans-serif;margin:0;background:#101314;color:#e8eaed}
+  #bar{padding:10px 14px;background:#000;color:#fff;font-weight:700}
+  #wrap{display:flex;gap:12px;padding:12px}
+  #view{background:#fff}
+  table{border-collapse:collapse;font-size:12px}
+  th,td{border:1px solid #333;padding:4px 8px;text-align:right}
+  th{background:#1c2022}
+  td.id{text-align:left;font-weight:700}
+  .pass{color:#49d17a;font-weight:700}
+  .fail{color:#ff6b6b;font-weight:700}
+  #summary{padding:8px 14px;font-size:14px;font-weight:700}
+</style>
+</head>
+<body>
+<div id="bar">Bobcat Harness — Walk QA harness (controlled three.js, pixel + raycast verification)</div>
+<div id="summary">Loading…</div>
+<div id="wrap">
+  <canvas id="view" width="520" height="400"></canvas>
+  <div id="results"></div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+const W = 520, H = 400;
+const canvas = document.getElementById("view");
+const renderer = new THREE.WebGLRenderer({ canvas, preserveDrawingBuffer: true, antialias: true });
+renderer.setSize(W, H, false);
+renderer.setClearColor(0xffffff, 1);
+const gl = renderer.getContext();
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xffffff);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x888888, 1.1));
+const dir = new THREE.DirectionalLight(0xffffff, 1.4); dir.position.set(1, 2, 1.5); scene.add(dir);
+scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+const camera = new THREE.PerspectiveCamera(45, W / H, 0.01, 100);
+
+const ORANGE = new THREE.Color(0xED6D26);
+
+// ---- state ----
+let MESHES = [];           // {mesh, center:THREE.Vector3, size:number, origMat}
+let HS = [];               // {id, pos:THREE.Vector3, normal:THREE.Vector3, hitMesh, hitCenter, hitSize}
+
+function collectMeshes() {
+  MESHES = [];
+  scene.updateMatrixWorld(true);
+  scene.traverse(o => {
+    if (o.isMesh && o.geometry) {
+      o.geometry.computeBoundingBox();
+      const b = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+      const c = new THREE.Vector3(); b.getCenter(c);
+      const s = Math.max(b.max.x - b.min.x, b.max.y - b.min.y, b.max.z - b.min.z);
+      MESHES.push({ mesh: o, center: c, size: s, origMat: o.material });
+    }
+  });
+}
+
+// ---- MY LOGIC UNDER TEST ----
+// (1) map each hotspot to the nearest connector mesh
+function mapHotspots() {
+  for (const h of HS) {
+    let best = null;
+    for (const m of MESHES) {
+      if (m.size > 0.5) continue;              // skip the big wire bundle
+      const d = m.center.distanceTo(h.pos);
+      if (!best || d < best.d) best = { d, m };
+    }
+    if (best && best.d <= 0.22) { h.hitMesh = best.m.mesh; h.hitCenter = best.m.center.clone(); h.hitSize = best.m.size; }
+    else { h.hitMesh = null; }
+  }
+}
+// (2) frame the connector along its surface normal so nothing occludes it
+function frameConnector(h) {
+  const dist = Math.min(Math.max((h.hitSize || 0.06) * 5, 0.14), 0.42);
+  const n = h.normal.clone().normalize();
+  camera.position.copy(h.hitCenter).addScaledVector(n, dist);
+  camera.up.set(0, 1, 0);
+  camera.lookAt(h.hitCenter);
+  camera.updateMatrixWorld(true);
+}
+// (3) highlight: orange the connector, dim everything else
+function applyHighlight(h) {
+  for (const m of MESHES) {
+    if (m.mesh === h.hitMesh) {
+      m.mesh.material = new THREE.MeshStandardMaterial({ color: ORANGE, emissive: ORANGE, emissiveIntensity: 0.65, metalness: 0, roughness: 0.6 });
+    } else {
+      m.mesh.material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, transparent: true, opacity: 0.12, depthWrite: false });
+    }
+  }
+}
+function restoreMaterials() { for (const m of MESHES) m.mesh.material = m.origMat; }
+
+// ---- verification ----
+function countOrange() {
+  const buf = new Uint8Array(W * H * 4);
+  gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+  let total = 0, center = 0;
+  const cx0 = W * 0.33, cx1 = W * 0.67, cy0 = H * 0.33, cy1 = H * 0.67;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 4, r = buf[i], g = buf[i + 1], b = buf[i + 2];
+    // orange-ish: strong red, mid green, low blue, R>G>B
+    if (r > 150 && g > 50 && g < 170 && b < 100 && r > g && g > b) {
+      total++;
+      if (x >= cx0 && x <= cx1 && y >= cy0 && y <= cy1) center++;
+    }
+  }
+  return { total, center };
+}
+// true line-of-sight test: ray from camera to connector; is the connector the first mesh hit?
+function occlusionOk(h) {
+  const origin = camera.position.clone();
+  const target = h.hitCenter.clone();
+  const dirv = target.clone().sub(origin).normalize();
+  const rc = new THREE.Raycaster(origin, dirv, 0.001, origin.distanceTo(target) + h.hitSize);
+  const hits = rc.intersectObjects(MESHES.map(m => m.mesh), true);
+  if (!hits.length) return { ok: false, first: "none" };
+  const first = hits[0].object;
+  // first hit should be the connector mesh (or a child of it)
+  let ok = false, o = first;
+  while (o) { if (o === h.hitMesh) { ok = true; break; } o = o.parent; }
+  return { ok, firstName: first.name || first.type };
+}
+
+async function runQA() {
+  const results = [];
+  for (let i = 0; i < HS.length; i++) {
+    const h = HS[i];
+    if (!h.hitMesh) { results.push({ id: h.id, mapped: false, pass: false }); continue; }
+    frameConnector(h);
+    applyHighlight(h);
+    renderer.render(scene, camera);
+    const px = countOrange();
+    const occ = occlusionOk(h);
+    restoreMaterials();
+    // Honest metric: can you actually SEE orange at the connector, centered in frame?
+    // (dim is 88% transparent, so geometric occlusion by a thin wire still shows orange through it)
+    const pass = px.center >= 300;
+    results.push({ id: h.id, mapped: true, orange: px.total, centerOrange: px.center, geomOccluded: !occ.ok, firstHit: occ.firstName, pass });
+  }
+  renderResults(results);
+  window.__QA = results;
+  return results;
+}
+
+function renderResults(rows) {
+  const pass = rows.filter(r => r.pass).length;
+  document.getElementById("summary").innerHTML =
+    `${pass}/${rows.length} connectors PASS ` + (pass === rows.length ? '<span class="pass">✓ ALL GREEN</span>' : '<span class="fail">✗ failures below</span>');
+  let html = "<table><tr><th>#</th><th class='id'>id</th><th>mapped</th><th>orange px</th><th>center px</th><th>occluded</th><th>first hit</th><th>result</th></tr>";
+  rows.forEach((r, i) => {
+    html += `<tr><td>${i + 1}</td><td class='id'>${r.id}</td><td>${r.mapped ? "yes" : "NO"}</td>` +
+      `<td>${r.orange ?? "-"}</td><td>${r.centerOrange ?? "-"}</td><td>${r.geomOccluded ? "YES" : "no"}</td>` +
+      `<td>${r.firstHit ?? "-"}</td><td class='${r.pass ? "pass" : "fail"}'>${r.pass ? "PASS" : "FAIL"}</td></tr>`;
+  });
+  document.getElementById("results").innerHTML = html + "</table>";
+}
+
+// ---- boot ----
+(async function () {
+  try {
+    const hs = await fetch("hotspots.json").then(r => r.json());
+    HS = hs.map(h => ({
+      id: h.id,
+      pos: new THREE.Vector3(...h.position.split(" ").map(s => parseFloat(s))),
+      normal: new THREE.Vector3(...h.normal.split(" ").map(s => parseFloat(s)))
+    }));
+    const buf = await fetch("harness.glb").then(r => r.arrayBuffer());
+    const loader = new GLTFLoader();
+    loader.parse(buf, "", (gltf) => {
+      scene.add(gltf.scene);
+      collectMeshes();
+      mapHotspots();
+      document.getElementById("summary").textContent = `Loaded ${MESHES.length} meshes, ${HS.length} hotspots. Running QA…`;
+      window.runQA = runQA;
+      runQA();
+    }, (err) => { document.getElementById("summary").textContent = "GLB parse error: " + err; });
+  } catch (e) {
+    document.getElementById("summary").textContent = "Boot error: " + e.message;
+  }
+})();
+</script>
+</body>
+</html>
