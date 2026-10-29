@@ -61,6 +61,9 @@
       <li><b>Animation.</b> Build the Animated asset last, once Deployed and Stowed are approved.</li>
       <li><b>Review:</b> Apex and VNTANA leave notes as annotations on the asset. Fix, re-upload as a new version.</li>
     </ol>
+    <ul class="rules">
+      <li><b>Before you start:</b> send VNTANA a date for each step above, and how many review rounds your quote includes (materials are the step most likely to need more than one).</li>
+    </ul>
     <h3>Where files live</h3>
     <ul class="rules">
       <li><b>Apex on the VNTANA platform</b> (VNTANA gives you access). Reference photos: <a href="https://platform.vntana.com/apex/reference-assets/products/" target="_blank" rel="noopener">Reference assets workspace</a>. Nova CAD: linked on the <a href="nova.html">Nova page</a>. The render template and material library go here too. Upload all your deliveries to the Apex workspace.</li>
@@ -92,6 +95,8 @@
       <li><b>Render setup:</b> every .blend uses the render setup agreed after the viewer review (section 6). The GLBs come first; the .blend follows.</li>
       <li><b>Materials:</b> library materials only. Substance source files (.spp or .sbsar) for every new material.</li>
       <li>All textures packed in each .blend. One .blend attached per asset.</li>
+      <li><b>No baked ambient occlusion needed.</b> Renders come from Cycles, which makes real contact shadows, so you do not need full UVs just for an AO bake.</li>
+      <li><b>Animation:</b> keyframes only, so it plays in the GLB. No drivers, constraints or simulations in the final file (bake them to keyframes if you use them while working).</li>
     </ul>
   </div>
 </section>
@@ -138,6 +143,7 @@
   <div class="card">
     <ul class="rules">
       <li><b>When:</b> only after VNTANA and Apex have reviewed your GLBs in the VNTANA viewer (section 2, step 3). We send you the agreed viewer settings and a screenshot of each render view. Build the render setup to match them.</li>
+      <li><b>One file, reused:</b> one render setup with 9 cameras and 2 scenes (Studio and Dark Space). Each platform reuses it; only the model changes.</li>
       <li><b>How:</b> build it once as <code>APEX_Render_Template</code> and upload it for approval. After approval, start every render file from it. Do not copy cameras into your own scene: the color settings do not come with them.</li>
       <li><b>9 cameras:</b> 01_Hero, then 02 to 09 for the standard views (front, sides, back, top, bottom, detail). Exact angles come from the screenshots.<span class="tbd">CONFIRM names</span></li>
       <li><b>2 environments,</b> packed in the file: <b>Studio</b> (clean product lighting) and <b>Dark Space</b> (black background, hard sun light).</li>
@@ -173,7 +179,8 @@
     <h3>UVs and textures</h3>
     <ul class="rules">
       <li><b>UVs only where a texture is needed:</b> solar cells, swirl-milled boxes, MLI blankets, Kapton tape. Flat finishes (chromate, gold rail, anodize, stainless, paint) are plain material values and need no UVs.</li>
-      <li><b>Use the CAD as is.</b> Remodel a part only if you have to: it does not look right, or you cannot get clean UVs on it (the solar panels may be the one case). Tell us before you remodel, and keep the CAD sizes and positions exactly.</li>
+      <li><b>Expect UVs on about a third of the model,</b> and textures on 4 or 5 materials. Everything else is a plain material.</li>
+      <li><b>Use the CAD as is.</b> Remodel a part only if you have to: it does not look right, you cannot get clean UVs on it, or it does not move cleanly in the animation (the solar panel backing plates are the likely case). Tell us before you remodel, and keep the CAD sizes and positions exactly.</li>
       <li>Single 0 to 1 UV space per material; texture density at real-world scale.</li>
     </ul>
   </div>
