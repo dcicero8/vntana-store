@@ -125,7 +125,7 @@
       <div class="frame">
         <div class="loading" id="loading">Loading harness 3D…</div>
         <div class="diagram"><img src="assets/bobcat/harness-2d.png" alt="2D engine-start harness diagram"></div>
-        <vntana-viewer id="viewer" picking="true" min-camera-distance="0.08m" dim-opacity="0.4" environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment/Indoor_Studio_2.hdr"></vntana-viewer>
+        <vntana-viewer id="viewer" picking="true" min-camera-distance="0.08m" dim-opacity="0.12" environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment/Indoor_Studio_2.hdr"></vntana-viewer>
       </div>
       <div class="cap" id="cap">Live VNTANA 3D · drag to orbit · zoom</div>
     </div>
@@ -302,7 +302,8 @@
     if(h.cam){ if(h.cam.cameraRotation!==undefined) viewer.cameraRotation=h.cam.cameraRotation;
                if(h.cam.fieldOfView!==undefined) viewer.fieldOfView=h.cam.fieldOfView; }
     if(w){ viewer.cameraTarget=`${(w[0]-C.x)/R}r ${(w[1]-C.y)/R}r ${(w[2]-C.z)/R}r`;
-           const m=Math.min(Math.max((h.hitSize||0.06)*5, 0.15), 0.6);
+           // not too tight: a very close zoom buries small connectors behind foreground harness.
+           const m=Math.min(Math.max((h.hitSize||0.06)*5, 0.3), 0.6);
            viewer.cameraDistance=`${m.toFixed(2)}m`; }
     viewer.needsRender=true;
   }catch(_){} }
