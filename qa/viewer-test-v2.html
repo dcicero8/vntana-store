@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Viewer state test (local GLB)</title>
+<script type="module" src="../vendor/viewer-test/dist/index.js"></script>
+<style>
+  body{margin:0;font:13px sans-serif;overflow:hidden}
+  #log{display:none}
+  vntana-viewer{width:100vw;height:100vh;display:block;background:#fff}
+  vntana-hotspot{--hotspot-size:0px}
+  .lbl{background:#111;color:#fff;padding:3px 7px;border-radius:4px;font:700 12px sans-serif;transform:translate(-50%,-50%)}
+</style>
+</head>
+<body>
+<vntana-viewer id="v" picking="true" min-camera-distance="0.08m" dim-opacity="0.12" environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment/Indoor_Studio_2.hdr" src="harness_connectors_v2.glb"></vntana-viewer>
+<pre id="log">loading…</pre>
+<script>
+  const v = document.getElementById("v");
+  let added = false;
+  async function boot(){
+    const hs = await fetch("hotspots.json").then(r=>r.json());
+    window.__HS = hs;
+    function addPins(){
+      if(added) return; added = true;
+      hs.forEach(h=>{
+        const el = document.createElement("vntana-hotspot");
+        el.setAttribute("position", h.position);
+        if(h.normal) el.setAttribute("normal", h.normal);
+        el.dataset.id = h.id;
+        const d = document.createElement("div"); d.className = "lbl"; d.textContent = h.id;
+        el.appendChild(d); v.appendChild(el); h.el = el;
+      });
+    }
+    ["scene-loaded","updates-loaded","load"].forEach(ev=>v.addEventListener(ev, addPins));
+  }
+  boot();
+  window.leafCount = () => { let c=0; (function w(n){ if(!n)return; if(n.type==="primitive"||n.type==="mesh")c++; (n.children||[]).forEach(w); })(v.sceneGraph); return c; };
+  const Vec = () => v.camera.position.constructor;
+  const bboxOf = (o) => { o.geometry.computeBoundingBox(); const b=o.geometry.boundingBox.clone(); b.applyMatrix4(o.matrixWorld);
+    return {c:[(b.min.x+b.max.x)/2,(b.min.y+b.max.y)/2,(b.min.z+b.max.z)/2], sz:Math.max(b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z)}; };
+  // Replicates the real page's intended walk logic for one connector, so I can SEE it.
+  window.walk = (id) => {
+    const h = window.__HS.find(x=>x.id===id); if(!h) return "no "+id;
+    const p = h.position.split(" ").map(parseFloat); const V = Vec();
+    const cm = v.scene.closestMeshToPoint(new V(p[0],p[1],p[2]));
+    const bb = bboxOf(cm);
+    const zoomOnly = bb.sz > 0.15;             // closest mesh is a big material-merged blob
+    const ALL=[]; v.scene.traverse(o=>{ if(o.isMesh&&o.geometry)ALL.push(o.uuid); });
+    ["dim","outline","highlight","glow"].forEach(e=>v.clearEffect(e));
+    for(const u of ALL){ if(u!==cm.uuid) v.setEffect(u,"dim"); } // keep closest un-dimmed (label shows)
+    if(!zoomOnly) v.setEffect(cm.uuid,"outline","highlight");
+    // show only this hotspot's pin
+    window.__HS.forEach(x=>{ if(!x.el)return; if(x.id===id){ if(x.el.parentNode!==v)v.appendChild(x.el);} else if(x.el.parentNode===v)v.removeChild(x.el); });
+    // frame: target the connector center (zoom-only -> hotspot point), along the normal
+    const bs=v.scene.contentBoundingSphere, C=bs.center, R=bs.radius;
+    const t = zoomOnly ? p : bb.c;
+    v.setCameraTarget(`${(t[0]-C.x)/R}r ${(t[1]-C.y)/R}r ${(t[2]-C.z)/R}r`);
+    v.setCameraDistance(`${Math.min(Math.max((zoomOnly?0.12:bb.sz)*5,0.14),0.42).toFixed(2)}m`);
+    const n=h.normal.split(" ").map(parseFloat); const Ln=Math.hypot(...n)||1;
+    v.setCameraRotation(`${-Math.asin(n[1]/Ln)}rad ${Math.atan2(n[0],n[2])}rad 0rad`);
+    v.needsRender=true;
+    return {id, mesh:cm.name, size:+bb.sz.toFixed(3), zoomOnly};
+  };
+</script>
+</body>
+</html>
