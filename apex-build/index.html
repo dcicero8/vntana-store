@@ -63,6 +63,8 @@
     </ol>
     <ul class="rules">
       <li><b>Before you start:</b> send VNTANA a date for each step above, and how many review rounds your quote includes (materials are the step most likely to need more than one).</li>
+      <li><b>Questions:</b> if something is unclear (which part a material goes on, for example), mark up a screenshot with an arrow and post it in the Slack channel. Use annotation replies only for final decisions or reference requests, and tag Derek (@Derek) so he is notified. Apex sees the annotations.</li>
+      <li><b>Updates are rolling:</b> upload as you go, so we can review and get Apex feedback early.</li>
     </ul>
     <h3>Where files live</h3>
     <ul class="rules">
@@ -96,7 +98,8 @@
       <li><b>Materials:</b> library materials only. Substance source files (.spp or .sbsar) for every new material.</li>
       <li>All textures packed in each .blend. One .blend attached per asset.</li>
       <li><b>No baked ambient occlusion needed.</b> Renders come from Cycles, which makes real contact shadows, so you do not need full UVs just for an AO bake.</li>
-      <li><b>Animation:</b> keyframes only, so it plays in the GLB. No drivers, constraints or simulations in the final file (bake them to keyframes if you use them while working).</li>
+      <li><b>Animation:</b> keyframes, so it plays in the GLB. Armature skinning is OK where a part has to bend (the solar panel backing), but test that it exports and plays in the GLB first and tell us the result. No drivers, constraints or simulations in the final file (bake them to keyframes if you use them while working).</li>
+      <li><b>Textures: 4K</b> (4096 &times; 4096), so the Cycles renders hold up close.</li>
     </ul>
   </div>
 </section>
@@ -110,7 +113,7 @@
     <h3>Key materials</h3>
     <p class="lead">From the Nova 1 hardware photos. <b>Priority 1</b> = build these cubes first: they are the hardest to get right and appear on every platform.</p>
     <table class="t"><thead><tr><th>Material</th><th>Priority</th><th>What it looks like</th><th>Where it is used</th><th>Reference photo (in the Apex workspace)</th></tr></thead><tbody>
-      <tr><td><code>MAT_SOLAR_CELL</code><br>Solar cell (cover glass)</td><td>1</td><td>Very dark blue-black cells, fine silver grid lines, thin white gaps between cells, glossy cover glass</td><td>Solar array faces</td><td>Two cell close-ups from Apex (on their annotation 13). <b>Received</b></td></tr>
+      <tr><td><code>MAT_SOLAR_CELL</code><br>Solar cell (cover glass)</td><td>1</td><td>Very dark blue-black cells, fine silver grid lines, thin white gaps between cells, glossy cover glass</td><td>Solar array faces</td><td>Two cell close-ups from Apex (on their annotation 13). <b>Received</b>. Photos read black, the platform reads blue: upload a blue and a black test panel for Apex to choose. The GLB gets a baked base color; the Blender file may add an angle-based blue sheen.</td></tr>
       <tr><td><code>MAT_AL_CHROMATE</code><br>Alodined aluminum (Apex name)</td><td>1</td><td>Pale champagne-yellow chromate (alodine) on aluminum, slightly uneven tone, satin</td><td>Decks, panels, brackets</td><td>Isogrid panel close-up; launch-side deck. <b>Confirmed by Apex</b></td></tr>
       <tr><td><code>MAT_GOLD_RAIL</code><br>Gold rail (perforated)</td><td>1</td><td>Richer, deeper gold, satin, perforated</td><td>Perforated rails, hinge fittings<span class="tbd">CONFIRM finish with Apex</span></td><td>Stowed 3/4 view, 3/4 detail, side view (rails)</td></tr>
       <tr><td><code>MAT_AL_MILLED</code><br>Machined aluminum (swirl-milled)</td><td>1</td><td>Bare aluminum with circular face-milling swirl marks</td><td>Avionics boxes 2 and 3 (box 1 is black Kapton, per Apex)</td><td>Stowed side view (large swirl-milled box)</td></tr>
@@ -118,6 +121,7 @@
       <tr><td><code>MAT_MLI_SILVER</code><br>Silver MLI blanket</td><td>1</td><td>Crinkled, mirror-like silver foil</td><td>Thermal blanket on boxes</td><td>Stowed side view (box on the right, distant). Close-up requested</td></tr>
       <tr><td><code>MAT_SCT</code><br>Silver-coated Teflon (SCT) <b>NEW</b></td><td>1</td><td>Thin reflective silver-white film with fine dimpling</td><td>-X wall covers, avionics box 3 cover (per Apex)</td><td>Apex screenshot on their annotation 1. A close-up would help</td></tr>
       <tr><td><code>MAT_KAPTON_BLACK</code><br>Black Kapton (black MLI) <b>NEW</b></td><td>1</td><td>Matte, low-reflectivity black film. Apex: "Black Stamet Kapton"</td><td>Separation ring module, avionics box 1 (per Apex)</td><td>Apex CAD image on their annotation 11. A real photo is requested</td></tr>
+      <tr><td><code>MAT_ARRAY_MESH</code><br>Solar panel backing mesh <b>NEW</b></td><td>2</td><td>Fine woven plastic mesh pulled taut between the panel frames; keep it flat (no sag). Normal map for the weave</td><td>Back of the solar array panels</td><td>Panel back photos in the Apex workspace<span class="tbd">CONFIRM material with Apex</span></td></tr>
       <tr><td><code>MAT_AL_BARE</code><br>Bare aluminum</td><td>2</td><td>Plain bare aluminum, light brushed</td><td>Array panel frames, plain parts</td><td>Isogrid panel close-up (bare edge)</td></tr>
       <tr><td><code>MAT_MLI_GOLD</code><br>Gold MLI blanket</td><td>2</td><td>Crinkled gold foil</td><td>Thermal blanket (small areas)</td><td>Stowed 3/4 detail (small gold foil area)</td></tr>
       <tr><td><code>MAT_BLACK_ANODIZE</code><br>Black anodize</td><td>2</td><td>Matte black</td><td>Rail brackets, clamps, the latch at each wing tip (per Apex)</td><td>Stowed 3/4 view and detail; Nova Reference 1 for the wing-tip latch</td></tr>
@@ -128,10 +132,16 @@
       <tr><td><code>MAT_STAINLESS</code><br>Stainless steel (polished)</td><td>3</td><td>Polished steel</td><td>Fasteners, fittings; maybe the box 3 frame (Apex reviewer note, CONFIRM)</td><td>Fasteners in all photos (standard finish)</td></tr>
     </tbody></table>
     <p class="lead">Starting list<span class="tbd">CONFIRM with Apex</span>. Match the reference photos in the Apex workspace.</p>
+    <ul class="rules">
+      <li><b>Apex website images are accurate</b> for any finish visible in them (<a href="https://www.apexspace.com/platforms/nova" target="_blank" rel="noopener">Nova page</a>). Use them alongside the photos.</li>
+      <li><b>No limit on the number of materials.</b> Make as many as it takes to look right, and reuse them wherever the finish is the same (base metals especially).</li>
+      <li><b>Missing or weak reference?</b> Reply on the Apex annotation with "Additional reference required" and tag Derek. Known gaps: a better silver-coated Teflon photo and a real black MLI / black Kapton photo.</li>
+    </ul>
     <h3>Material cube (for approval)</h3>
     <ul class="rules">
       <li>One beveled cube per material, 20 cm, with the texture at real-world scale.</li>
       <li>Upload each cube to the Apex workspace as an asset named <code>MAT_&lt;NAME&gt;_v1</code>, with its .blend attached and the reference photo it matches. Apex reviews it in the VNTANA viewer (Neutral environment).</li>
+      <li><b>Not sure between two looks?</b> Put each option on the real part instead (for example one solar panel in blue and one in black) and upload them side by side. Apex picks one. This is faster than going back and forth on cubes.</li>
       <li>After approval, the material is locked. Use it as is. If a part needs a finish that is not in the library, make a new cube and get it approved first.</li>
     </ul>
   </div>
@@ -161,12 +171,14 @@
     <ul class="rules">
       <li>Real-world size in meters, from the CAD VNTANA sends you. This CAD is the <b>outside only</b>: VNTANA removes every part hidden from outside before you receive it, separately for each pose. Model only what is in the CAD; do not add internal parts. When a platform has several poses, build parts from the most open pose (see the platform page).</li>
       <li><b>Repeatable parts:</b> catalog screws, washers, nuts and connectors appear many times. Model each part number once and place linked copies (instances) everywhere it appears.</li>
+      <li><b>Combine to keep draw calls down.</b> On the central body nothing moves (no exploded view is planned), so merge small parts by type: brackets with brackets, cables with cables, and so on. On the solar array wings, keep every part that moves in the animation separate. Instance the panels too if the animation still works.</li>
+      <li><b>Keep the CAD as it is</b> where it looks rough: holes in the CAD stay open (no plates behind them; Apex's own images show them), and wires that run into other parts stay that way. Where two identical meshes sit exactly on top of each other, keep one.</li>
       <li>Clean geometry where visible.</li>
-      <li>Triangle budget<span class="tbd">TBD</span></li>
+      <li><b>Triangle budget:</b> no hard limit for now. VNTANA removes hidden geometry when the GLB is uploaded. Keep it as light as accuracy allows: AR is the one place a model this large struggles.</li>
     </ul>
     <h3>Naming</h3>
     <ul class="rules">
-      <li>Every part is a separate, named mesh with the platform prefix: <code>NOVA_</code>, <code>ARIES_</code>, <code>COMET_</code>. For example <code>NOVA_BUS</code>, <code>NOVA_SADA_L</code>, <code>NOVA_ARRAY_L1</code>.</li>
+      <li>Every part or merged group is a named mesh with the platform prefix: <code>NOVA_</code>, <code>ARIES_</code>, <code>COMET_</code>. For example <code>NOVA_BUS</code>, <code>NOVA_SADA_L</code>, <code>NOVA_ARRAY_L1</code>.</li>
       <li>Each configurator option is a parent empty named <code>OPT_&lt;GROUP&gt;_&lt;CHOICE&gt;</code>, for example <code>OPT_COMMS_MDL</code>.</li>
       <li>Moving parts (hinges, SADAs, yokes) have their pivot on the real rotation axis.</li>
       <li>English names, no spaces, no default names like "Cube.001".</li>
@@ -178,7 +190,8 @@
     </ul>
     <h3>UVs and textures</h3>
     <ul class="rules">
-      <li><b>UVs only where a texture is needed:</b> solar cells, swirl-milled boxes, MLI blankets, Kapton tape. Flat finishes (chromate, gold rail, anodize, stainless, paint) are plain material values and need no UVs (no UVs or a quick auto-unwrap are both fine).</li>
+      <li><b>UVs only where a texture is needed.</b> First list (VNTANA will add to it): solar cells (<code>MAT_SOLAR_CELL</code>), solar panel backing mesh (<code>MAT_ARRAY_MESH</code>), swirl-milled boxes 2 and 3 (<code>MAT_AL_MILLED</code>), silver and gold MLI blankets, silver-coated Teflon covers (<code>MAT_SCT</code>), Kapton tape, black Kapton. Flat finishes (chromate, gold rail, anodize, stainless, paint, harness) are plain material values and need no UVs (no UVs or a quick auto-unwrap are both fine).</li>
+      <li>Any UV tool is fine (Maya, RizomUV, Zen UV). Automatic layouts are OK as long as the texture reads correctly.</li>
       <li><b>Expect UVs on about a third of the model,</b> and textures on 4 or 5 materials. Everything else is a plain material.</li>
       <li><b>Use the CAD as is.</b> Remodel a part only if you have to: it does not look right, you cannot get clean UVs on it, or it does not move cleanly in the animation (the solar panel backing plates are the likely case). Tell us before you remodel, and keep the CAD sizes and positions exactly.</li>
       <li>Single 0 to 1 UV space per material; texture density at real-world scale.</li>
