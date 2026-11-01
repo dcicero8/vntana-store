@@ -798,7 +798,7 @@ function setMode(m){
   const productEmbed=(tab==="product"&&m==="3d");   // Product tab = straight platform embed (native hotspots)
   $("ovEmbed").classList.toggle("show",productEmbed);
   $("ovRenders").classList.toggle("show",m==="renders"); $("ovRevit").classList.toggle("show",m==="revit");
-  const foot=document.querySelector(".foot"); if(foot) foot.style.display=productEmbed?"none":"";   // embed has its own controls
+  const foot=document.querySelector(".foot"); if(foot) foot.style.display=(tab==="product")?"none":"";   // Product uses the embed (own controls) or static renders; foot only applies to the Parts/Service viewer
   if(productEmbed&&!$("embedFrame").src) $("embedFrame").src=`https://embed.vntana.com/v2?productUuid=${UUID}&clientSlug=${WS}&organizationSlug=${ORG}`;
   if(m==="renders"&&!$("renderImg").src) showRender(0);
   if(m==="revit"&&!$("revitFrame").src) $("revitFrame").src=`https://embed.vntana.com/v2?productUuid=${REVIT_UUID}&clientSlug=${WS}&organizationSlug=${ORG}`;
