@@ -16,6 +16,11 @@
   #brand{position:fixed;top:clamp(16px,3vh,34px);left:clamp(18px,3vw,44px);z-index:10;display:flex;align-items:baseline;gap:.6rem}
   #brand .nm{font-weight:800;letter-spacing:.14em;font-size:clamp(16px,2vw,24px);color:var(--navy)}
   #brand .pw{font-size:clamp(9px,.9vw,12px);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6b7785}
+  /* VNTANA value badge (upper right) — frames the screen as CAD reuse, not plumbing */
+  #vbadge{position:fixed;top:clamp(14px,2.6vh,30px);right:clamp(18px,3vw,44px);z-index:12;text-align:right;max-width:min(40ch,42vw)}
+  #vbadge .cat{font-size:clamp(10px,.9vw,12px);font-weight:800;letter-spacing:.18em;color:var(--teal)}
+  #vbadge .tag{font-size:clamp(15px,1.7vw,22px);font-weight:800;color:var(--navy);line-height:1.12;margin:.22rem 0 .16rem}
+  #vbadge .sub{font-size:clamp(10px,.95vw,13px);font-weight:600;letter-spacing:.03em;color:#6b7785}
   /* caption */
   #cap{position:fixed;left:clamp(18px,3vw,44px);bottom:clamp(26px,5vh,60px);z-index:10;max-width:min(46ch,52vw)}
   #cap .ey{font-size:clamp(10px,1vw,13px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
@@ -56,7 +61,8 @@
 <div id="stage">
   <vntana-viewer id="viewer" loading="eager" environment-src="assets/env/studio.hdr" shadow-intensity="0.45" exposure="0.85" min-camera-distance="0.05m" dim-opacity="0.2" disable-controls></vntana-viewer>
 </div>
-<div id="brand"><span class="nm">NORTHLINE</span><span class="pw">Powered by VNTANA</span></div>
+<div id="brand"><span class="nm">NORTHLINE</span><span class="pw">Fictional demo brand</span></div>
+<div id="vbadge"><div class="cat">VNTANA</div><div class="tag">Sell more with CAD you already own</div><div class="sub">One 3D asset &rarr; marketing &middot; parts &middot; service &middot; AR</div></div>
 <div id="cap"><div class="ey" id="capEy">Live 3D</div><h1 class="ti" id="capTi">Northline NRP-200</h1><p class="su" id="capSu">Reduced Pressure Zone Assembly</p></div>
 <div id="dots"></div>
 <div id="card"><div class="k">Replacement part</div><div class="nm" id="cardNm"></div><div class="no" id="cardNo"></div><div class="pr" id="cardPr"></div><div class="cta">Add to cart</div></div>
