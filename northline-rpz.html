@@ -491,8 +491,8 @@ function renderSteps(){
   $("count").textContent=cur<0?"Press Next to begin":`Step ${cur+1} of ${STEPS.length}`;
   $("prog").style.width=cur<0?"0":`${((cur+1)/STEPS.length)*100}%`;
   $("prev").disabled=cur<=0;
-  $("next").disabled=cur>=STEPS.length-1;
-  $("next").textContent=cur<0?"Start":"Next";
+  $("next").disabled=false;                                                   // last step: "Done" restarts the walkthrough
+  $("next").textContent=cur<0?"Start":(cur>=STEPS.length-1?"Done":"Next");
   const on=$("steps").querySelector("li.on"); if(on) try{on.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}
 }
 renderSteps();
@@ -777,7 +777,7 @@ function goStep(i,fromTab){
   $("hint").textContent="Highlighted parts are what this step acts on. Drag to orbit.";
   renderSteps();
 }
-$("next").onclick=()=>goStep(cur+1);
+$("next").onclick=()=>goStep(cur>=STEPS.length-1?-1:cur+1);   // "Done" on the last step loops back to the start
 $("prev").onclick=()=>goStep(cur-1);
 $("steps").addEventListener("click",e=>{
   const a=e.target.closest(".ack"); if(a){ acked.add(+a.dataset.ack); renderSteps(); return; }
