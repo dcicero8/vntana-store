@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Northline NRP-200 · Auto Demo</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer@3.0.0/dist/bundle.js"></script>
+<style>
+  :root{ --navy:#0b2340; --teal:#1f6f78; --ink:#12202e; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:radial-gradient(120% 120% at 50% 0%,#fafbfc 0%,#eef1f4 60%,#e4e8ec 100%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);overflow:hidden}
+  #stage{position:fixed;inset:0}
+  vntana-viewer{position:absolute;inset:0;width:100%;height:100%;display:block}
+  vntana-viewer::part(default-progress-bar){display:none}
+  /* brand */
+  #brand{position:fixed;top:clamp(16px,3vh,34px);left:clamp(18px,3vw,44px);z-index:10;display:flex;align-items:baseline;gap:.6rem}
+  #brand .nm{font-weight:800;letter-spacing:.14em;font-size:clamp(16px,2vw,24px);color:var(--navy)}
+  #brand .pw{font-size:clamp(9px,.9vw,12px);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6b7785}
+  /* caption */
+  #cap{position:fixed;left:clamp(18px,3vw,44px);bottom:clamp(26px,5vh,60px);z-index:10;max-width:min(46ch,52vw)}
+  #cap .ey{font-size:clamp(10px,1vw,13px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
+  #cap .ti{font-size:clamp(26px,4.4vw,56px);font-weight:800;line-height:1.05;color:var(--navy);margin:0 0 .5rem}
+  #cap .su{font-size:clamp(14px,1.7vw,22px);line-height:1.4;color:#44525f;margin:0}
+  #cap.swap{opacity:0;transform:translateY(14px)}
+  #cap{opacity:1;transform:translateY(0);transition:opacity .45s ease,transform .45s ease}
+  /* progress dots */
+  #dots{position:fixed;right:clamp(18px,3vw,44px);bottom:clamp(26px,5vh,60px);z-index:10;display:flex;gap:.5rem}
+  #dots i{width:9px;height:9px;border-radius:50%;background:#c4ccd4;transition:background .3s,transform .3s}
+  #dots i.on{background:var(--teal);transform:scale(1.25)}
+  /* loading */
+  #ld{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#eef1f4;transition:opacity .5s}
+  #ld.hidden{opacity:0;pointer-events:none}
+  .spin{width:34px;height:34px;border:3px solid #cdd4db;border-top-color:var(--teal);border-radius:50%;animation:sp 1s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <vntana-viewer id="viewer" loading="eager" environment-src="assets/env/studio.hdr" shadow-intensity="0.45" exposure="0.85" min-camera-distance="0.05m" dim-opacity="0.2" disable-controls></vntana-viewer>
+</div>
+<div id="brand"><span class="nm">NORTHLINE</span><span class="pw">Powered by VNTANA</span></div>
+<div id="cap"><div class="ey" id="capEy">Live 3D</div><h1 class="ti" id="capTi">Northline NRP-200</h1><p class="su" id="capSu">Reduced Pressure Zone Assembly</p></div>
+<div id="dots"></div>
+<div id="ld"><div class="spin"></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const BASE="https://api.vntana.com", ORG="DCicero", WS="tradeshows", UUID="28fe585b-b03f-40ac-8d56-7e745e33733b";
+const viewer=$("viewer");
+
+/* ---- part groups (node names in the GLB) ---- */
+const G={
+  body:["Body_main","Body_Cavity1","Body_Cavity2"], cover:["Cover1","Cover2"], bolts:["CoverBolts1","CoverBolts2"], oring:["CoverORing1","CoverORing2"],
+  c1:["Check1_Seat","Check1_SeatORing","Check1_Disc","Check1_Spring","Check1_Cage"],
+  c2:["Check2_Seat","Check2_SeatORing","Check2_Disc","Check2_Spring","Check2_Cage"],
+  relief:["Relief_Cover","Relief_CoverBolts","Relief_Diaphragm","Relief_Spring","Relief_Disc"],
+  airgap:["AirGap_Funnel","AirGap_Brackets"],
+  testcocks:["TestCock_1","TestCock_1_Handle","TestCock_1_Port","TestCock_2","TestCock_2_Handle","TestCock_2_Port","TestCock_3","TestCock_3_Handle","TestCock_3_Port","TestCock_4","TestCock_4_Handle","TestCock_4_Port"],
+  valveIn:["ShutoffValve_Inlet"], valveOut:["ShutoffValve_Outlet"],
+  leverIn:["Lever_Inlet","LeverGrip_Inlet"], leverOut:["Lever_Outlet","LeverGrip_Outlet"],
+};
+const NAMES=new Set(Object.values(G).flat());
+
+/* ---- scene-graph index (public sceneGraph) ---- */
+let ready=false, leaves=[], byName={};
+function walk(){ const sg=viewer.sceneGraph, found=[];
+  if(sg)(function w(n,path){ const p=n.name?[...path,n.name]:path;
+    if(n.type==="primitive"||n.type==="mesh") found.push({uuid:n.uuid,segs:p});
+    (n.children||[]).forEach(c=>w(c,p)); })(sg,[]);
+  return found; }
+function buildIndex(tries){ const f=walk();
+  if(!f.length){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
+  leaves=f; byName={};
+  f.forEach(l=>{ const nm=[...l.segs].reverse().find(s=>NAMES.has(s)); if(!nm) return; (byName[nm]=byName[nm]||[]).push(l.uuid); });
+  ready=true; cacheObjects(); start(); }
+const uuidsFor=names=>names.flatMap(n=>byName[n]||[]);
+
+/* ---- effects (documented public API) ---- */
+function clearFx(){ try{["glow","outline","highlight","dim"].forEach(e=>viewer.clearEffect(e));}catch(_){} }
+function highlight(names){ clearFx(); if(!ready||!names||!names.length) return;
+  const hit=new Set(uuidsFor(names));
+  try{ hit.forEach(u=>viewer.setEffect(u,"highlight","outline"));
+       leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); }); }catch(_){} }
+function renderNow(){ try{viewer.renderScene&&viewer.renderScene();}catch(_){}; try{viewer.render&&viewer.render();}catch(_){} }
+
+/* ---- exploded pose (glTF node frame; +Y up, +Z toward the front) ---- */
+const OBJ={}, HOME={};
+function cacheObjects(){ if(!viewer.scene||!viewer.scene.getObjectByProperty) return;
+  Object.entries(byName).forEach(([nm,uu])=>{
+    const objs=uu.map(u=>viewer.scene.getObjectByProperty("uuid",u)).filter(Boolean);
+    const under=(o,p)=>{ for(let q=o.parent;q;q=q.parent) if(q===p) return true; return false; };
+    OBJ[nm]=objs.filter(o=>!objs.some(p=>p!==o&&under(o,p)));
+    OBJ[nm].forEach(o=>{ if(!HOME[o.uuid]) HOME[o.uuid]={p:o.position.clone(),r:o.rotation.clone()}; });
+  }); }
+const P0={}; const setOff=(names,v)=>names.forEach(n=>P0[n]=v);
+setOff(["Cover1","CoverBolts1"],[0,0.075,0]); setOff(["Cover2","CoverBolts2"],[0,0.075,0]);
+setOff(["CoverORing1","CoverORing2"],[0,0.06,0]);
+const RELIEF_OUT={Relief_Cover:0.075,Relief_CoverBolts:0.075,Relief_Diaphragm:0.055,Relief_Disc:0.04,Relief_Spring:0.026};
+const SPREAD={Seat:-0.016,SeatORing:-0.010,Disc:-0.003,Spring:0.004,Cage:0.011};
+function poseVec(nm,t){ const c=x=>Math.max(0,Math.min(1,x));
+  if(P0[nm]){ const k=c(t/0.33); return P0[nm].map(v=>v*k); }
+  if(RELIEF_OUT[nm]!=null){ const k=c((t-0.33)/0.33); return [0,0,RELIEF_OUT[nm]*k]; }
+  const m=nm.match(/^Check(\d)_(\w+)$/); if(m){ const lift=c((t-0.33)/0.33), fan=c((t-0.66)/0.34); return [SPREAD[m[2]]*2.2*fan,0.07*lift,0]; }
+  return null; }
+let poseT=0;
+function applyPose(){ if(!ready) return;
+  Object.entries(OBJ).forEach(([nm,objs])=>{ objs.forEach(o=>{ const h=HOME[o.uuid]; if(!h) return;
+    const v=poseVec(nm,poseT); o.position.copy(h.p); o.rotation.copy(h.r);
+    if(v){ o.position.x+=v[0]; o.position.y+=v[1]; o.position.z+=v[2]; } }); });
+  renderNow(); }
+let anim=null;
+function tween(toPose,ms,done){ if(anim) cancelAnimationFrame(anim);
+  const p0=poseT,t0=performance.now();
+  (function tick(){ const t=Math.min(1,(performance.now()-t0)/ms), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    poseT=p0+(toPose-p0)*e; applyPose();
+    if(t<1) anim=requestAnimationFrame(tick); else { anim=null; done&&done(); } })(); }
+
+/* ---- camera presets (r-units are bounds-relative) ---- */
+const CAMS={
+  hero:{rotation:"-0.3rad 0.4rad 0rad",distance:"1.8r",target:"0r 0.05r 0r"},
+  top:{rotation:"-0.25rad 0.85rad 0rad",distance:"1.7r",target:"0r 0.15r 0r"},
+  open:{rotation:"-0.3rad 0.6rad 0rad",distance:"2.6r",target:"0r 0.25r 0r"},
+  inlet:{rotation:"-0.5rad 0.35rad 0rad",distance:"1.6r",target:"-0.45r 0.15r 0r"},
+  checks:{rotation:"-0.15rad 0.55rad 0rad",distance:"2.2r",target:"0r 0.3r 0r"},
+  relief:{rotation:"-0.75rad 0.2rad 0rad",distance:"1.45r",target:"0r -0.2r 0.12r"},
+  below:{rotation:"-0.4rad -0.05rad 0rad",distance:"1.7r",target:"0r -0.35r 0r"},
+};
+function cam(k){ const c=CAMS[k]||CAMS.hero;
+  try{ viewer.setCameraRotation&&viewer.setCameraRotation(c.rotation); viewer.setCameraDistance&&viewer.setCameraDistance(c.distance); viewer.setCameraTarget&&viewer.setCameraTarget(c.target); }catch(_){}
+}
+
+/* ---- caption ---- */
+function caption(ey,ti,su){ const c=$("cap"); c.classList.add("swap");
+  setTimeout(()=>{ $("capEy").textContent=ey; $("capTi").textContent=ti; $("capSu").textContent=su; c.classList.remove("swap"); },300); }
+
+/* ---- the automatic walkthrough ---- */
+const SCENES=[
+  {cam:"hero",  rotate:true,  explode:0, dwell:7000, ey:"Live 3D · Interactive product",      ti:"NRP-200 Reduced Pressure Zone",  su:"Lead-free bronze RPZ backflow preventer"},
+  {cam:"relief",            explode:0, parts:G.relief, dwell:5500, ey:"How it protects",     ti:"Differential relief valve",       su:"Drains the zone between the checks if either check leaks"},
+  {cam:"checks",            explode:0, parts:[...G.c1,...G.c2], dwell:5500, ey:"Two lines of defense", ti:"Two independent check valves", su:"Spring-loaded checks in series, each closes against backflow"},
+  {cam:"inlet",             explode:0, parts:[...G.valveIn,...G.valveOut,...G.leverIn,...G.leverOut], dwell:5500, ey:"Isolation", ti:"Quarter-turn ball valve shutoffs", su:"Full-port handles to isolate for testing and service"},
+  {cam:"below",             explode:0, parts:G.airgap, dwell:5000, ey:"Code compliant",      ti:"Bolt-on air-gap drain",           su:"Visible air gap sized for full relief discharge"},
+  {cam:"top",               explode:0, parts:G.testcocks, dwell:5000, ey:"Field testable",   ti:"Four quarter-turn test cocks",    su:"For the annual certified field test"},
+  {cam:"open",              explode:1, dwell:8000, ey:"Serviceable",                         ti:"Every wear part replaceable",     su:"Top-entry covers and modular check cartridges"},
+  {cam:"open",              explode:0, rotate:true, dwell:4500, ey:"One optimized 3D asset", ti:"See it. Spin it. Service it.",    su:"Interactive 3D and AR, powered by VNTANA"},
+];
+$("dots").innerHTML=SCENES.map(()=>"<i></i>").join("");
+let si=-1, running=false;
+function playNext(){ si=(si+1)%SCENES.length; const sc=SCENES[si];
+  [...$("dots").children].forEach((d,i)=>d.classList.toggle("on",i===si));
+  caption(sc.ey,sc.ti,sc.su);
+  cam(sc.cam);
+  tween(sc.explode||0,1500);
+  if(sc.parts) highlight(sc.parts); else clearFx();
+  try{ viewer.enableAutoRotate=!!sc.rotate; viewer.autoRotateDelay=0; viewer.autoRotateSpeed="10deg"; }catch(_){}
+  setTimeout(playNext,sc.dwell||5000);
+}
+function start(){ if(running) return; running=true; $("ld").classList.add("hidden"); playNext(); }
+
+/* ---- load the model, then index + start ---- */
+const getGlb=u=>fetch(`${BASE}/products/${u}/organizations/${ORG}/clients/${WS}`).then(r=>r.ok?r.json():null).catch(()=>null)
+  .then(p=>{ const m=((p&&p.response&&p.response.asset)||{}).models||[]; const g=m.find(x=>(x.conversionFormat??x.type)==="GLB"); return g?{uuid:u,blob:g.modelBlobId}:null; });
+getGlb(UUID).then(g=>{ if(!g){ $("ld").innerHTML="<p style='color:#44525f;font:600 15px/1.4 sans-serif'>Model is still processing</p>"; return; }
+  let started=false;
+  const go=()=>{ if(started||!viewer.sceneGraph) return; started=true; buildIndex(150); };
+  viewer.addEventListener("load",go,{once:true});
+  viewer.src=`${BASE}/assets/products/${g.uuid}/organizations/${ORG}/clients/${WS}/${g.blob}`;
+  let polls=0; const t=setInterval(()=>{ if(started||polls++>80) clearInterval(t); else if(viewer.sceneGraph){ go(); clearInterval(t); } },500);
+}).catch(()=>{ $("ld").innerHTML="<p style='color:#44525f;font:600 15px/1.4 sans-serif'>Could not load the model</p>"; });
+</script>
+</body>
+</html>
