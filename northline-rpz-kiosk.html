@@ -27,6 +27,14 @@
   #dots{position:fixed;right:clamp(18px,3vw,44px);bottom:clamp(26px,5vh,60px);z-index:10;display:flex;gap:.5rem}
   #dots i{width:9px;height:9px;border-radius:50%;background:#c4ccd4;transition:background .3s,transform .3s}
   #dots i.on{background:var(--teal);transform:scale(1.25)}
+  /* PDP-style buy card (spare-parts use case) */
+  #card{position:fixed;right:clamp(18px,3vw,44px);top:50%;z-index:11;width:min(320px,30vw);background:#fff;border:1px solid #e3e7eb;border-radius:14px;box-shadow:0 18px 50px rgba(11,35,64,.16);padding:clamp(16px,1.6vw,22px);opacity:0;pointer-events:none;transform:translateY(-50%) translateX(24px);transition:opacity .45s ease,transform .45s ease}
+  #card.show{opacity:1;transform:translateY(-50%) translateX(0)}
+  #card .k{font-size:clamp(10px,.9vw,12px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+  #card .nm{font-size:clamp(16px,1.5vw,21px);font-weight:800;color:var(--navy);margin:.4rem 0 .15rem;line-height:1.15}
+  #card .no{font-size:clamp(12px,1.1vw,14px);color:#6b7785}
+  #card .pr{font-size:clamp(20px,2vw,27px);font-weight:800;color:var(--navy);margin:.55rem 0 .75rem}
+  #card .cta{display:block;text-align:center;background:var(--teal);color:#fff;font-weight:700;font-size:clamp(13px,1.2vw,15px);border-radius:9px;padding:.65rem}
   /* loading */
   #ld{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#eef1f4;transition:opacity .5s}
   #ld.hidden{opacity:0;pointer-events:none}
@@ -41,6 +49,7 @@
 <div id="brand"><span class="nm">NORTHLINE</span><span class="pw">Powered by VNTANA</span></div>
 <div id="cap"><div class="ey" id="capEy">Live 3D</div><h1 class="ti" id="capTi">Northline NRP-200</h1><p class="su" id="capSu">Reduced Pressure Zone Assembly</p></div>
 <div id="dots"></div>
+<div id="card"><div class="k">Replacement part</div><div class="nm" id="cardNm"></div><div class="no" id="cardNo"></div><div class="pr" id="cardPr"></div><div class="cta">Add to cart</div></div>
 <div id="ld"><div class="spin"></div></div>
 
 <script>
@@ -135,14 +144,17 @@ function caption(ey,ti,su){ const c=$("cap"); c.classList.add("swap");
 
 /* ---- the automatic walkthrough ---- */
 const SCENES=[
-  {cam:"hero",  rotate:true,  explode:0, dwell:7000, ey:"Live 3D · Interactive product",      ti:"NRP-200 Reduced Pressure Zone",  su:"Lead-free bronze RPZ backflow preventer"},
-  {cam:"relief",            explode:0, parts:G.relief, dwell:5500, ey:"How it protects",     ti:"Differential relief valve",       su:"Drains the zone between the checks if either check leaks"},
-  {cam:"checks",            explode:0, parts:[...G.c1,...G.c2], dwell:5500, ey:"Two lines of defense", ti:"Two independent check valves", su:"Spring-loaded checks in series, each closes against backflow"},
-  {cam:"inlet",             explode:0, parts:[...G.valveIn,...G.valveOut,...G.leverIn,...G.leverOut], dwell:5500, ey:"Isolation", ti:"Quarter-turn ball valve shutoffs", su:"Full-port handles to isolate for testing and service"},
-  {cam:"below",             explode:0, parts:G.airgap, dwell:5000, ey:"Code compliant",      ti:"Bolt-on air-gap drain",           su:"Visible air gap sized for full relief discharge"},
-  {cam:"top",               explode:0, parts:G.testcocks, dwell:5000, ey:"Field testable",   ti:"Four quarter-turn test cocks",    su:"For the annual certified field test"},
-  {cam:"open",              explode:1, dwell:8000, ey:"Serviceable",                         ti:"Every wear part replaceable",     su:"Top-entry covers and modular check cartridges"},
-  {cam:"open",              explode:0, rotate:true, dwell:4500, ey:"One optimized 3D asset", ti:"See it. Spin it. Service it.",    su:"Interactive 3D and AR, powered by VNTANA"},
+  /* Chapter 1 — product marketing */
+  {cam:"hero", rotate:true, explode:0, dwell:6000, ey:"One optimized 3D asset",            ti:"NRP-200 Reduced Pressure Zone",     su:"Lead-free bronze RPZ backflow preventer"},
+  {cam:"open",              explode:1, dwell:6500, ey:"Use case · Product marketing",      ti:"Show the whole product in 3D & AR", su:"Spin it, zoom it, drop it into the room"},
+  /* Chapter 2 — spare-parts commerce */
+  {cam:"relief", explode:0, parts:G.relief,      dwell:6500, ey:"Use case · Spare parts",  ti:"Find the exact part",               su:"Identify it in 3D, then order the kit that includes it", card:{name:"Relief valve kit", no:"NRP-RK1-RV", price:"$38.00"}},
+  {cam:"checks", explode:0, parts:[...G.c1],     dwell:6000, ey:"Use case · Spare parts",  ti:"Every wear part, mapped",           su:"Seats, discs, O-rings and springs, each tied to its kit", card:{name:"Check repair kit", no:"NRP-RK1-CK", price:"$24.50"}},
+  /* Chapter 3 — install & service */
+  {cam:"inlet", explode:0, parts:[...G.valveIn,...G.valveOut,...G.leverIn,...G.leverOut], dwell:5500, ey:"Use case · Install & service · Step 1", ti:"Close both shutoffs",       su:"Quarter-turn the outlet, then the inlet"},
+  {cam:"top",   explode:0, parts:G.testcocks,   dwell:5500, ey:"Use case · Install & service · Step 2", ti:"Open test cocks 4, 3, 2",   su:"Bleed the pressure trapped between the shutoffs"},
+  /* close */
+  {cam:"open", rotate:true, explode:0, dwell:5500, ey:"One CAD file",                      ti:"Product · Parts · Service · AR",    su:"Every use case, from a single VNTANA 3D asset"},
 ];
 $("dots").innerHTML=SCENES.map(()=>"<i></i>").join("");
 let si=-1, running=false;
@@ -152,6 +164,9 @@ function playNext(){ si=(si+1)%SCENES.length; const sc=SCENES[si];
   cam(sc.cam);
   tween(sc.explode||0,1500);
   if(sc.parts) highlight(sc.parts); else clearFx();
+  const card=$("card");
+  if(sc.card){ $("cardNm").textContent=sc.card.name; $("cardNo").textContent="Part no. "+sc.card.no; $("cardPr").textContent=sc.card.price; setTimeout(()=>card.classList.add("show"),320); }
+  else card.classList.remove("show");
   try{ viewer.enableAutoRotate=!!sc.rotate; viewer.autoRotateDelay=0; viewer.autoRotateSpeed="10deg"; }catch(_){}
   setTimeout(playNext,sc.dwell||5000);
 }
