@@ -35,6 +35,16 @@
   #card .no{font-size:clamp(12px,1.1vw,14px);color:#6b7785}
   #card .pr{font-size:clamp(20px,2vw,27px);font-weight:800;color:var(--navy);margin:.55rem 0 .75rem}
   #card .cta{display:block;text-align:center;background:var(--teal);color:#fff;font-weight:700;font-size:clamp(13px,1.2vw,15px);border-radius:9px;padding:.65rem}
+  /* step card (install & service use case) */
+  #stepcard{position:fixed;right:clamp(18px,3vw,44px);top:50%;z-index:11;width:min(350px,33vw);background:#fff;border:1px solid #e3e7eb;border-radius:14px;box-shadow:0 18px 50px rgba(11,35,64,.16);padding:clamp(16px,1.6vw,22px);opacity:0;pointer-events:none;transform:translateY(-50%) translateX(24px);transition:opacity .45s ease,transform .45s ease}
+  #stepcard.show{opacity:1;transform:translateY(-50%) translateX(0)}
+  #stepcard .k{font-size:clamp(10px,.9vw,12px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+  #stepcard .ti{font-size:clamp(16px,1.5vw,21px);font-weight:800;color:var(--navy);margin:.35rem 0 .55rem;line-height:1.15}
+  #stepcard ul{list-style:none;margin:0;padding:0}
+  #stepcard li{display:flex;gap:.65rem;align-items:flex-start;padding:.6rem 0;border-top:1px solid #eef1f4}
+  #stepcard li:first-child{border-top:0}
+  #stepcard li .b{flex:none;min-width:34px;text-align:center;background:var(--teal);color:#fff;font-weight:800;font-size:clamp(11px,1vw,13px);border-radius:7px;padding:.24rem .3rem}
+  #stepcard li .x{font-size:clamp(13px,1.2vw,15px);color:#33414e;line-height:1.35}
   /* loading */
   #ld{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#eef1f4;transition:opacity .5s}
   #ld.hidden{opacity:0;pointer-events:none}
@@ -50,6 +60,7 @@
 <div id="cap"><div class="ey" id="capEy">Live 3D</div><h1 class="ti" id="capTi">Northline NRP-200</h1><p class="su" id="capSu">Reduced Pressure Zone Assembly</p></div>
 <div id="dots"></div>
 <div id="card"><div class="k">Replacement part</div><div class="nm" id="cardNm"></div><div class="no" id="cardNo"></div><div class="pr" id="cardPr"></div><div class="cta">Add to cart</div></div>
+<div id="stepcard"><div class="k" id="stepN">Step</div><div class="ti" id="stepTi"></div><ul id="stepList"></ul></div>
 <div id="ld"><div class="spin"></div></div>
 
 <script>
@@ -151,8 +162,10 @@ const SCENES=[
   {cam:"relief", explode:0, parts:G.relief,      dwell:6500, ey:"Use case · Spare parts",  ti:"Find the exact part",               su:"Identify it in 3D, then order the kit that includes it", card:{name:"Relief valve kit", no:"NRP-RK1-RV", price:"$38.00"}},
   {cam:"checks", explode:0, parts:[...G.c1],     dwell:6000, ey:"Use case · Spare parts",  ti:"Every wear part, mapped",           su:"Seats, discs, O-rings and springs, each tied to its kit", card:{name:"Check repair kit", no:"NRP-RK1-CK", price:"$24.50"}},
   /* Chapter 3 — install & service */
-  {cam:"inlet", explode:0, parts:[...G.valveIn,...G.valveOut,...G.leverIn,...G.leverOut], dwell:5500, ey:"Use case · Install & service · Step 1", ti:"Close both shutoffs",       su:"Quarter-turn the outlet, then the inlet"},
-  {cam:"top",   explode:0, parts:G.testcocks,   dwell:5500, ey:"Use case · Install & service · Step 2", ti:"Open test cocks 4, 3, 2",   su:"Bleed the pressure trapped between the shutoffs"},
+  {cam:"inlet", explode:0, parts:[...G.valveIn,...G.valveOut,...G.leverIn,...G.leverOut], dwell:7000, ey:"Use case · Install & service", ti:"Guided, step-by-step install", su:"On-model work instructions, from the same 3D asset",
+     step:{n:"Step 1 · Isolate the assembly", title:"Close both shutoffs", items:[{k:"1A",t:"Close the outlet shutoff, a quarter turn"},{k:"1B",t:"Close the inlet shutoff, a quarter turn"}]}},
+  {cam:"top",   explode:0, parts:G.testcocks,   dwell:7000, ey:"Use case · Install & service", ti:"Guided, step-by-step install", su:"On-model work instructions, from the same 3D asset",
+     step:{n:"Step 2 · Relieve the pressure", title:"Open the test cocks", items:[{k:"2A",t:"Open test cock No. 4"},{k:"2B",t:"Open test cocks No. 3, then No. 2"}]}},
   /* close */
   {cam:"open", rotate:true, explode:0, dwell:5500, ey:"One CAD file",                      ti:"Product · Parts · Service · AR",    su:"Every use case, from a single VNTANA 3D asset"},
 ];
@@ -167,6 +180,9 @@ function playNext(){ si=(si+1)%SCENES.length; const sc=SCENES[si];
   const card=$("card");
   if(sc.card){ $("cardNm").textContent=sc.card.name; $("cardNo").textContent="Part no. "+sc.card.no; $("cardPr").textContent=sc.card.price; setTimeout(()=>card.classList.add("show"),320); }
   else card.classList.remove("show");
+  const sstep=$("stepcard");
+  if(sc.step){ $("stepN").textContent=sc.step.n; $("stepTi").textContent=sc.step.title; $("stepList").innerHTML=sc.step.items.map(it=>`<li><span class="b">${it.k}</span><span class="x">${it.t}</span></li>`).join(""); setTimeout(()=>sstep.classList.add("show"),320); }
+  else sstep.classList.remove("show");
   try{ viewer.enableAutoRotate=!!sc.rotate; viewer.autoRotateDelay=0; viewer.autoRotateSpeed="10deg"; }catch(_){}
   setTimeout(playNext,sc.dwell||5000);
 }
