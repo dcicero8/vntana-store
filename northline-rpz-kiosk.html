@@ -55,7 +55,7 @@
   #qrcard.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
   #qrcard .k{font-size:clamp(11px,1vw,13px);font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
   #qrcard .ti{font-size:clamp(20px,2.3vw,30px);font-weight:800;color:var(--navy);line-height:1.1;margin:.4rem 0 1rem}
-  #qrcard img{width:min(220px,46vw);height:auto;image-rendering:pixelated;display:block;margin:0 auto;border-radius:10px}
+  #qrcard img{width:min(240px,48vw);height:auto;display:block;margin:0 auto;border-radius:10px}
   #qrcard .su{font-size:clamp(13px,1.3vw,16px);font-weight:600;color:#44525f;margin:1rem 0 0}
   /* loading */
   #ld{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#eef1f4;transition:opacity .5s}
@@ -74,15 +74,14 @@
 <div id="dots"></div>
 <div id="card"><div class="k">Replacement part</div><div class="nm" id="cardNm"></div><div class="no" id="cardNo"></div><div class="pr" id="cardPr"></div><div class="cta">Add to cart</div></div>
 <div id="stepcard"><div class="k" id="stepN">Step</div><div class="ti" id="stepTi"></div><ul id="stepList"></ul></div>
-<div id="qrcard"><div class="k">Try it yourself</div><div class="ti">See it on your phone in 3D &amp; AR</div><img id="qrImg" alt="Scan to open the Northline NRP-200 product page" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYwAAAGMAQMAAADz9wcJAAAABlBMVEULI0D////Sa2L3AAABuklEQVR42u2cW47CMAxFLTaQ/e8yO8gMNH6F/uDkg9GcqEKo9PxEV/a14yLj09UFBAQE5NsQsdWed37X9Wk38wMP+XiB/GfkpbE2FedfTF16+QNoDKSkMVPUjGAW0IbKzB9gk0F2NfZUV45gaAzkuMZiukRjIGf9WPqp3xk2NAZS0FgsIW8v6kqQPY0ta960JkZb2h1sMkgpV5rVN4E1baCpQ0NjILu50pQmXlpa72IWAuRKkFqu7NoQM13pfQ9i3R5mk0GKfsyiluXNVGl6GmWTQSpxzHNiClmaSaPw0BhIKY69mS7Pj5c9w/OD7Ht+y4yL4V/b/mgMpNy7iK7sveq0aIbGQKoas0PJ6PxnjdndnqExkKLnD6OJ7srCYA/9MZDNOCa3x0Y6K+v1JhoDqdaVPmIh65BPbGWgMZAzcSw0YJe5a/wYSD2OjTzJn2uBOKaIxkAqccxW6PMnz99iY5ZNBin1LkaeqZbchh0jKJBNBin6sXRe2cYa5RpnSSBnNHaZ/3hAGcet0RjIgTim/dh1yEd4LwlEDr4n7g3/0PnH84OceS8pdGXjeSV1JciOxvgXGhAQkL+M/ACtqmmiMvV6+wAAAABJRU5ErkJggg=="></div>
+<div id="qrcard"><div class="k">Try it yourself</div><div class="ti">See it on your phone in 3D &amp; AR</div><img id="qrImg" alt="Scan to open the Northline NRP-200 product page" src="assets/northline/qr-phone.png"></div>
 <div id="ld"><div class="spin"></div></div>
 
 <script>
 const $=id=>document.getElementById(id);
 const BASE="https://api.vntana.com", ORG="DCicero", WS="tradeshows", UUID="28fe585b-b03f-40ac-8d56-7e745e33733b";
 const viewer=$("viewer");
-/* QR (baked in as a data URI, no network dependency) points visitors to the real
-   interactive product page at https://try.vntana.com/northline-rpz.html — 3D + AR on their device */
+/* QR finale: Derek's branded VNTANA QR (assets/northline/qr-phone.png) — scan to open on your own device */
 
 /* ---- part groups (node names in the GLB) ---- */
 const G={
