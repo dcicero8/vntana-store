@@ -50,6 +50,13 @@
   #stepcard li:first-child{border-top:0}
   #stepcard li .b{flex:none;min-width:34px;text-align:center;background:var(--teal);color:#fff;font-weight:800;font-size:clamp(11px,1vw,13px);border-radius:7px;padding:.24rem .3rem}
   #stepcard li .x{font-size:clamp(13px,1.2vw,15px);color:#33414e;line-height:1.35}
+  /* QR finale card (scan to view on your own phone) */
+  #qrcard{position:fixed;left:50%;top:50%;z-index:14;width:min(400px,78vw);background:#fff;border:1px solid #e3e7eb;border-radius:20px;box-shadow:0 26px 70px rgba(11,35,64,.22);padding:clamp(22px,2.4vw,34px);text-align:center;opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.92);transition:opacity .5s ease,transform .5s ease}
+  #qrcard.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  #qrcard .k{font-size:clamp(11px,1vw,13px);font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+  #qrcard .ti{font-size:clamp(20px,2.3vw,30px);font-weight:800;color:var(--navy);line-height:1.1;margin:.4rem 0 1rem}
+  #qrcard img{width:min(220px,46vw);height:auto;image-rendering:pixelated;display:block;margin:0 auto;border-radius:10px}
+  #qrcard .su{font-size:clamp(13px,1.3vw,16px);font-weight:600;color:#44525f;margin:1rem 0 0}
   /* loading */
   #ld{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#eef1f4;transition:opacity .5s}
   #ld.hidden{opacity:0;pointer-events:none}
@@ -67,12 +74,15 @@
 <div id="dots"></div>
 <div id="card"><div class="k">Replacement part</div><div class="nm" id="cardNm"></div><div class="no" id="cardNo"></div><div class="pr" id="cardPr"></div><div class="cta">Add to cart</div></div>
 <div id="stepcard"><div class="k" id="stepN">Step</div><div class="ti" id="stepTi"></div><ul id="stepList"></ul></div>
+<div id="qrcard"><div class="k">Try it yourself</div><div class="ti">See it on your phone in 3D &amp; AR</div><img id="qrImg" alt="Scan to open the Northline NRP-200 product page" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYwAAAGMAQMAAADz9wcJAAAABlBMVEULI0D////Sa2L3AAABuklEQVR42u2cW47CMAxFLTaQ/e8yO8gMNH6F/uDkg9GcqEKo9PxEV/a14yLj09UFBAQE5NsQsdWed37X9Wk38wMP+XiB/GfkpbE2FedfTF16+QNoDKSkMVPUjGAW0IbKzB9gk0F2NfZUV45gaAzkuMZiukRjIGf9WPqp3xk2NAZS0FgsIW8v6kqQPY0ta960JkZb2h1sMkgpV5rVN4E1baCpQ0NjILu50pQmXlpa72IWAuRKkFqu7NoQM13pfQ9i3R5mk0GKfsyiluXNVGl6GmWTQSpxzHNiClmaSaPw0BhIKY69mS7Pj5c9w/OD7Ht+y4yL4V/b/mgMpNy7iK7sveq0aIbGQKoas0PJ6PxnjdndnqExkKLnD6OJ7srCYA/9MZDNOCa3x0Y6K+v1JhoDqdaVPmIh65BPbGWgMZAzcSw0YJe5a/wYSD2OjTzJn2uBOKaIxkAqccxW6PMnz99iY5ZNBin1LkaeqZbchh0jKJBNBin6sXRe2cYa5RpnSSBnNHaZ/3hAGcet0RjIgTim/dh1yEd4LwlEDr4n7g3/0PnH84OceS8pdGXjeSV1JciOxvgXGhAQkL+M/ACtqmmiMvV6+wAAAABJRU5ErkJggg=="></div>
 <div id="ld"><div class="spin"></div></div>
 
 <script>
 const $=id=>document.getElementById(id);
 const BASE="https://api.vntana.com", ORG="DCicero", WS="tradeshows", UUID="28fe585b-b03f-40ac-8d56-7e745e33733b";
 const viewer=$("viewer");
+/* QR (baked in as a data URI, no network dependency) points visitors to the real
+   interactive product page at https://try.vntana.com/northline-rpz.html — 3D + AR on their device */
 
 /* ---- part groups (node names in the GLB) ---- */
 const G={
@@ -174,6 +184,8 @@ const SCENES=[
      step:{n:"Step 2 · Relieve the pressure", title:"Open the test cocks", items:[{k:"2A",t:"Open test cock No. 4"},{k:"2B",t:"Open test cocks No. 3, then No. 2"}]}},
   /* close */
   {cam:"open", rotate:true, explode:0, dwell:5500, ey:"One CAD file",                      ti:"Product · Parts · Service · AR",    su:"Every use case, from a single VNTANA 3D asset"},
+  /* QR finale — scan to view on your own device */
+  {cam:"hero", rotate:true, explode:0, dwell:10000, qr:true, ey:"Try it yourself",         ti:"See it with your iPhone or Android", su:"Scan the code to open this product in 3D & AR"},
 ];
 $("dots").innerHTML=SCENES.map(()=>"<i></i>").join("");
 let si=-1, running=false;
@@ -189,6 +201,9 @@ function playNext(){ si=(si+1)%SCENES.length; const sc=SCENES[si];
   const sstep=$("stepcard");
   if(sc.step){ $("stepN").textContent=sc.step.n; $("stepTi").textContent=sc.step.title; $("stepList").innerHTML=sc.step.items.map(it=>`<li><span class="b">${it.k}</span><span class="x">${it.t}</span></li>`).join(""); setTimeout(()=>sstep.classList.add("show"),320); }
   else sstep.classList.remove("show");
+  const qc=$("qrcard");
+  if(sc.qr){ setTimeout(()=>qc.classList.add("show"),320); }
+  else qc.classList.remove("show");
   try{ viewer.enableAutoRotate=!!sc.rotate; viewer.autoRotateDelay=0; viewer.autoRotateSpeed="10deg"; }catch(_){}
   setTimeout(playNext,sc.dwell||5000);
 }
