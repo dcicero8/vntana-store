@@ -39,7 +39,7 @@ vntana-viewer{display:block;width:100%;height:100%;--vntana-viewer-background-co
 .badge.confirm{background:#fff3d6;color:#9a6b00;}
 .badge.needs{background:#ffe3e0;color:#b4332a;}
 /* empty-state prompt */
-.prompt{position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:22px;padding:.55rem 1.1rem;font-size:.8rem;color:var(--steel);box-shadow:0 4px 18px rgba(16,32,44,.1);transition:opacity .16s;}
+.prompt{position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:22px;padding:.55rem 1.1rem;font-size:.8rem;color:var(--steel);box-shadow:0 4px 18px rgba(16,32,44,.1);transition:opacity .16s;pointer-events:none;}
 .prompt b{color:var(--navy);}
 .prompt .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 1.4s infinite;}
 @keyframes pulse{0%,100%{opacity:.35;}50%{opacity:1;}}
@@ -130,19 +130,27 @@ function buildIndex(tries){
 function clearFx(){ try{["glow","outline","highlight","dim"].forEach(e=>viewer.clearEffect(e));}catch(_){ } }
 function renderNow(){ try{viewer.needsRender=true;}catch(_){ } }
 function highlightPart(uid){
+  // explorer mode: outline+highlight the clicked part, leave everything else
+  // fully visible and clickable so you can keep clicking part to part.
   clearFx(); if(!ready) return;
-  const hit=new Set(uidUuids[uid]||[]);
-  try{ hit.forEach(u=>viewer.setEffect(u,"highlight","outline"));
-    leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); }); }catch(_){ }
-  try{ if(viewer.focusNodes && hit.size) viewer.focusNodes([...hit]); }catch(_){ }
+  const hit=uidUuids[uid]||[];
+  try{ hit.forEach(u=>viewer.setEffect(u,"highlight","outline")); }catch(_){ }
   renderNow();
+}
+function clearSelection(){
+  clearFx(); renderNow();
+  selectedUid=null;
+  card.classList.remove('on');
+  prompt.style.opacity=1;
 }
 
 // ---------- UI ----------
 const money=n=>"$"+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
 const card=document.getElementById('card'), prompt=document.getElementById('prompt'), hovertag=document.getElementById('hovertag');
+let hoverUid=null, selectedUid=null;
 function showPart(uid){
   const p=PARTS[uid]; if(!p) return;
+  selectedUid=uid;
   const isNeed=p.flag==="needs";
   document.getElementById('c-sku').innerHTML = `${p.sku}`+
     (p.flag==="confirm"?'<span class="badge confirm">confirm</span>':isNeed?'<span class="badge needs">needs map</span>':'');
@@ -159,20 +167,33 @@ function showPart(uid){
 }
 document.getElementById('c-cart').addEventListener('click',e=>e.stopPropagation());
 
+let lastSelectAt=0;
 viewer.addEventListener("object-select",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0]; if(!hit) return;
   let uid=uuidUid[hit.uuid];
   if(uid==null && hit.name){ const p=partForNodeName(hit.name); if(p) uid=p.uid; }
-  if(uid!=null) showPart(uid);
+  if(uid!=null){ lastSelectAt=performance.now(); showPart(uid); }
 });
 viewer.addEventListener("object-hover",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0];
   const uid=hit?uuidUid[hit.uuid]:null;
+  hoverUid=uid;
   if(uid!=null){ const p=PARTS[uid];
     hovertag.innerHTML=`<span class="sku">${p.sku}</span>${p.name}`;
     hovertag.classList.add('on'); viewer.style.cursor="pointer";
   } else { hovertag.classList.remove('on'); viewer.style.cursor=""; }
 });
+// tap empty space -> clear. The viewer's orbit controls swallow DOM 'click',
+// so listen on pointerup in the capture phase with a small drag guard. A tap on a
+// part fires object-select (sets lastSelectAt); a tap on background does not, so if
+// no pick landed just after the tap we clear and bring the full model back.
+let pdx=0,pdy=0,pdown=false;
+viewer.addEventListener("pointerdown",e=>{ pdown=true; pdx=e.clientX; pdy=e.clientY; },true);
+viewer.addEventListener("pointerup",e=>{
+  if(!pdown) return; pdown=false;
+  if(Math.hypot(e.clientX-pdx,e.clientY-pdy)>6) return;   // was a drag/orbit, not a tap
+  setTimeout(()=>{ if(selectedUid!=null && performance.now()-lastSelectAt>150) clearSelection(); },90);
+},true);
 
 // ---------- load parts, then init ----------
 fetch("assets/brucerock/parts_data.json").then(r=>r.json()).then(data=>{
