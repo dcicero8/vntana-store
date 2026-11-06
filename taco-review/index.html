@@ -68,7 +68,7 @@
 </div>
 
 <div class="site">
-<div class="top"><div class="wrap"><span class="tag">TACO &times; VNTANA</span><span>Weekly Review</span><span class="sub" id="updated">Updated Oct 23, 2026</span></div></div>
+<div class="top"><div class="wrap"><span class="tag">TACO &times; VNTANA</span><span>Weekly Review</span><span class="sub" id="updated">Updated Nov 6, 2026</span></div></div>
 
 <div class="head"><div class="wrap">
   <div class="crumbs">3D assets and Advanced Renders</div>
@@ -97,7 +97,7 @@
     </ul>
   </div>
   <div class="ready" id="ready"></div>
-  <div class="note" style="background:#f0f9f1;border:1px solid #bfe3c5"><b>New this week:</b> the <b>0034e Plus</b> pair (003eP-F2 cast iron, 003eP-SF2 stainless) just landed, marked <span class="pill2 p-new">NEW</span>. Both look production-ready: clean part breakdown, correct body materials (cast iron vs stainless), branded faceplates (the stainless carries the white faceplate + NSF mark).</div>
+  <div class="note" style="background:#f0f9f1;border:1px solid #bfe3c5"><b>New this week:</b> the full <b>007e</b> family (2F2, 3&#8209;2F4, SF4, 3&#8209;SU) and both <b>VT2218</b> variants (HY1, HY2) are now on your platform and Live Public, marked <span class="pill2 p-new">NEW</span>. That brings this first set to <b>12 products live for review</b> (every one tagged <i>Live Render</i> on the platform).</div>
   <div class="note"><b>Placeholders:</b> faceplate art on these models is a placeholder until the final faceplate design arrives. The side label uses your new label layout as a sticker.</div>
 
   <h2 style="margin-top:26px"><span class="n">1b</span>Bronze material review</h2>
@@ -222,7 +222,7 @@
   <h2><span class="n">6</span>Next steps</h2>
   <div class="card">
     <ul class="clean">
-      <li><b>VNTANA:</b> 0034e+ (003eP-F2 / SF2) delivered and live. VT2218 (4C, FC) coming Tue/Wed next week.</li>
+      <li><b>VNTANA:</b> all 12 products in this first set are now Live Public (0026e, 0034e, 0034e+, 007e, VT2218). Next family <b>0015e3</b>: base 2F2 by Mon Nov 9, three variations by Tue Nov 10 (3D Team).</li>
       <li><b>VNTANA:</b> update the bronze to the lighter "hero" color + a machined finish, post to platform and send over Tue/Wed. Separators follow once Ken signs off.</li>
       <li><b>VNTANA:</b> build the 3 faceplate assets (007e, 0015e3, 0018e) now that the faceplate design is approved.</li>
       <li><b>Derek:</b> book a ~1-hour visual geometry review with Nate (0026e, 0034e, 0034e+).</li>
@@ -255,16 +255,22 @@ var BUILT = {
   "0026e-F2":"4fa95e8e-e1d6-4467-937b-7b01d7f06ce5",
   "0026e-SF2":"e65196f8-be2a-49c6-a562-47467f51c153",
   "003eP-F2":"87e9ad07-c815-4a32-9cf1-d934698386d8",
-  "003eP-SF2":"a62e0550-7c4d-454c-9a6f-51777502d3d3"
+  "003eP-SF2":"a62e0550-7c4d-454c-9a6f-51777502d3d3",
+  "VT2218-HY2-FC1A00":"ec3cb30c-cc38-4a0e-b0ce-65cd72fd2cb3",
+  "VT2218-HY1-4C1A00":"f55be5aa-8cea-4465-b13d-3937f6b7d6bb",
+  "007e-2F2":"ca19a875-c8b3-4f41-8231-d69f63a14c1f",
+  "007e3-2F4":"6a004c61-540c-4495-a729-c3162f151a67",
+  "007e-SF4":"5632858a-85e8-4ae9-94fd-c6680c17b770",
+  "007e3-SU":"e98a8363-3177-4687-b13d-1495e55a0e7f"
 };
-// SKUs to flag with a NEW badge (just delivered this week)
-var NEWSET = {"003eP-F2":1,"003eP-SF2":1};
-// Per-SKU delivery ETA for products still in production
-var ETA = {"VT2218-HY1-4C1A00":"Oct 27","VT2218-HY2-FC1A00":"Oct 28"};
+// SKUs to flag with a NEW badge (just published to Live Public this week)
+var NEWSET = {"007e-2F2":1,"007e3-2F4":1,"007e-SF4":1,"007e3-SU":1,"VT2218-HY2-FC1A00":1,"VT2218-HY1-4C1A00":1};
+// Per-SKU delivery ETA for products still in production (3D Team schedule)
+var ETA = {"0015e3-2F2":"Mon Nov 9","0015e3-2F4":"Tue Nov 10","0015e3-SF4":"Tue Nov 10","0015e3-SU":"Tue Nov 10"};
 // SKUs provisionally approved (Approved? badge). 0026e-SF2's approval Oct 23 was accidental -> cleared.
 var APPROVEDQ = {};
 // Family status for products not yet built: next | wait | none
-var FAMSTATUS = {"007e":"wait","0015e3":"wait","0018e":"wait","0034e+":"next","VT2218":"next","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
+var FAMSTATUS = {"0015e3":"next","0018e":"wait","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
 /* ============================ */
 
 var EMBED=function(u){return "https://embed.vntana.com/v2?productUuid="+u+"&clientSlug=products&organizationSlug=taco";};
