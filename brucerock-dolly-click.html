@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TAN-DOLLY Parts — Click the Model | Bruce Rock Engineering</title>
+<style>
+:root{--navy:#14222e;--steel:#2b3b49;--orange:#e8621d;--light:#f3f6f8;--line:#e4e8ec;--header-h:56px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--light);color:#13212c;}
+header{height:var(--header-h);background:var(--navy);display:flex;align-items:center;gap:1rem;padding:0 1.2rem;color:#fff;}
+header .brand{font-weight:800;letter-spacing:.02em;font-size:1rem;}
+header .brand span{color:var(--orange);}
+header .sub{font-size:.72rem;color:#9fb0bd;border-left:1px solid #33475a;padding-left:1rem;}
+header .spacer{flex:1;}
+header a.alt{font-size:.68rem;color:#cfe0ec;text-decoration:none;border:1px solid #33475a;border-radius:6px;padding:.35rem .7rem;transition:background .15s;}
+header a.alt:hover{background:#1e2f3c;}
+header .vn{font-size:.62rem;color:#7d93a3;letter-spacing:.08em;text-transform:uppercase;margin-left:1rem;}
+.stage{position:relative;height:calc(100vh - var(--header-h));background:radial-gradient(circle at 50% 40%,#e7edf1,#c7d2da);overflow:hidden;}
+vntana-viewer{display:block;width:100%;height:100%;--vntana-viewer-background-color:transparent;}
+/* top hover readout */
+.hover-tag{position:absolute;top:1rem;left:50%;transform:translateX(-50%);background:rgba(20,34,46,.82);color:#fff;font-size:.78rem;font-weight:600;letter-spacing:.01em;padding:.5rem 1rem;border-radius:22px;pointer-events:none;white-space:nowrap;max-width:80vw;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .12s;}
+.hover-tag.on{opacity:1;}
+.hover-tag .sku{color:#f2a97e;font-weight:800;margin-right:.5rem;}
+/* floating selected-part card */
+.card{position:absolute;right:1.5rem;bottom:1.5rem;width:340px;max-width:calc(100vw - 3rem);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 40px rgba(16,32,44,.18);padding:1.1rem 1.2rem;transform:translateY(12px);opacity:0;pointer-events:none;transition:opacity .16s,transform .16s;}
+.card.on{opacity:1;transform:none;pointer-events:auto;}
+.card .kick{font-size:.56rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+.card .sku{font-size:.62rem;font-weight:800;letter-spacing:.06em;color:#9aa8b3;text-transform:uppercase;margin-top:.5rem;}
+.card .nm{font-size:1.02rem;font-weight:800;line-height:1.25;margin:.15rem 0 .55rem;}
+.card .ft{display:flex;align-items:center;justify-content:space-between;gap:.6rem;}
+.card .meta{font-size:.74rem;color:#6b7b88;}
+.card .price{font-size:1.15rem;font-weight:800;color:var(--navy);}
+.card .price.tbd{font-size:.8rem;font-weight:600;color:#9a6b00;}
+.card .cart{font-size:.76rem;font-weight:700;background:var(--orange);color:#fff;border:none;border-radius:8px;padding:.55rem 1rem;cursor:pointer;white-space:nowrap;}
+.card .cart:hover{background:#c9500f;}
+.card .cart.disabled{background:#e4e8ec;color:#9aa8b3;cursor:default;}
+.badge{display:inline-block;font-size:.54rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:.14rem .45rem;border-radius:4px;margin-left:.4rem;vertical-align:middle;}
+.badge.confirm{background:#fff3d6;color:#9a6b00;}
+.badge.needs{background:#ffe3e0;color:#b4332a;}
+/* empty-state prompt */
+.prompt{position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:22px;padding:.55rem 1.1rem;font-size:.8rem;color:var(--steel);box-shadow:0 4px 18px rgba(16,32,44,.1);transition:opacity .16s;}
+.prompt b{color:var(--navy);}
+.prompt .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:.35;}50%{opacity:1;}}
+.help{position:absolute;left:1.5rem;bottom:1.5rem;font-size:.74rem;color:var(--steel);background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem;max-width:230px;line-height:1.45;}
+.help a{color:var(--orange);font-weight:700;text-decoration:none;}
+.help a:hover{text-decoration:underline;}
+@media(max-width:620px){.help{display:none;}.card{right:50%;transform:translateX(50%) translateY(12px);} .card.on{transform:translateX(50%);}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">BRUCE ROCK <span>ENGINEERING</span></div>
+  <div class="sub">TAN-DOLLY KH 1.2 &nbsp;·&nbsp; Click-to-Identify</div>
+  <div class="spacer"></div>
+  <a class="alt" href="brucerock-dolly.html">Browse full catalog ›</a>
+  <div class="vn">Powered by VNTANA 3D</div>
+</header>
+<div class="stage">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer/dist/bundle.js"></script>
+  <vntana-viewer id="viewer" loading="eager" picking="true" shadow-intensity="0.35" shadow-radius="4" exposure="1.0"
+    environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr"
+    camera-rotation="-18deg -35deg 0deg"
+    highlight-color="#e8621d" outline-color="#e8621d" outline-width="4" dim-opacity="0.18"
+    aria-label="TAN-DOLLY 3D model — click any part to identify it">
+    <vntana-fs-button></vntana-fs-button>
+    <vntana-center-button></vntana-center-button>
+    <div class="button-container zoom-buttons">
+      <vntana-zoom-in-button></vntana-zoom-in-button>
+      <vntana-zoom-out-button></vntana-zoom-out-button>
+    </div>
+  </vntana-viewer>
+
+  <div class="hover-tag" id="hovertag"></div>
+
+  <div class="prompt" id="prompt"><span class="dot"></span> <span><b>Click any part</b> on the dolly to identify it</span></div>
+
+  <div class="help">
+    Some parts are small or tucked behind others.<br>
+    Can't click the one you want? <a href="brucerock-dolly.html">Open the parts list ›</a>
+  </div>
+
+  <div class="card" id="card">
+    <div class="kick">Selected part</div>
+    <div class="sku" id="c-sku"></div>
+    <div class="nm" id="c-nm"></div>
+    <div class="ft">
+      <span class="meta" id="c-meta"></span>
+      <span id="c-price"></span>
+      <button class="cart" id="c-cart">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+const viewer = document.getElementById('viewer');
+viewer.src = "assets/brucerock/dolly.glb";
+viewer.enableAutoRotate = false;   // free orbit, no auto-spin
+
+function norm(s){ return (s||"").toUpperCase().replace(/[^A-Z0-9]/g,""); }
+let PARTS=[];
+function partForNodeName(name){
+  const n=norm(name); if(!n) return null;
+  for(const p of PARTS){ if(p._n && n.indexOf(p._n)===0) return p; }
+  for(const p of PARTS){ if(p._sku && p._sku.length>=4 && n.indexOf(p._sku)!==-1) return p; }
+  return null;
+}
+
+// ---------- scene graph index ----------
+let ready=false, leaves=[], uidUuids={}, uuidUid={};
+function walkSG(){
+  const sg=viewer.sceneGraph; const out=[];
+  if(sg)(function w(node,ap){
+    let a=ap; if(node.name){ const p=partForNodeName(node.name); if(p) a=p; }
+    if(node.type==="mesh"||node.type==="primitive"){ out.push({uuid:node.uuid,part:a}); }
+    (node.children||[]).forEach(c=>w(c,a));
+  })(sg,null);
+  return out;
+}
+function buildIndex(tries){
+  const f=walkSG();
+  if(!f.length){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
+  leaves=f; uidUuids={}; uuidUid={};
+  f.forEach(l=>{ if(!l.part) return; const u=l.part.uid;
+    (uidUuids[u]=uidUuids[u]||[]).push(l.uuid); uuidUid[l.uuid]=u; });
+  ready=true;
+  console.log("INDEX", Object.keys(uidUuids).length, "parts matched;", f.filter(x=>x.part).length,"/",f.length,"leaves mapped");
+}
+function clearFx(){ try{["glow","outline","highlight","dim"].forEach(e=>viewer.clearEffect(e));}catch(_){ } }
+function renderNow(){ try{viewer.needsRender=true;}catch(_){ } }
+function highlightPart(uid){
+  clearFx(); if(!ready) return;
+  const hit=new Set(uidUuids[uid]||[]);
+  try{ hit.forEach(u=>viewer.setEffect(u,"highlight","outline"));
+    leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); }); }catch(_){ }
+  try{ if(viewer.focusNodes && hit.size) viewer.focusNodes([...hit]); }catch(_){ }
+  renderNow();
+}
+
+// ---------- UI ----------
+const money=n=>"$"+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
+const card=document.getElementById('card'), prompt=document.getElementById('prompt'), hovertag=document.getElementById('hovertag');
+function showPart(uid){
+  const p=PARTS[uid]; if(!p) return;
+  const isNeed=p.flag==="needs";
+  document.getElementById('c-sku').innerHTML = `${p.sku}`+
+    (p.flag==="confirm"?'<span class="badge confirm">confirm</span>':isNeed?'<span class="badge needs">needs map</span>':'');
+  document.getElementById('c-nm').textContent = p.name;
+  document.getElementById('c-meta').textContent = p.qty? `Qty ${p.qty} per dolly`:'';
+  const price=document.getElementById('c-price');
+  price.className = isNeed?'price tbd':'price';
+  price.textContent = isNeed? 'Needs part mapping' : money(p.price);
+  const cart=document.getElementById('c-cart');
+  cart.className = isNeed? 'cart disabled':'cart';
+  cart.textContent = isNeed? 'Not yet available':'Add to Cart';
+  card.classList.add('on'); prompt.style.opacity=0;
+  highlightPart(uid);
+}
+document.getElementById('c-cart').addEventListener('click',e=>e.stopPropagation());
+
+viewer.addEventListener("object-select",e=>{
+  const hit=((e.detail&&e.detail.intersections)||[])[0]; if(!hit) return;
+  let uid=uuidUid[hit.uuid];
+  if(uid==null && hit.name){ const p=partForNodeName(hit.name); if(p) uid=p.uid; }
+  if(uid!=null) showPart(uid);
+});
+viewer.addEventListener("object-hover",e=>{
+  const hit=((e.detail&&e.detail.intersections)||[])[0];
+  const uid=hit?uuidUid[hit.uuid]:null;
+  if(uid!=null){ const p=PARTS[uid];
+    hovertag.innerHTML=`<span class="sku">${p.sku}</span>${p.name}`;
+    hovertag.classList.add('on'); viewer.style.cursor="pointer";
+  } else { hovertag.classList.remove('on'); viewer.style.cursor=""; }
+});
+
+// ---------- load parts, then init ----------
+fetch("assets/brucerock/parts_data.json").then(r=>r.json()).then(data=>{
+  PARTS=data;
+  PARTS.forEach((p,i)=>{ p.uid=i; p._n=norm(p.node); p._sku=norm(p.sku); });
+  viewer.addEventListener("load",()=>buildIndex(30));
+  let polls=0; const t=setInterval(()=>{ if(ready||polls++>80){clearInterval(t);} else if(viewer.sceneGraph){ buildIndex(5);} },500);
+  if(viewer.sceneGraph) buildIndex(5);
+});
+</script>
+</body>
+</html>
