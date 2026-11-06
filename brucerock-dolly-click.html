@@ -18,6 +18,10 @@ header a.alt:hover{background:#1e2f3c;}
 header .vn{font-size:.62rem;color:#7d93a3;letter-spacing:.08em;text-transform:uppercase;margin-left:1rem;}
 .stage{position:relative;height:calc(100vh - var(--header-h));background:radial-gradient(circle at 50% 40%,#e7edf1,#c7d2da);overflow:hidden;}
 vntana-viewer{display:block;width:100%;height:100%;--vntana-viewer-background-color:transparent;}
+/* viewer control buttons — tidy vertical stack, clear of the header */
+vntana-fs-button,vntana-center-button{position:absolute;left:1rem;z-index:2;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(16,32,44,.1);width:34px;height:34px;}
+vntana-center-button{top:1rem;}
+vntana-fs-button{top:3.25rem;}
 /* top hover readout */
 .hover-tag{position:absolute;top:1rem;left:50%;transform:translateX(-50%);background:rgba(20,34,46,.82);color:#fff;font-size:.78rem;font-weight:600;letter-spacing:.01em;padding:.5rem 1rem;border-radius:22px;pointer-events:none;white-space:nowrap;max-width:80vw;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .12s;}
 .hover-tag.on{opacity:1;}
@@ -64,12 +68,8 @@ vntana-viewer{display:block;width:100%;height:100%;--vntana-viewer-background-co
     camera-rotation="-18deg -35deg 0deg"
     highlight-color="#e8621d" outline-color="#e8621d" outline-width="4" dim-opacity="0.18"
     aria-label="TAN-DOLLY 3D model — click any part to identify it">
-    <vntana-fs-button></vntana-fs-button>
     <vntana-center-button></vntana-center-button>
-    <div class="button-container zoom-buttons">
-      <vntana-zoom-in-button></vntana-zoom-in-button>
-      <vntana-zoom-out-button></vntana-zoom-out-button>
-    </div>
+    <vntana-fs-button></vntana-fs-button>
   </vntana-viewer>
 
   <div class="hover-tag" id="hovertag"></div>
