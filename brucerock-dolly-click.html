@@ -50,7 +50,11 @@ vntana-fs-button{top:3.25rem;}
 .help{position:absolute;left:1.5rem;bottom:1.5rem;font-size:.74rem;color:var(--steel);background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem;max-width:230px;line-height:1.45;}
 .help a{color:var(--orange);font-weight:700;text-decoration:none;}
 .help a:hover{text-decoration:underline;}
-@media(max-width:620px){.help{display:none;}.card{right:50%;transform:translateX(50%) translateY(12px);} .card.on{transform:translateX(50%);}}
+@media(max-width:620px){.help{display:none;}.card{right:50%;transform:translateX(50%) translateY(12px);} .card.on{transform:translateX(50%);}
+  header{flex-wrap:nowrap;gap:.6rem;padding:0 .9rem;}
+  header .brand{font-size:.82rem;white-space:nowrap;}
+  header .sub,header .vn{display:none;}
+  header a.alt{white-space:nowrap;font-size:.62rem;padding:.3rem .55rem;}}
 </style>
 </head>
 <body>
@@ -99,6 +103,8 @@ viewer.src = "assets/brucerock/dolly.glb";
 viewer.enableAutoRotate = false;   // free orbit, no auto-spin
 
 function norm(s){ return (s||"").toUpperCase().replace(/[^A-Z0-9]/g,""); }
+// a "sku" is only worth showing when it isn't just a slug of the name (e.g. a real part number)
+function skuChip(p){ const s=norm(p.sku), n=norm(p.name); if(!s||n.includes(s)||s.includes(n)) return ""; return `<span class="sku">${p.sku}</span>`; }
 let PARTS=[];
 function partForNodeName(name){
   const n=norm(name); if(!n) return null;
@@ -152,7 +158,9 @@ function showPart(uid){
   const p=PARTS[uid]; if(!p) return;
   selectedUid=uid;
   const isNeed=p.flag==="needs";
-  document.getElementById('c-sku').innerHTML = `${p.sku}`+
+  const ns=norm(p.sku), nn=norm(p.name);
+  const skuText = (ns && !nn.includes(ns) && !ns.includes(nn)) ? `${p.sku} ` : '';
+  document.getElementById('c-sku').innerHTML = skuText+
     (p.flag==="confirm"?'<span class="badge confirm">confirm</span>':isNeed?'<span class="badge needs">needs map</span>':'');
   document.getElementById('c-nm').textContent = p.name;
   document.getElementById('c-meta').textContent = p.qty? `Qty ${p.qty} per dolly`:'';
@@ -179,7 +187,7 @@ viewer.addEventListener("object-hover",e=>{
   const uid=hit?uuidUid[hit.uuid]:null;
   hoverUid=uid;
   if(uid!=null){ const p=PARTS[uid];
-    hovertag.innerHTML=`<span class="sku">${p.sku}</span>${p.name}`;
+    hovertag.innerHTML=`${skuChip(p)}${p.name}`;
     hovertag.classList.add('on'); viewer.style.cursor="pointer";
   } else { hovertag.classList.remove('on'); viewer.style.cursor=""; }
 });
