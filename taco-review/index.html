@@ -222,7 +222,7 @@
   <h2><span class="n">6</span>Next steps</h2>
   <div class="card">
     <ul class="clean">
-      <li><b>VNTANA:</b> all 12 products in this first set are now Live Public (0026e, 0034e, 0034e+, 007e, VT2218). Next family <b>0015e3</b>: base 2F2 by Mon Nov 9, three variations by Tue Nov 10 (3D Team).</li>
+      <li><b>VNTANA:</b> all 12 products in this first set are now Live Public (0026e, 0034e, 0034e+, 007e, VT2218). Remaining 20 SKUs scheduled through early December (per-SKU ETAs in the status table): <b>0015e3</b> Nov 9&ndash;10, <b>0018e</b> Nov 11&ndash;13, then the <b>49-xxx separators</b> Nov 17&ndash;Dec 8 (these follow bronze sign-off).</li>
       <li><b>VNTANA:</b> update the bronze to the lighter "hero" color + a machined finish, post to platform and send over Tue/Wed. Separators follow once Ken signs off.</li>
       <li><b>VNTANA:</b> build the 3 faceplate assets (007e, 0015e3, 0018e) now that the faceplate design is approved.</li>
       <li><b>Derek:</b> book a ~1-hour visual geometry review with Nate (0026e, 0034e, 0034e+).</li>
@@ -265,12 +265,19 @@ var BUILT = {
 };
 // SKUs to flag with a NEW badge (just published to Live Public this week)
 var NEWSET = {"007e-2F2":1,"007e3-2F4":1,"007e-SF4":1,"007e3-SU":1,"VT2218-HY2-FC1A00":1,"VT2218-HY1-4C1A00":1};
-// Per-SKU delivery ETA for products still in production (3D Team schedule)
-var ETA = {"0015e3-2F2":"Mon Nov 9","0015e3-2F4":"Tue Nov 10","0015e3-SF4":"Tue Nov 10","0015e3-SU":"Tue Nov 10"};
+// Per-SKU delivery ETA for products still in production (3D Team schedule, Taco ETA sheet)
+var ETA = {
+  "0015e3-2F2":"Mon Nov 9","0015e3-2F4":"Tue Nov 10","0015e3-SF4":"Tue Nov 10","0015e3-SU":"Tue Nov 10",
+  "0018e-2F2":"Nov 11","0018e-2F4":"Nov 13","0018e-SF4":"Nov 13","0018e-SU":"Nov 13",
+  "49-075C":"Nov 17","49-075P":"Nov 19","49-075T":"Nov 19",
+  "49-100C":"Nov 23","49-100P":"Nov 25","49-100T":"Nov 25",
+  "49-125C":"Nov 27","49-125P":"Dec 2","49-125T":"Dec 2",
+  "49-150C":"Dec 4","49-150T":"Dec 8","49-200T":"Dec 8"
+};
 // SKUs provisionally approved (Approved? badge). 0026e-SF2's approval Oct 23 was accidental -> cleared.
 var APPROVEDQ = {};
 // Family status for products not yet built: next | wait | none
-var FAMSTATUS = {"0015e3":"next","0018e":"wait","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
+var FAMSTATUS = {"0015e3":"next","0018e":"next","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
 /* ============================ */
 
 var EMBED=function(u){return "https://embed.vntana.com/v2?productUuid="+u+"&clientSlug=products&organizationSlug=taco";};
@@ -300,7 +307,7 @@ document.getElementById("stats").innerHTML=
   (approvedq?'<div class="stat"><div class="k">Approved?</div><div class="v">'+approvedq+'</div><div class="s">to confirm in review</div></div>':'')+
   '<div class="stat"><div class="k">Next up</div><div class="v">'+next+'</div><div class="s">in production</div></div>'+
   '<div class="stat"><div class="k">After bronze sign-off</div><div class="v">'+mat+'</div><div class="s">air &amp; dirt separators</div></div>'+
-  '<div class="stat"><div class="k">After faceplate art</div><div class="v">'+wait+'</div><div class="s">e-series faceplates</div></div>';
+  (wait?'<div class="stat"><div class="k">After faceplate art</div><div class="v">'+wait+'</div><div class="s">e-series faceplates</div></div>':'');
 </script>
 </body>
 </html>
