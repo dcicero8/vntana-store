@@ -133,18 +133,34 @@ function buildIndex(tries){
   ready=true;
   console.log("INDEX", Object.keys(uidUuids).length, "parts matched;", f.filter(x=>x.part).length,"/",f.length,"leaves mapped");
 }
-function clearFx(){ try{["glow","outline","highlight","dim"].forEach(e=>viewer.clearEffect(e));}catch(_){ } }
 function renderNow(){ try{viewer.needsRender=true;}catch(_){ } }
+// Two independent cues so they can coexist and be cleared separately:
+//   HOVER   = "outline" (orange edge preview of what a click will select)
+//   SELECT  = "highlight" (orange fill of the committed part)
+let curHover=null;
+function applyHover(uid){
+  if(uid===curHover) return;              // only touch effects when the hovered part actually changes
+  curHover=uid;
+  try{ viewer.clearEffect("outline"); }catch(_){ }
+  if(uid!=null && uid!==selectedUid && ready){
+    const hit=uidUuids[uid]||[];
+    try{ hit.forEach(u=>viewer.setEffect(u,"outline")); }catch(_){ }
+  }
+  renderNow();
+}
 function highlightPart(uid){
-  // explorer mode: outline+highlight the clicked part, leave everything else
-  // fully visible and clickable so you can keep clicking part to part.
-  clearFx(); if(!ready) return;
+  // explorer mode: fill the clicked part, leave everything else fully visible and
+  // clickable so you can keep clicking part to part. Clear any hover preview first.
+  try{ viewer.clearEffect("outline"); viewer.clearEffect("highlight"); }catch(_){ }
+  curHover=null;
+  if(!ready){ renderNow(); return; }
   const hit=uidUuids[uid]||[];
-  try{ hit.forEach(u=>viewer.setEffect(u,"highlight","outline")); }catch(_){ }
+  try{ hit.forEach(u=>viewer.setEffect(u,"highlight")); }catch(_){ }
   renderNow();
 }
 function clearSelection(){
-  clearFx(); renderNow();
+  try{ viewer.clearEffect("outline"); viewer.clearEffect("highlight"); }catch(_){ }
+  curHover=null; renderNow();
   selectedUid=null;
   card.classList.remove('on');
   prompt.style.opacity=1;
@@ -184,12 +200,14 @@ viewer.addEventListener("object-select",e=>{
 });
 viewer.addEventListener("object-hover",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0];
-  const uid=hit?uuidUid[hit.uuid]:null;
+  let uid=hit?uuidUid[hit.uuid]:null;
+  if(uid==null && hit && hit.name){ const p=partForNodeName(hit.name); if(p) uid=p.uid; }
   hoverUid=uid;
   if(uid!=null){ const p=PARTS[uid];
     hovertag.innerHTML=`${skuChip(p)}${p.name}`;
     hovertag.classList.add('on'); viewer.style.cursor="pointer";
   } else { hovertag.classList.remove('on'); viewer.style.cursor=""; }
+  applyHover(uid);
 });
 // tap empty space -> clear. The viewer's orbit controls swallow DOM 'click',
 // so listen on pointerup in the capture phase with a small drag guard. A tap on a
