@@ -130,6 +130,7 @@ function buildIndex(tries){
 
 function clearFx(){ try{["glow","outline","highlight","dim"].forEach(e=>viewer.clearEffect(e));}catch(_){ } }
 function renderNow(){ try{viewer.needsRender=true;}catch(_){ } try{viewer.render&&viewer.render();}catch(_){ } }
+function parseTriplet(s){ return (s||"").trim().split(/\s+/).map(x=>parseFloat(x)||0); }
 function highlightPart(uid){
   clearFx(); if(!ready) return;
   const hit=new Set(uidUuids[uid]||[]);
@@ -137,7 +138,20 @@ function highlightPart(uid){
     hit.forEach(u=>viewer.setEffect(u,"highlight","outline"));
     leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); });
   }catch(_){ }
-  try{ if(viewer.focusNodes && hit.size) viewer.focusNodes([...hit]); }catch(_){ }
+  // frame the part AND swing the camera around to face it (focusNodes alone only
+  // fits the bounding box, keeping the old angle, so a rear part like the tail lamp
+  // stays oblique). focusNodes sets the target to the part centre; we read that back
+  // and rotate yaw to the part's side: yaw = atan2(targetX, targetZ).
+  try{
+    if(viewer.focusNodes && hit.size){
+      viewer.focusNodes([...hit]);
+      if(viewer.getCameraTarget && viewer.setCameraRotation){
+        const t=parseTriplet(viewer.getCameraTarget());
+        const yaw=Math.atan2(t[0], t[2]);
+        viewer.setCameraRotation(`-12deg ${yaw}rad 0rad`);
+      }
+    }
+  }catch(_){ }
   renderNow();
 }
 
