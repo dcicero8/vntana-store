@@ -196,7 +196,7 @@ function clearSelection(){
   document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel"));
   document.getElementById("h-title").textContent=DEF_TITLE;
   document.getElementById("h-desc").textContent=DEF_DESC;
-  try{ viewer.centerCamera&&viewer.centerCamera(); }catch(_){ }
+  // leave the camera where it is on deselect (no re-spin); the recenter button resets it
   renderNow();
 }
 function selectUid(uid,fromList){
