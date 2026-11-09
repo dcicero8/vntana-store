@@ -20,9 +20,7 @@ main{display:grid;grid-template-columns:1fr 440px;min-height:calc(100vh - var(--
 .viewer-col{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));background:linear-gradient(180deg,#dfe6eb,#cdd7de);display:flex;flex-direction:column;}
 vntana-viewer{flex:1;display:block;width:100%;height:100%;--vntana-viewer-background-color:transparent;}
 /* viewer control buttons — tidy vertical stack, clear of the header (matches the click page) */
-vntana-fs-button,vntana-center-button{position:absolute;left:1rem;z-index:2;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(16,32,44,.1);width:34px;height:34px;display:flex;align-items:center;justify-content:center;}
-vntana-center-button{top:1rem;}
-vntana-fs-button{top:3.25rem;}
+vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(16,32,44,.1);width:34px;height:34px;display:flex;align-items:center;justify-content:center;}
 .hint{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);color:rgba(255,255,255,.85);font-size:.72rem;padding:.4rem .9rem;border-radius:20px;pointer-events:none;white-space:nowrap;}
 .parts-col{background:#fff;border-left:1px solid var(--line);display:flex;flex-direction:column;height:calc(100vh - var(--header-h));position:sticky;top:var(--header-h);overflow:hidden;}
 .pc-head{padding:1.1rem 1.25rem .85rem;border-bottom:1px solid var(--line);}
@@ -72,9 +70,8 @@ vntana-fs-button{top:3.25rem;}
       environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/Studio_A_dim.hdr"
       camera-rotation="-18deg -35deg 0deg"
       highlight-color="#e8621d" outline-color="#e8621d" outline-width="4" dim-opacity="0.18"
-      aria-label="TAN-DOLLY 3D parts catalog — click any part to see its part number and price">
+      aria-label="TAN-DOLLY 3D parts catalog, click any part to see its part number and price">
       <vntana-center-button></vntana-center-button>
-      <vntana-fs-button></vntana-fs-button>
     </vntana-viewer>
     <div class="hint">Click any part on the model &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
   </div>
@@ -165,7 +162,7 @@ function highlightPart(uid){
 
 // ---------- list rendering ----------
 const money=n=>"$"+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
-const GROUPS=[["ok","Mapped parts"],["confirm","Mapped — pending engineering confirm"],["needs","Identified in model — needs part mapping (not yet clickable)"]];
+const GROUPS=[["ok","Mapped parts"],["confirm","Mapped, pending engineering confirm"],["needs","Identified in model, needs part mapping (not yet clickable)"]];
 function cardHTML(p){
   const isNeed = p.flag==="needs";
   const badge = p.flag==="confirm"?'<span class="badge confirm">confirm</span>':isNeed?'<span class="badge needs">needs map</span>':'';
@@ -190,9 +187,20 @@ function renderList(filter=""){
   // only mapped parts are selectable; needs-map rows are greyed, non-interactive reference
   list.querySelectorAll(".card:not(.ref)").forEach(c=>c.addEventListener("click",()=>selectUid(+c.dataset.uid,true)));
 }
-let selUid=null;
+let selUid=null, lastSelectAt=0;
+const DEF_TITLE="TAN-DOLLY Parts Catalog";
+const DEF_DESC="Click a part in the 3D model, or pick from the list, to see its part number, quantity and price.";
+function clearSelection(){
+  selUid=null;
+  clearFx();
+  document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel"));
+  document.getElementById("h-title").textContent=DEF_TITLE;
+  document.getElementById("h-desc").textContent=DEF_DESC;
+  try{ viewer.centerCamera&&viewer.centerCamera(); }catch(_){ }
+  renderNow();
+}
 function selectUid(uid,fromList){
-  selUid=uid;
+  selUid=uid; lastSelectAt=performance.now();
   document.querySelectorAll(".card").forEach(c=>c.classList.toggle("sel",+c.dataset.uid===uid));
   const p=PARTS[uid]; if(!p) return;
   document.getElementById("h-title").textContent=p.name;
@@ -204,7 +212,7 @@ function selectUid(uid,fromList){
   const qty = p.qty?`Qty ${p.qty} per dolly`:"";
   const join = (a,b)=>[a,b].filter(Boolean).join(" · ");
   document.getElementById("h-desc").textContent = p.flag==="needs"
-    ? join("Identified in model — needs part mapping",qty)
+    ? join("Identified in model, needs part mapping",qty)
     : join(showSku?`Part number ${p.sku}`:"",qty);
   highlightPart(uid);
   if(fromList){ const el=document.querySelector(`.card[data-uid="${uid}"]`); el&&el.scrollIntoView({block:"nearest",behavior:"smooth"}); }
@@ -223,6 +231,16 @@ viewer.addEventListener("object-hover",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0];
   viewer.style.cursor = hit&&uuidUid[hit.uuid]!=null ? "pointer":"";
 });
+// U1: tap empty space -> clear selection and bring the full (un-dimmed) model back.
+// The viewer swallows DOM 'click', so use capture-phase pointerup with a drag guard;
+// a tap on a part fires object-select (sets lastSelectAt), a tap on background does not.
+let pdx=0,pdy=0,pdown=false;
+viewer.addEventListener("pointerdown",e=>{ pdown=true; pdx=e.clientX; pdy=e.clientY; },true);
+viewer.addEventListener("pointerup",e=>{
+  if(!pdown) return; pdown=false;
+  if(Math.hypot(e.clientX-pdx,e.clientY-pdy)>6) return;       // drag/orbit, not a tap
+  setTimeout(()=>{ if(selUid!=null && performance.now()-lastSelectAt>150) clearSelection(); },90);
+},true);
 
 // ---------- init ----------
 viewer.addEventListener("load",()=>{ buildIndex(30); });
