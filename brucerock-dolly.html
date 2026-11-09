@@ -14,9 +14,15 @@ header .brand span{color:var(--orange);}
 header .sub{font-size:.72rem;color:#9fb0bd;border-left:1px solid #33475a;padding-left:1rem;}
 header .spacer{flex:1;}
 header .vn{font-size:.62rem;color:#7d93a3;letter-spacing:.08em;text-transform:uppercase;}
+header a.alt{font-size:.68rem;color:#cfe0ec;text-decoration:none;border:1px solid #33475a;border-radius:6px;padding:.35rem .7rem;margin-left:1rem;transition:background .15s;white-space:nowrap;}
+header a.alt:hover{background:#1e2f3c;}
 main{display:grid;grid-template-columns:1fr 440px;min-height:calc(100vh - var(--header-h));}
 .viewer-col{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));background:linear-gradient(180deg,#dfe6eb,#cdd7de);display:flex;flex-direction:column;}
 vntana-viewer{flex:1;display:block;width:100%;height:100%;--vntana-viewer-background-color:transparent;}
+/* viewer control buttons — tidy vertical stack, clear of the header (matches the click page) */
+vntana-fs-button,vntana-center-button{position:absolute;left:1rem;z-index:2;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(16,32,44,.1);width:34px;height:34px;}
+vntana-center-button{top:1rem;}
+vntana-fs-button{top:3.25rem;}
 .hint{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);color:rgba(255,255,255,.85);font-size:.72rem;padding:.4rem .9rem;border-radius:20px;pointer-events:none;white-space:nowrap;}
 .parts-col{background:#fff;border-left:1px solid var(--line);display:flex;flex-direction:column;height:calc(100vh - var(--header-h));position:sticky;top:var(--header-h);overflow:hidden;}
 .pc-head{padding:1.1rem 1.25rem .85rem;border-bottom:1px solid var(--line);}
@@ -56,6 +62,7 @@ vntana-viewer{flex:1;display:block;width:100%;height:100%;--vntana-viewer-backgr
   <div class="brand">BRUCE ROCK <span>ENGINEERING</span></div>
   <div class="sub">TAN-DOLLY KH 1.2 &nbsp;·&nbsp; Interactive Parts Catalog</div>
   <div class="spacer"></div>
+  <a class="alt" href="brucerock-dolly-click.html">Try click-to-explore ›</a>
   <div class="vn">Powered by VNTANA 3D</div>
 </header>
 <main>
@@ -66,12 +73,8 @@ vntana-viewer{flex:1;display:block;width:100%;height:100%;--vntana-viewer-backgr
       camera-rotation="-18deg -35deg 0deg"
       highlight-color="#e8621d" outline-color="#e8621d" outline-width="4" dim-opacity="0.18"
       aria-label="TAN-DOLLY 3D parts catalog — click any part to see its part number and price">
-      <vntana-fs-button></vntana-fs-button>
       <vntana-center-button></vntana-center-button>
-      <div class="button-container zoom-buttons">
-        <vntana-zoom-in-button></vntana-zoom-in-button>
-        <vntana-zoom-out-button></vntana-zoom-out-button>
-      </div>
+      <vntana-fs-button></vntana-fs-button>
     </vntana-viewer>
     <div class="hint">Click any part on the model &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
   </div>
