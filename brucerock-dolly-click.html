@@ -209,6 +209,12 @@ viewer.addEventListener("object-hover",e=>{
   } else { hovertag.classList.remove('on'); viewer.style.cursor=""; }
   applyHover(uid);
 });
+// F5: object-hover doesn't fire with a null hit when the pointer slides off the model
+// into empty space, so the readout tag could linger. Clear it on pointerleave.
+viewer.addEventListener("pointerleave",()=>{
+  hoverUid=null; hovertag.classList.remove('on'); viewer.style.cursor="";
+  applyHover(null);
+});
 // tap empty space -> clear. The viewer's orbit controls swallow DOM 'click',
 // so listen on pointerup in the capture phase with a small drag guard. A tap on a
 // part fires object-select (sets lastSelectAt); a tap on background does not, so if
