@@ -20,7 +20,7 @@ main{display:grid;grid-template-columns:1fr 440px;min-height:calc(100vh - var(--
 .viewer-col{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));background:linear-gradient(180deg,#dfe6eb,#cdd7de);display:flex;flex-direction:column;}
 vntana-viewer{flex:1;display:block;width:100%;height:100%;--vntana-viewer-background-color:transparent;}
 /* viewer control buttons — tidy vertical stack, clear of the header (matches the click page) */
-vntana-fs-button,vntana-center-button{position:absolute;left:1rem;z-index:2;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(16,32,44,.1);width:34px;height:34px;}
+vntana-fs-button,vntana-center-button{position:absolute;left:1rem;z-index:2;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(16,32,44,.1);width:34px;height:34px;display:flex;align-items:center;justify-content:center;}
 vntana-center-button{top:1rem;}
 vntana-fs-button{top:3.25rem;}
 .hint{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);color:rgba(255,255,255,.85);font-size:.72rem;padding:.4rem .9rem;border-radius:20px;pointer-events:none;white-space:nowrap;}
