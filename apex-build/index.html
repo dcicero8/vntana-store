@@ -55,10 +55,9 @@
     <div class="note"><b>Confidential:</b> all Apex files (CAD, reference images, this brief) are covered by the NDA. Do not share them outside your team or use them for anything else.</div>
     <ol class="qa">
       <li><b>Materials.</b> Build a material cube for each key material and upload it. Apex approves each one in the VNTANA viewer against its reference photo. Approved materials go into the material library (section 5).</li>
-      <li><b>Build the model</b> from the VNTANA CAD, with library materials only: Deployed and Stowed first (section 4). Upload the GLBs to the Apex workspace and run the QA check.</li>
+      <li><b>Build the model</b> from the VNTANA CAD, with library materials only: Deployed and Stowed (section 4). Upload the GLBs to the Apex workspace and run the QA check.</li>
       <li><b>Viewer review (VNTANA and Apex).</b> We review your GLBs with Apex in the VNTANA viewer, set the viewer settings (lighting) and pick the render views. We send you the settings and a screenshot of each view.</li>
       <li><b>Render files.</b> Then build the Blender render setup to match those settings and views (section 6) and attach the .blend to each asset. Do not start this before step 3.</li>
-      <li><b>Animation.</b> Build the Animated asset last, once Deployed and Stowed are approved.</li>
       <li><b>Review:</b> Apex and VNTANA leave notes as annotations on the asset. Fix, re-upload as a new version.</li>
     </ol>
     <ul class="rules">
@@ -85,20 +84,18 @@
   <h2><span class="n">4</span>What you deliver (per platform)</h2>
   <div class="card">
     <ul class="rules">
-      <li><b>Three separate assets</b> on the VNTANA platform, each with its own GLB and its own .blend:</li>
+      <li><b>Two separate assets</b> on the VNTANA platform, each with its own GLB and its own .blend. <b>No animation:</b> Deployed and Stowed are two static poses (scope update, Nov 10).</li>
     </ul>
     <table class="t"><thead><tr><th>Asset name</th><th>What it shows</th></tr></thead><tbody>
       <tr><td><code>&lt;PLATFORM&gt;_Deployed</code></td><td>Solar arrays open. The main product asset.</td></tr>
       <tr><td><code>&lt;PLATFORM&gt;_Stowed</code></td><td>Folded for launch, arrays stowed against the bus.</td></tr>
-      <tr><td><code>&lt;PLATFORM&gt;_Animated</code></td><td>10-second animation from stowed to deployed. One clip named <code>DEPLOY</code> in the GLB. Rotate the real hinges and SADAs; do not morph or scale parts.</td></tr>
     </tbody></table>
     <ul class="rules">
-      <li>Example: <code>NOVA_Deployed</code>, <code>NOVA_Stowed</code>, <code>NOVA_Animated</code>.</li>
+      <li>Example: <code>NOVA_Deployed</code>, <code>NOVA_Stowed</code>.</li>
       <li><b>Render setup:</b> every .blend uses the render setup agreed after the viewer review (section 6). The GLBs come first; the .blend follows.</li>
       <li><b>Materials:</b> library materials only. Substance source files (.spp or .sbsar) for every new material.</li>
       <li>All textures packed in each .blend. One .blend attached per asset.</li>
       <li><b>No baked ambient occlusion needed.</b> Renders come from Cycles, which makes real contact shadows, so you do not need full UVs just for an AO bake.</li>
-      <li><b>Animation:</b> keyframes, so it plays in the GLB. Armature skinning is OK where a part has to bend (the solar panel backing), but test that it exports and plays in the GLB first and tell us the result. No drivers, constraints or simulations in the final file (bake them to keyframes if you use them while working).</li>
       <li><b>Textures: 4K</b> (4096 &times; 4096), so the Cycles renders hold up close.</li>
     </ul>
   </div>
@@ -171,7 +168,7 @@
     <ul class="rules">
       <li>Real-world size in meters, from the CAD VNTANA sends you. This CAD is the <b>outside only</b>: VNTANA removes every part hidden from outside before you receive it, separately for each pose. Model only what is in the CAD; do not add internal parts. When a platform has several poses, build parts from the most open pose (see the platform page).</li>
       <li><b>Repeatable parts:</b> catalog screws, washers, nuts and connectors appear many times. Model each part number once and place linked copies (instances) everywhere it appears.</li>
-      <li><b>Combine to keep draw calls down.</b> On the central body nothing moves (no exploded view is planned), so merge small parts by type: brackets with brackets, cables with cables, and so on. On the solar array wings, keep every part that moves in the animation separate. Instance the panels too if the animation still works.</li>
+      <li><b>Combine to keep draw calls down.</b> On the central body nothing moves (no exploded view is planned), so merge small parts by type: brackets with brackets, cables with cables, and so on. On the solar array wings, keep each panel, cell string and solar array drive as its own named part (easier to review and fix), and merge small hardware by type. Instance identical panels where you can.</li>
       <li><b>Keep the CAD as it is</b> where it looks rough: holes in the CAD stay open (no plates behind them; Apex's own images show them), and wires that run into other parts stay that way. Where two identical meshes sit exactly on top of each other, keep one.</li>
       <li>Clean geometry where visible.</li>
       <li><b>Triangle budget:</b> no hard limit for now. VNTANA removes hidden geometry when the GLB is uploaded. Keep it as light as accuracy allows: AR is the one place a model this large struggles.</li>
@@ -180,7 +177,6 @@
     <ul class="rules">
       <li>Every part or merged group is a named mesh with the platform prefix: <code>NOVA_</code>, <code>ARIES_</code>, <code>COMET_</code>. For example <code>NOVA_BUS</code>, <code>NOVA_SADA_L</code>, <code>NOVA_ARRAY_L1</code>.</li>
       <li>Each configurator option is a parent empty named <code>OPT_&lt;GROUP&gt;_&lt;CHOICE&gt;</code>, for example <code>OPT_COMMS_MDL</code>.</li>
-      <li>Moving parts (hinges, SADAs, yokes) have their pivot on the real rotation axis.</li>
       <li>English names, no spaces, no default names like "Cube.001".</li>
     </ul>
     <h3>Origin, scale, orientation</h3>
@@ -193,7 +189,7 @@
       <li><b>UVs only where a texture is needed.</b> First list (VNTANA will add to it): solar cells (<code>MAT_SOLAR_CELL</code>), solar panel backing mesh (<code>MAT_ARRAY_MESH</code>), swirl-milled boxes 2 and 3 (<code>MAT_AL_MILLED</code>), silver and gold MLI blankets, silver-coated Teflon covers (<code>MAT_SCT</code>), Kapton tape, black Kapton. Flat finishes (chromate, gold rail, anodize, stainless, paint, harness) are plain material values and need no UVs (no UVs or a quick auto-unwrap are both fine).</li>
       <li>Any UV tool is fine (Maya, RizomUV, Zen UV). Automatic layouts are OK as long as the texture reads correctly.</li>
       <li><b>Expect UVs on about a third of the model,</b> and textures on 4 or 5 materials. Everything else is a plain material.</li>
-      <li><b>Use the CAD as is.</b> Remodel a part only if you have to: it does not look right, you cannot get clean UVs on it, or it does not move cleanly in the animation (the solar panel backing plates are the likely case). Tell us before you remodel, and keep the CAD sizes and positions exactly.</li>
+      <li><b>Use the CAD as is.</b> Remodel a part only if you have to: it does not look right, or you cannot get clean UVs on it. Tell us before you remodel, and keep the CAD sizes and positions exactly.</li>
       <li>Single 0 to 1 UV space per material; texture density at real-world scale.</li>
     </ul>
   </div>
