@@ -1,0 +1,54 @@
+{
+ "_about": "Part renders for brucerock-dolly.html. Key on node (unique for all 76 parts; sku is not). 1200x1200 JPG on white. First batch: 8 hero parts; the other 68 follow after look approval.",
+ "count": 8,
+ "images": [
+  {
+   "node": "AXLE DRUM BRAKE PARALLEL KH [100556]",
+   "sku": "100556",
+   "name": "AXLE DRUM BRAKE PARALLEL KH",
+   "file": "axle-drum-brake-parallel-kh-100556.jpg"
+  },
+  {
+   "node": "HELLA LED COMB TAIL LAMP (BRE) [117156]",
+   "sku": "117156",
+   "name": "HELLA LED COMB TAIL LAMP (BRE)",
+   "file": "hella-led-comb-tail-lamp-bre-117156.jpg"
+  },
+  {
+   "node": "MOUNT - AIR TANK 950 [123428]",
+   "sku": "123428",
+   "name": "MOUNT - AIR TANK 950",
+   "file": "mount-air-tank-950-123428.jpg"
+  },
+  {
+   "node": "BRAKE BOOSTER 3030 (CONFIRM)",
+   "sku": "BRAKE-BOOSTER-3030",
+   "name": "BRAKE BOOSTER 3030",
+   "file": "brake-booster-3030-confirm.jpg"
+  },
+  {
+   "node": "DRAWBAR A-FRAME WELDMENT (CONFIRM)",
+   "sku": "DRAWBAR-A-FRAME-WELDME",
+   "name": "DRAWBAR A-FRAME WELDMENT",
+   "file": "drawbar-a-frame-weldment-confirm.jpg"
+  },
+  {
+   "node": "RELAY VALVE 4-WAY (CONFIRM)",
+   "sku": "RELAY-VALVE-4-WAY",
+   "name": "RELAY VALVE 4-WAY",
+   "file": "relay-valve-4-way-confirm.jpg"
+  },
+  {
+   "node": "SUSPENSION ASSEMBLY (MECHANICAL O/SLUNG) [101224] (CONFIRM)",
+   "sku": "101224",
+   "name": "SUSPENSION ASSEMBLY (MECHANICAL O/SLUNG)",
+   "file": "suspension-assembly-mechanical-o-slung-101224-confirm.jpg"
+  },
+  {
+   "node": "WHEEL ASSY (CONFIRM)",
+   "sku": "WHEEL-ASSY",
+   "name": "WHEEL ASSY",
+   "file": "wheel-assy-confirm.jpg"
+  }
+ ]
+}
