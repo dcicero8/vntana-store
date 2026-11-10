@@ -1,6 +1,6 @@
 {
- "_about": "Part renders for brucerock-dolly.html. Key on node (unique for all 76 parts; sku is not). 1200x1200 JPG on white. First batch: 8 hero parts; the other 68 follow after look approval.",
- "count": 8,
+ "_about": "Part renders for brucerock-dolly.html. Key on node (unique for all 76 parts; sku is not). 1200x1200 JPG on white. All 8 mapped parts (flag ok) now have an image, plus 5 pending-confirmation parts. The rest follow after look approval.",
+ "count": 13,
  "images": [
   {
    "node": "AXLE DRUM BRAKE PARALLEL KH [100556]",
@@ -49,6 +49,36 @@
    "sku": "WHEEL-ASSY",
    "name": "WHEEL ASSY",
    "file": "wheel-assy-confirm.jpg"
+  },
+  {
+   "node": "BOLT HEX M8x65 AS1110 GR8.8 [118068]",
+   "sku": "118068",
+   "name": "BOLT HEX M8x65 AS1110 GR8.8",
+   "file": "bolt-hex-m8x65-as1110-gr8-8-118068.jpg"
+  },
+  {
+   "node": "HELLA LED RED/AMBER SIDE MARKER [117141]",
+   "sku": "117141",
+   "name": "HELLA LED RED/AMBER SIDE MARKER",
+   "file": "hella-led-red-amber-side-marker-117141.jpg"
+  },
+  {
+   "node": "MOUNT - MUDFLAP SINGLE [114429]",
+   "sku": "114429",
+   "name": "MOUNT - MUDFLAP SINGLE",
+   "file": "mount-mudflap-single-114429.jpg"
+  },
+  {
+   "node": "SOCKET-WELD IN-BSP-1/2-BLACK [107356]",
+   "sku": "107356",
+   "name": "SOCKET-WELD IN-BSP-1/2-BLACK",
+   "file": "socket-weld-in-bsp-1-2-black-107356.jpg"
+  },
+  {
+   "node": "SUSPENSION MECHANICAL O/SLUNG [101224]",
+   "sku": "101224",
+   "name": "SUSPENSION MECHANICAL O/SLUNG",
+   "file": "suspension-mechanical-o-slung-101224.jpg"
   }
  ]
 }
