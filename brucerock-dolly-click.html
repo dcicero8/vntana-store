@@ -30,6 +30,10 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 .card .kick{font-size:.56rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
 .card .c-render{display:none;width:100%;max-height:180px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff;margin:.55rem 0 .1rem;cursor:zoom-in;}
 .card .c-render.on{display:block;}
+.card .c-render-ph{display:none;height:110px;flex-direction:column;align-items:center;justify-content:center;gap:.25rem;text-align:center;border:1px dashed var(--line);border-radius:10px;background:#f7f9fa;margin:.55rem 0 .1rem;}
+.card .c-render-ph.on{display:flex;}
+.card .c-render-ph span{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#b4832a;}
+.card .c-render-ph small{font-size:.64rem;color:#9aa8b3;}
 .lightbox{position:fixed;inset:0;background:rgba(16,32,44,.86);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;padding:3vw;}
 .lightbox.on{display:flex;}
 .lightbox img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4);background:#fff;}
@@ -90,6 +94,7 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
   <div class="card" id="card">
     <div class="kick">Selected part</div>
     <img class="c-render" id="c-render" alt="">
+    <div class="c-render-ph" id="c-render-ph"><span>Needs mapping</span><small>No render yet</small></div>
     <div class="sku" id="c-sku"></div>
     <div class="nm" id="c-nm"></div>
     <div class="ft">
@@ -169,6 +174,7 @@ function clearSelection(){
   card.classList.remove('on');
   document.getElementById('c-render').classList.remove('on');
   document.getElementById('c-render').removeAttribute('src');
+  document.getElementById('c-render-ph').classList.remove('on');
   prompt.style.opacity=1;
 }
 
@@ -243,10 +249,10 @@ fetch("renders/brucerock/manifest.json").then(r=>r.json())
             if(selectedUid!=null) showRenderCard(PARTS[selectedUid]); })
   .catch(()=>{});
 function showRenderCard(p){
-  const img=document.getElementById("c-render");
+  const img=document.getElementById("c-render"), ph=document.getElementById("c-render-ph");
   const f=p&&RENDERS[p.node];
-  if(f){ img.src="renders/brucerock/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render"; img.classList.add("on"); }
-  else { img.classList.remove("on"); img.removeAttribute("src"); }
+  if(f){ img.src="renders/brucerock/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render"; img.classList.add("on"); ph.classList.remove("on"); }
+  else { img.classList.remove("on"); img.removeAttribute("src"); ph.classList.add("on"); }
 }
 // render lightbox
 (function(){
