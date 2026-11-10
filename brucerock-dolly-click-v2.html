@@ -38,7 +38,10 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 .lightbox.on{display:flex;}
 .lightbox img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4);background:#fff;}
 .card .sku{font-size:.62rem;font-weight:800;letter-spacing:.06em;color:#9aa8b3;text-transform:uppercase;margin-top:.5rem;}
-.card .nm{font-size:1.02rem;font-weight:800;line-height:1.25;margin:.15rem 0 .55rem;}
+.card .nm{font-size:1.02rem;font-weight:800;line-height:1.25;margin:.15rem 0 .35rem;}
+.card .partof{font-size:.72rem;margin:0 0 .5rem;min-height:0;}
+.card .partof a{color:var(--orange);font-weight:700;text-decoration:none;cursor:pointer;}
+.card .partof a:hover{text-decoration:underline;}
 .card .ft{display:flex;align-items:center;justify-content:space-between;gap:.6rem;}
 .card .meta{font-size:.74rem;color:#6b7b88;}
 .card .price{font-size:1.15rem;font-weight:800;color:var(--navy);}
@@ -94,9 +97,10 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
   <div class="card" id="card">
     <div class="kick">Selected part</div>
     <img class="c-render" id="c-render" alt="">
-    <div class="c-render-ph" id="c-render-ph"><span>Needs mapping</span><small>No render yet</small></div>
+    <div class="c-render-ph" id="c-render-ph"><span>Render pending</span><small>No render yet</small></div>
     <div class="sku" id="c-sku"></div>
     <div class="nm" id="c-nm"></div>
+    <div class="partof" id="c-partof"></div>
     <div class="ft">
       <span class="meta" id="c-meta"></span>
       <span id="c-price"></span>
@@ -107,70 +111,75 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 <div class="lightbox" id="lightbox"><img id="lightbox-img" alt=""></div>
 
 <script type="module">
-const viewer = document.getElementById('viewer');
-viewer.src = "assets/brucerock/dolly.glb";
-viewer.enableAutoRotate = false;   // free orbit, no auto-spin
+/* ---------------------------------------------------------------------------
+   TAN-DOLLY click-to-identify, version 2. Shares the v2 mapping table with the
+   catalog page (assets/brucerock/v2/parts_v2.json) and the v2 model. Explorer
+   interaction: hover outlines what a click will select, click fills it, the rest
+   stays fully visible and clickable. Click resolves to the most specific line.
+--------------------------------------------------------------------------- */
+const V2_GLB ="assets/brucerock/v2/dolly_v2.glb";
+const V2_DATA="assets/brucerock/v2/parts_v2.json";
+const V2_REND="renders/brucerock-v2/";
+const viewer=document.getElementById('viewer');
+viewer.src=V2_GLB;
+viewer.enableAutoRotate=false;   // free orbit, no auto-spin
 
-function norm(s){ return (s||"").toUpperCase().replace(/[^A-Z0-9]/g,""); }
-// a "sku" is only worth showing when it isn't just a slug of the name (e.g. a real part number)
-function skuChip(p){ const s=norm(p.sku), n=norm(p.name); if(!s||n.includes(s)||s.includes(n)) return ""; return `<span class="sku">${p.sku}</span>`; }
-let PARTS=[];
-function partForNodeName(name){
-  const n=norm(name); if(!n) return null;
-  for(const p of PARTS){ if(p._n && n.indexOf(p._n)===0) return p; }
-  for(const p of PARTS){ if(p._sku && p._sku.length>=4 && n.indexOf(p._sku)!==-1) return p; }
-  return null;
-}
+let LINES=[], byId={};
 
-// ---------- scene graph index ----------
-let ready=false, leaves=[], uidUuids={}, uuidUid={};
-function walkSG(){
-  const sg=viewer.sceneGraph; const out=[];
-  if(sg)(function w(node,ap){
-    let a=ap; if(node.name){ const p=partForNodeName(node.name); if(p) a=p; }
-    if(node.type==="mesh"||node.type==="primitive"){ out.push({uuid:node.uuid,part:a}); }
-    (node.children||[]).forEach(c=>w(c,a));
-  })(sg,null);
-  return out;
+// ---------- scene graph index: nodes by n#### id, meshes per line ----------
+let ready=false, nodeById={}, lineMeshes={}, meshToLines={};
+function nodeId(name){ const k=(name||"").replace(/[^A-Za-z0-9]/g,""); const m=k.match(/^[Nn](\d{4})/); return m?("n"+m[1]):null; }
+function collectMeshes(node,acc){
+  if(node.type==="mesh"||node.type==="primitive") acc.push(node.uuid);
+  (node.children||[]).forEach(c=>collectMeshes(c,acc));
 }
 function buildIndex(tries){
-  const f=walkSG();
-  if(!f.length){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
-  leaves=f; uidUuids={}; uuidUid={};
-  f.forEach(l=>{ if(!l.part) return; const u=l.part.uid;
-    (uidUuids[u]=uidUuids[u]||[]).push(l.uuid); uuidUid[l.uuid]=u; });
+  const sg=viewer.sceneGraph;
+  if(!sg){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
+  nodeById={};
+  (function w(n){ const id=n.name?nodeId(n.name):null; if(id) nodeById[id]=n; (n.children||[]).forEach(w); })(sg);
+  if(!Object.keys(nodeById).length){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
+  lineMeshes={}; meshToLines={};
+  LINES.forEach(L=>{
+    const acc=[];
+    (L.nodes||[]).forEach(id=>{ const n=nodeById[id]; if(n) collectMeshes(n,acc); });
+    lineMeshes[L.id]=acc;
+    acc.forEach(u=>{ (meshToLines[u]=meshToLines[u]||[]).push(L.id); });
+  });
   ready=true;
-  console.log("INDEX", Object.keys(uidUuids).length, "parts matched;", f.filter(x=>x.part).length,"/",f.length,"leaves mapped");
+  console.log("INDEX v2:",Object.keys(nodeById).length,"nodes,",LINES.length,"lines");
 }
 function renderNow(){ try{viewer.needsRender=true;}catch(_){ } }
-// Two independent cues so they can coexist and be cleared separately:
-//   HOVER   = "outline" (orange edge preview of what a click will select)
-//   SELECT  = "highlight" (orange fill of the committed part)
+function lineForMesh(uuid){
+  const c=meshToLines[uuid]; if(!c||!c.length) return null;
+  let best=c[0]; c.forEach(id=>{ if(byId[id].mesh_count<byId[best].mesh_count) best=id; });
+  return best;
+}
+
+// Two independent cues so they can coexist and clear separately:
+//   HOVER  = "outline" (orange edge preview of what a click will select)
+//   SELECT = "highlight" (orange fill of the committed part)
 let curHover=null;
-function applyHover(uid){
-  if(uid===curHover) return;              // only touch effects when the hovered part actually changes
-  curHover=uid;
+function applyHover(id){
+  if(id===curHover) return;
+  curHover=id;
   try{ viewer.clearEffect("outline"); }catch(_){ }
-  if(uid!=null && uid!==selectedUid && ready){
-    const hit=uidUuids[uid]||[];
-    try{ hit.forEach(u=>viewer.setEffect(u,"outline")); }catch(_){ }
+  if(id!=null && id!==selected && ready){
+    (lineMeshes[id]||[]).forEach(u=>{ try{ viewer.setEffect(u,"outline"); }catch(_){ } });
   }
   renderNow();
 }
-function highlightPart(uid){
-  // explorer mode: fill the clicked part, leave everything else fully visible and
-  // clickable so you can keep clicking part to part. Clear any hover preview first.
+function highlightPart(id){
   try{ viewer.clearEffect("outline"); viewer.clearEffect("highlight"); }catch(_){ }
   curHover=null;
   if(!ready){ renderNow(); return; }
-  const hit=uidUuids[uid]||[];
-  try{ hit.forEach(u=>viewer.setEffect(u,"highlight")); }catch(_){ }
+  (lineMeshes[id]||[]).forEach(u=>{ try{ viewer.setEffect(u,"highlight"); }catch(_){ } });
   renderNow();
 }
 function clearSelection(){
   try{ viewer.clearEffect("outline"); viewer.clearEffect("highlight"); }catch(_){ }
   curHover=null; renderNow();
-  selectedUid=null;
+  selected=null;
   card.classList.remove('on');
   document.getElementById('c-render').classList.remove('on');
   document.getElementById('c-render').removeAttribute('src');
@@ -180,78 +189,75 @@ function clearSelection(){
 
 // ---------- UI ----------
 const money=n=>"$"+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
+function badge(L){ return L.status==="confirm"?'<span class="badge confirm">confirm</span>':L.status==="needs"?'<span class="badge needs">needs map</span>':''; }
+function skuChip(L){ return L.part_number?`<span class="sku">${L.part_number}</span>`:""; }
 const card=document.getElementById('card'), prompt=document.getElementById('prompt'), hovertag=document.getElementById('hovertag');
-let hoverUid=null, selectedUid=null;
-function showPart(uid){
-  const p=PARTS[uid]; if(!p) return;
-  selectedUid=uid;
-  const isNeed=p.flag==="needs";
-  const ns=norm(p.sku), nn=norm(p.name);
-  const skuText = (ns && !nn.includes(ns) && !ns.includes(nn)) ? `${p.sku} ` : '';
-  document.getElementById('c-sku').innerHTML = skuText+
-    (p.flag==="confirm"?'<span class="badge confirm">confirm</span>':isNeed?'<span class="badge needs">needs map</span>':'');
-  document.getElementById('c-nm').textContent = p.name;
-  document.getElementById('c-meta').textContent = p.qty? `Qty ${p.qty} per dolly`:'';
+let hoverId=null, selected=null;
+function showPart(id){
+  const L=byId[id]; if(!L) return;
+  selected=id;
+  const noPrice=L.price==null;
+  document.getElementById('c-sku').innerHTML=(L.part_number?L.part_number+' ':'')+badge(L);
+  document.getElementById('c-nm').textContent=L.name;
+  const po=document.getElementById('c-partof');
+  po.innerHTML=(L.parent&&byId[L.parent])?`<a data-id="${L.parent}">Part of ${byId[L.parent].name}</a>`:'';
+  const up=po.querySelector('a'); if(up) up.addEventListener('click',ev=>{ ev.stopPropagation(); showPart(up.dataset.id); });
+  document.getElementById('c-meta').textContent=L.qty?`Qty ${L.qty} per dolly`:'';
   const price=document.getElementById('c-price');
-  price.className = isNeed?'price tbd':'price';
-  price.textContent = isNeed? 'Needs part mapping' : money(p.price);
+  price.className=noPrice?'price tbd':'price';
+  price.textContent=noPrice?'Contact for pricing':money(L.price);
   const cart=document.getElementById('c-cart');
-  cart.className = isNeed? 'cart disabled':'cart';
-  cart.textContent = isNeed? 'Not yet available':'Add to Cart';
-  showRenderCard(p);
+  cart.className=noPrice?'cart disabled':'cart';
+  cart.textContent=noPrice?'Contact for pricing':'Add to Cart';
+  showRenderCard(L);
   card.classList.add('on'); prompt.style.opacity=0;
-  highlightPart(uid);
+  highlightPart(id);
 }
 document.getElementById('c-cart').addEventListener('click',e=>e.stopPropagation());
 
 let lastSelectAt=0;
 viewer.addEventListener("object-select",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0]; if(!hit) return;
-  let uid=uuidUid[hit.uuid];
-  if(uid==null && hit.name){ const p=partForNodeName(hit.name); if(p) uid=p.uid; }
-  if(uid!=null){ lastSelectAt=performance.now(); showPart(uid); }
+  const id=lineForMesh(hit.uuid);
+  if(id!=null){ lastSelectAt=performance.now(); showPart(id); }
 });
 viewer.addEventListener("object-hover",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0];
-  let uid=hit?uuidUid[hit.uuid]:null;
-  if(uid==null && hit && hit.name){ const p=partForNodeName(hit.name); if(p) uid=p.uid; }
-  hoverUid=uid;
-  if(uid!=null){ const p=PARTS[uid];
-    hovertag.innerHTML=`${skuChip(p)}${p.name}`;
+  const id=hit?lineForMesh(hit.uuid):null;
+  hoverId=id;
+  if(id!=null){ const L=byId[id];
+    hovertag.innerHTML=`${skuChip(L)}${L.name}`;
     hovertag.classList.add('on'); viewer.style.cursor="pointer";
   } else { hovertag.classList.remove('on'); viewer.style.cursor=""; }
-  applyHover(uid);
+  applyHover(id);
 });
-// F5: object-hover doesn't fire with a null hit when the pointer slides off the model
-// into empty space, so the readout tag could linger. Clear it on pointerleave.
+// F5: object-hover doesn't fire with a null hit when the pointer slides off the
+// model into empty space, so clear the readout on pointerleave.
 viewer.addEventListener("pointerleave",()=>{
-  hoverUid=null; hovertag.classList.remove('on'); viewer.style.cursor="";
+  hoverId=null; hovertag.classList.remove('on'); viewer.style.cursor="";
   applyHover(null);
 });
-// tap empty space -> clear. The viewer's orbit controls swallow DOM 'click',
-// so listen on pointerup in the capture phase with a small drag guard. A tap on a
-// part fires object-select (sets lastSelectAt); a tap on background does not, so if
-// no pick landed just after the tap we clear and bring the full model back.
+// tap empty space -> clear (orbit controls swallow DOM 'click', so use capture-phase
+// pointerup with a drag guard; a part tap fires object-select and sets lastSelectAt).
 let pdx=0,pdy=0,pdown=false;
 viewer.addEventListener("pointerdown",e=>{ pdown=true; pdx=e.clientX; pdy=e.clientY; },true);
 viewer.addEventListener("pointerup",e=>{
   if(!pdown) return; pdown=false;
   if(Math.hypot(e.clientX-pdx,e.clientY-pdy)>6) return;   // was a drag/orbit, not a tap
-  setTimeout(()=>{ if(selectedUid!=null && performance.now()-lastSelectAt>150) clearSelection(); },90);
+  setTimeout(()=>{ if(selected!=null && performance.now()-lastSelectAt>150) clearSelection(); },90);
 },true);
 
-// part renders (same manifest as the list page), keyed on node. Cache-bust per load
-// so in-place render updates always show.
+// ---------- part renders (manifest keyed on line id) ----------
 const RENDER_BUST=Date.now();
 const RENDERS={};
-fetch("renders/brucerock-v2/manifest.json").then(r=>r.json())
-  .then(m=>{ (m.images||[]).forEach(im=>{ RENDERS[im.node]=im.file; });
-            if(selectedUid!=null) showRenderCard(PARTS[selectedUid]); })
+fetch(V2_REND+"manifest.json").then(r=>r.json())
+  .then(m=>{ (m.images||[]).forEach(im=>{ RENDERS[im.id]=im.file; });
+            if(selected!=null) showRenderCard(byId[selected]); })
   .catch(()=>{});
-function showRenderCard(p){
+function showRenderCard(L){
   const img=document.getElementById("c-render"), ph=document.getElementById("c-render-ph");
-  const f=p&&RENDERS[p.node];
-  if(f){ img.src="renders/brucerock-v2/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render"; img.classList.add("on"); ph.classList.remove("on"); }
+  const f=L&&(RENDERS[L.id]||L.render);
+  if(f){ img.src=V2_REND+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=L.name+" render"; img.classList.add("on"); ph.classList.remove("on"); }
   else { img.classList.remove("on"); img.removeAttribute("src"); ph.classList.add("on"); }
 }
 // render lightbox
@@ -264,10 +270,9 @@ function showRenderCard(p){
   document.addEventListener("keydown",e=>{ if(e.key==="Escape") lb.classList.remove("on"); });
 })();
 
-// ---------- load parts, then init ----------
-fetch("assets/brucerock/parts_data.json").then(r=>r.json()).then(data=>{
-  PARTS=data;
-  PARTS.forEach((p,i)=>{ p.uid=i; p._n=norm(p.node); p._sku=norm(p.sku); });
+// ---------- load data, then init ----------
+fetch(V2_DATA).then(r=>r.json()).then(d=>{
+  LINES=d.lines; byId={}; LINES.forEach(L=>byId[L.id]=L);
   viewer.addEventListener("load",()=>buildIndex(30));
   let polls=0; const t=setInterval(()=>{ if(ready||polls++>80){clearInterval(t);} else if(viewer.sceneGraph){ buildIndex(5);} },500);
   if(viewer.sceneGraph) buildIndex(5);

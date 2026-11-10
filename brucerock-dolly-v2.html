@@ -27,6 +27,9 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 .pc-head .kick{font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
 .pc-head h1{font-size:1.1rem;font-weight:800;margin:.25rem 0 .15rem;}
 .pc-head p{font-size:.76rem;color:#6b7b88;line-height:1.5;}
+.pc-head p .uplink{color:var(--orange);font-weight:700;text-decoration:none;cursor:pointer;}
+.pc-head p .uplink:hover{text-decoration:underline;}
+.pc-head p .note{margin-top:.35rem;color:#8a97a2;font-size:.72rem;line-height:1.4;}
 .search{margin-top:.7rem;width:100%;padding:.5rem .7rem;border:1.5px solid var(--line);border-radius:8px;font-size:.8rem;}
 /* floating render preview over the viewer (keeps the parts list from reflowing) */
 .render-float{position:absolute;top:1rem;right:1rem;width:min(38%,280px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 24px rgba(16,32,44,.16);padding:.4rem;display:none;z-index:3;}
@@ -42,6 +45,9 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 .card{border:1.5px solid var(--line);border-radius:10px;padding:.8rem .9rem;margin-bottom:.6rem;cursor:pointer;transition:border-color .14s,box-shadow .14s,background .14s;}
 .card:hover{border-color:var(--steel);box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .card.sel{border-color:var(--orange);background:#fff7f2;box-shadow:0 2px 14px rgba(232,98,29,.15);}
+/* nested child line (part inside an assembly) */
+.card.child{border-left:3px solid #d7dee3;}
+.card.child.sel{border-left-color:var(--orange);}
 .card .sku{font-size:.58rem;font-weight:800;letter-spacing:.06em;color:#9aa8b3;text-transform:uppercase;}
 .card .nm{font-size:.86rem;font-weight:700;line-height:1.3;margin:.15rem 0 .5rem;}
 .card .ft{display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
@@ -53,13 +59,6 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 .badge.needs{background:#ffe3e0;color:#b4332a;}
 .cart{font-size:.72rem;font-weight:700;background:var(--orange);color:#fff;border:none;border-radius:7px;padding:.45rem .9rem;cursor:pointer;white-space:nowrap;}
 .cart:hover{background:#c9500f;}
-.card.ref{cursor:default;opacity:.5;background:#fafbfc;border-style:dashed;}
-.card.ref:hover{border-color:var(--line);box-shadow:none;}
-.card.ref .nm{color:#8a97a2;}
-.card.ref .cart{display:none;}
-.card.ref.sel{opacity:1;background:#fff8ec;border-color:#d8a43a;border-style:dashed;box-shadow:0 2px 14px rgba(216,164,58,.15);}
-.card.ref.sel .nm{color:#13212c;}
-.sec.refsec{color:#b3bec7;}
 @media(max-width:880px){main{grid-template-columns:1fr;}.viewer-col{height:58vw;position:relative;top:0;}.parts-col{height:auto;position:static;overflow:visible;}}
 @media(max-width:620px){header{gap:.6rem;padding:0 .9rem;flex-wrap:nowrap;}header .brand{font-size:.82rem;white-space:nowrap;}header .sub,header .vn{display:none;}}
 </style>
@@ -98,99 +97,74 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 <div class="lightbox" id="lightbox"><img id="lightbox-img" alt=""></div>
 
 <script type="module">
-const PARTS = [{"sku":"100556","name":"AXLE DRUM BRAKE PARALLEL KH","qty":"2","price":3052.22,"flag":"ok","node":"AXLE DRUM BRAKE PARALLEL KH [100556]"},{"sku":"118068","name":"BOLT HEX M8x65 AS1110 GR8.8","qty":"2","price":4.78,"flag":"ok","node":"BOLT HEX M8x65 AS1110 GR8.8 [118068]"},{"sku":"117156","name":"HELLA LED COMB TAIL LAMP (BRE)","qty":"2","price":96.25,"flag":"ok","node":"HELLA LED COMB TAIL LAMP (BRE) [117156]"},{"sku":"117141","name":"HELLA LED RED/AMBER SIDE MARKER","qty":"4","price":111.63,"flag":"ok","node":"HELLA LED RED/AMBER SIDE MARKER [117141]"},{"sku":"123428","name":"MOUNT - AIR TANK 950","qty":"2","price":539.8,"flag":"ok","node":"MOUNT - AIR TANK 950 [123428]"},{"sku":"114429","name":"MOUNT - MUDFLAP SINGLE","qty":"2","price":118.6,"flag":"ok","node":"MOUNT - MUDFLAP SINGLE [114429]"},{"sku":"107356","name":"SOCKET-WELD IN-BSP-1/2-BLACK","qty":"4","price":38.7,"flag":"ok","node":"SOCKET-WELD IN-BSP-1/2-BLACK [107356]"},{"sku":"101224","name":"SUSPENSION MECHANICAL O/SLUNG","qty":"1","price":1940.92,"flag":"ok","node":"SUSPENSION MECHANICAL O/SLUNG [101224]"},{"sku":"106872","name":"3/8 M&F EXTRUDED ELBOW","qty":"1","price":21.3,"flag":"confirm","node":"3/8 M&F EXTRUDED ELBOW [106872] (CONFIRM)"},{"sku":"116851","name":"A-FRAME COMPRESSION SPRING","qty":"1","price":286.95,"flag":"confirm","node":"A-FRAME COMPRESSION SPRING [116851] (CONFIRM)"},{"sku":"112401","name":"A-FRAME GUSSET PLATE","qty":"2","price":286.8,"flag":"confirm","node":"A-FRAME GUSSET PLATE [112401] (CONFIRM)"},{"sku":"117817","name":"A-FRAME TENSION/HELPER SPRING","qty":"2","price":292.97,"flag":"confirm","node":"A-FRAME TENSION/HELPER SPRING [117817] (CONFIRM)"},{"sku":"AIR-BRAKE-VALVE","name":"AIR BRAKE VALVE","qty":"4","price":217.12,"flag":"confirm","node":"AIR BRAKE VALVE (CONFIRM)"},{"sku":"AIR-FITTING-1-2","name":"AIR FITTING 1/2\"","qty":"10","price":21.43,"flag":"confirm","node":"AIR FITTING 1/2\" (CONFIRM)"},{"sku":"AIR-FITTING-3-8","name":"AIR FITTING 3/8\"","qty":"6","price":22.1,"flag":"confirm","node":"AIR FITTING 3/8\" (CONFIRM)"},{"sku":"AIR-LINE-JUNCTION","name":"AIR LINE JUNCTION","qty":"2","price":351.74,"flag":"confirm","node":"AIR LINE JUNCTION (CONFIRM)"},{"sku":"123428","name":"AIR TANK CRADLE BRACKET","qty":"2","price":719.2,"flag":"confirm","node":"AIR TANK CRADLE BRACKET [123428] (CONFIRM)"},{"sku":"BRAKE-BOOSTER-3030","name":"BRAKE BOOSTER 3030","qty":"4","price":202.68,"flag":"confirm","node":"BRAKE BOOSTER 3030 (CONFIRM)"},{"sku":"DRAWBAR-A-FRAME-WELDME","name":"DRAWBAR A-FRAME WELDMENT","qty":"1","price":343.82,"flag":"confirm","node":"DRAWBAR A-FRAME WELDMENT (CONFIRM)"},{"sku":"100675","name":"DRAWBAR END PIVOT CASTING (LH)","qty":"2","price":546.6,"flag":"confirm","node":"DRAWBAR END PIVOT CASTING (LH) [100675] (CONFIRM)"},{"sku":"100675","name":"DRAWBAR END PIVOT CASTING (RH)","qty":"2","price":609.3,"flag":"confirm","node":"DRAWBAR END PIVOT CASTING (RH) [100675] (CONFIRM)"},{"sku":"HELLA-LAMP-2559","name":"HELLA LAMP 2559","qty":"1","price":161.35,"flag":"confirm","node":"HELLA LAMP 2559 (CONFIRM)"},{"sku":"MOUNTING-RING-COLLAR","name":"MOUNTING RING / COLLAR","qty":"1","price":372.06,"flag":"confirm","node":"MOUNTING RING / COLLAR (CONFIRM)"},{"sku":"NUMBER-PLATE","name":"NUMBER PLATE","qty":"1","price":393.08,"flag":"confirm","node":"NUMBER PLATE (CONFIRM)"},{"sku":"PRESSURE-PROTECTION-VA","name":"PRESSURE PROTECTION VALVE","qty":"2","price":162.48,"flag":"confirm","node":"PRESSURE PROTECTION VALVE (CONFIRM)"},{"sku":"PRESSURE-PROTECTION-VA","name":"PRESSURE PROTECTION VALVE ASSY","qty":"2","price":392.89,"flag":"confirm","node":"PRESSURE PROTECTION VALVE ASSY (CONFIRM)"},{"sku":"RELAY-VALVE","name":"RELAY VALVE","qty":"4","price":472.93,"flag":"confirm","node":"RELAY VALVE (CONFIRM)"},{"sku":"RELAY-VALVE-4-WAY","name":"RELAY VALVE 4-WAY","qty":"2","price":141.56,"flag":"confirm","node":"RELAY VALVE 4-WAY (CONFIRM)"},{"sku":"RIM","name":"RIM","qty":"8","price":244.06,"flag":"confirm","node":"RIM (CONFIRM)"},{"sku":"101001","name":"ROCKER PIN EQUALISER","qty":"2","price":275.06,"flag":"confirm","node":"ROCKER PIN EQUALISER [101001] (CONFIRM)"},{"sku":"SLACK-ADJUSTER","name":"SLACK ADJUSTER","qty":"4","price":224.05,"flag":"confirm","node":"SLACK ADJUSTER (CONFIRM)"},{"sku":"101224","name":"SUSPENSION ASSEMBLY (MECHANICAL O/SLUNG)","qty":"1","price":1858.34,"flag":"confirm","node":"SUSPENSION ASSEMBLY (MECHANICAL O/SLUNG) [101224] (CONFIRM)"},{"sku":"101224","name":"SUSPENSION MECHANICAL O/SLUNG","qty":"1","price":2055.08,"flag":"confirm","node":"SUSPENSION MECHANICAL O/SLUNG [101224] (CONFIRM)"},{"sku":"TRAILING-ARM-RADIUS-RO","name":"TRAILING ARM / RADIUS ROD (LH 395)","qty":"1","price":452.64,"flag":"confirm","node":"TRAILING ARM / RADIUS ROD (LH 395) (CONFIRM)"},{"sku":"TRAILING-ARM-RADIUS-RO","name":"TRAILING ARM / RADIUS ROD (LH 495)","qty":"1","price":669.64,"flag":"confirm","node":"TRAILING ARM / RADIUS ROD (LH 495) (CONFIRM)"},{"sku":"TRAILING-ARM-RADIUS-RO","name":"TRAILING ARM / RADIUS ROD (RH 395)","qty":"1","price":529.22,"flag":"confirm","node":"TRAILING ARM / RADIUS ROD (RH 395) (CONFIRM)"},{"sku":"TRAILING-ARM-RADIUS-RO","name":"TRAILING ARM / RADIUS ROD (RH 495)","qty":"1","price":711.47,"flag":"confirm","node":"TRAILING ARM / RADIUS ROD (RH 495) (CONFIRM)"},{"sku":"101446","name":"TURNTABLE BOOMERANG (HALF)","qty":"1","price":2426.96,"flag":"confirm","node":"TURNTABLE BOOMERANG (HALF) [101446] (CONFIRM)"},{"sku":"101446","name":"TURNTABLE BOOMERANG (TOP PLATE)","qty":"1","price":2407.78,"flag":"confirm","node":"TURNTABLE BOOMERANG (TOP PLATE) [101446] (CONFIRM)"},{"sku":"TYRE","name":"TYRE","qty":"8","price":590.85,"flag":"confirm","node":"TYRE (CONFIRM)"},{"sku":"WHEEL-ASSY","name":"WHEEL ASSY","qty":"4","price":395.86,"flag":"confirm","node":"WHEEL ASSY (CONFIRM)"},{"sku":"108384","name":"WIGGLEBAR 6x300 CENTRES","qty":"2","price":202.82,"flag":"confirm","node":"WIGGLEBAR 6x300 CENTRES [108384] (CONFIRM)"},{"sku":"1-2-INCH-BLANKING-AIR-","name":"1-2 Inch BLANKING AIR FITTING","qty":"3","price":47.58,"flag":"needs","node":"1-2 Inch BLANKING AIR FITTING (NEEDS ENG MAP)"},{"sku":"1-2-TO-3-4-INCH-UNION","name":"1-2 to 3-4 Inch UNION","qty":"5","price":400.26,"flag":"needs","node":"1-2 to 3-4 Inch UNION (NEEDS ENG MAP)"},{"sku":"1-2-TO-3-8-INCH-UNION","name":"1-2 to 3-8 Inch UNION","qty":"2","price":156.38,"flag":"needs","node":"1-2 to 3-8 Inch UNION (NEEDS ENG MAP)"},{"sku":"3-8-INCH-90-SWIVEL-AIR","name":"3-8 Inch 90\u00b0 SWIVEL AIR FITTING","qty":"1","price":55.46,"flag":"needs","node":"3-8 Inch 90\u00b0 SWIVEL AIR FITTING (NEEDS ENG MAP)"},{"sku":"3-8-INCH-BLANKING-AIR-","name":"3-8 Inch BLANKING AIR FITTING","qty":"4","price":33.63,"flag":"needs","node":"3-8 Inch BLANKING AIR FITTING (NEEDS ENG MAP)"},{"sku":"3-8-INCH-STRAIGHT-AIR-","name":"3-8 Inch STRAIGHT AIR FITTING","qty":"2","price":63.31,"flag":"needs","node":"3-8 Inch STRAIGHT AIR FITTING (NEEDS ENG MAP)"},{"sku":"3-8-INCH-T-AIR-FITTING","name":"3-8 Inch T AIR FITTING","qty":"2","price":29.58,"flag":"needs","node":"3-8 Inch T AIR FITTING (NEEDS ENG MAP)"},{"sku":"3-8-TO-3-8-INCH-BSP-T-","name":"3-8 to 3-8 Inch BSP T AIR FITTING","qty":"2","price":36.68,"flag":"needs","node":"3-8 to 3-8 Inch BSP T AIR FITTING (NEEDS ENG MAP)"},{"sku":"BENT-PLATE-BRACKET-KDS","name":"BENT PLATE BRACKET KDSLB","qty":"2","price":312.09,"flag":"needs","node":"BENT PLATE BRACKET KDSLB (NEEDS ENG MAP)"},{"sku":"BRACKET-0679","name":"BRACKET 0679","qty":"2","price":318.73,"flag":"needs","node":"BRACKET 0679 (NEEDS ENG MAP)"},{"sku":"CAST-BEARING-PIVOT-BLO","name":"CAST BEARING/PIVOT BLOCK KH600068","qty":"2","price":798.45,"flag":"needs","node":"CAST BEARING/PIVOT BLOCK KH600068 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-01","qty":"2","price":618.25,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-01 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-02","qty":"4","price":549.52,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-02 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-03","qty":"2","price":851.49,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-03 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-04","qty":"2","price":558.02,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-04 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-05","qty":"2","price":585.02,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-05 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-07","qty":"1","price":888.6,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-07 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-08","qty":"2","price":877.44,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-08 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-09","qty":"2","price":414.84,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-09 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-10","qty":"1","price":279.25,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-10 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-11","qty":"1","price":556.92,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-11 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-13","qty":"1","price":799.15,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-13 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-14","qty":"2","price":592.24,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-14 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-15","qty":"6","price":579.85,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-15 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-16","qty":"2","price":378.18,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-16 (NEEDS ENG MAP)"},{"sku":"FRAME-WELDMENT-MEMBER-","name":"FRAME WELDMENT MEMBER 16981-26","qty":"1","price":897.24,"flag":"needs","node":"FRAME WELDMENT MEMBER 16981-26 (NEEDS ENG MAP)"},{"sku":"GUARD-RAIL-STRIP-G01","name":"GUARD RAIL/STRIP G01","qty":"4","price":284.64,"flag":"needs","node":"GUARD RAIL/STRIP G01 (NEEDS ENG MAP)"},{"sku":"GUARD-RAIL-STRIP-G03","name":"GUARD RAIL/STRIP G03","qty":"4","price":183.96,"flag":"needs","node":"GUARD RAIL/STRIP G03 (NEEDS ENG MAP)"},{"sku":"GUARD-RAIL-STRIP-G04","name":"GUARD RAIL/STRIP G04","qty":"2","price":281.07,"flag":"needs","node":"GUARD RAIL/STRIP G04 (NEEDS ENG MAP)"},{"sku":"GUARD-FENDER-PANEL-255","name":"GUARD/FENDER PANEL 2559-1-B","qty":"1","price":217.1,"flag":"needs","node":"GUARD/FENDER PANEL 2559-1-B (NEEDS ENG MAP)"},{"sku":"GUARD-FENDER-PANEL-255","name":"GUARD/FENDER PANEL 25591-A","qty":"1","price":90.08,"flag":"needs","node":"GUARD/FENDER PANEL 25591-A (NEEDS ENG MAP)"},{"sku":"MUDGUARD-PANEL-G02","name":"MUDGUARD PANEL G02","qty":"2","price":173.89,"flag":"needs","node":"MUDGUARD PANEL G02 (NEEDS ENG MAP)"},{"sku":"PIVOT-PIN-COLLAR-KH007","name":"PIVOT PIN & COLLAR KH007","qty":"2","price":566.2,"flag":"needs","node":"PIVOT PIN & COLLAR KH007 (NEEDS ENG MAP)"},{"sku":"SADDLE-SEAT-CASTING-KH","name":"SADDLE/SEAT CASTING KH071","qty":"2","price":772.49,"flag":"needs","node":"SADDLE/SEAT CASTING KH071 (NEEDS ENG MAP)"}];
-const viewer = document.getElementById('viewer');
-viewer.src = "assets/brucerock/dolly.glb";
-viewer.enableAutoRotate = false;   // free orbit, no auto-spin
+/* ---------------------------------------------------------------------------
+   TAN-DOLLY parts catalog, version 2.
+   One mapping table: assets/brucerock/v2/parts_v2.json ("lines").
+   Model: assets/brucerock/v2/dolly_v2.glb (CAD names prefixed with a stable
+   n#### id). No name-matching: each line lists its node ids in `nodes`, and a
+   line owns every mesh under those nodes. Renders keyed on line id.
+--------------------------------------------------------------------------- */
+const V2_GLB ="assets/brucerock/v2/dolly_v2.glb";
+const V2_DATA="assets/brucerock/v2/parts_v2.json";
+const V2_REND="renders/brucerock-v2/";
+const viewer=document.getElementById('viewer');
+viewer.src=V2_GLB;
+viewer.enableAutoRotate=false;   // free orbit, no auto-spin
 
-// each part gets a stable unique id (SKUs are NOT unique in this BOM)
-PARTS.forEach((p,i)=>{ p.uid=i; p._n=norm(p.node); p._sku=norm(p.sku); p.eflag=p.flag; });
+let LINES=[], byId={}, GROUPS=[];
 
-// part renders (Blender studio shots), keyed on node via the manifest.
-// Renders update in place under the same filename, so cache-bust per page load
-// (a refresh always pulls the latest; images still cache within one session).
-const RENDER_BUST=Date.now();
-const RENDERS={};
-fetch("renders/brucerock-v2/manifest.json").then(r=>r.json())
-  .then(m=>{ (m.images||[]).forEach(im=>{ RENDERS[im.node]=im.file; });
-            if(selUid!=null) showRender(PARTS[selUid]); })
-  .catch(()=>{});
-function showRender(p){
-  const fl=document.getElementById("render-float"), img=document.getElementById("h-render"),
-        cap=document.getElementById("render-cap"), note=document.getElementById("render-note");
-  const f=p&&RENDERS[p.node];
-  if(f){
-    img.src="renders/brucerock-v2/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render";
-    img.style.display=""; note.style.display="none"; cap.textContent="Part render"; fl.classList.add("on");
-  } else {
-    fl.classList.remove("on"); img.removeAttribute("src"); note.style.display="none";
-  }
-}
-
-// ---------- normalization-proof matching ----------
-function norm(s){ return (s||"").toUpperCase().replace(/[^A-Z0-9]/g,""); }
-function partForNodeName(name){
-  const n = norm(name);
-  if(!n) return null;
-  let best=null;
-  for(const p of PARTS){ if(p._n && n.indexOf(p._n)===0){ best=p; break; } }  // starts-with full label
-  if(best) return best;
-  for(const p of PARTS){ if(p._sku && p._sku.length>=4 && n.indexOf(p._sku)!==-1) return p; }  // sku token
-  return null;
-}
-
-// ---------- scene graph index (keyed by uid, not sku) ----------
-let ready=false, leaves=[], uidUuids={}, uuidUid={};
-function walkSG(){
-  const sg=viewer.sceneGraph; const out=[];
-  if(sg)(function w(node,ancestorPart){
-    let ap=ancestorPart;
-    if(node.name){ const p=partForNodeName(node.name); if(p) ap=p; }
-    if(node.type==="mesh"||node.type==="primitive"){ out.push({uuid:node.uuid, part:ap}); }
-    (node.children||[]).forEach(c=>w(c,ap));
-  })(sg,null);
-  return out;
+// ---------- scene graph index: nodes by n#### id, meshes per line ----------
+let ready=false, nodeById={}, lineMeshes={}, meshToLines={}, allMeshes=[];
+function nodeId(name){ const k=(name||"").replace(/[^A-Za-z0-9]/g,""); const m=k.match(/^[Nn](\d{4})/); return m?("n"+m[1]):null; }
+function collectMeshes(node,acc){
+  if(node.type==="mesh"||node.type==="primitive") acc.push(node.uuid);
+  (node.children||[]).forEach(c=>collectMeshes(c,acc));
 }
 function buildIndex(tries){
-  const f=walkSG();
-  if(!f.length){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
-  leaves=f; uidUuids={}; uuidUid={};
-  f.forEach(l=>{ if(!l.part) return; const u=l.part.uid;
-    (uidUuids[u]=uidUuids[u]||[]).push(l.uuid); uuidUid[l.uuid]=u; });
-  ready=true;
-  console.log("INDEX", Object.keys(uidUuids).length, "parts matched;", f.filter(x=>x.part).length,"/",f.length,"leaves mapped");
-  // Any mapped/confirm line that owns no geometry of its own can't be highlighted on
-  // click, so it would look broken. Demote it to the non-clickable "needs part mapping"
-  // group (the geometry it groups belongs to other, separately-listed parts).
-  PARTS.forEach(p=>{ p.eflag = (p.flag!=="needs" && (uidUuids[p.uid]||[]).length===0) ? "needs" : p.flag; });
-  renderList(document.getElementById("search").value);
-  if(selUid!=null && PARTS[selUid] && PARTS[selUid].eflag==="needs") clearSelection();
+  const sg=viewer.sceneGraph;
+  if(!sg){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
+  nodeById={};
+  (function w(n){ const id=n.name?nodeId(n.name):null; if(id) nodeById[id]=n; (n.children||[]).forEach(w); })(sg);
+  if(!Object.keys(nodeById).length){ if(tries>0) setTimeout(()=>buildIndex(tries-1),400); return; }
+  lineMeshes={}; meshToLines={}; const seen=new Set();
+  LINES.forEach(L=>{
+    const acc=[];
+    (L.nodes||[]).forEach(id=>{ const n=nodeById[id]; if(n) collectMeshes(n,acc); });
+    lineMeshes[L.id]=acc;
+    acc.forEach(u=>{ seen.add(u); (meshToLines[u]=meshToLines[u]||[]).push(L.id); });
+  });
+  allMeshes=[...seen]; ready=true;
+  console.log("INDEX v2:",Object.keys(nodeById).length,"nodes,",LINES.length,"lines,",allMeshes.length,"meshes");
+  if(sel!=null) highlightLine(sel);
 }
 
 function clearFx(){ try{["glow","outline","highlight","dim"].forEach(e=>viewer.clearEffect(e));}catch(_){ } }
 function renderNow(){ try{viewer.needsRender=true;}catch(_){ } try{viewer.render&&viewer.render();}catch(_){ } }
 function parseTriplet(s){ return (s||"").trim().split(/\s+/).map(x=>parseFloat(x)||0); }
-function highlightPart(uid){
+// A clicked mesh can belong to several lines (an assembly and the part inside it).
+// Pick the most specific: the line with the smallest mesh_count.
+function lineForMesh(uuid){
+  const c=meshToLines[uuid]; if(!c||!c.length) return null;
+  let best=c[0]; c.forEach(id=>{ if(byId[id].mesh_count<byId[best].mesh_count) best=id; });
+  return best;
+}
+function highlightLine(id){
   clearFx(); if(!ready) return;
-  const hit=new Set(uidUuids[uid]||[]);
-  // F1 guard: an assembly/parent BOM line can map to no geometry of its own (its
-  // children already map to specific parts). Without this, dimming every other leaf
-  // would grey out the whole model with nothing highlighted and no camera swing.
+  const hit=new Set(lineMeshes[id]||[]);
   if(!hit.size){ renderNow(); return; }
   try{
     hit.forEach(u=>viewer.setEffect(u,"highlight","outline"));
-    leaves.forEach(l=>{ if(!hit.has(l.uuid)) viewer.setEffect(l.uuid,"dim"); });
+    allMeshes.forEach(u=>{ if(!hit.has(u)) viewer.setEffect(u,"dim"); });
   }catch(_){ }
-  // frame the part AND swing the camera around to face it (focusNodes alone only
-  // fits the bounding box, keeping the old angle, so a rear part like the tail lamp
-  // stays oblique). focusNodes sets the target to the part centre; we read that back
-  // and rotate yaw to the part's side: yaw = atan2(targetX, targetZ).
+  // frame the part AND swing the camera to face it (focusNodes alone keeps the old
+  // angle, so a rear part stays oblique). Read the part-centre target back and rotate
+  // yaw to the part's side: yaw = atan2(targetX, targetZ).
   try{
-    if(viewer.focusNodes && hit.size){
+    if(viewer.focusNodes){
       viewer.focusNodes([...hit]);
-      if(viewer.getCameraTarget && viewer.setCameraRotation){
+      if(viewer.getCameraTarget&&viewer.setCameraRotation){
         const t=parseTriplet(viewer.getCameraTarget());
-        const yaw=Math.atan2(t[0], t[2]);
+        const yaw=Math.atan2(t[0],t[2]);
         viewer.setCameraRotation(`-12deg ${yaw}rad 0rad`);
       }
     }
@@ -198,71 +172,105 @@ function highlightPart(uid){
   renderNow();
 }
 
-// ---------- list rendering ----------
+// ---------- part renders (manifest keyed on line id) ----------
+const RENDER_BUST=Date.now();
+const RENDERS={};
+fetch(V2_REND+"manifest.json").then(r=>r.json())
+  .then(m=>{ (m.images||[]).forEach(im=>{ RENDERS[im.id]=im.file; });
+            if(sel!=null) showRender(byId[sel]); })
+  .catch(()=>{});
+function showRender(L){
+  const fl=document.getElementById("render-float"), img=document.getElementById("h-render"),
+        cap=document.getElementById("render-cap"), note=document.getElementById("render-note");
+  const f=L&&(RENDERS[L.id]||L.render);
+  if(f){
+    img.src=V2_REND+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=L.name+" render";
+    img.style.display=""; note.style.display="none"; cap.textContent="Part render"; fl.classList.add("on");
+  } else { fl.classList.remove("on"); img.removeAttribute("src"); }
+}
+
+// ---------- list rendering (grouped by functional group, nested by parent) ----------
 const money=n=>"$"+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
-const GROUPS=[["ok","Mapped parts"],["confirm","Mapped, pending engineering confirm"],["needs","Identified in model, needs part mapping (not yet clickable)"]];
-function cardHTML(p){
-  const fl = p.eflag||p.flag;
-  const isNeed = fl==="needs";
-  const badge = fl==="confirm"?'<span class="badge confirm">confirm</span>':isNeed?'<span class="badge needs">needs map</span>':'';
-  const qty = p.qty? `Qty ${p.qty}`:'';
-  const price = isNeed?'<span class="price tbd">Contact for pricing</span>':`<span class="price">${money(p.price)}</span>`;
-  return `<div class="card${isNeed?' ref':''}" data-uid="${p.uid}">
-    <div class="sku">${p.sku}${badge}</div>
-    <div class="nm">${p.name}</div>
-    <div class="ft"><span class="meta">${qty}</span>${price}
-      <button class="cart" onclick="event.stopPropagation()">Add to Cart</button></div>
+function badge(L){ return L.status==="confirm"?'<span class="badge confirm">confirm</span>':L.status==="needs"?'<span class="badge needs">needs map</span>':''; }
+function cardHTML(L,depth){
+  const noPrice=L.price==null;
+  const label=L.part_number?L.part_number:(L.kind==="assembly"?"Assembly":"");
+  const price=noPrice?'<span class="price tbd">Contact for pricing</span>':`<span class="price">${money(L.price)}</span>`;
+  const qty=L.qty?`Qty ${L.qty}`:"";
+  const cart=noPrice?'':'<button class="cart" onclick="event.stopPropagation()">Add to Cart</button>';
+  return `<div class="card${depth?' child':''}" data-id="${L.id}" style="margin-left:${depth*14}px">
+    <div class="sku">${label}${badge(L)}</div>
+    <div class="nm">${L.name}</div>
+    <div class="ft"><span class="meta">${qty}</span>${price}${cart}</div>
   </div>`;
 }
 function renderList(filter=""){
   const q=filter.trim().toUpperCase();
-  const show=PARTS.filter(p=>!q || p.sku.toUpperCase().includes(q)||p.name.toUpperCase().includes(q));
   const list=document.getElementById("list"); let html="";
-  for(const [flag,label] of GROUPS){
-    const g=show.filter(p=>(p.eflag||p.flag)===flag); if(!g.length) continue;
-    html+=`<div class="sec${flag==='needs'?' refsec':''}">${label} (${g.length})</div>`+g.map(cardHTML).join("");
+  if(q){
+    // search: flat matches, grouped, no nesting
+    const match=L=> (L.part_number&&L.part_number.toUpperCase().includes(q))
+                 || L.name.toUpperCase().includes(q)
+                 || (L.cad_name&&L.cad_name.toUpperCase().includes(q));
+    for(const g of GROUPS){
+      const gl=LINES.filter(L=>L.group===g&&match(L)); if(!gl.length) continue;
+      html+=`<div class="sec">${g} (${gl.length})</div>`+gl.map(L=>cardHTML(L,0)).join("");
+    }
+    list.innerHTML=html||`<div class="sec">No matches</div>`;
+  } else {
+    for(const g of GROUPS){
+      const inGroup=LINES.filter(L=>L.group===g); if(!inGroup.length) continue;
+      const emitted=new Set();
+      let body="";
+      const emit=(L,depth)=>{ if(emitted.has(L.id)) return; emitted.add(L.id);
+        body+=cardHTML(L,depth); (L.children||[]).forEach(cid=>{ if(byId[cid]&&byId[cid].group===g) emit(byId[cid],depth+1); }); };
+      inGroup.filter(L=>!L.parent).forEach(L=>emit(L,0));
+      inGroup.forEach(L=>{ if(!emitted.has(L.id)) emit(L,0); }); // safety: any line not reached via a parent
+      html+=`<div class="sec">${g}</div>`+body;
+    }
+    list.innerHTML=html;
   }
-  list.innerHTML=html||`<div class="sec">No matches</div>`;
-  // only mapped parts are selectable; needs-map rows are greyed, non-interactive reference
-  list.querySelectorAll(".card:not(.ref)").forEach(c=>c.addEventListener("click",()=>selectUid(+c.dataset.uid,true)));
+  list.querySelectorAll(".card").forEach(c=>c.addEventListener("click",()=>selectId(c.dataset.id,true)));
 }
-let selUid=null, lastSelectAt=0;
+
+let sel=null, lastSelectAt=0;
 const DEF_TITLE="TAN-DOLLY Parts Catalog";
 const DEF_DESC="Click a part in the 3D model, or pick from the list, to see its part number, quantity and price.";
+function descHTML(L){
+  const bits=[];
+  if(L.part_number) bits.push(`Part number ${L.part_number}`);
+  else if(L.status==="needs") bits.push("Identified in model, part number pending");
+  if(L.qty) bits.push(`Qty ${L.qty} per dolly`);
+  if(L.spec) bits.push(L.spec);
+  let h=bits.join(" · ");
+  if(L.parent&&byId[L.parent]) h+=`${h?' · ':''}<a class="uplink" data-id="${L.parent}">Part of ${byId[L.parent].name}</a>`;
+  if(L.note) h+=`<div class="note">${L.note}</div>`;
+  return h||DEF_DESC;
+}
 function clearSelection(){
-  selUid=null;
-  clearFx();
+  sel=null; clearFx();
   document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel"));
   document.getElementById("h-title").textContent=DEF_TITLE;
-  document.getElementById("h-desc").textContent=DEF_DESC;
+  document.getElementById("h-desc").innerHTML=DEF_DESC;
   document.getElementById("render-float").classList.remove("on");
   document.getElementById("h-render").removeAttribute("src");
-  // leave the camera where it is on deselect (no re-spin); the recenter button resets it
-  renderNow();
+  renderNow(); // leave the camera where it is on deselect; the recenter button resets it
 }
-function selectUid(uid,fromList){
-  selUid=uid; lastSelectAt=performance.now();
-  document.querySelectorAll(".card").forEach(c=>c.classList.toggle("sel",+c.dataset.uid===uid));
-  const p=PARTS[uid]; if(!p) return;
-  document.getElementById("h-title").textContent=p.name;
-  // F4: slug-style placeholder SKUs just repeat the name (e.g. "TYRE"/"RIM"), so a
-  // "Part number TYRE" header reads as redundant. Show the part number only when it
-  // isn't contained in the name (real numbers like 117156 still show).
-  const ns=norm(p.sku), nn=norm(p.name);
-  const showSku = ns && !nn.includes(ns) && !ns.includes(nn);
-  const qty = p.qty?`Qty ${p.qty} per dolly`:"";
-  const join = (a,b)=>[a,b].filter(Boolean).join(" · ");
-  document.getElementById("h-desc").textContent = p.flag==="needs"
-    ? join("Identified in model, needs part mapping",qty)
-    : join(showSku?`Part number ${p.sku}`:"",qty);
-  showRender(p);
-  highlightPart(uid);
-  if(fromList){ const el=document.querySelector(`.card[data-uid="${uid}"]`); el&&el.scrollIntoView({block:"nearest",behavior:"smooth"}); }
+function selectId(id,fromList){
+  sel=id; lastSelectAt=performance.now();
+  document.querySelectorAll(".card").forEach(c=>c.classList.toggle("sel",c.dataset.id===id));
+  const L=byId[id]; if(!L) return;
+  document.getElementById("h-title").textContent=L.name;
+  const desc=document.getElementById("h-desc");
+  desc.innerHTML=descHTML(L);
+  const up=desc.querySelector(".uplink"); if(up) up.addEventListener("click",()=>selectId(up.dataset.id,true));
+  showRender(L);
+  highlightLine(id);
+  if(fromList){ const el=document.querySelector(`.card[data-id="${CSS.escape(id)}"]`); el&&el.scrollIntoView({block:"nearest",behavior:"smooth"}); }
 }
 document.getElementById("search").addEventListener("input",e=>renderList(e.target.value));
-renderList();
 
-// render lightbox
+// ---------- render lightbox ----------
 const lb=document.getElementById("lightbox"), lbImg=document.getElementById("lightbox-img");
 document.getElementById("h-render").addEventListener("click",function(){
   if(!this.src) return; lbImg.src=this.src; lb.classList.add("on");
@@ -270,31 +278,33 @@ document.getElementById("h-render").addEventListener("click",function(){
 lb.addEventListener("click",()=>{ lb.classList.remove("on"); lbImg.removeAttribute("src"); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") lb.classList.remove("on"); });
 
-// ---------- click-in-3D -> select ----------
+// ---------- click in 3D -> select the most specific line ----------
 viewer.addEventListener("object-select",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0]; if(!hit) return;
-  let uid=uuidUid[hit.uuid];
-  if(uid==null && hit.name){ const p=partForNodeName(hit.name); if(p) uid=p.uid; }
-  if(uid!=null){ const el=document.querySelector(`.card[data-uid="${uid}"]`); el&&el.scrollIntoView({block:"center",behavior:"smooth"}); selectUid(uid,false); }
+  const id=lineForMesh(hit.uuid);
+  if(id!=null){ const el=document.querySelector(`.card[data-id="${CSS.escape(id)}"]`); el&&el.scrollIntoView({block:"center",behavior:"smooth"}); selectId(id,false); }
 });
 viewer.addEventListener("object-hover",e=>{
   const hit=((e.detail&&e.detail.intersections)||[])[0];
-  viewer.style.cursor = hit&&uuidUid[hit.uuid]!=null ? "pointer":"";
+  viewer.style.cursor = hit&&meshToLines[hit.uuid] ? "pointer":"";
 });
-// U1: tap empty space -> clear selection and bring the full (un-dimmed) model back.
-// The viewer swallows DOM 'click', so use capture-phase pointerup with a drag guard;
-// a tap on a part fires object-select (sets lastSelectAt), a tap on background does not.
+// tap empty space -> clear selection and bring the full (un-dimmed) model back.
 let pdx=0,pdy=0,pdown=false;
 viewer.addEventListener("pointerdown",e=>{ pdown=true; pdx=e.clientX; pdy=e.clientY; },true);
 viewer.addEventListener("pointerup",e=>{
   if(!pdown) return; pdown=false;
   if(Math.hypot(e.clientX-pdx,e.clientY-pdy)>6) return;       // drag/orbit, not a tap
-  setTimeout(()=>{ if(selUid!=null && performance.now()-lastSelectAt>150) clearSelection(); },90);
+  setTimeout(()=>{ if(sel!=null && performance.now()-lastSelectAt>150) clearSelection(); },90);
 },true);
 
-// ---------- init ----------
-viewer.addEventListener("load",()=>{ buildIndex(30); });
-let polls=0; const t=setInterval(()=>{ if(ready||polls++>80){clearInterval(t);} else if(viewer.sceneGraph){ buildIndex(5);} },500);
+// ---------- load data, then init ----------
+fetch(V2_DATA).then(r=>r.json()).then(d=>{
+  LINES=d.lines; GROUPS=d.groups; byId={}; LINES.forEach(L=>byId[L.id]=L);
+  renderList();
+  viewer.addEventListener("load",()=>buildIndex(30));
+  let polls=0; const t=setInterval(()=>{ if(ready||polls++>80){clearInterval(t);} else if(viewer.sceneGraph){ buildIndex(5);} },500);
+  if(viewer.sceneGraph) buildIndex(5);
+});
 </script>
 </body>
 </html>

@@ -1,0 +1,3414 @@
+{
+ "_about": "Bruce Rock tandem dolly, parts table version 2. One table for the page and the renders. Part numbers and quantities marked bom come from the client parts list; prices are demo values.",
+ "version": 2,
+ "model": "assets/brucerock/v2/dolly_v2.glb",
+ "renders": "renders/brucerock-v2/",
+ "node_ids": "Every node name in the model starts with n and four digits, then the original CAD name, for example 'n0320 LARGE AIR TANK NEW:1'. Strip everything except letters and digits and read ^N(\\d{4}) to get the id.",
+ "rule": "A line owns every mesh under the nodes it lists. Highlight exactly those. The render shows the same geometry (one instance when a part repeats). When a clicked mesh belongs to several lines, pick the line with the smallest mesh_count, then offer its parent.",
+ "status_values": {
+  "mapped": "part number matched to the parts list",
+  "confirm": "identified, pending engineering confirmation",
+  "needs": "geometry located, identity or part number unknown"
+ },
+ "groups": [
+  "Running gear",
+  "Suspension",
+  "Turntable",
+  "Drawbar",
+  "Chassis frame",
+  "Air system",
+  "Lighting",
+  "Guards and mudflaps"
+ ],
+ "lines": [
+  {
+   "id": "axle-wheel-set",
+   "group": "Running gear",
+   "name": "AXLE AND WHEEL SET, COMPLETE",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": null,
+   "parent": null,
+   "cad_name": "STEEL RIM 11R TYRE & DRUM AXLE (285 PCD)",
+   "nodes": [
+    "n0197",
+    "n0243"
+   ],
+   "mesh_count": 42,
+   "size_mm": [
+    2417,
+    1323,
+    1323
+   ],
+   "note": "One axle with brakes and both dual wheel assemblies.",
+   "render": "axle-wheel-set.jpg",
+   "children": [
+    "axle-100556",
+    "wheel-assy"
+   ]
+  },
+  {
+   "id": "axle-100556",
+   "group": "Running gear",
+   "name": "AXLE DRUM BRAKE PARALLEL KH",
+   "kind": "assembly",
+   "status": "mapped",
+   "part_number": "100556",
+   "part_number_basis": "bom",
+   "confidence": "high",
+   "bom_description": "AXLE DRUM BRAKE PARALLEL KH 10",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 3052.22,
+   "parent": "axle-wheel-set",
+   "cad_name": "GENERIC DUMMY AXLE n BOOSTERS",
+   "nodes": [
+    "n0198",
+    "n0244"
+   ],
+   "mesh_count": 26,
+   "size_mm": [
+    2181,
+    691,
+    484
+   ],
+   "note": "Shown with brake boosters, slack adjusters and elbow fittings, without wheels. Confirm what 100556 includes.",
+   "render": "axle-100556.jpg",
+   "children": [
+    "brake-booster",
+    "slack-adjuster",
+    "elbow-106872"
+   ]
+  },
+  {
+   "id": "brake-booster",
+   "group": "Running gear",
+   "name": "BRAKE BOOSTER 3030",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": 202.68,
+   "parent": "axle-100556",
+   "cad_name": "BOOSTER 3030",
+   "nodes": [
+    "n0201",
+    "n0206",
+    "n0248",
+    "n0253"
+   ],
+   "mesh_count": 8,
+   "size_mm": [
+    529,
+    351,
+    180
+   ],
+   "render": "brake-booster.jpg",
+   "children": []
+  },
+  {
+   "id": "slack-adjuster",
+   "group": "Running gear",
+   "name": "SLACK ADJUSTER",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": 224.05,
+   "parent": "axle-100556",
+   "cad_name": "SLACK ADJUSTER",
+   "nodes": [
+    "n0211",
+    "n0214",
+    "n0256",
+    "n0259"
+   ],
+   "mesh_count": 8,
+   "size_mm": [
+    335,
+    257,
+    50
+   ],
+   "render": "slack-adjuster.jpg",
+   "children": []
+  },
+  {
+   "id": "elbow-106872",
+   "group": "Running gear",
+   "name": "3/8 M&F EXTRUDED ELBOW",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "106872",
+   "part_number_basis": "bom",
+   "confidence": "medium",
+   "bom_description": "233569 - 3/8 M&F EXTRUDED ELBO",
+   "qty": 8,
+   "qty_bom": 1,
+   "price": 21.3,
+   "parent": "axle-100556",
+   "cad_name": "3-8 Inch ELBOW AIR FITTING",
+   "nodes": [
+    "n0217",
+    "n0219",
+    "n0221",
+    "n0223",
+    "n0262",
+    "n0264",
+    "n0266",
+    "n0268"
+   ],
+   "mesh_count": 8,
+   "size_mm": [
+    54,
+    50,
+    19
+   ],
+   "note": "Parts list quantity 1, model has 8.",
+   "render": "elbow-106872.jpg",
+   "children": []
+  },
+  {
+   "id": "wheel-assy",
+   "group": "Running gear",
+   "name": "WHEEL ASSY (DUAL)",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": 395.86,
+   "parent": "axle-wheel-set",
+   "cad_name": "STEEL RIM & TYRE ASSY (285 CTRS)",
+   "nodes": [
+    "n0225",
+    "n0234",
+    "n0270",
+    "n0279"
+   ],
+   "mesh_count": 16,
+   "size_mm": [
+    1315,
+    1315,
+    586
+   ],
+   "note": "Two rims and two tyres.",
+   "render": "wheel-assy.jpg",
+   "children": [
+    "rim",
+    "tyre"
+   ]
+  },
+  {
+   "id": "rim",
+   "group": "Running gear",
+   "name": "RIM",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 8,
+   "qty_bom": null,
+   "price": 244.06,
+   "parent": "wheel-assy",
+   "cad_name": "STEEL RIM (285 CTRS)",
+   "nodes": [
+    "n0226",
+    "n0230",
+    "n0235",
+    "n0239",
+    "n0271",
+    "n0275",
+    "n0280",
+    "n0284"
+   ],
+   "mesh_count": 8,
+   "size_mm": [
+    746,
+    745,
+    291
+   ],
+   "spec": "Steel rim, 285 PCD",
+   "render": "rim.jpg",
+   "children": []
+  },
+  {
+   "id": "tyre",
+   "group": "Running gear",
+   "name": "TYRE",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 8,
+   "qty_bom": null,
+   "price": 590.85,
+   "parent": "wheel-assy",
+   "cad_name": "22.5x8.25 TIRE",
+   "nodes": [
+    "n0228",
+    "n0232",
+    "n0237",
+    "n0241",
+    "n0273",
+    "n0277",
+    "n0282",
+    "n0286"
+   ],
+   "mesh_count": 8,
+   "size_mm": [
+    1315,
+    1315,
+    281
+   ],
+   "spec": "CAD name: 22.5x8.25 TIRE",
+   "render": "tyre.jpg",
+   "children": []
+  },
+  {
+   "id": "suspension-101224",
+   "group": "Suspension",
+   "name": "SUSPENSION MECHANICAL O/SLUNG",
+   "kind": "assembly",
+   "status": "mapped",
+   "part_number": "101224",
+   "part_number_basis": "bom",
+   "confidence": "high",
+   "bom_description": "SUSPENSION MECHANICAL O/SLUNG ",
+   "qty": 1,
+   "qty_bom": 1,
+   "price": 1940.92,
+   "parent": null,
+   "cad_name": "KHDO2B8",
+   "nodes": [
+    "n0035"
+   ],
+   "mesh_count": 32,
+   "size_mm": [
+    2349,
+    1244,
+    466
+   ],
+   "note": "Complete K-Hitch overslung suspension.",
+   "render": "suspension-101224.jpg",
+   "children": [
+    "hanger-front",
+    "hanger-mid",
+    "hanger-rear",
+    "spring-set",
+    "rocker-101001",
+    "trailing-arm-lh-395",
+    "trailing-arm-lh-495",
+    "trailing-arm-rh-395",
+    "trailing-arm-rh-495"
+   ]
+  },
+  {
+   "id": "hanger-front",
+   "group": "Suspension",
+   "name": "SUSPENSION HANGER, FRONT",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": null,
+   "parent": "suspension-101224",
+   "cad_name": "FRONT OS HANGER",
+   "nodes": [
+    "n0036",
+    "n0042"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    343,
+    240,
+    208
+   ],
+   "render": "hanger-front.jpg",
+   "children": []
+  },
+  {
+   "id": "hanger-mid",
+   "group": "Suspension",
+   "name": "SUSPENSION HANGER, MID",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": null,
+   "parent": "suspension-101224",
+   "cad_name": "MID OS HANGER",
+   "nodes": [
+    "n0038",
+    "n0044"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    353,
+    249,
+    240
+   ],
+   "render": "hanger-mid.jpg",
+   "children": []
+  },
+  {
+   "id": "hanger-rear",
+   "group": "Suspension",
+   "name": "SUSPENSION HANGER, REAR",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": null,
+   "parent": "suspension-101224",
+   "cad_name": "REAR OS HANGER",
+   "nodes": [
+    "n0040",
+    "n0046"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    240,
+    225,
+    150
+   ],
+   "render": "hanger-rear.jpg",
+   "children": []
+  },
+  {
+   "id": "spring-set",
+   "group": "Suspension",
+   "name": "LEAF SPRING SET (9 LEAF)",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": null,
+   "parent": "suspension-101224",
+   "cad_name": "9L SET",
+   "nodes": [
+    "n0048",
+    "n0059",
+    "n0072",
+    "n0083"
+   ],
+   "mesh_count": 20,
+   "size_mm": [
+    1087,
+    399,
+    208
+   ],
+   "note": "Spring pack with saddle, keeper and two U-bolts.",
+   "render": "spring-set.jpg",
+   "children": [
+    "spring-pack",
+    "spring-saddle",
+    "spring-keeper",
+    "ubolt"
+   ]
+  },
+  {
+   "id": "spring-pack",
+   "group": "Suspension",
+   "name": "LEAF SPRING PACK (9 LEAF)",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": null,
+   "parent": "spring-set",
+   "cad_name": "9L SPRING PACK",
+   "nodes": [
+    "n0057",
+    "n0068",
+    "n0081",
+    "n0092"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    1087,
+    235,
+    112
+   ],
+   "render": "spring-pack.jpg",
+   "children": []
+  },
+  {
+   "id": "spring-saddle",
+   "group": "Suspension",
+   "name": "SPRING SADDLE",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": null,
+   "parent": "spring-set",
+   "cad_name": "OS SADDLE",
+   "nodes": [
+    "n0049",
+    "n0060",
+    "n0073",
+    "n0084"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    260,
+    208,
+    119
+   ],
+   "render": "spring-saddle.jpg",
+   "children": []
+  },
+  {
+   "id": "spring-keeper",
+   "group": "Suspension",
+   "name": "SPRING KEEPER",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": null,
+   "parent": "spring-set",
+   "cad_name": "OS KEEPER",
+   "nodes": [
+    "n0051",
+    "n0062",
+    "n0075",
+    "n0086"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    199,
+    148,
+    68
+   ],
+   "render": "spring-keeper.jpg",
+   "children": []
+  },
+  {
+   "id": "ubolt",
+   "group": "Suspension",
+   "name": "U-BOLT 325",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 8,
+   "qty_bom": null,
+   "price": null,
+   "parent": "spring-set",
+   "cad_name": "UBOLT_325",
+   "nodes": [
+    "n0053",
+    "n0055",
+    "n0064",
+    "n0066",
+    "n0077",
+    "n0079",
+    "n0088",
+    "n0090"
+   ],
+   "mesh_count": 8,
+   "size_mm": [
+    349,
+    176,
+    22
+   ],
+   "render": "ubolt.jpg",
+   "children": []
+  },
+  {
+   "id": "rocker-101001",
+   "group": "Suspension",
+   "name": "ROCKER PIN EQUALISER",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "101001",
+   "part_number_basis": "bom",
+   "confidence": "medium",
+   "bom_description": "ROCKER PIN EQUALISER",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 275.06,
+   "parent": "suspension-101224",
+   "cad_name": "9.1 ROCKER",
+   "nodes": [
+    "n0070",
+    "n0094"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    600,
+    183,
+    130
+   ],
+   "note": "The parts list describes the pin. The model shows the rocker itself.",
+   "render": "rocker-101001.jpg",
+   "children": []
+  },
+  {
+   "id": "trailing-arm-lh-395",
+   "group": "Suspension",
+   "name": "TRAILING ARM / RADIUS ROD (LH 395)",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 452.64,
+   "parent": "suspension-101224",
+   "cad_name": "LH TRAIL 395",
+   "nodes": [
+    "n0098"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    459,
+    134,
+    50
+   ],
+   "render": "trailing-arm-lh-395.jpg",
+   "children": []
+  },
+  {
+   "id": "trailing-arm-lh-495",
+   "group": "Suspension",
+   "name": "TRAILING ARM / RADIUS ROD (LH 495)",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 669.64,
+   "parent": "suspension-101224",
+   "cad_name": "LH TRAIL 495",
+   "nodes": [
+    "n0102"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    558,
+    126,
+    50
+   ],
+   "render": "trailing-arm-lh-495.jpg",
+   "children": []
+  },
+  {
+   "id": "trailing-arm-rh-395",
+   "group": "Suspension",
+   "name": "TRAILING ARM / RADIUS ROD (RH 395)",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 529.22,
+   "parent": "suspension-101224",
+   "cad_name": "RH TRAIL 395",
+   "nodes": [
+    "n0096"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    472,
+    158,
+    65
+   ],
+   "render": "trailing-arm-rh-395.jpg",
+   "children": []
+  },
+  {
+   "id": "trailing-arm-rh-495",
+   "group": "Suspension",
+   "name": "TRAILING ARM / RADIUS ROD (RH 495)",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 711.47,
+   "parent": "suspension-101224",
+   "cad_name": "RH TRAIL 495",
+   "nodes": [
+    "n0100"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    571,
+    150,
+    65
+   ],
+   "render": "trailing-arm-rh-495.jpg",
+   "children": []
+  },
+  {
+   "id": "turntable-101446",
+   "group": "Turntable",
+   "name": "TURNTABLE BOOMERANG 3.5\" BE-16",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": "101446",
+   "part_number_basis": "bom",
+   "confidence": "medium",
+   "bom_description": "TURNTABLE BOOMERANG 3.5\" BE-16",
+   "qty": 1,
+   "qty_bom": 1,
+   "price": 2426.96,
+   "parent": null,
+   "cad_name": "KH10D902234",
+   "nodes": [
+    "n0112"
+   ],
+   "mesh_count": 7,
+   "size_mm": [
+    916,
+    773,
+    266
+   ],
+   "note": "Complete K-Hitch turntable: top plate, pivot feet, castings and pins.",
+   "render": "turntable-101446.jpg",
+   "children": [
+    "turntable-top-plate",
+    "pivot-foot-lh",
+    "pivot-foot-rh",
+    "kh071",
+    "kh007"
+   ]
+  },
+  {
+   "id": "turntable-top-plate",
+   "group": "Turntable",
+   "name": "TURNTABLE TOP PLATE",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 2407.78,
+   "parent": "turntable-101446",
+   "cad_name": "TOP PLATE_KHITCH",
+   "nodes": [
+    "n0113"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    916,
+    773,
+    246
+   ],
+   "render": "turntable-top-plate.jpg",
+   "children": []
+  },
+  {
+   "id": "pivot-foot-lh",
+   "group": "Turntable",
+   "name": "UPPER PIVOT FOOT (LH)",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 546.6,
+   "parent": "turntable-101446",
+   "cad_name": "UPPER PIVOT FOOT (LH)",
+   "nodes": [
+    "n0117"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    387,
+    191,
+    161
+   ],
+   "render": "pivot-foot-lh.jpg",
+   "children": []
+  },
+  {
+   "id": "pivot-foot-rh",
+   "group": "Turntable",
+   "name": "UPPER PIVOT FOOT (RH)",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 609.3,
+   "parent": "turntable-101446",
+   "cad_name": "UPPER PIVOT FOOT (RH)",
+   "nodes": [
+    "n0115"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    387,
+    191,
+    161
+   ],
+   "render": "pivot-foot-rh.jpg",
+   "children": []
+  },
+  {
+   "id": "kh071",
+   "group": "Turntable",
+   "name": "SADDLE/SEAT CASTING KH071",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 772.49,
+   "parent": "turntable-101446",
+   "cad_name": "KH071 (93H)",
+   "nodes": [
+    "n0119",
+    "n0121"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    457,
+    144,
+    90
+   ],
+   "render": "kh071.jpg",
+   "children": []
+  },
+  {
+   "id": "kh007",
+   "group": "Turntable",
+   "name": "PIVOT PIN & COLLAR KH007",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 566.2,
+   "parent": "turntable-101446",
+   "cad_name": "KH007",
+   "nodes": [
+    "n0123",
+    "n0125"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    160,
+    125,
+    105
+   ],
+   "render": "kh007.jpg",
+   "children": []
+  },
+  {
+   "id": "drawbar",
+   "group": "Drawbar",
+   "name": "DRAWBAR A-FRAME WELDMENT",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 343.82,
+   "parent": null,
+   "cad_name": "D-AF-WE-2300-16981",
+   "nodes": [
+    "n0469"
+   ],
+   "mesh_count": 31,
+   "size_mm": [
+    2478,
+    1204,
+    895
+   ],
+   "render": "drawbar.jpg",
+   "children": [
+    "tow-eye-101380"
+   ]
+  },
+  {
+   "id": "tow-eye-101380",
+   "group": "Drawbar",
+   "name": "TOW EYE 50MM WELD IN",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "101380",
+   "part_number_basis": "proposed",
+   "confidence": "medium",
+   "bom_description": "TOW EYE 50MM WELD IN 314KN SOL",
+   "qty": 1,
+   "qty_bom": 1,
+   "price": null,
+   "parent": "drawbar",
+   "cad_name": "Solid1",
+   "nodes": [
+    "n0500"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    440,
+    110,
+    80
+   ],
+   "note": "Proposed match: the solid at the drawbar tip, 440 mm long.",
+   "render": "tow-eye-101380.jpg",
+   "children": []
+  },
+  {
+   "id": "kh600068-100675",
+   "group": "Drawbar",
+   "name": "DRAWBAR END PIVOT CASTING - KH",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "100675",
+   "part_number_basis": "proposed",
+   "confidence": "medium",
+   "bom_description": "DRAWBAR END PIVOT CASTING - KH",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 798.45,
+   "parent": null,
+   "cad_name": "KH600068",
+   "nodes": [
+    "n0019",
+    "n0031"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    236,
+    216,
+    96
+   ],
+   "note": "Proposed match: K-Hitch casting KH600068, two of them, where the drawbar meets the chassis rails.",
+   "render": "kh600068-100675.jpg",
+   "children": []
+  },
+  {
+   "id": "chassis-frame",
+   "group": "Chassis frame",
+   "name": "CHASSIS FRAME WELDMENT",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": null,
+   "parent": null,
+   "cad_name": [
+    "16981-01",
+    "16981-02",
+    "16981-03",
+    "16981-04",
+    "16981-05",
+    "16981-06",
+    "16981-07",
+    "16981-08",
+    "16981-09",
+    "16981-10",
+    "16981-11",
+    "16981-13",
+    "16981-14",
+    "16981-15",
+    "16981-16",
+    "16981-26",
+    "16981-27"
+   ],
+   "nodes": [
+    "n0011",
+    "n0023",
+    "n0003",
+    "n0005",
+    "n0007",
+    "n0009",
+    "n0013",
+    "n0025",
+    "n0015",
+    "n0027",
+    "n0017",
+    "n0029",
+    "n0104",
+    "n0106",
+    "n0108",
+    "n0110",
+    "n0129",
+    "n0131",
+    "n0133",
+    "n0135",
+    "n0139",
+    "n0147",
+    "n0149",
+    "n0155",
+    "n0157",
+    "n0159",
+    "n0161",
+    "n0163",
+    "n0165",
+    "n0021",
+    "n0033",
+    "n0191",
+    "n0193"
+   ],
+   "mesh_count": 33,
+   "size_mm": [
+    2495,
+    150,
+    100
+   ],
+   "note": "All welded frame members (drawing 16981). Fabricated from stock, not ordered as one part.",
+   "render": "chassis-frame.jpg",
+   "children": [
+    "frame-16981-01",
+    "frame-16981-02",
+    "frame-16981-03",
+    "frame-16981-04",
+    "frame-16981-05",
+    "frame-16981-06",
+    "frame-16981-07",
+    "frame-16981-08",
+    "frame-16981-09",
+    "frame-16981-10",
+    "frame-16981-11",
+    "frame-16981-13",
+    "frame-16981-14",
+    "frame-16981-15",
+    "frame-16981-16",
+    "frame-16981-26",
+    "frame-16981-27"
+   ]
+  },
+  {
+   "id": "frame-16981-01",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-01",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 618.25,
+   "parent": "chassis-frame",
+   "cad_name": "16981-01",
+   "nodes": [
+    "n0011",
+    "n0023"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    2495,
+    150,
+    100
+   ],
+   "spec": "Main rail. 150 x 100 x 9 RHS, 2495 mm",
+   "made_from": {
+    "part_number": "131315",
+    "description": "150x100x9.0 GALV"
+   },
+   "render": "frame-16981-01.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-02",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-02",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": 549.52,
+   "parent": "chassis-frame",
+   "cad_name": "16981-02",
+   "nodes": [
+    "n0003",
+    "n0005",
+    "n0007",
+    "n0009"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    895,
+    150,
+    100
+   ],
+   "spec": "Cross member. 150 x 100 x 9 RHS, 895 mm",
+   "made_from": {
+    "part_number": "131315",
+    "description": "150x100x9.0 GALV"
+   },
+   "render": "frame-16981-02.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-03",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-03",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 851.49,
+   "parent": "chassis-frame",
+   "cad_name": "16981-03",
+   "nodes": [
+    "n0013",
+    "n0025"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    148,
+    148,
+    90
+   ],
+   "spec": "148 x 148 x 90 mm",
+   "render": "frame-16981-03.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-04",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-04",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 558.02,
+   "parent": "chassis-frame",
+   "cad_name": "16981-04",
+   "nodes": [
+    "n0015",
+    "n0027"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    2545,
+    130,
+    12
+   ],
+   "spec": "130 x 12 flat bar, 2545 mm",
+   "made_from": {
+    "part_number": "130899",
+    "description": "130x12 MILD STEEL FLAT"
+   },
+   "render": "frame-16981-04.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-05",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-05",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 585.02,
+   "parent": "chassis-frame",
+   "cad_name": "16981-05",
+   "nodes": [
+    "n0017",
+    "n0029"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    130,
+    94,
+    16
+   ],
+   "spec": "Plate 130 x 94 x 16 mm",
+   "render": "frame-16981-05.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-06",
+   "group": "Chassis frame",
+   "name": "FRAME PLATE 16981-06",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 286.8,
+   "parent": "chassis-frame",
+   "cad_name": "16981-06",
+   "nodes": [
+    "n0104"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    1050,
+    1000,
+    16
+   ],
+   "spec": "Plate 1050 x 1000 x 16 mm under the turntable",
+   "render": "frame-16981-06.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-07",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-07",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 888.6,
+   "parent": "chassis-frame",
+   "cad_name": "16981-07",
+   "nodes": [
+    "n0106"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    2490,
+    150,
+    75
+   ],
+   "spec": "Rear cross member. 150 x 75 channel, 2490 mm",
+   "made_from": {
+    "part_number": "130634",
+    "description": "150x75 CHANNEL"
+   },
+   "render": "frame-16981-07.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-08",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-08",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 877.44,
+   "parent": "chassis-frame",
+   "cad_name": "16981-08",
+   "nodes": [
+    "n0108",
+    "n0110"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    129,
+    72,
+    5
+   ],
+   "spec": "Rear side marker bracket. Plate 129 x 72 x 5 mm",
+   "render": "frame-16981-08.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-09",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-09",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 414.84,
+   "parent": "chassis-frame",
+   "cad_name": "16981-09",
+   "nodes": [
+    "n0129",
+    "n0131"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    2347,
+    40,
+    12
+   ],
+   "spec": "12 mm round bar, 2350 mm",
+   "made_from": {
+    "part_number": "130741",
+    "description": "12mm ROUND BAR"
+   },
+   "render": "frame-16981-09.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-10",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-10",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 279.25,
+   "parent": "chassis-frame",
+   "cad_name": "16981-10",
+   "nodes": [
+    "n0133"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    882,
+    56,
+    56
+   ],
+   "spec": "32 NB pipe, 882 mm",
+   "made_from": {
+    "part_number": "131359",
+    "description": "32 NB MED PTD PIPE"
+   },
+   "render": "frame-16981-10.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-11",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-11",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 556.92,
+   "parent": "chassis-frame",
+   "cad_name": "16981-11",
+   "nodes": [
+    "n0135"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    861,
+    43,
+    43
+   ],
+   "spec": "32 NB pipe, 861 mm",
+   "made_from": {
+    "part_number": "131359",
+    "description": "32 NB MED PTD PIPE"
+   },
+   "render": "frame-16981-11.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-13",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-13",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 799.15,
+   "parent": "chassis-frame",
+   "cad_name": "16981-13",
+   "nodes": [
+    "n0139"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    350,
+    75,
+    5
+   ],
+   "spec": "Plate 350 x 75 x 5 mm with a BRE cut-out",
+   "render": "frame-16981-13.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-14",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-14",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 592.24,
+   "parent": "chassis-frame",
+   "cad_name": "16981-14",
+   "nodes": [
+    "n0147",
+    "n0149"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    760,
+    50,
+    50
+   ],
+   "spec": "Front guard arm. 50 x 50 x 5 RHS, 760 mm",
+   "made_from": {
+    "part_number": "131218",
+    "description": "50x50x5 RHS PAINTED"
+   },
+   "render": "frame-16981-14.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-15",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-15",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 6,
+   "qty_bom": null,
+   "price": 579.85,
+   "parent": "chassis-frame",
+   "cad_name": "16981-15",
+   "nodes": [
+    "n0155",
+    "n0157",
+    "n0159",
+    "n0161",
+    "n0163",
+    "n0165"
+   ],
+   "mesh_count": 6,
+   "size_mm": [
+    805,
+    43,
+    43
+   ],
+   "spec": "Mudguard support tube. 32 NB pipe, 805 mm",
+   "made_from": {
+    "part_number": "131359",
+    "description": "32 NB MED PTD PIPE"
+   },
+   "render": "frame-16981-15.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-16",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-16",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 378.18,
+   "parent": "chassis-frame",
+   "cad_name": "16981-16",
+   "nodes": [
+    "n0021",
+    "n0033"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    412,
+    256,
+    75
+   ],
+   "spec": "Bent strap at the drawbar pivot, 75 mm wide",
+   "candidates": [
+    {
+     "part_number": "130870",
+     "description": "75x12 MILD STEEL FLAT",
+     "why": "75 mm wide bent strap. The parts list has 1.5 m, which is 0.75 m for each of the two."
+    }
+   ],
+   "render": "frame-16981-16.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-26",
+   "group": "Chassis frame",
+   "name": "FRAME MEMBER 16981-26",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 897.24,
+   "parent": "chassis-frame",
+   "cad_name": "16981-26",
+   "nodes": [
+    "n0191"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    93,
+    92,
+    76
+   ],
+   "spec": "65 NB pipe, 75 mm",
+   "made_from": {
+    "part_number": "131378",
+    "description": "65 NB MED PTD PIPE"
+   },
+   "render": "frame-16981-26.jpg",
+   "children": []
+  },
+  {
+   "id": "frame-16981-27",
+   "group": "Chassis frame",
+   "name": "MOUNTING RING / COLLAR 16981-27",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 372.06,
+   "parent": "chassis-frame",
+   "cad_name": "16981-27",
+   "nodes": [
+    "n0193"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    114,
+    114,
+    75
+   ],
+   "spec": "100 NB pipe, 75 mm",
+   "made_from": {
+    "part_number": "131385",
+    "description": "100 NB MED PTD PIPE"
+   },
+   "render": "frame-16981-27.jpg",
+   "children": []
+  },
+  {
+   "id": "spring-116851",
+   "group": "Chassis frame",
+   "name": "COMPRESSION SPRING OL220 OD100",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "116851",
+   "part_number_basis": "bom",
+   "confidence": "high",
+   "bom_description": "COMPRESSION SPRING OL220 OD100",
+   "qty": 1,
+   "qty_bom": 1,
+   "price": 286.95,
+   "parent": null,
+   "cad_name": "SPRING",
+   "nodes": [
+    "n0195"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    228,
+    126,
+    100
+   ],
+   "note": "228 mm long, 100 mm outside diameter in the model.",
+   "render": "spring-116851.jpg",
+   "children": []
+  },
+  {
+   "id": "wigglebar-350",
+   "group": "Chassis frame",
+   "name": "WIGGLEBAR 6 x 350 CENTRES, 2 SECTION",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "108384",
+   "part_number_basis": "bom",
+   "confidence": "low",
+   "bom_description": "WIGGLEBAR 6x300 CENTRES 4 SECT",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 202.82,
+   "parent": null,
+   "cad_name": "Ø6 x 350 CTRS x 2 SECTION WIGGLEBAR",
+   "nodes": [
+    "n0183",
+    "n0185"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    700,
+    19,
+    19
+   ],
+   "note": "Parts list 108384 reads 6x300 centres, 4 section. The model has two bars at 350 centres, 2 section.",
+   "render": "wigglebar-350.jpg",
+   "children": []
+  },
+  {
+   "id": "wigglebar-400",
+   "group": "Chassis frame",
+   "name": "WIGGLEBAR 6 x 400 CENTRES, 2 SECTION",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": null,
+   "parent": null,
+   "cad_name": "Ø6 x 400 CTRS x 2 SECTION WIGGLEBAR",
+   "nodes": [
+    "n0127"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    800,
+    21,
+    6
+   ],
+   "candidates": [
+    {
+     "part_number": "108384",
+     "description": "WIGGLEBAR 6x300 CENTRES 4 SECT",
+     "why": "Only wigglebar on the parts list."
+    }
+   ],
+   "render": "wigglebar-400.jpg",
+   "children": []
+  },
+  {
+   "id": "air-system",
+   "group": "Air system",
+   "name": "AIR TANK AND VALVE ASSEMBLY",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": null,
+   "parent": null,
+   "cad_name": "LARGE AIR TANK NEW",
+   "nodes": [
+    "n0320"
+   ],
+   "mesh_count": 49,
+   "size_mm": [
+    786,
+    523,
+    360
+   ],
+   "note": "Tank with all valves and fittings.",
+   "render": "air-system.jpg",
+   "children": [
+    "air-tank",
+    "springbrake-valve-assy",
+    "relay-valve-assy",
+    "relay-valve-4way-assy",
+    "ppv-assy",
+    "fitting-1-2",
+    "fitting-3-8",
+    "fitting-1-2-blanking",
+    "fitting-3-8-blanking",
+    "fitting-3-8-straight",
+    "fitting-3-8-t",
+    "fitting-3-8-bsp-t",
+    "fitting-3-8-swivel",
+    "union-1-2-to-3-4",
+    "union-107133"
+   ]
+  },
+  {
+   "id": "air-tank",
+   "group": "Air system",
+   "name": "AIR TANK, LARGE 4 PORT",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 539.8,
+   "parent": "air-system",
+   "cad_name": "AIR TANK - LARGE 4 PORT",
+   "nodes": [
+    "n0321"
+   ],
+   "mesh_count": 3,
+   "size_mm": [
+    732,
+    368,
+    360
+   ],
+   "render": "air-tank.jpg",
+   "children": []
+  },
+  {
+   "id": "tank-mount-123428",
+   "group": "Air system",
+   "name": "MOUNT - GENERIC - AIR TANK 950",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "123428",
+   "part_number_basis": "bom",
+   "confidence": "high",
+   "bom_description": "MOUNT - GENERIC - AIR TANK 950",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 719.2,
+   "parent": null,
+   "cad_name": "KATB950",
+   "nodes": [
+    "n0187",
+    "n0189"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    125,
+    118,
+    60
+   ],
+   "note": "CAD name KATB950. Two brackets, one each side of the tank.",
+   "render": "tank-mount-123428.jpg",
+   "children": []
+  },
+  {
+   "id": "springbrake-valve-assy",
+   "group": "Air system",
+   "name": "SPRING BRAKE CONTROL VALVE WITH FITTINGS",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": null,
+   "parent": "air-system",
+   "cad_name": "SPRINGBRAKE CONTROL VALVE",
+   "nodes": [
+    "n0358",
+    "n0407"
+   ],
+   "mesh_count": 16,
+   "size_mm": [
+    153,
+    124,
+    120
+   ],
+   "note": "Valve body with the fittings screwed into it.",
+   "render": "springbrake-valve-assy.jpg",
+   "children": [
+    "springbrake-valve"
+   ]
+  },
+  {
+   "id": "springbrake-valve",
+   "group": "Air system",
+   "name": "SPRING BRAKE CONTROL VALVE",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 217.12,
+   "parent": "springbrake-valve-assy",
+   "cad_name": "SPRINGBRAKE CONTROL VALVE",
+   "nodes": [
+    "n0359",
+    "n0408"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    104,
+    88,
+    73
+   ],
+   "render": "springbrake-valve.jpg",
+   "children": []
+  },
+  {
+   "id": "relay-valve-assy",
+   "group": "Air system",
+   "name": "SERVICE RELAY VALVE WITH FITTINGS",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": null,
+   "parent": "air-system",
+   "cad_name": "VALVE SERVICE RELAY (PACIFIC)",
+   "nodes": [
+    "n0325",
+    "n0341"
+   ],
+   "mesh_count": 14,
+   "size_mm": [
+    144,
+    142,
+    92
+   ],
+   "note": "Valve body with the fittings screwed into it.",
+   "render": "relay-valve-assy.jpg",
+   "children": [
+    "relay-valve"
+   ]
+  },
+  {
+   "id": "relay-valve",
+   "group": "Air system",
+   "name": "SERVICE RELAY VALVE",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 472.93,
+   "parent": "relay-valve-assy",
+   "cad_name": "VALVE SERVICE RELAY (PACIFIC)",
+   "nodes": [
+    "n0326",
+    "n0342"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    102,
+    92,
+    83
+   ],
+   "render": "relay-valve.jpg",
+   "children": []
+  },
+  {
+   "id": "relay-valve-4way-assy",
+   "group": "Air system",
+   "name": "SERVICE RELAY VALVE 4-WAY WITH FITTINGS",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": null,
+   "parent": "air-system",
+   "cad_name": "VALVE SERVICE RELAY 4 WAY(PACIFIC)",
+   "nodes": [
+    "n0392"
+   ],
+   "mesh_count": 7,
+   "size_mm": [
+    149,
+    142,
+    92
+   ],
+   "note": "Valve body with the fittings screwed into it.",
+   "render": "relay-valve-4way-assy.jpg",
+   "children": [
+    "relay-valve-4way"
+   ]
+  },
+  {
+   "id": "relay-valve-4way",
+   "group": "Air system",
+   "name": "SERVICE RELAY VALVE 4-WAY",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 141.56,
+   "parent": "relay-valve-4way-assy",
+   "cad_name": "VALVE SERVICE RELAY 4 WAY (PACIFIC)",
+   "nodes": [
+    "n0393"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    102,
+    92,
+    85
+   ],
+   "render": "relay-valve-4way.jpg",
+   "children": []
+  },
+  {
+   "id": "ppv-assy",
+   "group": "Air system",
+   "name": "PRESSURE PROTECTION VALVE ASSY",
+   "kind": "assembly",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 392.89,
+   "parent": "air-system",
+   "cad_name": "PRESSURE PROTECTION VALVE ASSEMBLY.ipt",
+   "nodes": [
+    "n0376",
+    "n0384"
+   ],
+   "mesh_count": 6,
+   "size_mm": [
+    122,
+    68,
+    56
+   ],
+   "note": "Valve with its T fitting.",
+   "render": "ppv-assy.jpg",
+   "children": [
+    "ppv"
+   ]
+  },
+  {
+   "id": "ppv",
+   "group": "Air system",
+   "name": "PRESSURE PROTECTION VALVE",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 162.48,
+   "parent": "ppv-assy",
+   "cad_name": "PRESSURE PROTECTION VALVE",
+   "nodes": [
+    "n0377",
+    "n0385"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    97,
+    68,
+    40
+   ],
+   "render": "ppv.jpg",
+   "children": []
+  },
+  {
+   "id": "fitting-1-2",
+   "group": "Air system",
+   "name": "AIR FITTING 1/2\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 10,
+   "qty_bom": null,
+   "price": 21.43,
+   "parent": "air-system",
+   "cad_name": "1-2 Inch AIR FITTING",
+   "nodes": [
+    "n0331",
+    "n0333",
+    "n0335",
+    "n0346",
+    "n0348",
+    "n0350",
+    "n0395",
+    "n0397",
+    "n0401",
+    "n0403"
+   ],
+   "mesh_count": 10,
+   "size_mm": [
+    48,
+    26,
+    23
+   ],
+   "render": "fitting-1-2.jpg",
+   "children": []
+  },
+  {
+   "id": "fitting-3-8",
+   "group": "Air system",
+   "name": "AIR FITTING 3/8\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 6,
+   "qty_bom": null,
+   "price": 22.1,
+   "parent": "air-system",
+   "cad_name": "3-8 Inch AIR FITTING",
+   "nodes": [
+    "n0364",
+    "n0366",
+    "n0368",
+    "n0412",
+    "n0414",
+    "n0416"
+   ],
+   "mesh_count": 6,
+   "size_mm": [
+    48,
+    20,
+    18
+   ],
+   "render": "fitting-3-8.jpg",
+   "children": []
+  },
+  {
+   "id": "fitting-1-2-blanking",
+   "group": "Air system",
+   "name": "BLANKING AIR FITTING 1/2\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": 47.58,
+   "parent": "air-system",
+   "cad_name": "1-2 Inch BLANKING AIR FITTING",
+   "nodes": [
+    "n0337",
+    "n0352",
+    "n0356"
+   ],
+   "mesh_count": 3,
+   "size_mm": [
+    25,
+    22,
+    20
+   ],
+   "note": "1 of 4 in the CAD are missing from the web model.",
+   "render": "fitting-1-2-blanking.jpg",
+   "children": []
+  },
+  {
+   "id": "fitting-3-8-blanking",
+   "group": "Air system",
+   "name": "BLANKING AIR FITTING 3/8\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": 33.63,
+   "parent": "air-system",
+   "cad_name": "3-8 Inch BLANKING AIR FITTING",
+   "nodes": [
+    "n0370",
+    "n0372",
+    "n0418",
+    "n0420"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    20,
+    19,
+    17
+   ],
+   "render": "fitting-3-8-blanking.jpg",
+   "children": []
+  },
+  {
+   "id": "fitting-3-8-straight",
+   "group": "Air system",
+   "name": "STRAIGHT AIR FITTING 3/8\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 63.31,
+   "parent": "air-system",
+   "cad_name": "3-8 Inch STRAIGHT AIR FITTING",
+   "nodes": [
+    "n0374",
+    "n0422"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    38,
+    20,
+    17
+   ],
+   "render": "fitting-3-8-straight.jpg",
+   "children": []
+  },
+  {
+   "id": "fitting-3-8-t",
+   "group": "Air system",
+   "name": "T AIR FITTING 3/8\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 29.58,
+   "parent": "air-system",
+   "cad_name": "3-8 Inch T AIR FITTING",
+   "nodes": [
+    "n0380",
+    "n0388"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    56,
+    39,
+    23
+   ],
+   "render": "fitting-3-8-t.jpg",
+   "children": []
+  },
+  {
+   "id": "fitting-3-8-bsp-t",
+   "group": "Air system",
+   "name": "BSP T AIR FITTING 3/8\" TO 3/8\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 36.68,
+   "parent": "air-system",
+   "cad_name": "3-8 to 3-8 Inch BSP T AIR FITTING",
+   "nodes": [
+    "n0329",
+    "n0344"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    56,
+    38,
+    17
+   ],
+   "render": "fitting-3-8-bsp-t.jpg",
+   "children": []
+  },
+  {
+   "id": "fitting-3-8-swivel",
+   "group": "Air system",
+   "name": "SWIVEL AIR FITTING 3/8\" 90 DEG",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 55.46,
+   "parent": "air-system",
+   "cad_name": "3-8 Inch 90° SWIVEL AIR FITTING",
+   "nodes": [
+    "n0405"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    44,
+    39,
+    18
+   ],
+   "render": "fitting-3-8-swivel.jpg",
+   "children": []
+  },
+  {
+   "id": "union-1-2-to-3-4",
+   "group": "Air system",
+   "name": "UNION 1/2\" TO 3/4\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 5,
+   "qty_bom": null,
+   "price": 400.26,
+   "parent": "air-system",
+   "cad_name": "1-2 to 3-4 Inch UNION",
+   "nodes": [
+    "n0339",
+    "n0354",
+    "n0362",
+    "n0399",
+    "n0410"
+   ],
+   "mesh_count": 5,
+   "size_mm": [
+    49,
+    31,
+    27
+   ],
+   "render": "union-1-2-to-3-4.jpg",
+   "children": []
+  },
+  {
+   "id": "union-107133",
+   "group": "Air system",
+   "name": "CONNECTOR MALE 3/8\" OD x 1/2\"",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "107133",
+   "part_number_basis": "proposed",
+   "confidence": "low",
+   "bom_description": "CONNECTOR MALE 3/8\" OD x 1/2\" ",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 156.38,
+   "parent": "air-system",
+   "cad_name": "1-2 to 3-8 Inch UNION",
+   "nodes": [
+    "n0382",
+    "n0390"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    55,
+    45,
+    39
+   ],
+   "note": "Proposed match: CAD name is 1/2\" to 3/8\" union, and the quantity agrees.",
+   "render": "union-107133.jpg",
+   "children": []
+  },
+  {
+   "id": "air-line-junction",
+   "group": "Air system",
+   "name": "AIR LINE JUNCTION",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 351.74,
+   "parent": null,
+   "cad_name": "SPLIT JUNCTION",
+   "nodes": [
+    "n0501",
+    "n0504"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    206,
+    53,
+    45
+   ],
+   "spec": "CAD name: SPLIT JUNCTION",
+   "render": "air-line-junction.jpg",
+   "children": []
+  },
+  {
+   "id": "socket-107356",
+   "group": "Air system",
+   "name": "SOCKET-WELD IN-BSP-1/2-BLACK",
+   "kind": "part",
+   "status": "mapped",
+   "part_number": "107356",
+   "part_number_basis": "bom",
+   "confidence": "high",
+   "bom_description": "SOCKET-WELD IN-BSP-1/2-BLACK",
+   "qty": 4,
+   "qty_bom": 4,
+   "price": 38.7,
+   "parent": null,
+   "cad_name": "'1-2' BSP SOCKET",
+   "nodes": [
+    "n0137",
+    "n0141",
+    "n0143",
+    "n0145"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    34,
+    34,
+    34
+   ],
+   "render": "socket-107356.jpg",
+   "children": []
+  },
+  {
+   "id": "bolt-118068",
+   "group": "Air system",
+   "name": "BOLT HEX M8x65 AS1110 GR8.8",
+   "kind": "part",
+   "status": "mapped",
+   "part_number": "118068",
+   "part_number_basis": "bom",
+   "confidence": "high",
+   "bom_description": "BOLT HEX M8x65 AS1110 GR8.8 Z/",
+   "qty": 2,
+   "qty_bom": 3,
+   "price": 4.78,
+   "parent": null,
+   "cad_name": "M8 x 65",
+   "nodes": [
+    "n0179",
+    "n0181"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    71,
+    15,
+    13
+   ],
+   "note": "Fixes the air line junctions. Parts list quantity 3, model has 2.",
+   "render": "bolt-118068.jpg",
+   "children": []
+  },
+  {
+   "id": "tail-lamp-117156",
+   "group": "Lighting",
+   "name": "HELLA LED COMB TAIL LAMP (BRE)",
+   "kind": "part",
+   "status": "mapped",
+   "part_number": "117156",
+   "part_number_basis": "bom",
+   "confidence": "high",
+   "bom_description": "HELLA LED COMB TAIL LAMP (BRE)",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 96.25,
+   "parent": null,
+   "cad_name": "HELLA 2379 COMBINATION LAMP",
+   "nodes": [
+    "n0303",
+    "n0306"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    222,
+    96,
+    38
+   ],
+   "render": "tail-lamp-117156.jpg",
+   "children": []
+  },
+  {
+   "id": "side-marker-117141",
+   "group": "Lighting",
+   "name": "HELLA LED RED/AMBER SIDE MARKER",
+   "kind": "part",
+   "status": "mapped",
+   "part_number": "117141",
+   "part_number_basis": "bom",
+   "confidence": "high",
+   "bom_description": "HELLA LED RED/AMBER SIDE MARKE",
+   "qty": 4,
+   "qty_bom": 4,
+   "price": 111.63,
+   "parent": null,
+   "cad_name": "HELLA SIDE LIGHT 2058",
+   "nodes": [
+    "n0288",
+    "n0293",
+    "n0308",
+    "n0313"
+   ],
+   "mesh_count": 8,
+   "size_mm": [
+    58,
+    25,
+    22
+   ],
+   "render": "side-marker-117141.jpg",
+   "children": []
+  },
+  {
+   "id": "plate-lamp-117165",
+   "group": "Lighting",
+   "name": "HELLA LED LIC PLATE LAMP 2559",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "117165",
+   "part_number_basis": "proposed",
+   "confidence": "high",
+   "bom_description": "HELLA LED LIC PLATE LAMP 2559 ",
+   "qty": 1,
+   "qty_bom": 1,
+   "price": 161.35,
+   "parent": null,
+   "cad_name": "HELLA 2559-1",
+   "nodes": [
+    "n0298"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    85,
+    74,
+    58
+   ],
+   "note": "Proposed match: CAD name HELLA 2559-1, beside the number plate, quantity 1.",
+   "render": "plate-lamp-117165.jpg",
+   "children": []
+  },
+  {
+   "id": "number-plate",
+   "group": "Lighting",
+   "name": "NUMBER PLATE",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 1,
+   "qty_bom": null,
+   "price": 393.08,
+   "parent": null,
+   "cad_name": "NUMBER PLATE",
+   "nodes": [
+    "n0318"
+   ],
+   "mesh_count": 1,
+   "size_mm": [
+    370,
+    130,
+    1
+   ],
+   "render": "number-plate.jpg",
+   "children": []
+  },
+  {
+   "id": "light-bracket-124040",
+   "group": "Lighting",
+   "name": "BRACKET - GENERIC - SINGLE SIDED",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "124040",
+   "part_number_basis": "proposed",
+   "confidence": "medium",
+   "bom_description": "BRACKET - GENERIC - SINGLE SID",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 312.09,
+   "parent": null,
+   "cad_name": "KDSLB",
+   "nodes": [
+    "n0151",
+    "n0153"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    80,
+    76,
+    28
+   ],
+   "note": "Proposed match: CAD name KDSLB. Carries the front side markers. Quantity 2.",
+   "render": "light-bracket-124040.jpg",
+   "children": []
+  },
+  {
+   "id": "mudguard-117372",
+   "group": "Guards and mudflaps",
+   "name": "FLEXI MUDGUARD KIT 2.7M X 670",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "117372",
+   "part_number_basis": "proposed",
+   "confidence": "high",
+   "bom_description": "FLEXI MUDGUARD KIT 2.7M X 670",
+   "qty": 2,
+   "qty_bom": 1,
+   "price": 173.89,
+   "parent": null,
+   "cad_name": "G02",
+   "nodes": [
+    "n0428",
+    "n0430"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    2255,
+    670,
+    224
+   ],
+   "note": "Proposed match: CAD name G02. Each panel is 670 mm wide, as in the kit description. Parts list quantity 1, model has 2.",
+   "render": "mudguard-117372.jpg",
+   "children": [
+    "mudguard-spring"
+   ]
+  },
+  {
+   "id": "mudguard-spring",
+   "group": "Guards and mudflaps",
+   "name": "MUDGUARD TENSION SPRING",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 12,
+   "qty_bom": null,
+   "price": 292.97,
+   "parent": "mudguard-117372",
+   "cad_name": "Extension Spring1",
+   "nodes": [
+    "n0445",
+    "n0447",
+    "n0449",
+    "n0451",
+    "n0453",
+    "n0455",
+    "n0457",
+    "n0459",
+    "n0461",
+    "n0463",
+    "n0465",
+    "n0467"
+   ],
+   "mesh_count": 12,
+   "size_mm": [
+    141,
+    38,
+    30
+   ],
+   "note": "141 mm long. Six along the front edge of each mudguard.",
+   "render": "mudguard-spring.jpg",
+   "children": []
+  },
+  {
+   "id": "guard-rail-g01",
+   "group": "Guards and mudflaps",
+   "name": "GUARD RAIL/STRIP G01",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": 284.64,
+   "parent": null,
+   "cad_name": "G01",
+   "nodes": [
+    "n0171",
+    "n0173",
+    "n0175",
+    "n0177"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    650,
+    44,
+    34
+   ],
+   "spec": "650 mm long",
+   "candidates": [
+    {
+     "part_number": "125302",
+     "description": "GUARD ANNEX TRACK (650 LONG)",
+     "why": "Same 650 mm length. Parts list quantity 2."
+    }
+   ],
+   "render": "guard-rail-g01.jpg",
+   "children": []
+  },
+  {
+   "id": "guard-rail-g03",
+   "group": "Guards and mudflaps",
+   "name": "GUARD RAIL/STRIP G03",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 4,
+   "qty_bom": null,
+   "price": 183.96,
+   "parent": null,
+   "cad_name": "G03",
+   "nodes": [
+    "n0424",
+    "n0426",
+    "n0432",
+    "n0434"
+   ],
+   "mesh_count": 4,
+   "size_mm": [
+    650,
+    32,
+    6
+   ],
+   "spec": "650 mm long",
+   "candidates": [
+    {
+     "part_number": "125302",
+     "description": "GUARD ANNEX TRACK (650 LONG)",
+     "why": "Same 650 mm length. Parts list quantity 2."
+    }
+   ],
+   "render": "guard-rail-g03.jpg",
+   "children": []
+  },
+  {
+   "id": "guard-rail-g04",
+   "group": "Guards and mudflaps",
+   "name": "GUARD RAIL/STRIP G04",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 281.07,
+   "parent": null,
+   "cad_name": "G04",
+   "nodes": [
+    "n0436",
+    "n0438"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    650,
+    50,
+    15
+   ],
+   "spec": "650 mm long",
+   "candidates": [
+    {
+     "part_number": "125302",
+     "description": "GUARD ANNEX TRACK (650 LONG)",
+     "why": "Same 650 mm length. Parts list quantity 2."
+    }
+   ],
+   "render": "guard-rail-g04.jpg",
+   "children": []
+  },
+  {
+   "id": "mudflap-114429",
+   "group": "Guards and mudflaps",
+   "name": "MUDFLAP (MEDIUM)",
+   "kind": "part",
+   "status": "confirm",
+   "part_number": "114429",
+   "part_number_basis": "bom",
+   "confidence": "low",
+   "bom_description": "MOUNT - GENERIC - MUDFLAP SING",
+   "qty": 2,
+   "qty_bom": 2,
+   "price": 118.6,
+   "parent": null,
+   "cad_name": "MEDIUM MUDFLAP",
+   "nodes": [
+    "n0440",
+    "n0443"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    620,
+    610,
+    8
+   ],
+   "note": "114429 is described as a mudflap mount. This part is the flap. The bar along its top edge (0679) may be the mount.",
+   "render": "mudflap-114429.jpg",
+   "children": []
+  },
+  {
+   "id": "bracket-0679",
+   "group": "Guards and mudflaps",
+   "name": "BRACKET 0679",
+   "kind": "part",
+   "status": "needs",
+   "part_number": null,
+   "part_number_basis": null,
+   "confidence": null,
+   "bom_description": null,
+   "qty": 2,
+   "qty_bom": null,
+   "price": 318.73,
+   "parent": null,
+   "cad_name": "0679",
+   "nodes": [
+    "n0167",
+    "n0169"
+   ],
+   "mesh_count": 2,
+   "size_mm": [
+    620,
+    50,
+    4
+   ],
+   "spec": "Flat bar 620 x 50 x 4 mm along the top edge of the mudflap",
+   "candidates": [
+    {
+     "part_number": "114429",
+     "description": "MOUNT - GENERIC - MUDFLAP SINGLE",
+     "why": "Sits on the mudflap top edge. Quantity 2."
+    },
+    {
+     "part_number": "117402",
+     "description": "MUDFLAP ANTI-SAIL BRACKET",
+     "why": "Quantity 2."
+    }
+   ],
+   "render": "bracket-0679.jpg",
+   "children": []
+  }
+ ],
+ "bom_without_geometry": [
+  {
+   "part_number": "119874",
+   "description": "TAN-DOLLY KH 1.2 OS RHS < CENT",
+   "qty": 1,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "110516",
+   "description": "TAN DOLLY PROFILES KIT",
+   "qty": 1,
+   "uom": "EA",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "130921",
+   "description": "200x10 MILD STEEL FLAT",
+   "qty": 0.18,
+   "uom": "M",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "130870",
+   "description": "75x12 MILD STEEL FLAT",
+   "qty": 1.5,
+   "uom": "M",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "131029",
+   "description": "PLATE CS 6.0 MM G350",
+   "qty": 0.06,
+   "uom": "SQM",
+   "under": "MOUNT - GENERIC - AIR TANK 950"
+  },
+  {
+   "part_number": "131449",
+   "description": "SHEET 3.0 MM HU250",
+   "qty": 0.02,
+   "uom": "SQM",
+   "under": "BRACKET - GENERIC - SINGLE SID"
+  },
+  {
+   "part_number": "131352",
+   "description": "25 NB MED PTD PIPE",
+   "qty": 1.526,
+   "uom": "M",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "131275",
+   "description": "100x50x5 RHS PAINTED",
+   "qty": 5.769,
+   "uom": "M",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "123739",
+   "description": "DO NOT USE - REPLACE WITH KXDA",
+   "qty": 2,
+   "uom": "EA",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "123744",
+   "description": "A-FRAME BUMP STOP",
+   "qty": 1,
+   "uom": "EA",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "112400",
+   "description": "A-FRAME BUMP STOP CAP",
+   "qty": 3,
+   "uom": "EA",
+   "under": "A-FRAME BUMP STOP"
+  },
+  {
+   "part_number": "306151",
+   "description": "LEG",
+   "qty": 1,
+   "uom": "EA",
+   "under": "A-FRAME BUMP STOP"
+  },
+  {
+   "part_number": "100673",
+   "description": "DRAWBAR CHEEK PLATE CASTING - ",
+   "qty": 4,
+   "uom": "EA",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "112403",
+   "description": "A-FRAME GUSSET REAR",
+   "qty": 2,
+   "uom": "EA",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "131019",
+   "description": "PLATE CS 5.0 MM G350",
+   "qty": 0.08,
+   "uom": "SQM",
+   "under": "A-FRAME GUSSET REAR"
+  },
+  {
+   "part_number": "112401",
+   "description": "A-FRAME GUSSET MIDDLE",
+   "qty": 2,
+   "uom": "EA",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "116829",
+   "description": "10mm  CHAINLINK",
+   "qty": 0.1,
+   "uom": "M",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "116834",
+   "description": "6mm CHAIN",
+   "qty": 0.5,
+   "uom": "M",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "116835",
+   "description": "8mm CHAINLINK",
+   "qty": 0.05,
+   "uom": "M",
+   "under": "TAN-DOLLY KH 1.2 OS RHS < CENT"
+  },
+  {
+   "part_number": "128020",
+   "description": "PAINT FOR TAN DOLLY (CENTURION",
+   "qty": 1,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "118587",
+   "description": "NASON - CENTURION BLUE - 20L",
+   "qty": 4.0,
+   "uom": "L",
+   "under": "PAINT FOR TAN DOLLY (CENTURION"
+  },
+  {
+   "part_number": "118516",
+   "description": "Paint IMRON HDC HO WHITE",
+   "qty": 0.25,
+   "uom": "L",
+   "under": "PAINT FOR TAN DOLLY (CENTURION"
+  },
+  {
+   "part_number": "118502",
+   "description": "HARDENER PAINT - ACTIVATOR HS ",
+   "qty": 1.85,
+   "uom": "L",
+   "under": "PAINT FOR TAN DOLLY (CENTURION"
+  },
+  {
+   "part_number": "118551",
+   "description": "SOLVENT THINNER - IMRON - ET75",
+   "qty": 0.65,
+   "uom": "L",
+   "under": "PAINT FOR TAN DOLLY (CENTURION"
+  },
+  {
+   "part_number": "118606",
+   "description": "PAINT - EPOXY PRIMER - NASON -",
+   "qty": 4.5,
+   "uom": "L",
+   "under": "PAINT FOR TAN DOLLY (CENTURION"
+  },
+  {
+   "part_number": "118607",
+   "description": "NASON - (ZP-861-62) EPOXY REDU",
+   "qty": 1.2,
+   "uom": "L",
+   "under": "PAINT FOR TAN DOLLY (CENTURION"
+  },
+  {
+   "part_number": "100944",
+   "description": "RUBBER BUSH LARGE MULLINS",
+   "qty": 4,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "128708",
+   "description": "PICKING MODULE - DOLLY TAN 2.7",
+   "qty": 1,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "107004",
+   "description": "HOSE AIRBRAKE RUBBER 1/2\"",
+   "qty": 30.0,
+   "uom": "M",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "107070",
+   "description": "3/8 Inch NYLON TUBE - BLUE",
+   "qty": 10.0,
+   "uom": "M",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "107074",
+   "description": "3/8 Inch NYLON TUBE - RED",
+   "qty": 9.0,
+   "uom": "M",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "107073",
+   "description": "3/8 Inch NYLON TUBE - ORANGE",
+   "qty": 5.0,
+   "uom": "M",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "107226",
+   "description": "YARD RELEASE KIT - EXCLUDING A",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "114396",
+   "description": "YARD RELEASE SPANNER 9/16\" & 3",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "118137",
+   "description": "WING NUT Z/P M10",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "117924",
+   "description": "BOLT Z/P GR8.8 M10x30",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "118279",
+   "description": "SPRING WASHER M10",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "117914",
+   "description": "NUT Z/P M10 GR8.8",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "107005",
+   "description": "1/2\" RUBBER AIRBRAKE HOSE SEPA",
+   "qty": 12,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "123695",
+   "description": "DOLLY YR BRACKET -PRESSED",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "118039",
+   "description": "BOLT HEX M6x25 AS1110 GR8.8 Z/",
+   "qty": 2,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "118122",
+   "description": "NUT NYLOC HEX M6 DIN985 CL8 Z/",
+   "qty": 6,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "118273",
+   "description": "WASHER METRIC M6 HT ASTM F436M",
+   "qty": 12,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY TAN 2.7"
+  },
+  {
+   "part_number": "128627",
+   "description": "PICKING MODULE - AIR TANKS FAS",
+   "qty": 1,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "117926",
+   "description": "BOLT Z/P GR8.8 M10x40",
+   "qty": 4,
+   "uom": "EA",
+   "under": "PICKING MODULE - AIR TANKS FAS"
+  },
+  {
+   "part_number": "118103",
+   "description": "NYLOC NUT Z/P GR8 M10",
+   "qty": 4,
+   "uom": "EA",
+   "under": "PICKING MODULE - AIR TANKS FAS"
+  },
+  {
+   "part_number": "118248",
+   "description": "WASHER Z/P G8-HT M10 (3/8\")",
+   "qty": 8,
+   "uom": "EA",
+   "under": "PICKING MODULE - AIR TANKS FAS"
+  },
+  {
+   "part_number": "128809",
+   "description": "PICKING MODULE - DOLLY REAR MU",
+   "qty": 1,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "117902",
+   "description": "MUDGUARD FLAP SET FASTENER KIT",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY REAR MU"
+  },
+  {
+   "part_number": "117402",
+   "description": "MUDFLAP ANTI-SAIL BRACKET SUIT",
+   "qty": 2,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY REAR MU"
+  },
+  {
+   "part_number": "125302",
+   "description": "GUARD ANNEX TRACK (650 LONG)",
+   "qty": 2,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY REAR MU"
+  },
+  {
+   "part_number": "116753",
+   "description": "TRACK ANNEX - ROPE TRACK - SIN",
+   "qty": 1.3,
+   "uom": "M",
+   "under": "GUARD ANNEX TRACK (650 LONG)"
+  },
+  {
+   "part_number": "117905",
+   "description": "ROLLGUARD FASTENER KIT",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY REAR MU"
+  },
+  {
+   "part_number": "128814",
+   "description": "PICKING MODULE - DOLLY PLATES",
+   "qty": 1,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "150323",
+   "description": "COMPLIANCE PLATE - ENGRAVED",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "101385",
+   "description": "SS LABEL TRAILER ID PLATE",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117688",
+   "description": "ALUMINIUM LABEL - TRAILER TORQ",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "118141",
+   "description": "RIVET SMALL-AS-5-4",
+   "qty": 16,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117744",
+   "description": "STICKER - GREASE",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117212",
+   "description": "REFLECTOR - RECTANGLE - WHITE ",
+   "qty": 2,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117211",
+   "description": "REFLECTOR - RECTANGLE - AMBER ",
+   "qty": 6,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117213",
+   "description": "REFLECTOR - RECTANGLE - RED - ",
+   "qty": 2,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117643",
+   "description": "REAR MARKER CHEVRON-METAL (600",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117594",
+   "description": "SIGN ALUMINIUM DO NOT OVERTAKE",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117689",
+   "description": "BRE DOMED \"WA MADE\" STICKER",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "117675",
+   "description": "STICKER - NON EBS",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "165896",
+   "description": "REFLECTOR - ROUND - AMBER - 42",
+   "qty": 2,
+   "uom": "EA",
+   "under": "PICKING MODULE - DOLLY PLATES"
+  },
+  {
+   "part_number": "128699",
+   "description": "PICKING MODULE - TANDEM DOLLY ",
+   "qty": 1,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "116950",
+   "description": "7 PIN PLUG - NARVA",
+   "qty": 2,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "117770",
+   "description": "SPIRAL WRAP 20mm - 24mm STANDA",
+   "qty": 3.0,
+   "uom": "M",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "117772",
+   "description": "SPIRAL WRAP 33mm - 44mm HEAVY ",
+   "qty": 3.0,
+   "uom": "M",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "118036",
+   "description": "BOLT Z/P GR8.8 M6x20",
+   "qty": 4,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "118143",
+   "description": "RIVET - 4.8x11.4 DOME HEAD - U",
+   "qty": 8,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "117173",
+   "description": "HARNESS & LIGHT KIT - TAN DOLL",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "118024",
+   "description": "BOLT Z/P GR8.8 M5x20",
+   "qty": 4,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "118120",
+   "description": "NYLOC NUT Z/P GR8 M5",
+   "qty": 4,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "118269",
+   "description": "WASHER Z/P G8-HT M5",
+   "qty": 8,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "125418",
+   "description": "EMAX DRYBOX BRACE - 1.6 SS304 ",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "118124",
+   "description": "NUT NYLOC HEX M8 DIN985 CL8 Z/",
+   "qty": 1,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "118275",
+   "description": "WASHER Z/P G8-HT M8 (5/16\")",
+   "qty": 2,
+   "uom": "EA",
+   "under": "PICKING MODULE - TANDEM DOLLY "
+  },
+  {
+   "part_number": "123638",
+   "description": "A-FRAME HELPER SPRING ASSEMBLY",
+   "qty": 1,
+   "uom": "EA",
+   "under": null
+  },
+  {
+   "part_number": "112010",
+   "description": "A-FRAME SPRING MOUNT (10 MS)",
+   "qty": 2,
+   "uom": "EA",
+   "under": "A-FRAME HELPER SPRING ASSEMBLY"
+  },
+  {
+   "part_number": "114385",
+   "description": "CHAIN POINT - GENERIC - SWINGI",
+   "qty": 2,
+   "uom": "EA",
+   "under": "A-FRAME HELPER SPRING ASSEMBLY"
+  },
+  {
+   "part_number": "116826",
+   "description": "CHAIN TRANSPORT 8MM G70 GOLD",
+   "qty": 1.2,
+   "uom": "M",
+   "under": "A-FRAME HELPER SPRING ASSEMBLY"
+  },
+  {
+   "part_number": "117592",
+   "description": "D SHACKLE 10MM GRADE SWLL 1T",
+   "qty": 4,
+   "uom": "EA",
+   "under": "A-FRAME HELPER SPRING ASSEMBLY"
+  },
+  {
+   "part_number": "117817",
+   "description": "A-FRAME TENSION SPRING TC1253",
+   "qty": 2,
+   "uom": "EA",
+   "under": "A-FRAME HELPER SPRING ASSEMBLY"
+  }
+ ]
+}

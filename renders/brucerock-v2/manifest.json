@@ -1,258 +1,695 @@
 {
- "_about": "Part renders for brucerock-dolly.html. Key on node (unique for all 76 parts; sku is not). 1200x1200 JPG on white. All 8 mapped parts done; pending-confirmation parts are being added in page order.",
- "count": 42,
+ "_about": "Bruce Rock dolly version 2 part renders. One image per line in assets/brucerock/v2/parts_v2.json, keyed on line id. 1200 px JPG on white. 'node' is the delivered catalog label the line came from.",
+ "count": 88,
  "images": [
   {
-   "node": "AXLE DRUM BRAKE PARALLEL KH [100556]",
-   "sku": "100556",
+   "id": "axle-wheel-set",
+   "name": "AXLE AND WHEEL SET, COMPLETE",
+   "part_number": null,
+   "file": "axle-wheel-set.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "axle-100556",
    "name": "AXLE DRUM BRAKE PARALLEL KH",
-   "file": "axle-drum-brake-parallel-kh-100556.jpg"
+   "part_number": "100556",
+   "file": "axle-100556.jpg",
+   "source": "new for version 2",
+   "node": "AXLE DRUM BRAKE PARALLEL KH [100556]"
   },
   {
-   "node": "HELLA LED COMB TAIL LAMP (BRE) [117156]",
-   "sku": "117156",
-   "name": "HELLA LED COMB TAIL LAMP (BRE)",
-   "file": "hella-led-comb-tail-lamp-bre-117156.jpg"
-  },
-  {
-   "node": "MOUNT - AIR TANK 950 [123428]",
-   "sku": "123428",
-   "name": "MOUNT - AIR TANK 950",
-   "file": "mount-air-tank-950-123428.jpg"
-  },
-  {
-   "node": "BRAKE BOOSTER 3030 (CONFIRM)",
-   "sku": "BRAKE-BOOSTER-3030",
+   "id": "brake-booster",
    "name": "BRAKE BOOSTER 3030",
-   "file": "brake-booster-3030-confirm.jpg"
+   "part_number": null,
+   "file": "brake-booster.jpg",
+   "source": "carried over from the delivered set",
+   "node": "BRAKE BOOSTER 3030 (CONFIRM)"
   },
   {
-   "node": "DRAWBAR A-FRAME WELDMENT (CONFIRM)",
-   "sku": "DRAWBAR-A-FRAME-WELDME",
-   "name": "DRAWBAR A-FRAME WELDMENT",
-   "file": "drawbar-a-frame-weldment-confirm.jpg"
-  },
-  {
-   "node": "RELAY VALVE 4-WAY (CONFIRM)",
-   "sku": "RELAY-VALVE-4-WAY",
-   "name": "RELAY VALVE 4-WAY",
-   "file": "relay-valve-4-way-confirm.jpg"
-  },
-  {
-   "node": "SUSPENSION ASSEMBLY (MECHANICAL O/SLUNG) [101224] (CONFIRM)",
-   "sku": "101224",
-   "name": "SUSPENSION ASSEMBLY (MECHANICAL O/SLUNG)",
-   "file": "suspension-assembly-mechanical-o-slung-101224-confirm.jpg"
-  },
-  {
-   "node": "WHEEL ASSY (CONFIRM)",
-   "sku": "WHEEL-ASSY",
-   "name": "WHEEL ASSY",
-   "file": "wheel-assy-confirm.jpg"
-  },
-  {
-   "node": "BOLT HEX M8x65 AS1110 GR8.8 [118068]",
-   "sku": "118068",
-   "name": "BOLT HEX M8x65 AS1110 GR8.8",
-   "file": "bolt-hex-m8x65-as1110-gr8-8-118068.jpg"
-  },
-  {
-   "node": "HELLA LED RED/AMBER SIDE MARKER [117141]",
-   "sku": "117141",
-   "name": "HELLA LED RED/AMBER SIDE MARKER",
-   "file": "hella-led-red-amber-side-marker-117141.jpg"
-  },
-  {
-   "node": "MOUNT - MUDFLAP SINGLE [114429]",
-   "sku": "114429",
-   "name": "MOUNT - MUDFLAP SINGLE",
-   "file": "mount-mudflap-single-114429.jpg"
-  },
-  {
-   "node": "SOCKET-WELD IN-BSP-1/2-BLACK [107356]",
-   "sku": "107356",
-   "name": "SOCKET-WELD IN-BSP-1/2-BLACK",
-   "file": "socket-weld-in-bsp-1-2-black-107356.jpg"
-  },
-  {
-   "node": "SUSPENSION MECHANICAL O/SLUNG [101224]",
-   "sku": "101224",
-   "name": "SUSPENSION MECHANICAL O/SLUNG",
-   "file": "suspension-mechanical-o-slung-101224.jpg"
-  },
-  {
-   "node": "3/8 M&F EXTRUDED ELBOW [106872] (CONFIRM)",
-   "sku": "106872",
-   "name": "3/8 M&F EXTRUDED ELBOW",
-   "file": "3-8-m-f-extruded-elbow-106872-confirm.jpg"
-  },
-  {
-   "node": "A-FRAME COMPRESSION SPRING [116851] (CONFIRM)",
-   "sku": "116851",
-   "name": "A-FRAME COMPRESSION SPRING",
-   "file": "a-frame-compression-spring-116851-confirm.jpg"
-  },
-  {
-   "node": "A-FRAME GUSSET PLATE [112401] (CONFIRM)",
-   "sku": "112401",
-   "name": "A-FRAME GUSSET PLATE",
-   "file": "a-frame-gusset-plate-112401-confirm.jpg"
-  },
-  {
-   "node": "A-FRAME TENSION/HELPER SPRING [117817] (CONFIRM)",
-   "sku": "117817",
-   "name": "A-FRAME TENSION/HELPER SPRING",
-   "file": "a-frame-tension-helper-spring-117817-confirm.jpg"
-  },
-  {
-   "node": "AIR BRAKE VALVE (CONFIRM)",
-   "sku": "AIR-BRAKE-VALVE",
-   "name": "AIR BRAKE VALVE",
-   "file": "air-brake-valve-confirm.jpg"
-  },
-  {
-   "node": "AIR FITTING 1/2\" (CONFIRM)",
-   "sku": "AIR-FITTING-1-2",
-   "name": "AIR FITTING 1/2\"",
-   "file": "air-fitting-1-2-confirm.jpg"
-  },
-  {
-   "node": "AIR FITTING 3/8\" (CONFIRM)",
-   "sku": "AIR-FITTING-3-8",
-   "name": "AIR FITTING 3/8\"",
-   "file": "air-fitting-3-8-confirm.jpg"
-  },
-  {
-   "node": "AIR LINE JUNCTION (CONFIRM)",
-   "sku": "AIR-LINE-JUNCTION",
-   "name": "AIR LINE JUNCTION",
-   "file": "air-line-junction-confirm.jpg"
-  },
-  {
-   "node": "AIR TANK CRADLE BRACKET [123428] (CONFIRM)",
-   "sku": "123428",
-   "name": "AIR TANK CRADLE BRACKET",
-   "file": "air-tank-cradle-bracket-123428-confirm.jpg"
-  },
-  {
-   "node": "DRAWBAR END PIVOT CASTING (LH) [100675] (CONFIRM)",
-   "sku": "100675",
-   "name": "DRAWBAR END PIVOT CASTING (LH)",
-   "file": "drawbar-end-pivot-casting-lh-100675-confirm.jpg"
-  },
-  {
-   "node": "DRAWBAR END PIVOT CASTING (RH) [100675] (CONFIRM)",
-   "sku": "100675",
-   "name": "DRAWBAR END PIVOT CASTING (RH)",
-   "file": "drawbar-end-pivot-casting-rh-100675-confirm.jpg"
-  },
-  {
-   "node": "HELLA LAMP 2559 (CONFIRM)",
-   "sku": "HELLA-LAMP-2559",
-   "name": "HELLA LAMP 2559",
-   "file": "hella-lamp-2559-confirm.jpg"
-  },
-  {
-   "node": "MOUNTING RING / COLLAR (CONFIRM)",
-   "sku": "MOUNTING-RING-COLLAR",
-   "name": "MOUNTING RING / COLLAR",
-   "file": "mounting-ring-collar-confirm.jpg"
-  },
-  {
-   "node": "NUMBER PLATE (CONFIRM)",
-   "sku": "NUMBER-PLATE",
-   "name": "NUMBER PLATE",
-   "file": "number-plate-confirm.jpg"
-  },
-  {
-   "node": "PRESSURE PROTECTION VALVE (CONFIRM)",
-   "sku": "PRESSURE-PROTECTION-VA",
-   "name": "PRESSURE PROTECTION VALVE",
-   "file": "pressure-protection-valve-confirm.jpg"
-  },
-  {
-   "node": "PRESSURE PROTECTION VALVE ASSY (CONFIRM)",
-   "sku": "PRESSURE-PROTECTION-VA",
-   "name": "PRESSURE PROTECTION VALVE ASSY",
-   "file": "pressure-protection-valve-assy-confirm.jpg"
-  },
-  {
-   "node": "RELAY VALVE (CONFIRM)",
-   "sku": "RELAY-VALVE",
-   "name": "RELAY VALVE",
-   "file": "relay-valve-confirm.jpg"
-  },
-  {
-   "node": "RIM (CONFIRM)",
-   "sku": "RIM",
-   "name": "RIM",
-   "file": "rim-confirm.jpg"
-  },
-  {
-   "node": "ROCKER PIN EQUALISER [101001] (CONFIRM)",
-   "sku": "101001",
-   "name": "ROCKER PIN EQUALISER",
-   "file": "rocker-pin-equaliser-101001-confirm.jpg"
-  },
-  {
-   "node": "SLACK ADJUSTER (CONFIRM)",
-   "sku": "SLACK-ADJUSTER",
+   "id": "slack-adjuster",
    "name": "SLACK ADJUSTER",
-   "file": "slack-adjuster-confirm.jpg"
+   "part_number": null,
+   "file": "slack-adjuster.jpg",
+   "source": "carried over from the delivered set",
+   "node": "SLACK ADJUSTER (CONFIRM)"
   },
   {
-   "node": "SUSPENSION MECHANICAL O/SLUNG [101224] (CONFIRM)",
-   "sku": "101224",
-   "name": "SUSPENSION MECHANICAL O/SLUNG",
-   "file": "suspension-mechanical-o-slung-101224-confirm.jpg"
+   "id": "elbow-106872",
+   "name": "3/8 M&F EXTRUDED ELBOW",
+   "part_number": "106872",
+   "file": "elbow-106872.jpg",
+   "source": "carried over from the delivered set",
+   "node": "3/8 M&F EXTRUDED ELBOW [106872] (CONFIRM)"
   },
   {
-   "node": "TRAILING ARM / RADIUS ROD (LH 395) (CONFIRM)",
-   "sku": "TRAILING-ARM-RADIUS-RO",
-   "name": "TRAILING ARM / RADIUS ROD (LH 395)",
-   "file": "trailing-arm-radius-rod-lh-395-confirm.jpg"
+   "id": "wheel-assy",
+   "name": "WHEEL ASSY (DUAL)",
+   "part_number": null,
+   "file": "wheel-assy.jpg",
+   "source": "carried over from the delivered set",
+   "node": "WHEEL ASSY (CONFIRM)"
   },
   {
-   "node": "TRAILING ARM / RADIUS ROD (LH 495) (CONFIRM)",
-   "sku": "TRAILING-ARM-RADIUS-RO",
-   "name": "TRAILING ARM / RADIUS ROD (LH 495)",
-   "file": "trailing-arm-radius-rod-lh-495-confirm.jpg"
+   "id": "rim",
+   "name": "RIM",
+   "part_number": null,
+   "file": "rim.jpg",
+   "source": "carried over from the delivered set",
+   "node": "RIM (CONFIRM)"
   },
   {
-   "node": "TRAILING ARM / RADIUS ROD (RH 395) (CONFIRM)",
-   "sku": "TRAILING-ARM-RADIUS-RO",
-   "name": "TRAILING ARM / RADIUS ROD (RH 395)",
-   "file": "trailing-arm-radius-rod-rh-395-confirm.jpg"
-  },
-  {
-   "node": "TRAILING ARM / RADIUS ROD (RH 495) (CONFIRM)",
-   "sku": "TRAILING-ARM-RADIUS-RO",
-   "name": "TRAILING ARM / RADIUS ROD (RH 495)",
-   "file": "trailing-arm-radius-rod-rh-495-confirm.jpg"
-  },
-  {
-   "node": "TURNTABLE BOOMERANG (HALF) [101446] (CONFIRM)",
-   "sku": "101446",
-   "name": "TURNTABLE BOOMERANG (HALF)",
-   "file": "turntable-boomerang-half-101446-confirm.jpg"
-  },
-  {
-   "node": "TURNTABLE BOOMERANG (TOP PLATE) [101446] (CONFIRM)",
-   "sku": "101446",
-   "name": "TURNTABLE BOOMERANG (TOP PLATE)",
-   "file": "turntable-boomerang-top-plate-101446-confirm.jpg"
-  },
-  {
-   "node": "TYRE (CONFIRM)",
-   "sku": "TYRE",
+   "id": "tyre",
    "name": "TYRE",
-   "file": "tyre-confirm.jpg"
+   "part_number": null,
+   "file": "tyre.jpg",
+   "source": "carried over from the delivered set",
+   "node": "TYRE (CONFIRM)"
   },
   {
-   "node": "WIGGLEBAR 6x300 CENTRES [108384] (CONFIRM)",
-   "sku": "108384",
-   "name": "WIGGLEBAR 6x300 CENTRES",
-   "file": "wigglebar-6x300-centres-108384-confirm.jpg"
+   "id": "suspension-101224",
+   "name": "SUSPENSION MECHANICAL O/SLUNG",
+   "part_number": "101224",
+   "file": "suspension-101224.jpg",
+   "source": "new for version 2",
+   "node": "SUSPENSION MECHANICAL O/SLUNG [101224]"
+  },
+  {
+   "id": "hanger-front",
+   "name": "SUSPENSION HANGER, FRONT",
+   "part_number": null,
+   "file": "hanger-front.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "hanger-mid",
+   "name": "SUSPENSION HANGER, MID",
+   "part_number": null,
+   "file": "hanger-mid.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "hanger-rear",
+   "name": "SUSPENSION HANGER, REAR",
+   "part_number": null,
+   "file": "hanger-rear.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "spring-set",
+   "name": "LEAF SPRING SET (9 LEAF)",
+   "part_number": null,
+   "file": "spring-set.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "spring-pack",
+   "name": "LEAF SPRING PACK (9 LEAF)",
+   "part_number": null,
+   "file": "spring-pack.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "spring-saddle",
+   "name": "SPRING SADDLE",
+   "part_number": null,
+   "file": "spring-saddle.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "spring-keeper",
+   "name": "SPRING KEEPER",
+   "part_number": null,
+   "file": "spring-keeper.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "ubolt",
+   "name": "U-BOLT 325",
+   "part_number": null,
+   "file": "ubolt.jpg",
+   "source": "carried over from the delivered set",
+   "node": "SUSPENSION MECHANICAL O/SLUNG [101224] (CONFIRM)"
+  },
+  {
+   "id": "rocker-101001",
+   "name": "ROCKER PIN EQUALISER",
+   "part_number": "101001",
+   "file": "rocker-101001.jpg",
+   "source": "carried over from the delivered set",
+   "node": "ROCKER PIN EQUALISER [101001] (CONFIRM)"
+  },
+  {
+   "id": "trailing-arm-lh-395",
+   "name": "TRAILING ARM / RADIUS ROD (LH 395)",
+   "part_number": null,
+   "file": "trailing-arm-lh-395.jpg",
+   "source": "carried over from the delivered set",
+   "node": "TRAILING ARM / RADIUS ROD (LH 395) (CONFIRM)"
+  },
+  {
+   "id": "trailing-arm-lh-495",
+   "name": "TRAILING ARM / RADIUS ROD (LH 495)",
+   "part_number": null,
+   "file": "trailing-arm-lh-495.jpg",
+   "source": "carried over from the delivered set",
+   "node": "TRAILING ARM / RADIUS ROD (LH 495) (CONFIRM)"
+  },
+  {
+   "id": "trailing-arm-rh-395",
+   "name": "TRAILING ARM / RADIUS ROD (RH 395)",
+   "part_number": null,
+   "file": "trailing-arm-rh-395.jpg",
+   "source": "carried over from the delivered set",
+   "node": "TRAILING ARM / RADIUS ROD (RH 395) (CONFIRM)"
+  },
+  {
+   "id": "trailing-arm-rh-495",
+   "name": "TRAILING ARM / RADIUS ROD (RH 495)",
+   "part_number": null,
+   "file": "trailing-arm-rh-495.jpg",
+   "source": "carried over from the delivered set",
+   "node": "TRAILING ARM / RADIUS ROD (RH 495) (CONFIRM)"
+  },
+  {
+   "id": "turntable-101446",
+   "name": "TURNTABLE BOOMERANG 3.5\" BE-16",
+   "part_number": "101446",
+   "file": "turntable-101446.jpg",
+   "source": "carried over from the delivered set",
+   "node": "TURNTABLE BOOMERANG (HALF) [101446] (CONFIRM)"
+  },
+  {
+   "id": "turntable-top-plate",
+   "name": "TURNTABLE TOP PLATE",
+   "part_number": null,
+   "file": "turntable-top-plate.jpg",
+   "source": "carried over from the delivered set",
+   "node": "TURNTABLE BOOMERANG (TOP PLATE) [101446] (CONFIRM)"
+  },
+  {
+   "id": "pivot-foot-lh",
+   "name": "UPPER PIVOT FOOT (LH)",
+   "part_number": null,
+   "file": "pivot-foot-lh.jpg",
+   "source": "carried over from the delivered set",
+   "node": "DRAWBAR END PIVOT CASTING (LH) [100675] (CONFIRM)"
+  },
+  {
+   "id": "pivot-foot-rh",
+   "name": "UPPER PIVOT FOOT (RH)",
+   "part_number": null,
+   "file": "pivot-foot-rh.jpg",
+   "source": "carried over from the delivered set",
+   "node": "DRAWBAR END PIVOT CASTING (RH) [100675] (CONFIRM)"
+  },
+  {
+   "id": "kh071",
+   "name": "SADDLE/SEAT CASTING KH071",
+   "part_number": null,
+   "file": "kh071.jpg",
+   "source": "new for version 2",
+   "node": "SADDLE/SEAT CASTING KH071 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "kh007",
+   "name": "PIVOT PIN & COLLAR KH007",
+   "part_number": null,
+   "file": "kh007.jpg",
+   "source": "new for version 2",
+   "node": "PIVOT PIN & COLLAR KH007 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "drawbar",
+   "name": "DRAWBAR A-FRAME WELDMENT",
+   "part_number": null,
+   "file": "drawbar.jpg",
+   "source": "carried over from the delivered set",
+   "node": "DRAWBAR A-FRAME WELDMENT (CONFIRM)"
+  },
+  {
+   "id": "tow-eye-101380",
+   "name": "TOW EYE 50MM WELD IN",
+   "part_number": "101380",
+   "file": "tow-eye-101380.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "kh600068-100675",
+   "name": "DRAWBAR END PIVOT CASTING - KH",
+   "part_number": "100675",
+   "file": "kh600068-100675.jpg",
+   "source": "new for version 2",
+   "node": "CAST BEARING/PIVOT BLOCK KH600068 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "chassis-frame",
+   "name": "CHASSIS FRAME WELDMENT",
+   "part_number": null,
+   "file": "chassis-frame.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "frame-16981-01",
+   "name": "FRAME MEMBER 16981-01",
+   "part_number": null,
+   "file": "frame-16981-01.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-01 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-02",
+   "name": "FRAME MEMBER 16981-02",
+   "part_number": null,
+   "file": "frame-16981-02.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-02 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-03",
+   "name": "FRAME MEMBER 16981-03",
+   "part_number": null,
+   "file": "frame-16981-03.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-03 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-04",
+   "name": "FRAME MEMBER 16981-04",
+   "part_number": null,
+   "file": "frame-16981-04.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-04 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-05",
+   "name": "FRAME MEMBER 16981-05",
+   "part_number": null,
+   "file": "frame-16981-05.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-05 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-06",
+   "name": "FRAME PLATE 16981-06",
+   "part_number": null,
+   "file": "frame-16981-06.jpg",
+   "source": "carried over from the delivered set",
+   "node": "A-FRAME GUSSET PLATE [112401] (CONFIRM)"
+  },
+  {
+   "id": "frame-16981-07",
+   "name": "FRAME MEMBER 16981-07",
+   "part_number": null,
+   "file": "frame-16981-07.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-07 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-08",
+   "name": "FRAME MEMBER 16981-08",
+   "part_number": null,
+   "file": "frame-16981-08.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-08 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-09",
+   "name": "FRAME MEMBER 16981-09",
+   "part_number": null,
+   "file": "frame-16981-09.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-09 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-10",
+   "name": "FRAME MEMBER 16981-10",
+   "part_number": null,
+   "file": "frame-16981-10.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-10 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-11",
+   "name": "FRAME MEMBER 16981-11",
+   "part_number": null,
+   "file": "frame-16981-11.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-11 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-13",
+   "name": "FRAME MEMBER 16981-13",
+   "part_number": null,
+   "file": "frame-16981-13.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-13 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-14",
+   "name": "FRAME MEMBER 16981-14",
+   "part_number": null,
+   "file": "frame-16981-14.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-14 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-15",
+   "name": "FRAME MEMBER 16981-15",
+   "part_number": null,
+   "file": "frame-16981-15.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-15 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-16",
+   "name": "FRAME MEMBER 16981-16",
+   "part_number": null,
+   "file": "frame-16981-16.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-16 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-26",
+   "name": "FRAME MEMBER 16981-26",
+   "part_number": null,
+   "file": "frame-16981-26.jpg",
+   "source": "new for version 2",
+   "node": "FRAME WELDMENT MEMBER 16981-26 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "frame-16981-27",
+   "name": "MOUNTING RING / COLLAR 16981-27",
+   "part_number": null,
+   "file": "frame-16981-27.jpg",
+   "source": "carried over from the delivered set",
+   "node": "MOUNTING RING / COLLAR (CONFIRM)"
+  },
+  {
+   "id": "spring-116851",
+   "name": "COMPRESSION SPRING OL220 OD100",
+   "part_number": "116851",
+   "file": "spring-116851.jpg",
+   "source": "carried over from the delivered set",
+   "node": "A-FRAME COMPRESSION SPRING [116851] (CONFIRM)"
+  },
+  {
+   "id": "wigglebar-350",
+   "name": "WIGGLEBAR 6 x 350 CENTRES, 2 SECTION",
+   "part_number": "108384",
+   "file": "wigglebar-350.jpg",
+   "source": "new for version 2",
+   "node": "WIGGLEBAR 6x300 CENTRES [108384] (CONFIRM)"
+  },
+  {
+   "id": "wigglebar-400",
+   "name": "WIGGLEBAR 6 x 400 CENTRES, 2 SECTION",
+   "part_number": null,
+   "file": "wigglebar-400.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "air-system",
+   "name": "AIR TANK AND VALVE ASSEMBLY",
+   "part_number": null,
+   "file": "air-system.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "air-tank",
+   "name": "AIR TANK, LARGE 4 PORT",
+   "part_number": null,
+   "file": "air-tank.jpg",
+   "source": "new for version 2",
+   "node": "MOUNT - AIR TANK 950 [123428]"
+  },
+  {
+   "id": "tank-mount-123428",
+   "name": "MOUNT - GENERIC - AIR TANK 950",
+   "part_number": "123428",
+   "file": "tank-mount-123428.jpg",
+   "source": "carried over from the delivered set",
+   "node": "AIR TANK CRADLE BRACKET [123428] (CONFIRM)"
+  },
+  {
+   "id": "springbrake-valve-assy",
+   "name": "SPRING BRAKE CONTROL VALVE WITH FITTINGS",
+   "part_number": null,
+   "file": "springbrake-valve-assy.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "springbrake-valve",
+   "name": "SPRING BRAKE CONTROL VALVE",
+   "part_number": null,
+   "file": "springbrake-valve.jpg",
+   "source": "new for version 2",
+   "node": "AIR BRAKE VALVE (CONFIRM)"
+  },
+  {
+   "id": "relay-valve-assy",
+   "name": "SERVICE RELAY VALVE WITH FITTINGS",
+   "part_number": null,
+   "file": "relay-valve-assy.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "relay-valve",
+   "name": "SERVICE RELAY VALVE",
+   "part_number": null,
+   "file": "relay-valve.jpg",
+   "source": "new for version 2",
+   "node": "RELAY VALVE (CONFIRM)"
+  },
+  {
+   "id": "relay-valve-4way-assy",
+   "name": "SERVICE RELAY VALVE 4-WAY WITH FITTINGS",
+   "part_number": null,
+   "file": "relay-valve-4way-assy.jpg",
+   "source": "new for version 2"
+  },
+  {
+   "id": "relay-valve-4way",
+   "name": "SERVICE RELAY VALVE 4-WAY",
+   "part_number": null,
+   "file": "relay-valve-4way.jpg",
+   "source": "new for version 2",
+   "node": "RELAY VALVE 4-WAY (CONFIRM)"
+  },
+  {
+   "id": "ppv-assy",
+   "name": "PRESSURE PROTECTION VALVE ASSY",
+   "part_number": null,
+   "file": "ppv-assy.jpg",
+   "source": "carried over from the delivered set",
+   "node": "PRESSURE PROTECTION VALVE ASSY (CONFIRM)"
+  },
+  {
+   "id": "ppv",
+   "name": "PRESSURE PROTECTION VALVE",
+   "part_number": null,
+   "file": "ppv.jpg",
+   "source": "carried over from the delivered set",
+   "node": "PRESSURE PROTECTION VALVE (CONFIRM)"
+  },
+  {
+   "id": "fitting-1-2",
+   "name": "AIR FITTING 1/2\"",
+   "part_number": null,
+   "file": "fitting-1-2.jpg",
+   "source": "carried over from the delivered set",
+   "node": "AIR FITTING 1/2\" (CONFIRM)"
+  },
+  {
+   "id": "fitting-3-8",
+   "name": "AIR FITTING 3/8\"",
+   "part_number": null,
+   "file": "fitting-3-8.jpg",
+   "source": "carried over from the delivered set",
+   "node": "AIR FITTING 3/8\" (CONFIRM)"
+  },
+  {
+   "id": "fitting-1-2-blanking",
+   "name": "BLANKING AIR FITTING 1/2\"",
+   "part_number": null,
+   "file": "fitting-1-2-blanking.jpg",
+   "source": "new for version 2",
+   "node": "1-2 Inch BLANKING AIR FITTING (NEEDS ENG MAP)"
+  },
+  {
+   "id": "fitting-3-8-blanking",
+   "name": "BLANKING AIR FITTING 3/8\"",
+   "part_number": null,
+   "file": "fitting-3-8-blanking.jpg",
+   "source": "new for version 2",
+   "node": "3-8 Inch BLANKING AIR FITTING (NEEDS ENG MAP)"
+  },
+  {
+   "id": "fitting-3-8-straight",
+   "name": "STRAIGHT AIR FITTING 3/8\"",
+   "part_number": null,
+   "file": "fitting-3-8-straight.jpg",
+   "source": "new for version 2",
+   "node": "3-8 Inch STRAIGHT AIR FITTING (NEEDS ENG MAP)"
+  },
+  {
+   "id": "fitting-3-8-t",
+   "name": "T AIR FITTING 3/8\"",
+   "part_number": null,
+   "file": "fitting-3-8-t.jpg",
+   "source": "new for version 2",
+   "node": "3-8 Inch T AIR FITTING (NEEDS ENG MAP)"
+  },
+  {
+   "id": "fitting-3-8-bsp-t",
+   "name": "BSP T AIR FITTING 3/8\" TO 3/8\"",
+   "part_number": null,
+   "file": "fitting-3-8-bsp-t.jpg",
+   "source": "new for version 2",
+   "node": "3-8 to 3-8 Inch BSP T AIR FITTING (NEEDS ENG MAP)"
+  },
+  {
+   "id": "fitting-3-8-swivel",
+   "name": "SWIVEL AIR FITTING 3/8\" 90 DEG",
+   "part_number": null,
+   "file": "fitting-3-8-swivel.jpg",
+   "source": "new for version 2",
+   "node": "3-8 Inch 90\u00b0 SWIVEL AIR FITTING (NEEDS ENG MAP)"
+  },
+  {
+   "id": "union-1-2-to-3-4",
+   "name": "UNION 1/2\" TO 3/4\"",
+   "part_number": null,
+   "file": "union-1-2-to-3-4.jpg",
+   "source": "new for version 2",
+   "node": "1-2 to 3-4 Inch UNION (NEEDS ENG MAP)"
+  },
+  {
+   "id": "union-107133",
+   "name": "CONNECTOR MALE 3/8\" OD x 1/2\"",
+   "part_number": "107133",
+   "file": "union-107133.jpg",
+   "source": "new for version 2",
+   "node": "1-2 to 3-8 Inch UNION (NEEDS ENG MAP)"
+  },
+  {
+   "id": "air-line-junction",
+   "name": "AIR LINE JUNCTION",
+   "part_number": null,
+   "file": "air-line-junction.jpg",
+   "source": "carried over from the delivered set",
+   "node": "AIR LINE JUNCTION (CONFIRM)"
+  },
+  {
+   "id": "socket-107356",
+   "name": "SOCKET-WELD IN-BSP-1/2-BLACK",
+   "part_number": "107356",
+   "file": "socket-107356.jpg",
+   "source": "new for version 2",
+   "node": "SOCKET-WELD IN-BSP-1/2-BLACK [107356]"
+  },
+  {
+   "id": "bolt-118068",
+   "name": "BOLT HEX M8x65 AS1110 GR8.8",
+   "part_number": "118068",
+   "file": "bolt-118068.jpg",
+   "source": "new for version 2",
+   "node": "BOLT HEX M8x65 AS1110 GR8.8 [118068]"
+  },
+  {
+   "id": "tail-lamp-117156",
+   "name": "HELLA LED COMB TAIL LAMP (BRE)",
+   "part_number": "117156",
+   "file": "tail-lamp-117156.jpg",
+   "source": "new for version 2",
+   "node": "HELLA LED COMB TAIL LAMP (BRE) [117156]"
+  },
+  {
+   "id": "side-marker-117141",
+   "name": "HELLA LED RED/AMBER SIDE MARKER",
+   "part_number": "117141",
+   "file": "side-marker-117141.jpg",
+   "source": "new for version 2",
+   "node": "HELLA LED RED/AMBER SIDE MARKER [117141]"
+  },
+  {
+   "id": "plate-lamp-117165",
+   "name": "HELLA LED LIC PLATE LAMP 2559",
+   "part_number": "117165",
+   "file": "plate-lamp-117165.jpg",
+   "source": "carried over from the delivered set",
+   "node": "HELLA LAMP 2559 (CONFIRM)"
+  },
+  {
+   "id": "number-plate",
+   "name": "NUMBER PLATE",
+   "part_number": null,
+   "file": "number-plate.jpg",
+   "source": "carried over from the delivered set",
+   "node": "NUMBER PLATE (CONFIRM)"
+  },
+  {
+   "id": "light-bracket-124040",
+   "name": "BRACKET - GENERIC - SINGLE SIDED",
+   "part_number": "124040",
+   "file": "light-bracket-124040.jpg",
+   "source": "new for version 2",
+   "node": "BENT PLATE BRACKET KDSLB (NEEDS ENG MAP)"
+  },
+  {
+   "id": "mudguard-117372",
+   "name": "FLEXI MUDGUARD KIT 2.7M X 670",
+   "part_number": "117372",
+   "file": "mudguard-117372.jpg",
+   "source": "new for version 2",
+   "node": "MUDGUARD PANEL G02 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "mudguard-spring",
+   "name": "MUDGUARD TENSION SPRING",
+   "part_number": null,
+   "file": "mudguard-spring.jpg",
+   "source": "carried over from the delivered set",
+   "node": "A-FRAME TENSION/HELPER SPRING [117817] (CONFIRM)"
+  },
+  {
+   "id": "guard-rail-g01",
+   "name": "GUARD RAIL/STRIP G01",
+   "part_number": null,
+   "file": "guard-rail-g01.jpg",
+   "source": "new for version 2",
+   "node": "GUARD RAIL/STRIP G01 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "guard-rail-g03",
+   "name": "GUARD RAIL/STRIP G03",
+   "part_number": null,
+   "file": "guard-rail-g03.jpg",
+   "source": "new for version 2",
+   "node": "GUARD RAIL/STRIP G03 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "guard-rail-g04",
+   "name": "GUARD RAIL/STRIP G04",
+   "part_number": null,
+   "file": "guard-rail-g04.jpg",
+   "source": "new for version 2",
+   "node": "GUARD RAIL/STRIP G04 (NEEDS ENG MAP)"
+  },
+  {
+   "id": "mudflap-114429",
+   "name": "MUDFLAP (MEDIUM)",
+   "part_number": "114429",
+   "file": "mudflap-114429.jpg",
+   "source": "new for version 2",
+   "node": "MOUNT - MUDFLAP SINGLE [114429]"
+  },
+  {
+   "id": "bracket-0679",
+   "name": "BRACKET 0679",
+   "part_number": null,
+   "file": "bracket-0679.jpg",
+   "source": "new for version 2",
+   "node": "BRACKET 0679 (NEEDS ENG MAP)"
   }
  ]
 }
