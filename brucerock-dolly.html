@@ -28,8 +28,11 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 .pc-head h1{font-size:1.1rem;font-weight:800;margin:.25rem 0 .15rem;}
 .pc-head p{font-size:.76rem;color:#6b7b88;line-height:1.5;}
 .search{margin-top:.7rem;width:100%;padding:.5rem .7rem;border:1.5px solid var(--line);border-radius:8px;font-size:.8rem;}
-.part-render{display:none;width:100%;max-height:210px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:10px;margin-top:.7rem;cursor:zoom-in;}
-.part-render.on{display:block;}
+/* floating render preview over the viewer (keeps the parts list from reflowing) */
+.render-float{position:absolute;top:1rem;right:1rem;width:min(38%,280px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 24px rgba(16,32,44,.16);padding:.4rem;display:none;z-index:3;}
+.render-float.on{display:block;}
+.render-float img{width:100%;display:block;border-radius:8px;cursor:zoom-in;}
+.render-float .cap{font-size:.56rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9aa8b3;padding:.25rem .3rem 0;}
 .lightbox{position:fixed;inset:0;background:rgba(16,32,44,.86);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;padding:3vw;}
 .lightbox.on{display:flex;}
 .lightbox img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4);background:#fff;}
@@ -78,6 +81,7 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
       aria-label="TAN-DOLLY 3D parts catalog, click any part to see its part number and price">
       <vntana-center-button></vntana-center-button>
     </vntana-viewer>
+    <div class="render-float" id="render-float"><div class="cap">Part render</div><img id="h-render" alt=""></div>
     <div class="hint">Click any part on the model &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
   </div>
   <div class="parts-col">
@@ -85,7 +89,6 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
       <div class="kick">Replacement Parts</div>
       <h1 id="h-title">TAN-DOLLY Parts Catalog</h1>
       <p id="h-desc">Click a part in the 3D model, or pick from the list, to see its part number, quantity and price.</p>
-      <img id="h-render" class="part-render" alt="">
       <input class="search" id="search" placeholder="Search part number or name...">
     </div>
     <div class="list" id="list"></div>
@@ -109,10 +112,10 @@ fetch("renders/brucerock/manifest.json").then(r=>r.json())
             if(selUid!=null) showRender(PARTS[selUid]); })
   .catch(()=>{});
 function showRender(p){
-  const img=document.getElementById("h-render");
+  const fl=document.getElementById("render-float"), img=document.getElementById("h-render");
   const f=p&&RENDERS[p.node];
-  if(f){ img.src="renders/brucerock/"+encodeURIComponent(f); img.alt=p.name+" render"; img.classList.add("on"); }
-  else { img.classList.remove("on"); img.removeAttribute("src"); }
+  if(f){ img.src="renders/brucerock/"+encodeURIComponent(f); img.alt=p.name+" render"; fl.classList.add("on"); }
+  else { fl.classList.remove("on"); img.removeAttribute("src"); }
 }
 
 // ---------- normalization-proof matching ----------
@@ -216,7 +219,7 @@ function clearSelection(){
   document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel"));
   document.getElementById("h-title").textContent=DEF_TITLE;
   document.getElementById("h-desc").textContent=DEF_DESC;
-  document.getElementById("h-render").classList.remove("on");
+  document.getElementById("render-float").classList.remove("on");
   document.getElementById("h-render").removeAttribute("src");
   // leave the camera where it is on deselect (no re-spin); the recenter button resets it
   renderNow();
