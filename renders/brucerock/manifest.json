@@ -1,6 +1,6 @@
 {
  "_about": "Part renders for brucerock-dolly.html. Key on node (unique for all 76 parts; sku is not). 1200x1200 JPG on white. All 8 mapped parts done; pending-confirmation parts are being added in page order.",
- "count": 21,
+ "count": 37,
  "images": [
   {
    "node": "AXLE DRUM BRAKE PARALLEL KH [100556]",
@@ -127,6 +127,102 @@
    "sku": "AIR-LINE-JUNCTION",
    "name": "AIR LINE JUNCTION",
    "file": "air-line-junction-confirm.jpg"
+  },
+  {
+   "node": "AIR TANK CRADLE BRACKET [123428] (CONFIRM)",
+   "sku": "123428",
+   "name": "AIR TANK CRADLE BRACKET",
+   "file": "air-tank-cradle-bracket-123428-confirm.jpg"
+  },
+  {
+   "node": "DRAWBAR END PIVOT CASTING (LH) [100675] (CONFIRM)",
+   "sku": "100675",
+   "name": "DRAWBAR END PIVOT CASTING (LH)",
+   "file": "drawbar-end-pivot-casting-lh-100675-confirm.jpg"
+  },
+  {
+   "node": "DRAWBAR END PIVOT CASTING (RH) [100675] (CONFIRM)",
+   "sku": "100675",
+   "name": "DRAWBAR END PIVOT CASTING (RH)",
+   "file": "drawbar-end-pivot-casting-rh-100675-confirm.jpg"
+  },
+  {
+   "node": "HELLA LAMP 2559 (CONFIRM)",
+   "sku": "HELLA-LAMP-2559",
+   "name": "HELLA LAMP 2559",
+   "file": "hella-lamp-2559-confirm.jpg"
+  },
+  {
+   "node": "MOUNTING RING / COLLAR (CONFIRM)",
+   "sku": "MOUNTING-RING-COLLAR",
+   "name": "MOUNTING RING / COLLAR",
+   "file": "mounting-ring-collar-confirm.jpg"
+  },
+  {
+   "node": "NUMBER PLATE (CONFIRM)",
+   "sku": "NUMBER-PLATE",
+   "name": "NUMBER PLATE",
+   "file": "number-plate-confirm.jpg"
+  },
+  {
+   "node": "PRESSURE PROTECTION VALVE (CONFIRM)",
+   "sku": "PRESSURE-PROTECTION-VA",
+   "name": "PRESSURE PROTECTION VALVE",
+   "file": "pressure-protection-valve-confirm.jpg"
+  },
+  {
+   "node": "PRESSURE PROTECTION VALVE ASSY (CONFIRM)",
+   "sku": "PRESSURE-PROTECTION-VA",
+   "name": "PRESSURE PROTECTION VALVE ASSY",
+   "file": "pressure-protection-valve-assy-confirm.jpg"
+  },
+  {
+   "node": "RELAY VALVE (CONFIRM)",
+   "sku": "RELAY-VALVE",
+   "name": "RELAY VALVE",
+   "file": "relay-valve-confirm.jpg"
+  },
+  {
+   "node": "RIM (CONFIRM)",
+   "sku": "RIM",
+   "name": "RIM",
+   "file": "rim-confirm.jpg"
+  },
+  {
+   "node": "ROCKER PIN EQUALISER [101001] (CONFIRM)",
+   "sku": "101001",
+   "name": "ROCKER PIN EQUALISER",
+   "file": "rocker-pin-equaliser-101001-confirm.jpg"
+  },
+  {
+   "node": "SLACK ADJUSTER (CONFIRM)",
+   "sku": "SLACK-ADJUSTER",
+   "name": "SLACK ADJUSTER",
+   "file": "slack-adjuster-confirm.jpg"
+  },
+  {
+   "node": "SUSPENSION MECHANICAL O/SLUNG [101224] (CONFIRM)",
+   "sku": "101224",
+   "name": "SUSPENSION MECHANICAL O/SLUNG",
+   "file": "suspension-mechanical-o-slung-101224-confirm.jpg"
+  },
+  {
+   "node": "TRAILING ARM / RADIUS ROD (LH 395) (CONFIRM)",
+   "sku": "TRAILING-ARM-RADIUS-RO",
+   "name": "TRAILING ARM / RADIUS ROD (LH 395)",
+   "file": "trailing-arm-radius-rod-lh-395-confirm.jpg"
+  },
+  {
+   "node": "TRAILING ARM / RADIUS ROD (LH 495) (CONFIRM)",
+   "sku": "TRAILING-ARM-RADIUS-RO",
+   "name": "TRAILING ARM / RADIUS ROD (LH 495)",
+   "file": "trailing-arm-radius-rod-lh-495-confirm.jpg"
+  },
+  {
+   "node": "TRAILING ARM / RADIUS ROD (RH 395) (CONFIRM)",
+   "sku": "TRAILING-ARM-RADIUS-RO",
+   "name": "TRAILING ARM / RADIUS ROD (RH 395)",
+   "file": "trailing-arm-radius-rod-rh-395-confirm.jpg"
   }
  ]
 }
