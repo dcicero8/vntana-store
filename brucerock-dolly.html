@@ -104,7 +104,7 @@ viewer.src = "assets/brucerock/dolly.glb";
 viewer.enableAutoRotate = false;   // free orbit, no auto-spin
 
 // each part gets a stable unique id (SKUs are NOT unique in this BOM)
-PARTS.forEach((p,i)=>{ p.uid=i; p._n=norm(p.node); p._sku=norm(p.sku); });
+PARTS.forEach((p,i)=>{ p.uid=i; p._n=norm(p.node); p._sku=norm(p.sku); p.eflag=p.flag; });
 
 // part renders (Blender studio shots), keyed on node via the manifest.
 // Renders update in place under the same filename, so cache-bust per page load
@@ -119,17 +119,11 @@ function showRender(p){
   const fl=document.getElementById("render-float"), img=document.getElementById("h-render"),
         cap=document.getElementById("render-cap"), note=document.getElementById("render-note");
   const f=p&&RENDERS[p.node];
-  // a part with no geometry of its own (an assembly line whose parts sit elsewhere)
-  const hasGeo = !ready || (p && (uidUuids[p.uid]||[]).length>0);
   if(f){
     img.src="renders/brucerock/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render";
     img.style.display=""; note.style.display="none"; cap.textContent="Part render"; fl.classList.add("on");
-  } else if(p && !hasGeo){
-    img.removeAttribute("src"); img.style.display="none";
-    note.textContent="No standalone 3D view for this line, it is grouped as part of a larger assembly.";
-    note.style.display="block"; cap.textContent="Not shown separately"; fl.classList.add("on");
   } else {
-    fl.classList.remove("on"); img.removeAttribute("src"); img.style.display=""; note.style.display="none";
+    fl.classList.remove("on"); img.removeAttribute("src"); note.style.display="none";
   }
 }
 
@@ -165,6 +159,12 @@ function buildIndex(tries){
     (uidUuids[u]=uidUuids[u]||[]).push(l.uuid); uuidUid[l.uuid]=u; });
   ready=true;
   console.log("INDEX", Object.keys(uidUuids).length, "parts matched;", f.filter(x=>x.part).length,"/",f.length,"leaves mapped");
+  // Any mapped/confirm line that owns no geometry of its own can't be highlighted on
+  // click, so it would look broken. Demote it to the non-clickable "needs part mapping"
+  // group (the geometry it groups belongs to other, separately-listed parts).
+  PARTS.forEach(p=>{ p.eflag = (p.flag!=="needs" && (uidUuids[p.uid]||[]).length===0) ? "needs" : p.flag; });
+  renderList(document.getElementById("search").value);
+  if(selUid!=null && PARTS[selUid] && PARTS[selUid].eflag==="needs") clearSelection();
 }
 
 function clearFx(){ try{["glow","outline","highlight","dim"].forEach(e=>viewer.clearEffect(e));}catch(_){ } }
@@ -202,8 +202,9 @@ function highlightPart(uid){
 const money=n=>"$"+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
 const GROUPS=[["ok","Mapped parts"],["confirm","Mapped, pending engineering confirm"],["needs","Identified in model, needs part mapping (not yet clickable)"]];
 function cardHTML(p){
-  const isNeed = p.flag==="needs";
-  const badge = p.flag==="confirm"?'<span class="badge confirm">confirm</span>':isNeed?'<span class="badge needs">needs map</span>':'';
+  const fl = p.eflag||p.flag;
+  const isNeed = fl==="needs";
+  const badge = fl==="confirm"?'<span class="badge confirm">confirm</span>':isNeed?'<span class="badge needs">needs map</span>':'';
   const qty = p.qty? `Qty ${p.qty}`:'';
   const price = isNeed?'<span class="price tbd">Contact for pricing</span>':`<span class="price">${money(p.price)}</span>`;
   return `<div class="card${isNeed?' ref':''}" data-uid="${p.uid}">
@@ -218,7 +219,7 @@ function renderList(filter=""){
   const show=PARTS.filter(p=>!q || p.sku.toUpperCase().includes(q)||p.name.toUpperCase().includes(q));
   const list=document.getElementById("list"); let html="";
   for(const [flag,label] of GROUPS){
-    const g=show.filter(p=>p.flag===flag); if(!g.length) continue;
+    const g=show.filter(p=>(p.eflag||p.flag)===flag); if(!g.length) continue;
     html+=`<div class="sec${flag==='needs'?' refsec':''}">${label} (${g.length})</div>`+g.map(cardHTML).join("");
   }
   list.innerHTML=html||`<div class="sec">No matches</div>`;
