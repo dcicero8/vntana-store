@@ -28,6 +28,11 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 .card{position:absolute;right:1.5rem;bottom:1.5rem;width:340px;max-width:calc(100vw - 3rem);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 40px rgba(16,32,44,.18);padding:1.1rem 1.2rem;transform:translateY(12px);opacity:0;pointer-events:none;transition:opacity .16s,transform .16s;}
 .card.on{opacity:1;transform:none;pointer-events:auto;}
 .card .kick{font-size:.56rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+.card .c-render{display:none;width:100%;max-height:180px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff;margin:.55rem 0 .1rem;cursor:zoom-in;}
+.card .c-render.on{display:block;}
+.lightbox{position:fixed;inset:0;background:rgba(16,32,44,.86);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;padding:3vw;}
+.lightbox.on{display:flex;}
+.lightbox img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4);background:#fff;}
 .card .sku{font-size:.62rem;font-weight:800;letter-spacing:.06em;color:#9aa8b3;text-transform:uppercase;margin-top:.5rem;}
 .card .nm{font-size:1.02rem;font-weight:800;line-height:1.25;margin:.15rem 0 .55rem;}
 .card .ft{display:flex;align-items:center;justify-content:space-between;gap:.6rem;}
@@ -84,6 +89,7 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 
   <div class="card" id="card">
     <div class="kick">Selected part</div>
+    <img class="c-render" id="c-render" alt="">
     <div class="sku" id="c-sku"></div>
     <div class="nm" id="c-nm"></div>
     <div class="ft">
@@ -93,6 +99,7 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
     </div>
   </div>
 </div>
+<div class="lightbox" id="lightbox"><img id="lightbox-img" alt=""></div>
 
 <script type="module">
 const viewer = document.getElementById('viewer');
@@ -160,6 +167,8 @@ function clearSelection(){
   curHover=null; renderNow();
   selectedUid=null;
   card.classList.remove('on');
+  document.getElementById('c-render').classList.remove('on');
+  document.getElementById('c-render').removeAttribute('src');
   prompt.style.opacity=1;
 }
 
@@ -183,6 +192,7 @@ function showPart(uid){
   const cart=document.getElementById('c-cart');
   cart.className = isNeed? 'cart disabled':'cart';
   cart.textContent = isNeed? 'Not yet available':'Add to Cart';
+  showRenderCard(p);
   card.classList.add('on'); prompt.style.opacity=0;
   highlightPart(uid);
 }
@@ -223,6 +233,30 @@ viewer.addEventListener("pointerup",e=>{
   if(Math.hypot(e.clientX-pdx,e.clientY-pdy)>6) return;   // was a drag/orbit, not a tap
   setTimeout(()=>{ if(selectedUid!=null && performance.now()-lastSelectAt>150) clearSelection(); },90);
 },true);
+
+// part renders (same manifest as the list page), keyed on node. Cache-bust per load
+// so in-place render updates always show.
+const RENDER_BUST=Date.now();
+const RENDERS={};
+fetch("renders/brucerock/manifest.json").then(r=>r.json())
+  .then(m=>{ (m.images||[]).forEach(im=>{ RENDERS[im.node]=im.file; });
+            if(selectedUid!=null) showRenderCard(PARTS[selectedUid]); })
+  .catch(()=>{});
+function showRenderCard(p){
+  const img=document.getElementById("c-render");
+  const f=p&&RENDERS[p.node];
+  if(f){ img.src="renders/brucerock/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render"; img.classList.add("on"); }
+  else { img.classList.remove("on"); img.removeAttribute("src"); }
+}
+// render lightbox
+(function(){
+  const lb=document.getElementById("lightbox"), lbImg=document.getElementById("lightbox-img");
+  document.getElementById("c-render").addEventListener("click",function(e){
+    e.stopPropagation(); if(!this.src) return; lbImg.src=this.src; lb.classList.add("on");
+  });
+  lb.addEventListener("click",()=>{ lb.classList.remove("on"); lbImg.removeAttribute("src"); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") lb.classList.remove("on"); });
+})();
 
 // ---------- load parts, then init ----------
 fetch("assets/brucerock/parts_data.json").then(r=>r.json()).then(data=>{
