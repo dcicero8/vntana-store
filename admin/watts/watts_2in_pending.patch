@@ -1,0 +1,128 @@
+diff --git a/watts.html b/watts.html
+index 88c9e31..edc9655 100644
+--- a/watts.html
++++ b/watts.html
+@@ -248,10 +248,10 @@
+     <div class="eyebrow">Ames Fire &amp; Waterworks</div>
+     <h1>Series 2000B-FP Double Check Valve Assembly</h1>
+     <p class="lede">Cast bronze double check assembly with UL-listed, gear-operated slow-close shutoffs and pre-wired tamper switches. Built for non-health-hazard cross-connections on fire protection lines, with every internal part serviced through a single top cover.</p>
+-    <div class="model">Model <code id="modelCode">2000BM1-FP-GV 1"</code></div>
++    <div class="model">Model <code id="modelCode">2000BM1-FP-GV 2"</code></div>
+     <div class="opt"><div class="lbl">Size</div><div class="chips" id="sizeChips"></div></div>
+     <div class="opt"><div class="lbl">End connection</div><div class="chips" id="endChips"></div>
+-      <div class="note3d">3D model shown: 1" with grooved (GV) ends.</div></div>
++      <div class="note3d">3D model shown: 2" with grooved (GV) ends.</div></div>
+     <div class="ctas">
+       <a class="btn primary" href="#" onclick="return false">Find a distributor</a>
+       <a class="btn ghost" href="#" onclick="return false">Add to quote</a>
+@@ -274,7 +274,7 @@
+ 
+    <!-- PARTS -->
+    <section class="panel" id="p-parts">
+-    <div class="eyebrow">Replacement Parts · 1" 2000BM1-FP</div>
++    <div class="eyebrow">Replacement Parts · 2" 2000BM1-FP</div>
+     <h1>Repair kits &amp; parts</h1>
+     <p class="lede">Pick a kit or any part in the list to see what it does, when to replace it and which kit includes it.</p>
+     <div class="partcard" id="partcard"></div>
+@@ -320,7 +320,7 @@
+ <script>
+ const BASE="https://api.vntana.com", ORG="DCicero", WS="configurators";
+ const UUID=new URLSearchParams(location.search).get("uuid")||"737ea709-7cf9-445d-9153-a163b4d4bd3b";  // rebuilt 2000B-FP (v7), Live Public; ?uuid= to test another build
+-const REVIT_UUID="a960f6a4-52c2-4969-8c89-4553b8d560ac";    // original Revit family as uploaded
++const REVIT_UUID="a960f6a4-52c2-4969-8c89-4553b8d560ac", REVIT_WS="configurators";    // original Revit family as uploaded (moves to tradeshows with the 2" build)
+ const $=id=>document.getElementById(id);
+ const viewer=$("viewer");
+ 
+@@ -332,7 +332,7 @@ const SIZES={
+   '2"':    {model:"2000BM1-FP",A:['19-1/8"',486],AG:['19-2/3"',500],B:['6-1/2"',165],C:['4-1/4"',108],D:['2-1/4"',54],E:['13-3/8"',340],F:['6-1/2"',165],G:['2-7/8"',73],H:['3-5/8"',92],I:['19-1/2"',495],wt:[26.4,12],gpm:78},
+ };
+ const ENDS={GV:"Grooved inlet / outlet",FNPT:"Female NPT inlet / outlet"};
+-let size='1"', end="GV";
++let size='2"', end="GV";
+ function renderSpecs(){
+   const s=SIZES[size];
+   $("modelCode").textContent=`${s.model}${end==="GV"?"-GV":""} ${size}`;
+@@ -380,12 +380,12 @@ $("features").innerHTML=FEATURES.map((f,i)=>`<li data-i="${i}"><span class="dot"
+ 
+ /* ---------------- parts tab data ---------------- */
+ const KITS=[
+-  {id:"rt",code:"7016351",name:"ARK 2000B-RT 1",title:"Total rubber parts kit",desc:"Every rubber part in the 1\" assembly. The usual kit for an annual test failure.",
++  {id:"rt",code:"7016353",name:"ARK 2000B-RT 2",title:"Total rubber parts kit",desc:"Every rubber part in the 2\" assembly. The usual kit for an annual test failure.",
+    inc:["2 cover O-rings","2 disc assemblies","2 seat O-rings"],parts:[...G.oring,"Check1_Disc","Check2_Disc","Check1_SeatORing","Check2_SeatORing"],
+-   url:"https://www.watts.com/products/plumbing-flow-control-solutions/repair-kits/backflow-preventer-repair-kits/rk-2000b/ark-2000b-rt-1"},
+-  {id:"ck",code:"7016333",name:"ARK 2000B-CK4 1",title:"First or second check repair kit",desc:"Replaces the major internal components of one check.",
+-   inc:["Seat O-ring","Disc assembly","Spring","Check cage","Cover O-ring"],parts:["Check1_SeatORing","Check1_Disc","Check1_Spring","Check1_Cage",...G.oring],
+-   url:"https://www.watts.com/products/plumbing-flow-control-solutions/repair-kits/backflow-preventer-repair-kits/rk-2000b/ark-2000b-ck4-1"},
++   url:"https://www.watts.com/products/plumbing-flow-control-solutions/repair-kits/backflow-preventer-repair-kits/rk-2000b/ark-2000b-rt-2"},
++  {id:"ck",code:"7016335",name:"ARK 2000B-CK1 2",title:"First check repair kit",desc:"Replaces the major internal components of the first check (1-1/2\" and 2\").",
++   inc:["Seat","Seat O-ring","Disc assembly","Spring","Check cage","Cover O-ring"],parts:["Check1_Seat","Check1_SeatORing","Check1_Disc","Check1_Spring","Check1_Cage",...G.oring],
++   url:"https://www.watts.com/products/plumbing-flow-control-solutions/repair-kits/backflow-preventer-repair-kits/rk-2000b/ark-2000b-ck1-2"},
+ ];
+ /* what = what the part does, when = when to replace it, at = node the 3D label pins to, lbl = short label text */
+ const BOM=[
+@@ -401,7 +401,7 @@ const BOM=[
+    what:"Locks both check modules in the body bore.",when:"Reused. Reinstall only after both modules are fully seated."},
+   {n:"6",name:"First check module",lbl:"First check",qty:1,parts:G.c1,at:"Check1_Cage",open:0.66,
+    what:"Spring-loaded check that closes against backflow. Uses a heavier spring and smaller seat than the second check.",when:"Rebuild with the kits below when the first check fails its annual test."},
+-  {n:"6a",sub:1,name:"Seat (first check)",lbl:"Seat",qty:1,parts:["Check1_Seat"],at:"Check1_Seat",open:1,
++  {n:"6a",sub:1,name:"Seat (first check)",lbl:"Seat",qty:1,parts:["Check1_Seat"],at:"Check1_Seat",kits:["ck"],open:1,
+    what:"The surface the disc closes against. Bayonet-locks onto the cage.",when:"Replace if the sealing edge is scored or pitted."},
+   {n:"6b",sub:1,name:"Seat O-ring",lbl:"Seat O-ring",qty:1,parts:["Check1_SeatORing"],at:"Check1_SeatORing",kits:["rt","ck"],open:1,
+    what:"Seals the seat in the body bore so water can't bypass the check.",when:"Replace whenever the check is rebuilt."},
+@@ -415,13 +415,13 @@ const BOM=[
+    what:"Second, independent check in series. Lighter spring and larger seat than the first check.",when:"Rebuild with the kits below when the second check fails its annual test."},
+   {n:"7a",sub:1,name:"Seat (second check)",lbl:"Seat",qty:1,parts:["Check2_Seat"],at:"Check2_Seat",open:1,
+    what:"The surface the disc closes against. Bayonet-locks onto the cage.",when:"Replace if the sealing edge is scored or pitted."},
+-  {n:"7b",sub:1,name:"Seat O-ring",lbl:"Seat O-ring",qty:1,parts:["Check2_SeatORing"],at:"Check2_SeatORing",kits:["rt","ck"],open:1,
++  {n:"7b",sub:1,name:"Seat O-ring",lbl:"Seat O-ring",qty:1,parts:["Check2_SeatORing"],at:"Check2_SeatORing",kits:["rt"],open:1,
+    what:"Seals the seat in the body bore so water can't bypass the check.",when:"Replace whenever the check is rebuilt."},
+-  {n:"7c",sub:1,name:"Disc assembly",lbl:"Disc",qty:1,parts:["Check2_Disc"],at:"Check2_Disc",kits:["rt","ck"],open:1,
++  {n:"7c",sub:1,name:"Disc assembly",lbl:"Disc",qty:1,parts:["Check2_Disc"],at:"Check2_Disc",kits:["rt"],open:1,
+    what:"Rubber-faced disc that seals against the seat. The most common wear part.",when:"Replace if the rubber is cut, swollen or embedded with debris."},
+-  {n:"7d",sub:1,name:"Spring, light (second check)",lbl:"Spring",qty:1,parts:["Check2_Spring"],at:"Check2_Spring",kits:["ck"],open:1,
++  {n:"7d",sub:1,name:"Spring, light (second check)",lbl:"Spring",qty:1,parts:["Check2_Spring"],at:"Check2_Spring",open:1,
+    what:"Holds the disc closed. The lighter of the two springs.",when:"Replace if corroded, broken, or the check won't hold."},
+-  {n:"7e",sub:1,name:"Check cage",lbl:"Cage",qty:1,parts:["Check2_Cage"],at:"Check2_Cage",kits:["ck"],open:1,
++  {n:"7e",sub:1,name:"Check cage",lbl:"Cage",qty:1,parts:["Check2_Cage"],at:"Check2_Cage",open:1,
+    what:"Guides the disc and spring. The seat locks onto it.",when:"Replace if cracked or the guides are worn."},
+   {n:"8",name:"Test cocks",lbl:"Test cocks",qty:4,parts:G.testcocks,at:"TestCock_4",
+    what:"Ports a certified tester connects to for the annual test. No. 1 on the inlet shutoff, No. 2 before the first check, No. 3 in the cover, No. 4 after the second check.",when:"Replace if one leaks or won't shut off."},
+@@ -438,7 +438,7 @@ const BOM=[
+ ];
+ const OUT_LABELS=["2","8","9","11","12"];      // assembled: parts you can see from outside
+ const IN_LABELS=["2","4","5","6","7"];         // opened up: the serviceable internals only
+-const kitBadge=k=>k==="rt"?`<span class="badge rt">RT</span>`:`<span class="badge ck">CK4</span>`;
++const kitBadge=k=>k==="rt"?`<span class="badge rt">RT</span>`:`<span class="badge ck">CK1</span>`;
+ $("kits").innerHTML=KITS.map(k=>`<div class="kit" data-k="${k.id}"><div class="top"><span class="nm">${k.name}</span><span class="code">Ordering code ${k.code}</span></div>
+   <div class="desc"><b>${k.title}.</b> ${k.desc}</div><div class="inc">${k.inc.map(x=>`<span>${x}</span>`).join("")}</div>
+   <div class="row"><a class="btn primary" href="#" onclick="event.stopPropagation();return false">Add kit to quote</a><a class="btn ghost" href="${k.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Kit details</a></div></div>`).join("");
+@@ -483,7 +483,7 @@ function renderSteps(){
+     const warnBlock=s.warn?`<div class="callout warn"><b>Warning</b>${s.warn}</div>`:"";
+     return `<li class="${st}" data-i="${i}"><div class="sh"><span class="num">${i+1}</span><span class="tt">${s.t}<span class="ol-sub">${s.s}</span></span><span class="phase">${s.ph}</span></div>
+       <div class="body">${s.b}${warnBlock}${s.note?`<div class="callout note"><b>Note</b>${s.note}</div>`:""}${s.ok?`<div class="callout ok"><b>Done</b>${s.ok}</div>`:""}
+-      ${s.kit?`<div class="callout note"><b>Parts</b>Replacement discs and O-rings come in the <span class="kitlink" data-kit="${s.kit}">ARK 2000B-RT 1 rubber kit</span>.</div>`:""}</div></li>`;}).join("");
++      ${s.kit?`<div class="callout note"><b>Parts</b>Replacement discs and O-rings come in the <span class="kitlink" data-kit="${s.kit}">ARK 2000B-RT 2 rubber kit</span>.</div>`:""}</div></li>`;}).join("");
+   $("count").textContent=cur<0?"Press Next to begin":`Step ${cur+1} of ${STEPS.length}`;
+   $("prog").style.width=cur<0?"0":`${((cur+1)/STEPS.length)*100}%`;
+   $("prev").disabled=cur<=0;
+@@ -781,16 +781,16 @@ $("resetBtn").onclick=()=>{ applyTabState(); };
+ 
+ /* ---------------- renders + Revit overlay ---------------- */
+ const RENDERS=[["hero","Hero, three-quarter"],["front","Front elevation"],["top","Top three-quarter"],["detail","Gear operator detail"],["service","Service view, checks removed"]];
+-$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/watts/render_${k}.jpg?v=3" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
+-$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/watts/render_${k}.jpg?v=3" alt="${c}">`).join("");
+-function showRender(i){ $("renderImg").src=`assets/watts/render_${RENDERS[i][0]}.jpg?v=3`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
++$("gallery").innerHTML=RENDERS.map(([k,c],i)=>`<figure data-i="${i}"><img src="assets/watts/render_${k}.jpg?v=4" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
++$("thumbs").innerHTML=RENDERS.map(([k,c],i)=>`<img data-i="${i}" src="assets/watts/render_${k}.jpg?v=4" alt="${c}">`).join("");
++function showRender(i){ $("renderImg").src=`assets/watts/render_${RENDERS[i][0]}.jpg?v=4`; $("thumbs").querySelectorAll("img").forEach(t=>t.classList.toggle("on",+t.dataset.i===i)); }
+ $("thumbs").addEventListener("click",e=>{ const t=e.target.closest("img"); if(t) showRender(+t.dataset.i); });
+ $("gallery").addEventListener("click",e=>{ const f=e.target.closest("figure"); if(!f) return; setTab("product"); setMode("renders"); showRender(+f.dataset.i); window.scrollTo({top:0,behavior:"smooth"}); });
+ function setMode(m){
+   document.querySelectorAll("#modes button").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));
+   $("ovRenders").classList.toggle("show",m==="renders"); $("ovRevit").classList.toggle("show",m==="revit");
+   if(m==="renders"&&!$("renderImg").src) showRender(0);
+-  if(m==="revit"&&!$("revitFrame").src) $("revitFrame").src=`https://embed.vntana.com/v2?productUuid=${REVIT_UUID}&clientSlug=${WS}&organizationSlug=${ORG}`;
++  if(m==="revit"&&!$("revitFrame").src) $("revitFrame").src=`https://embed.vntana.com/v2?productUuid=${REVIT_UUID}&clientSlug=${REVIT_WS}&organizationSlug=${ORG}`;
+ }
+ document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+ // AR: phones launch AR directly; desktop opens the viewer's QR code so the visitor can continue on their phone

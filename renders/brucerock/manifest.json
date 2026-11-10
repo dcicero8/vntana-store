@@ -1,6 +1,6 @@
 {
  "_about": "Part renders for brucerock-dolly.html. Key on node (unique for all 76 parts; sku is not). 1200x1200 JPG on white. All 8 mapped parts done; pending-confirmation parts are being added in page order.",
- "count": 37,
+ "count": 42,
  "images": [
   {
    "node": "AXLE DRUM BRAKE PARALLEL KH [100556]",
@@ -223,6 +223,36 @@
    "sku": "TRAILING-ARM-RADIUS-RO",
    "name": "TRAILING ARM / RADIUS ROD (RH 395)",
    "file": "trailing-arm-radius-rod-rh-395-confirm.jpg"
+  },
+  {
+   "node": "TRAILING ARM / RADIUS ROD (RH 495) (CONFIRM)",
+   "sku": "TRAILING-ARM-RADIUS-RO",
+   "name": "TRAILING ARM / RADIUS ROD (RH 495)",
+   "file": "trailing-arm-radius-rod-rh-495-confirm.jpg"
+  },
+  {
+   "node": "TURNTABLE BOOMERANG (HALF) [101446] (CONFIRM)",
+   "sku": "101446",
+   "name": "TURNTABLE BOOMERANG (HALF)",
+   "file": "turntable-boomerang-half-101446-confirm.jpg"
+  },
+  {
+   "node": "TURNTABLE BOOMERANG (TOP PLATE) [101446] (CONFIRM)",
+   "sku": "101446",
+   "name": "TURNTABLE BOOMERANG (TOP PLATE)",
+   "file": "turntable-boomerang-top-plate-101446-confirm.jpg"
+  },
+  {
+   "node": "TYRE (CONFIRM)",
+   "sku": "TYRE",
+   "name": "TYRE",
+   "file": "tyre-confirm.jpg"
+  },
+  {
+   "node": "WIGGLEBAR 6x300 CENTRES [108384] (CONFIRM)",
+   "sku": "108384",
+   "name": "WIGGLEBAR 6x300 CENTRES",
+   "file": "wigglebar-6x300-centres-108384-confirm.jpg"
   }
  ]
 }
