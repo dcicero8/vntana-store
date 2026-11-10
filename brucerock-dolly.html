@@ -105,7 +105,10 @@ viewer.enableAutoRotate = false;   // free orbit, no auto-spin
 // each part gets a stable unique id (SKUs are NOT unique in this BOM)
 PARTS.forEach((p,i)=>{ p.uid=i; p._n=norm(p.node); p._sku=norm(p.sku); });
 
-// part renders (Blender studio shots), keyed on node via the manifest
+// part renders (Blender studio shots), keyed on node via the manifest.
+// Renders update in place under the same filename, so cache-bust per page load
+// (a refresh always pulls the latest; images still cache within one session).
+const RENDER_BUST=Date.now();
 const RENDERS={};
 fetch("renders/brucerock/manifest.json").then(r=>r.json())
   .then(m=>{ (m.images||[]).forEach(im=>{ RENDERS[im.node]=im.file; });
@@ -114,7 +117,7 @@ fetch("renders/brucerock/manifest.json").then(r=>r.json())
 function showRender(p){
   const fl=document.getElementById("render-float"), img=document.getElementById("h-render");
   const f=p&&RENDERS[p.node];
-  if(f){ img.src="renders/brucerock/"+encodeURIComponent(f); img.alt=p.name+" render"; fl.classList.add("on"); }
+  if(f){ img.src="renders/brucerock/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render"; fl.classList.add("on"); }
   else { fl.classList.remove("on"); img.removeAttribute("src"); }
 }
 
