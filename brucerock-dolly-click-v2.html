@@ -189,7 +189,7 @@ function clearSelection(){
 
 // ---------- UI ----------
 const money=n=>"$"+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
-function badge(L){ return L.status==="confirm"?'<span class="badge confirm">confirm</span>':L.status==="needs"?'<span class="badge needs">needs map</span>':''; }
+function badge(L){ return L.status==="confirm"?'<span class="badge confirm">confirm part number</span>':L.status==="needs"?'<span class="badge needs">needs part number</span>':''; }
 function skuChip(L){ return L.part_number?`<span class="sku">${L.part_number}</span>`:""; }
 const card=document.getElementById('card'), prompt=document.getElementById('prompt'), hovertag=document.getElementById('hovertag');
 let hoverId=null, selected=null;

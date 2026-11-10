@@ -191,7 +191,7 @@ function showRender(L){
 
 // ---------- list rendering (grouped by functional group, nested by parent) ----------
 const money=n=>"$"+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
-function badge(L){ return L.status==="confirm"?'<span class="badge confirm">confirm</span>':L.status==="needs"?'<span class="badge needs">needs map</span>':''; }
+function badge(L){ return L.status==="confirm"?'<span class="badge confirm">confirm part number</span>':L.status==="needs"?'<span class="badge needs">needs part number</span>':''; }
 function cardHTML(L,depth){
   const noPrice=L.price==null;
   const label=L.part_number?L.part_number:(L.kind==="assembly"?"Assembly":"");
@@ -239,7 +239,7 @@ const DEF_DESC="Click a part in the 3D model, or pick from the list, to see its 
 function descHTML(L){
   const bits=[];
   if(L.part_number) bits.push(`Part number ${L.part_number}`);
-  else if(L.status==="needs") bits.push("Identified in model, part number pending");
+  else if(L.status==="needs") bits.push("Identified in model, needs a part number");
   if(L.qty) bits.push(`Qty ${L.qty} per dolly`);
   if(L.spec) bits.push(L.spec);
   let h=bits.join(" · ");
