@@ -33,6 +33,7 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
 .render-float.on{display:block;}
 .render-float img{width:100%;display:block;border-radius:8px;cursor:zoom-in;}
 .render-float .cap{font-size:.56rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9aa8b3;padding:.25rem .3rem 0;}
+.render-float .render-note{display:none;font-size:.74rem;color:#6b7b88;line-height:1.45;padding:.4rem .35rem .3rem;}
 .lightbox{position:fixed;inset:0;background:rgba(16,32,44,.86);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;padding:3vw;}
 .lightbox.on{display:flex;}
 .lightbox img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4);background:#fff;}
@@ -81,7 +82,7 @@ vntana-center-button{position:absolute;left:1rem;top:1rem;z-index:2;background:r
       aria-label="TAN-DOLLY 3D parts catalog, click any part to see its part number and price">
       <vntana-center-button></vntana-center-button>
     </vntana-viewer>
-    <div class="render-float" id="render-float"><div class="cap">Part render</div><img id="h-render" alt=""></div>
+    <div class="render-float" id="render-float"><div class="cap" id="render-cap">Part render</div><img id="h-render" alt=""><div class="render-note" id="render-note"></div></div>
     <div class="hint">Click any part on the model &nbsp;·&nbsp; Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
   </div>
   <div class="parts-col">
@@ -115,10 +116,21 @@ fetch("renders/brucerock/manifest.json").then(r=>r.json())
             if(selUid!=null) showRender(PARTS[selUid]); })
   .catch(()=>{});
 function showRender(p){
-  const fl=document.getElementById("render-float"), img=document.getElementById("h-render");
+  const fl=document.getElementById("render-float"), img=document.getElementById("h-render"),
+        cap=document.getElementById("render-cap"), note=document.getElementById("render-note");
   const f=p&&RENDERS[p.node];
-  if(f){ img.src="renders/brucerock/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render"; fl.classList.add("on"); }
-  else { fl.classList.remove("on"); img.removeAttribute("src"); }
+  // a part with no geometry of its own (an assembly line whose parts sit elsewhere)
+  const hasGeo = !ready || (p && (uidUuids[p.uid]||[]).length>0);
+  if(f){
+    img.src="renders/brucerock/"+encodeURIComponent(f)+"?v="+RENDER_BUST; img.alt=p.name+" render";
+    img.style.display=""; note.style.display="none"; cap.textContent="Part render"; fl.classList.add("on");
+  } else if(p && !hasGeo){
+    img.removeAttribute("src"); img.style.display="none";
+    note.textContent="No standalone 3D view for this line, it is grouped as part of a larger assembly.";
+    note.style.display="block"; cap.textContent="Not shown separately"; fl.classList.add("on");
+  } else {
+    fl.classList.remove("on"); img.removeAttribute("src"); img.style.display=""; note.style.display="none";
+  }
 }
 
 // ---------- normalization-proof matching ----------
