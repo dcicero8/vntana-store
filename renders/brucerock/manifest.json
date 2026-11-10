@@ -1,6 +1,6 @@
 {
- "_about": "Part renders for brucerock-dolly.html. Key on node (unique for all 76 parts; sku is not). 1200x1200 JPG on white. All 8 mapped parts (flag ok) now have an image, plus 5 pending-confirmation parts. The rest follow after look approval.",
- "count": 13,
+ "_about": "Part renders for brucerock-dolly.html. Key on node (unique for all 76 parts; sku is not). 1200x1200 JPG on white. All 8 mapped parts done; pending-confirmation parts are being added in page order.",
+ "count": 21,
  "images": [
   {
    "node": "AXLE DRUM BRAKE PARALLEL KH [100556]",
@@ -79,6 +79,54 @@
    "sku": "101224",
    "name": "SUSPENSION MECHANICAL O/SLUNG",
    "file": "suspension-mechanical-o-slung-101224.jpg"
+  },
+  {
+   "node": "3/8 M&F EXTRUDED ELBOW [106872] (CONFIRM)",
+   "sku": "106872",
+   "name": "3/8 M&F EXTRUDED ELBOW",
+   "file": "3-8-m-f-extruded-elbow-106872-confirm.jpg"
+  },
+  {
+   "node": "A-FRAME COMPRESSION SPRING [116851] (CONFIRM)",
+   "sku": "116851",
+   "name": "A-FRAME COMPRESSION SPRING",
+   "file": "a-frame-compression-spring-116851-confirm.jpg"
+  },
+  {
+   "node": "A-FRAME GUSSET PLATE [112401] (CONFIRM)",
+   "sku": "112401",
+   "name": "A-FRAME GUSSET PLATE",
+   "file": "a-frame-gusset-plate-112401-confirm.jpg"
+  },
+  {
+   "node": "A-FRAME TENSION/HELPER SPRING [117817] (CONFIRM)",
+   "sku": "117817",
+   "name": "A-FRAME TENSION/HELPER SPRING",
+   "file": "a-frame-tension-helper-spring-117817-confirm.jpg"
+  },
+  {
+   "node": "AIR BRAKE VALVE (CONFIRM)",
+   "sku": "AIR-BRAKE-VALVE",
+   "name": "AIR BRAKE VALVE",
+   "file": "air-brake-valve-confirm.jpg"
+  },
+  {
+   "node": "AIR FITTING 1/2\" (CONFIRM)",
+   "sku": "AIR-FITTING-1-2",
+   "name": "AIR FITTING 1/2\"",
+   "file": "air-fitting-1-2-confirm.jpg"
+  },
+  {
+   "node": "AIR FITTING 3/8\" (CONFIRM)",
+   "sku": "AIR-FITTING-3-8",
+   "name": "AIR FITTING 3/8\"",
+   "file": "air-fitting-3-8-confirm.jpg"
+  },
+  {
+   "node": "AIR LINE JUNCTION (CONFIRM)",
+   "sku": "AIR-LINE-JUNCTION",
+   "name": "AIR LINE JUNCTION",
+   "file": "air-line-junction-confirm.jpg"
   }
  ]
 }
