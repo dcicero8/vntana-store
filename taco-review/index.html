@@ -97,8 +97,8 @@
     </ul>
   </div>
   <div class="ready" id="ready"></div>
-  <div class="note" style="background:#f0f9f1;border:1px solid #bfe3c5"><b>New this week:</b> the full <b>007e</b> family (2F2, 3&#8209;2F4, SF4, 3&#8209;SU) and both <b>VT2218</b> variants (HY1, HY2) are now on your platform and Live Public, marked <span class="pill2 p-new">NEW</span>. That brings this first set to <b>12 products live for review</b> (every one tagged <i>Live Render</i> on the platform).</div>
-  <div class="note"><b>Placeholders:</b> faceplate art on these models is a placeholder until the final faceplate design arrives. The side label uses your new label layout as a sticker.</div>
+  <div class="note" style="background:#f0f9f1;border:1px solid #bfe3c5"><b>New this week &mdash; faceplate e-series:</b> the new faceplate assets came in on Nov 6, built on the faceplate design you approved Oct 23. The full <b>0015e3</b> family (2F2, 2F4, SF4, SU) and the first two <b>0018e</b> variants (2F2, 2F4) are now on your platform and Live Public, marked <span class="pill2 p-new">NEW</span>. The remaining two 0018e variants (SF4, SU) follow this week. That brings this first set to <b>18 products live for review</b> (every one tagged <i>Live Render</i> on the platform). The <b>007e</b> family and both <b>VT2218</b> variants from last week are still live below.</div>
+  <div class="note"><b>Faceplates:</b> the e-series models (007e, 0015e3, 0018e) now carry the <b>approved faceplate design</b>, not the earlier placeholder. The side label uses your new label layout as a sticker.</div>
 
   <h2 style="margin-top:26px"><span class="n">1b</span>Bronze material review</h2>
   <p class="lead">New for the November 13 review: the bronze is now shown on a real separator (49-075C) instead of a swatch, next to your own photo, in the same studio lighting used for your renders. There are two options. They are identical except for how deep the cast texture is on the main body.</p>
@@ -238,9 +238,9 @@
   <h2><span class="n">6</span>Next steps</h2>
   <div class="card">
     <ul class="clean">
-      <li><b>VNTANA:</b> all 12 products in this first set are now Live Public (0026e, 0034e, 0034e+, 007e, VT2218). Remaining 20 SKUs scheduled through early December (per-SKU ETAs in the status table): <b>0015e3</b> Nov 9&ndash;10, <b>0018e</b> Nov 11&ndash;13, then the <b>49-xxx separators</b> Nov 17&ndash;Dec 8 (these follow bronze sign-off).</li>
+      <li><b>VNTANA:</b> 18 products in this first set are now Live Public (0026e, 0034e, 0034e+, 007e, VT2218, 0015e3, and 0018e 2F2/2F4). Remaining 14 SKUs scheduled through early December (per-SKU ETAs in the status table): the last two <b>0018e</b> variants (SF4, SU) Nov 13, then the <b>49-xxx separators</b> Nov 17&ndash;Dec 8 (these follow bronze sign-off).</li>
       <li><b>VNTANA:</b> update the bronze to the lighter "hero" color + a machined finish, post to platform and send over Tue/Wed. Separators follow once Ken signs off.</li>
-      <li><b>VNTANA:</b> build the 3 faceplate assets (007e, 0015e3, 0018e) now that the faceplate design is approved.</li>
+      <li><b>VNTANA:</b> faceplate assets delivered Nov 6: 007e and 0015e3 are complete and live; 0018e 2F2/2F4 are live, with SF4/SU to follow Nov 13.</li>
       <li><b>Derek:</b> book a ~1-hour visual geometry review with Nate (0026e, 0034e, 0034e+).</li>
       <li><b>Taco:</b> Ken to send texture feedback; send updated hi-res label art to the 3D Toolkit; remove the accidental "Approved" status on 0026e-SF2.</li>
       <li><b>Links:</b> use this page and cycles.vntana.com only. Old links with "railway" in the address are an old demo; please delete those bookmarks.</li>
@@ -277,14 +277,20 @@ var BUILT = {
   "007e-2F2":"ca19a875-c8b3-4f41-8231-d69f63a14c1f",
   "007e3-2F4":"6a004c61-540c-4495-a729-c3162f151a67",
   "007e-SF4":"5632858a-85e8-4ae9-94fd-c6680c17b770",
-  "007e3-SU":"e98a8363-3177-4687-b13d-1495e55a0e7f"
+  "007e3-SU":"e98a8363-3177-4687-b13d-1495e55a0e7f",
+  // Faceplate e-series delivered Nov 6 (built on the approved faceplate design), now Live Public:
+  "0015e3-2F2":"6965dd48-c4cd-4263-ba79-4b0cfd41ee24",
+  "0015e3-2F4":"3cec947f-6d78-4ee5-82b1-b549f0abdadf",
+  "0015e3-SF4":"715c0070-640b-44e2-8dd7-a3772cc73885",
+  "0015e3-SU":"9f7c774e-e516-4588-9d43-68fac9530a59",
+  "0018e-2F2":"86d9b6c7-63f6-493a-9f47-a9dd8daf7f81",
+  "0018e-2F4":"41b4af77-2b5c-4a81-afe1-41cacd0af224"
 };
 // SKUs to flag with a NEW badge (just published to Live Public this week)
-var NEWSET = {"007e-2F2":1,"007e3-2F4":1,"007e-SF4":1,"007e3-SU":1,"VT2218-HY2-FC1A00":1,"VT2218-HY1-4C1A00":1};
+var NEWSET = {"0015e3-2F2":1,"0015e3-2F4":1,"0015e3-SF4":1,"0015e3-SU":1,"0018e-2F2":1,"0018e-2F4":1};
 // Per-SKU delivery ETA for products still in production (3D Team schedule, Taco ETA sheet)
 var ETA = {
-  "0015e3-2F2":"Mon Nov 9","0015e3-2F4":"Tue Nov 10","0015e3-SF4":"Tue Nov 10","0015e3-SU":"Tue Nov 10",
-  "0018e-2F2":"Nov 11","0018e-2F4":"Nov 13","0018e-SF4":"Nov 13","0018e-SU":"Nov 13",
+  "0018e-SF4":"Nov 13","0018e-SU":"Nov 13",
   "49-075C":"Nov 17","49-075P":"Nov 19","49-075T":"Nov 19",
   "49-100C":"Nov 23","49-100P":"Nov 25","49-100T":"Nov 25",
   "49-125C":"Nov 27","49-125P":"Dec 2","49-125T":"Dec 2",
@@ -293,7 +299,7 @@ var ETA = {
 // SKUs provisionally approved (Approved? badge). 0026e-SF2's approval Oct 23 was accidental -> cleared.
 var APPROVEDQ = {};
 // Family status for products not yet built: next | wait | none
-var FAMSTATUS = {"0015e3":"next","0018e":"next","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
+var FAMSTATUS = {"0018e":"next","49-075":"mat","49-100":"mat","49-125":"mat","49-150":"mat","49-200":"mat"};
 /* ============================ */
 
 var EMBED=function(u){return "https://embed.vntana.com/v2?productUuid="+u+"&clientSlug=products&organizationSlug=taco";};
