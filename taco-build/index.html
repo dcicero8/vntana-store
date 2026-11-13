@@ -125,7 +125,7 @@
     </table>
     <ul class="rules" style="margin-top:10px">
       <li><b>Real size first.</b> Every part must be in meters with scale applied (scale 1). The cast iron and rubber textures repeat in real millimeters. A wrong scale gives the wrong grain size.</li>
-      <li><b>No UVs are needed</b> for these materials in Blender. They are projected from six sides.</li>
+      <li><b>Keep clean UVs on every part. They are still required.</b> The library materials do not use them inside Blender (they are projected from six sides), but the web model, AR and any future baked material do. Do not delete or skip UVs because a library material works without them.</li>
       <li><b>Leave as delivered:</b> Taco green motor housing, shaft steel, fasteners, the dial knob body and the faceplate material (only its artwork changes).</li>
       <li><b>No Substance.</b> Materials are no longer built in Substance, and Substance files (.spp, .sbs, .sbsar) are no longer part of a delivery.</li>
       <li><b>A material that is not in the library:</b> check the library first. If it is truly missing, build it as a Blender material in the same form as the library ones, add it to the library as a new item, and tell VNTANA what it is and where it is used.</li>
@@ -177,7 +177,7 @@
     <p class="lead" style="margin-top:0">The platform flattens fine grain that is baked into one large map for a whole part. So the grain goes into the GLB as a small tile that repeats. The gold standard GLB is the working example; open it and copy the setup.</p>
     <ul class="rules">
       <li><b>Plain values</b> for color, metal and roughness on the library materials. No baked color maps for them.</li>
-      <li><b>Cast iron grain and rubber stipple:</b> add a second UV set on the part, projected from six sides in real size, and use the library's normal tile on it, set to repeat. Cast iron: one tile per 32 mm. Rubber cap: one tile per 40 mm. Keep the first UV set for anything else on the part.</li>
+      <li><b>Cast iron grain and rubber stipple:</b> keep the part's normal UVs as the first UV set, and add a second UV set on the part, projected from six sides in real size, and use the library's normal tile on it, set to repeat. Cast iron: one tile per 32 mm. Rubber cap: one tile per 40 mm. Keep the first UV set for anything else on the part.</li>
       <li><b>Black plastic and rubber</b> have reduced surface reflection. Export it as the glTF specular setting (Blender does this when the material is exported as is).</li>
       <li><b>Do not bake the grain</b> into the part's own normal map.</li>
     </ul>
