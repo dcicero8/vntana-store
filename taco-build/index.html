@@ -87,35 +87,19 @@
 <div class="wrap">
 
 <div class="callout" style="background:#eef5ff;border-color:#bcd6f5;color:#14315c;margin-top:24px;font-size:15px">
-  <span class="badge-new">Updated Nov 13</span> <b>There is now one gold standard model. Every circulator must be brought up to it, in one revision.</b>
-  <ul class="rules" style="margin-top:8px">
-    <li><b>The gold standard is the 0018e-2F4.</b> It carries the final faceplate art, the final materials, the closed casing joint and the other fixes Taco asked for on Nov 13. Open it, download both files, and match it.</li>
-    <li><b>Materials are now Blender materials in the Taco Material Library.</b> Use them by name. Do not rebuild them and do not re-tune them.</li>
-    <li><b>Substance is no longer needed.</b> Do not build materials in Substance and do not deliver Substance files. Materials are Blender materials only.</li>
-    <li><b>Faceplate art is final</b> (Taco files dated Nov 6). The "faceplate on hold" note is over.</li>
-    <li><b>Side sticker: removed.</b> Taco no longer wants the rating sticker on the side of the circulators.</li>
-    <li><b>Where this page disagrees with older notes below, this update wins.</b></li>
-  </ul>
-  <p style="margin:12px 0 0"><a class="btn" href="#gold">Go to the gold standard and the full instructions &darr;</a></p>
+  <span class="badge-new">Updated Nov 13</span> <b>What to do now</b>
+  <ol class="rules" style="margin-top:8px">
+    <li><b>Circulators:</b> bring every e-series circulator up to the gold standard model, the 0018e-2F4, in one revision. The six steps are in <a href="#gold">section A</a>.</li>
+    <li><b>Separators:</b> start modeling the 49-xxx separators with the approved bronze. Details and photos are in <a href="#separators">section B</a>.</li>
+    <li><b>No Substance.</b> Materials are finished Blender materials in the Taco Material Library. Use them by name.</li>
+  </ol>
+  <p style="margin:10px 0 0"><b>Walkthrough call:</b> Monday, Nov 16, at 8:00 am Pacific (16:00 UTC). We will go through this page together.</p>
+  <p style="margin:6px 0 0;font-size:13.5px">Where this page disagrees with the older notes further down, sections A and B win.</p>
 </div>
 
-<div class="callout" style="background:#fff1f1;border-color:#f3c2c2;color:#5c1414;margin-top:14px;font-size:15px">
-  <span class="badge-new">Updated Oct 9</span> <b>Taco reviewed the 0034e. Here is what changed.</b>
-  <ul class="rules" style="margin-top:8px">
-    <li><b>Materials approved.</b> Taco approved <b>stainless, cast iron and Taco green</b>: they are <b>locked</b>. Keep them exactly as they are and reuse them on every product. <b>Black plastic:</b> keep as is, not confirmed yet. <b>Bronze and black composite:</b> not approved yet, do not build until we confirm. Shared library: <a href="https://platform.vntana.com/taco/3d-toolkit/products/" target="_blank" rel="noopener">Taco 3d-toolkit workspace</a>.</li>
-    <li><b>New template is ready.</b> Download the <b>latest</b> <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">Blender template</a> and <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">Studio HDRI</a>: 9 cameras, Studio HDRI at 1.0, ACES 1.3, exposure 1.0. Delete your old cameras.</li>
-    <li><b>Side labels on 0034e and 0026e are stickers.</b> Deliver the <b>Flat Label</b> version only (no Etched version), using Liz's new layout. Put the label text in its own material.</li>
-    <li><b>Real-world size.</b> 0034e is about 163 x 206 x 179 mm. Bottom at Z = 0, centered.</li>
-    <li><b>Upload:</b> pipeline <b>Preserve Meshes + UVs</b> (Draco can stay on), new version of the original asset, <b>one Blender file per asset</b>.</li>
-    <li><b>Next:</b> update the 0034e files, then continue with <b>0026e</b>, the <b>separators</b> and <b>VT2218</b>.</li>
-  </ul>
-  <p style="margin:10px 0 0"><b>All feedback on delivered assets is on the review page.</b></p>
-  <p style="margin:12px 0 0"><a class="btn" href="review-0034e.html">Read the full 0034e review: what worked, what must change &rarr;</a></p>
-</div>
-
-<!-- SECTION 0: GOLD STANDARD (Nov 13) -->
+<!-- CIRCULATORS: GOLD STANDARD (Nov 13) -->
 <section id="gold">
-  <h2><span class="n">&#9733;</span>The gold standard: 0018e-2F4</h2>
+  <h2><span class="n">A</span>Circulators: match the gold standard (0018e-2F4)</h2>
   <p class="lead">This one model is the reference for every e-series circulator. The cast iron, the black plastic, the rubber cap, the green arrow, the faceplate and the joint are all correct on it. Bring each circulator to the same state and deliver it as a new version of its existing asset.</p>
   <p style="margin:6px 0 14px"><a class="btn" href="https://platform.vntana.com/taco/products/products/details/a94a6472-4cc0-4839-be82-e7f9dcbbdbae" target="_blank" rel="noopener">Open the gold standard on the platform &#8599;</a></p>
   <div class="note"><b>Files to download from that asset:</b> the model <code>0018e-2F4_new-faceplate_matlib_v5.glb</code> (Download, original file) and the attached Blender file <code>0018e-2F4_new-faceplate_matlib_v5.blend</code> (Attachments). Blender 5.1. The render template inside is unchanged: 9 cameras, Studio HDRI, ACES 1.3.</div>
@@ -127,7 +111,7 @@
   </div>
 
   <div class="card">
-    <h3>A. Materials: use the Material Library, by name</h3>
+    <h3>Step 1. Materials: use the Material Library, by name</h3>
     <p class="lead" style="margin-top:0">The materials are finished Blender materials in the <a href="https://platform.vntana.com/taco/material-library/products/" target="_blank" rel="noopener">Taco Material Library workspace</a>. Each item shows a preview ball. The real material is in the item's <b>Attachments</b>: a Blender file <code>&lt;NAME&gt;_v&lt;N&gt;.blend</code> with textures packed, and a text file <code>&lt;NAME&gt;_v&lt;N&gt;.json</code> with the instructions. Always take the highest version number.</p>
     <ol class="rules">
       <li>Download the .blend and the .json of the material.</li>
@@ -137,13 +121,12 @@
     </ol>
     <table class="track" style="margin-top:8px">
       <thead><tr><th>Material</th><th>Version</th><th>Goes on</th><th>Notes</th></tr></thead>
-      <tbody><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/0d4de3d8-7713-4d87-8765-f3837efe03a3" target="_blank" rel="noopener">TACO_CAST_IRON</a></b></td><td>v2</td><td>Cast iron pump bodies (2F2, 2F4, F2)</td><td>Whole casting, including both flange faces. Cast iron flange faces are <b>not</b> machined. Remove the old baked cast iron normal map; do not stack it underneath.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/3cf4039f-205e-4854-87e1-bb02fec346ee" target="_blank" rel="noopener">TACO_PLASTIC_BLACK</a></b></td><td>v1</td><td>Terminal box (the black box on the side)</td><td>Deep black. Replaces Black_Plastic on this part.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/c5fe088e-b7c9-4292-90b9-0839da3c9692" target="_blank" rel="noopener">TACO_RUBBER_MATTE</a></b></td><td>v3</td><td>Round cap on the terminal box and the matching bottom plug</td><td>Rough stippled matte rubber. The cap and the box must never share one material.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/6be5851f-7e4b-4abe-9122-ba0e0e356c69" target="_blank" rel="noopener">TACO_LOGO_GREEN</a></b></td><td>v1</td><td>Arrow on the dial knob</td><td>The bright logo green, not the mint green of the motor housing.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/34522c85-f8f0-4248-a80d-fce74e7e4170" target="_blank" rel="noopener">TACO_STAINLESS_CAST</a></b></td><td>v2</td><td>Stainless pump bodies (SF4, SU, SF2): all cast faces</td><td>Matte, slightly warm silver. Use version 2 only; version 1 was too dark.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/dae678ab-9933-4d56-ad21-2e99f9a8b698" target="_blank" rel="noopener">TACO_STAINLESS_MACHINED</a></b></td><td>v1</td><td>Stainless flange sealing faces only</td><td>Bright machined face with circular tool lines. Needs its own face zone and four attributes, see section B.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/39c6f6a7-3fa2-4aff-9cf7-528ee3be6f02" target="_blank" rel="noopener">TACO_BRONZE_CAST</a></b></td><td>v2</td><td>Bronze separators (49-xxx): cast body and its machined faces</td><td>One material does both. Mark machined faces with the <code>machined</code> attribute, see section C.</td></tr></tbody>
+      <tbody><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/0d4de3d8-7713-4d87-8765-f3837efe03a3" target="_blank" rel="noopener">TACO_CAST_IRON</a></b></td><td>v2</td><td>Cast iron pump bodies (2F2, 2F4, F2)</td><td>Whole casting, including both flange faces. Cast iron flange faces are <b>not</b> machined. Remove the old baked cast iron normal map; do not stack it underneath.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/3cf4039f-205e-4854-87e1-bb02fec346ee" target="_blank" rel="noopener">TACO_PLASTIC_BLACK</a></b></td><td>v1</td><td>Terminal box (the black box on the side)</td><td>Deep black. Replaces Black_Plastic on this part.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/c5fe088e-b7c9-4292-90b9-0839da3c9692" target="_blank" rel="noopener">TACO_RUBBER_MATTE</a></b></td><td>v3</td><td>Round cap on the terminal box and the matching bottom plug</td><td>Rough stippled matte rubber. The cap and the box must never share one material.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/6be5851f-7e4b-4abe-9122-ba0e0e356c69" target="_blank" rel="noopener">TACO_LOGO_GREEN</a></b></td><td>v1</td><td>Arrow on the dial knob</td><td>The bright logo green, not the mint green of the motor housing.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/34522c85-f8f0-4248-a80d-fce74e7e4170" target="_blank" rel="noopener">TACO_STAINLESS_CAST</a></b></td><td>v2</td><td>Stainless pump bodies (SF4, SU, SF2): all cast faces</td><td>Matte, slightly warm silver. Use version 2 only; version 1 was too dark.</td></tr><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/dae678ab-9933-4d56-ad21-2e99f9a8b698" target="_blank" rel="noopener">TACO_STAINLESS_MACHINED</a></b></td><td>v1</td><td>Stainless flange sealing faces only</td><td>Bright machined face with circular tool lines. Needs its own face zone and four attributes, see step 4.</td></tr></tbody>
     </table>
     <ul class="rules" style="margin-top:10px">
-      <li><b>Real size first.</b> Every part must be in meters with scale applied (scale 1). The cast iron, rubber and bronze textures repeat in real millimeters. A wrong scale gives the wrong grain size.</li>
+      <li><b>Real size first.</b> Every part must be in meters with scale applied (scale 1). The cast iron and rubber textures repeat in real millimeters. A wrong scale gives the wrong grain size.</li>
       <li><b>No UVs are needed</b> for these materials in Blender. They are projected from six sides.</li>
       <li><b>Leave as delivered:</b> Taco green motor housing, shaft steel, fasteners, the dial knob body and the faceplate material (only its artwork changes).</li>
-      <li><b>Do not use TACO_BRONZE_CAST_DEEP.</b> It is a comparison test, not approved.</li>
       <li><b>No Substance.</b> Materials are no longer built in Substance, and Substance files (.spp, .sbs, .sbsar) are no longer part of a delivery.</li>
       <li><b>A material that is not in the library:</b> check the library first. If it is truly missing, build it as a Blender material in the same form as the library ones, add it to the library as a new item, and tell VNTANA what it is and where it is used.</li>
       <li>These materials are approved by VNTANA. Taco's sign-off is in progress. If Taco asks for a change, VNTANA updates the library once and tells you the new version number.</li>
@@ -151,33 +134,7 @@
   </div>
 
   <div class="card">
-    <h3>B. Stainless bodies: cast silver, with a machined flange face</h3>
-    <ul class="rules">
-      <li><b>Cast faces:</b> TACO_STAINLESS_CAST version 2 on the whole stainless body.</li>
-      <li><b>Machined sealing face:</b> on <b>both</b> flanges, the flat sealing face, the gasket groove (floor and walls) and the bore chamfer get TACO_STAINLESS_MACHINED. Give those faces their own material slot. Cut the boundary on mesh edges so it is a clean circle. The flange outer wall and the ears stay cast.</li>
-      <li><b>Four attributes on that mesh</b> make the tool lines run in circles around the pipe: <code>turn_axis</code>, <code>turn_origin</code>, <code>turned</code> = 1 and <code>cut</code> = 0. The exact types and a ready script are in the material's .json.</li>
-      <li><b>Only stainless is machined.</b> The top of a cast iron flange is plain cast. Taco confirmed this on Nov 13.</li>
-      <li><b>Status:</b> the machined face goes to Taco for review on Nov 20. You can do everything else on the stainless models now, and add the machined face when VNTANA confirms.</li>
-      <li>In the web model the machined face is a plain bright ring. The tool lines show in renders only.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h3>C. Bronze separators (49-xxx)</h3>
-    <ul class="rules">
-      <li><b>One bronze material does both finishes.</b> TACO_BRONZE_CAST version 2 covers the rough cast body and the smoother machined faces. On each bronze mesh add a face-corner attribute named <code>machined</code>: 1 on machined faces (pipe openings, thread ends, the vent stub, the seat under the magnet collar), 0 on cast faces. Without the attribute the whole part renders as rough cast.</li>
-      <li><b>Start modeling the separators with this bronze now.</b> VNTANA has approved it and Taco is confirming it by Nov 20.</li>
-      <li><b>Model the threads</b> on the threaded versions, and make the seam between the cap and the body smooth. The test model had a jagged seam; that was the test mesh, not the target.</li>
-      <li><b>Something must be visible inside.</b> The separators are filled with pall rings: small stamped stainless rings with curled tabs, held in a wire cage in the larger tanks. Model one pall ring from the photos and place enough of them that the inside does not look empty through the openings. You do not need to model every ring.</li>
-      <li><b>Magnetic dirt separator:</b> it has a removable black magnet collar around the neck, sitting on a smooth machined band, and a green label band on the body. See the photos.</li>
-      <li><b>Bright polished parts</b> (the press fitting and the band under the magnet collar) look shinier than the library's machined setting. Mark them as machined for now and flag them in your QA notes. VNTANA will confirm whether they need their own material.</li>
-      <li><b>Labels:</b> Taco is sending the green label art. Leave the band ready for a texture, with one consistent start and end point on every size.</li>
-      <li><b>Reference photos</b> (Taco 3D Toolkit): <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/78f471d6-2b1e-4ae7-ae75-94651e8e1c13" target="_blank" rel="noopener">PALL Ring 1</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/b9e2d247-4f97-47aa-95a7-ee1d9c5758dd" target="_blank" rel="noopener">PALL Ring 2</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/c137b306-917f-4f83-a037-76cbb2561351" target="_blank" rel="noopener">PALL Ring 3</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/acf011b1-2991-4150-9b7e-b5b2a450247a" target="_blank" rel="noopener">Cutaway 1</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/937d8079-2b0c-41f5-91e7-1832fee20c4a" target="_blank" rel="noopener">Cutaway 2</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/5b2f4b23-dbaf-4330-8dbc-0e58589d54db" target="_blank" rel="noopener">Cutaway 3</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/b2dab9e0-81a8-4070-bcbc-c066ecffdc45" target="_blank" rel="noopener">Magnetic Dirt Separator 1</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/60a7b14c-0a5e-4b7d-8094-b258e7f19b91" target="_blank" rel="noopener">Magnetic Dirt Separator 2</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/f716d9d5-ff6c-4b66-802b-cdd6e49c8b9c" target="_blank" rel="noopener">Magnetic Dirt Separator 3</a>, <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/bdfc1e7c-eb41-439e-86ae-604b656c4d3e" target="_blank" rel="noopener">Magnetic Dirt Separator 4</a>.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h3>D. Close the casing joint (no gasket)</h3>
+    <h3>Step 2. Close the casing joint (no gasket)</h3>
     <p class="lead" style="margin-top:0">Taco's CAD leaves a groove between the pump casing and the black motor bracket, where a gasket sits on the real pump. Taco wants it closed and flush, with no gasket modeled. On the 0018e-2F4 the numbers were as below. Blender coordinates, millimeters. Measure each model; the other bodies may differ slightly.</p>
     <ol class="rules">
       <li><b>Fill the step on the bracket.</b> The black motor bracket (the object named <code>shaft</code>) has a 0.5 mm step all around its outer edge. Raise those edge vertices to the level of the bracket's main face (from Y 2.35 to Y 2.85; 248 vertices).</li>
@@ -188,7 +145,7 @@
   </div>
 
   <div class="card">
-    <h3>E. Faceplate, dial arrow and sticker</h3>
+    <h3>Step 3. Faceplate, dial arrow and sticker</h3>
     <ul class="rules">
       <li><b>Faceplate art:</b> use Taco's files dated Nov 6, in the Taco 3D Toolkit. Cast iron art on the cast iron models, stainless art on the stainless models.</li>
     </ul>
@@ -204,7 +161,19 @@
   </div>
 
   <div class="card">
-    <h3>F. The web model (GLB)</h3>
+    <h3>Step 4. Stainless bodies: cast silver, with a machined flange face</h3>
+    <ul class="rules">
+      <li><b>Cast faces:</b> TACO_STAINLESS_CAST version 2 on the whole stainless body.</li>
+      <li><b>Machined sealing face:</b> on <b>both</b> flanges, the flat sealing face, the gasket groove (floor and walls) and the bore chamfer get TACO_STAINLESS_MACHINED. Give those faces their own material slot. Cut the boundary on mesh edges so it is a clean circle. The flange outer wall and the ears stay cast.</li>
+      <li><b>Four attributes on that mesh</b> make the tool lines run in circles around the pipe: <code>turn_axis</code>, <code>turn_origin</code>, <code>turned</code> = 1 and <code>cut</code> = 0. The exact types and a ready script are in the material's .json.</li>
+      <li><b>Only stainless is machined.</b> The top of a cast iron flange is plain cast. Taco confirmed this on Nov 13.</li>
+      <li><b>Status:</b> the machined face goes to Taco for review on Nov 20. You can do everything else on the stainless models now, and add the machined face when VNTANA confirms.</li>
+      <li>In the web model the machined face is a plain bright ring. The tool lines show in renders only.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Step 5. The web model (GLB)</h3>
     <p class="lead" style="margin-top:0">The platform flattens fine grain that is baked into one large map for a whole part. So the grain goes into the GLB as a small tile that repeats. The gold standard GLB is the working example; open it and copy the setup.</p>
     <ul class="rules">
       <li><b>Plain values</b> for color, metal and roughness on the library materials. No baked color maps for them.</li>
@@ -215,15 +184,49 @@
   </div>
 
   <div class="card">
-    <h3>G. Delivery</h3>
+    <h3>Step 6. Delivery</h3>
     <ul class="rules">
       <li><b>New version of the existing asset.</b> Never a new asset, and never overwrite the current file. The older versions stay.</li>
       <li><b>One Blender file per asset.</b> Delete the old attached .blend, then attach the new one, with a new version in the file name. Save in Blender 5.1.</li>
       <li><b>Processing:</b> choose the optimization preset <b>Taco Default</b> (150,000 polygons, inside parts kept, textures up to 2048). Keeping the inside parts is what makes the exploded view work.</li>
       <li><b>Viewer:</b> set the viewer preset to <b>Taco Default</b> on the new version.</li>
-      <li><b>Order of work:</b> the cast iron e-series first (0015e3-2F2, 0015e3-2F4, 0018e-2F2, 007e-2F2, 007e3-2F4), then the stainless e-series, then the separators. For the 0026e, 0034e, 0034e+ and VT2218, apply the same materials and check the casing joint; close it the same way if there is a groove.</li>
+      <li><b>Order of work:</b> the cast iron e-series first (0015e3-2F2, 0015e3-2F4, 0018e-2F2, 007e-2F2, 007e3-2F4), then the stainless e-series. For the 0026e, 0034e, 0034e+ and VT2218, apply the same materials and check the casing joint; close it the same way if there is a groove.</li>
     </ul>
     <div class="note"><b>Checklist for each circulator:</b> real size at scale 1 &middot; library materials on body, terminal box, round cap and arrow &middot; box and cap are two materials &middot; old baked cast iron normal map removed &middot; Nov 6 faceplate art &middot; joint closed, no light passing &middot; side sticker removed &middot; GLB uses repeating tiles &middot; one Blender file attached &middot; uploaded as a new version with Taco Default processing and viewer preset.</div>
+  </div>
+</section>
+
+<!-- SEPARATORS (Nov 13) -->
+<section id="separators">
+  <h2><span class="n">B</span>Separators (49-xxx): start modeling with the approved bronze</h2>
+  <p class="lead">The bronze is ready and VNTANA has approved it. Taco is confirming it by Nov 20. Start modeling the separators now, with the points below.</p>
+  <div class="card">
+    <h3>Material</h3>
+    <table class="track" style="margin-top:4px">
+      <thead><tr><th>Material</th><th>Version</th><th>Goes on</th><th>Notes</th></tr></thead>
+      <tbody><tr><td><b><a href="https://platform.vntana.com/taco/material-library/products/details/39c6f6a7-3fa2-4aff-9cf7-528ee3be6f02" target="_blank" rel="noopener">TACO_BRONZE_CAST</a></b></td><td>v2</td><td>Bronze separators (49-xxx): cast body and its machined faces</td><td>One material does both. Mark machined faces with the <code>machined</code> attribute, see the list below.</td></tr></tbody>
+    </table>
+    <ul class="rules" style="margin-top:10px">
+      <li>Pick it up the same way as the circulator materials: download the .blend and the .json from the item's Attachments, read the .json, append the material by name. No Substance.</li>
+      <li><b>Do not use TACO_BRONZE_CAST_DEEP.</b> It is a comparison test, not approved.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>What to model</h3>
+    <ul class="rules">
+      <li><b>One bronze material does both finishes.</b> TACO_BRONZE_CAST version 2 covers the rough cast body and the smoother machined faces. On each bronze mesh add a face-corner attribute named <code>machined</code>: 1 on machined faces (pipe openings, thread ends, the vent stub, the seat under the magnet collar), 0 on cast faces. Without the attribute the whole part renders as rough cast.</li>
+      <li><b>Model the threads</b> on the threaded versions, and make the seam between the cap and the body smooth. The test model had a jagged seam; that was the test mesh, not the target.</li>
+      <li><b>Something must be visible inside.</b> The separators are filled with pall rings: small stamped stainless rings with curled tabs, held in a wire cage in the larger tanks. Model one pall ring from the photos and place enough of them that the inside does not look empty through the openings. You do not need to model every ring.</li>
+      <li><b>Magnetic dirt separator:</b> it has a removable black magnet collar around the neck, sitting on a smooth machined band, and a green label band on the body. See the photos.</li>
+      <li><b>Bright polished parts</b> (the press fitting and the band under the magnet collar) look shinier than the library's machined setting. Mark them as machined for now and flag them in your QA notes. VNTANA will confirm whether they need their own material.</li>
+      <li><b>Labels:</b> Taco is sending the green label art. Leave the band ready for a texture, with one consistent start and end point on every size.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Reference photos from Taco</h3>
+    <p class="lead" style="margin-top:0">Click a photo to open it larger. The full-size originals are in the Taco 3D Toolkit.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px"><figure style="margin:0"><a href="refs/separators/pall-ring-1_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/pall-ring-1_v1.jpg" alt="Pall ring, side" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Pall ring, side</figcaption></figure><figure style="margin:0"><a href="refs/separators/pall-ring-2_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/pall-ring-2_v1.jpg" alt="Pall ring, from above: curled tabs inside" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Pall ring, from above: curled tabs inside</figcaption></figure><figure style="margin:0"><a href="refs/separators/pall-ring-3_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/pall-ring-3_v1.jpg" alt="Pall ring, three-quarter view" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Pall ring, three-quarter view</figcaption></figure><figure style="margin:0"><a href="refs/separators/tank-cutaway-1_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/tank-cutaway-1_v1.jpg" alt="Cutaway of a large separator: the cage full of pall rings" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Cutaway of a large separator: the cage full of pall rings</figcaption></figure><figure style="margin:0"><a href="refs/separators/tank-cutaway-2_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/tank-cutaway-2_v1.jpg" alt="Cutaway, closer: rings packed inside the wire cage" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Cutaway, closer: rings packed inside the wire cage</figcaption></figure><figure style="margin:0"><a href="refs/separators/tank-cutaway-3_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/tank-cutaway-3_v1.jpg" alt="Cutaway, end of the cage" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Cutaway, end of the cage</figcaption></figure><figure style="margin:0"><a href="refs/separators/magnetic-dirt-separator-1_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/magnetic-dirt-separator-1_v1.jpg" alt="Magnetic dirt separator, assembled: black magnet collar on the neck" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Magnetic dirt separator, assembled: black magnet collar on the neck</figcaption></figure><figure style="margin:0"><a href="refs/separators/magnetic-dirt-separator-2_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/magnetic-dirt-separator-2_v1.jpg" alt="Collar removed: smooth polished band under it" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Collar removed: smooth polished band under it</figcaption></figure><figure style="margin:0"><a href="refs/separators/magnetic-dirt-separator-3_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/magnetic-dirt-separator-3_v1.jpg" alt="Other side: label band and press fitting" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Other side: label band and press fitting</figcaption></figure><figure style="margin:0"><a href="refs/separators/magnetic-dirt-separator-4_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/magnetic-dirt-separator-4_v1.jpg" alt="Assembled, press fitting side" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Assembled, press fitting side</figcaption></figure></div>
   </div>
 </section>
 
@@ -232,7 +235,7 @@
   <h2><span class="n">1</span>Repeatable Materials</h2>
   <p class="lead">Build these first. They are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. Get each one built and signed off once, then reuse the exact same material everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
   <p class="lead"><span class="badge-new">Approved Oct 9</span> <b>Taco approved stainless, cast iron and Taco green</b> (black plastic not confirmed yet; bronze and black composite not reviewed). The approved ones are <b>locked</b>: reuse them exactly, by name, on every product. Shared library: <a href="https://platform.vntana.com/taco/3d-toolkit/products/" target="_blank" rel="noopener">Taco 3d-toolkit workspace</a>. Before making a new material, check the library so you do not duplicate one. If a product needs a new material, build it, add it to the library, and tell us what it is and what it is used on.</p>
-  <p class="lead"><span class="badge-new">Updated Nov 13</span> <b>Materials are no longer built in Substance.</b> They are finished Blender materials in the Taco Material Library (see the gold standard section above). Use the exact same material, by name, on every part and every SKU with that finish. A per-asset baked atlas does not count as a library material.</p>
+  <p class="lead"><span class="badge-new">Updated Nov 13</span> <b>Materials are no longer built in Substance.</b> They are finished Blender materials in the Taco Material Library (see section A above). Use the exact same material, by name, on every part and every SKU with that finish. A per-asset baked atlas does not count as a library material.</p>
   <p class="lead"><b>Not a complete list.</b> These are only the materials that repeat and that the catalog names. Individual assets will have additional, non-repeated materials that are not shown here. Build those per asset and flag anything you are unsure of.</p>
 
   <div class="card">
@@ -320,7 +323,7 @@
       <li><b>Faceplates and labels are textures</b>, not modeled geometry. Confirm the version/label artwork before baking it in.</li>
       <li><b>Side-of-casing label.</b> <span class="badge-new">Decided Oct 9</span> For <b>0034e and 0026e</b> the side marking is a <b>sticker label</b>: deliver the <b>Flat Label</b> version only, using the <a href="refs/Taco-Side-Label-Layout.pdf" target="_blank" rel="noopener">side label layout</a> (<a href="refs/Taco-Side-Label-Layout.ai" target="_blank" rel="noopener">.ai</a>), never the old CAD text. Put the label text in <b>its own material</b> on the label part (Taco may ask for lighter text). Keep the casing shape as the CAD has it. Other families: ask before building the label; some newer products are etched.</li>
     </ul>
-    <div class="note"><span class="badge-new">Updated Nov 13</span> <b>Faceplate art is final.</b> Use Taco's files dated Nov 6 from the 3D Toolkit, as listed in the gold standard section above (part E). <b>Side sticker:</b> Taco no longer wants it on the circulators; see part E. <b>Second UV set:</b> the "single UV space" rule above still holds for the first UV set; the repeating grain tiles use a second set, see part F.</div>
+    <div class="note"><span class="badge-new">Updated Nov 13</span> <b>Faceplate art is final.</b> Use Taco's files dated Nov 6 from the 3D Toolkit, as listed in section A, step 3. <b>Side sticker:</b> Taco no longer wants it on the circulators; see section A, step 3. <b>Second UV set:</b> the "single UV space" rule above still holds for the first UV set; the repeating grain tiles use a second set, see section A, step 5.</div>
   </div>
 
   <div class="card">
@@ -373,6 +376,25 @@
     <a class="fam" href="49-150.html" style="--famc:#c8102e"><div class="name">49-150</div><div class="meta">Air &amp; Dirt Separator, 1-1/2" · 2 variants</div><div class="cat">Catalog p.25</div></a>
     <a class="fam" href="49-200.html" style="--famc:#8a5a2b"><div class="name">49-200</div><div class="meta">Air &amp; Dirt Separator, 2" · 1 variant</div><div class="cat">Catalog p.25</div></a>
   </div>
+</section>
+
+<!-- EARLIER UPDATE (Oct 9), moved down Nov 13 -->
+<section>
+  <h2><span class="n">5</span>Earlier update (Oct 9)</h2>
+  <p class="lead">Kept for reference. Sections A and B at the top replace anything here that differs.</p>
+<div class="callout" style="background:#fff1f1;border-color:#f3c2c2;color:#5c1414;margin-top:6px;font-size:15px">
+  <span class="badge-new">Updated Oct 9</span> <b>Taco reviewed the 0034e. Here is what changed.</b>
+  <ul class="rules" style="margin-top:8px">
+    <li><b>Materials approved.</b> Taco approved <b>stainless, cast iron and Taco green</b>: they are <b>locked</b>. Keep them exactly as they are and reuse them on every product. <b>Black plastic:</b> keep as is, not confirmed yet. <b>Bronze and black composite:</b> not approved yet, do not build until we confirm. Shared library: <a href="https://platform.vntana.com/taco/3d-toolkit/products/" target="_blank" rel="noopener">Taco 3d-toolkit workspace</a>.</li>
+    <li><b>New template is ready.</b> Download the <b>latest</b> <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/ca73638d-7871-42d6-a7b0-a2572d616ac9" target="_blank" rel="noopener">Blender template</a> and <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/d00ffb66-2b5c-4b06-b0a8-ab36443cd0e8" target="_blank" rel="noopener">Studio HDRI</a>: 9 cameras, Studio HDRI at 1.0, ACES 1.3, exposure 1.0. Delete your old cameras.</li>
+    <li><b>Side labels on 0034e and 0026e are stickers.</b> Deliver the <b>Flat Label</b> version only (no Etched version), using Liz's new layout. Put the label text in its own material.</li>
+    <li><b>Real-world size.</b> 0034e is about 163 x 206 x 179 mm. Bottom at Z = 0, centered.</li>
+    <li><b>Upload:</b> pipeline <b>Preserve Meshes + UVs</b> (Draco can stay on), new version of the original asset, <b>one Blender file per asset</b>.</li>
+    <li><b>Next:</b> update the 0034e files, then continue with <b>0026e</b>, the <b>separators</b> and <b>VT2218</b>.</li>
+  </ul>
+  <p style="margin:10px 0 0"><b>All feedback on delivered assets is on the review page.</b></p>
+  <p style="margin:12px 0 0"><a class="btn" href="review-0034e.html">Read the full 0034e review: what worked, what must change &rarr;</a></p>
+</div>
 </section>
 
 <footer>VNTANA &times; Taco Comfort Solutions &middot; Internal delivery dashboard</footer>
