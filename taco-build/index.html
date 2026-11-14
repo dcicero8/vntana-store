@@ -92,6 +92,7 @@
     <li><b>Circulators:</b> bring every e-series circulator up to the gold standard model, the 0018e-2F4, in one revision. The six steps are in <a href="#gold">section A</a>.</li>
     <li><b>Separators:</b> start modeling the 49-xxx separators with the approved bronze. Details and photos are in <a href="#separators">section B</a>.</li>
     <li><b>No Substance.</b> Materials are finished Blender materials in the Taco Material Library. Use them by name.</li>
+    <li><b style="color:#c01818">Remove the side sticker</b> on every e-series circulator (section A, step 3).</li>
   </ol>
   <p style="margin:10px 0 0"><b>Walkthrough call:</b> Monday, Nov 16, at 8:00 am Pacific (16:00 UTC). We will go through this page together.</p>
   <p style="margin:6px 0 0;font-size:13.5px">Where this page disagrees with the older notes further down, sections A and B win.</p>
@@ -125,7 +126,7 @@
     </table>
     <ul class="rules" style="margin-top:10px">
       <li><b>Real size first.</b> Every part must be in meters with scale applied (scale 1). The cast iron and rubber textures repeat in real millimeters. A wrong scale gives the wrong grain size.</li>
-      <li><b>Keep clean UVs on every part. They are still required.</b> The library materials do not use them inside Blender (they are projected from six sides), but the web model, AR and any future baked material do. Do not delete or skip UVs because a library material works without them.</li>
+      <li><b>Clean UVs on every part. Required.</b> Clean means: a few large pieces, not hundreds of small ones; the same scale across the part; the full square used; seams on faces you do not see. The library materials do not use UVs inside Blender, but the web model, AR and any future baked material do. <b>Check the UVs on the models you already delivered</b> and fix any visible part that does not meet this, starting with the cast pump bodies.</li>
       <li><b>Leave as delivered:</b> Taco green motor housing, shaft steel, fasteners, the dial knob body and the faceplate material (only its artwork changes).</li>
       <li><b>No Substance.</b> Materials are no longer built in Substance, and Substance files (.spp, .sbs, .sbsar) are no longer part of a delivery.</li>
       <li><b>A material that is not in the library:</b> check the library first. If it is truly missing, build it as a Blender material in the same form as the library ones, add it to the library as a new item, and tell VNTANA what it is and where it is used.</li>
@@ -146,6 +147,7 @@
 
   <div class="card">
     <h3>Step 3. Faceplate, dial arrow and sticker</h3>
+    <div class="callout" style="background:#fff1f1;border-color:#e08a8a;color:#7a1010;margin:4px 0 14px;font-size:15px"><b style="color:#c01818">REMOVE THE SIDE STICKER.</b> Taco no longer wants the rating sticker on the side of the motor housing. <b>Delete it on every e-series circulator</b>: the object <code>Side_Label_base</code> and its material. Do not add a sticker to any new model. For the 0034e, 0026e and VT2218 that are already delivered, VNTANA will confirm removal.</div>
     <ul class="rules">
       <li><b>Faceplate art:</b> use Taco's files dated Nov 6, in the Taco 3D Toolkit. Cast iron art on the cast iron models, stainless art on the stainless models.</li>
     </ul>
@@ -156,7 +158,6 @@
     <ul class="rules" style="margin-top:10px">
       <li><b>How it goes on:</b> it is a texture swap only. Part <code>Face_Plate</code>, material <code>Label</code>, map <code>Label_BaseColor</code> (4096 px). On the 0015e3 and 0018e the plate front is one flat square: pixels left 1315, right 4013, top 1361, bottom 4060. Place the art on that square over a near-black plate color and leave the rest of the map alone. The other three Label maps are flat and do not change. The 007e plate has a different layout; fit it the same way.</li>
       <li><b>Dial arrow:</b> the arrow on the knob (<code>face_key</code>) becomes TACO_LOGO_GREEN. The arrow is not a separate part. It is the faces that sit in the pale gray area of the knob's color map. Give those faces the green material as a second slot. The rest of the knob stays black.</li>
-      <li><b>Side sticker:</b> delete the rating sticker on the side of the motor housing (<code>Side_Label_base</code> and its material) on every e-series circulator. For the 0034e, 0026e and VT2218, do not add a sticker to new work; VNTANA will confirm removal on the delivered ones.</li>
     </ul>
   </div>
 
