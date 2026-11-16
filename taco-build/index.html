@@ -87,7 +87,7 @@
 <div class="wrap">
 
 <div class="callout" style="background:#eef5ff;border-color:#bcd6f5;color:#14315c;margin-top:24px;font-size:15px">
-  <span class="badge-new">Updated Nov 13</span> <b>What to do now</b>
+  <span class="badge-new">Updated Nov 16</span> <b>What to do now</b>
   <ol class="rules" style="margin-top:8px">
     <li><b>Circulators:</b> bring every e-series circulator up to the gold standard model, the 0018e-2F4, in one revision. The six steps are in <a href="#gold">section A</a>.</li>
     <li><b>Separators:</b> start modeling the 49-xxx separators with the approved bronze. Details and photos are in <a href="#separators">section B</a>. <span class="badge-new">New Nov 16</span> Taco sent the label art and two photos that show how the pall rings sit inside. See <a href="#sep-new">the new card in section B</a>.</li>
@@ -275,8 +275,8 @@
 <!-- SECTION 1: REPEATABLE MATERIALS -->
 <section>
   <h2><span class="n">1</span>Repeatable Materials</h2>
-  <p class="lead">Build these first. They are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. Get each one built and signed off once, then reuse the exact same material everywhere it applies, so we are not re-approving the same finish on every SKU.</p>
-  <p class="lead"><span class="badge-new">Approved Oct 9</span> <b>Taco approved stainless, cast iron and Taco green</b> (black plastic not confirmed yet; bronze and black composite not reviewed). The approved ones are <b>locked</b>: reuse them exactly, by name, on every product. Shared library: <a href="https://platform.vntana.com/taco/3d-toolkit/products/" target="_blank" rel="noopener">Taco 3d-toolkit workspace</a>. Before making a new material, check the library so you do not duplicate one. If a product needs a new material, build it, add it to the library, and tell us what it is and what it is used on.</p>
+  <p class="lead">These are the shared materials that repeat across the assets, named from the catalog's Materials of Construction (Wholesale Catalog p.15) plus the visible finishes. They are no longer built per asset. Each one is a finished material in the Taco Material Library: use it by name on every part and every SKU with that finish (section A, step 1).</p>
+  <p class="lead"><span class="badge-new">Status Nov 16</span> <b>The library materials in sections A and B are approved by VNTANA.</b> Taco approved stainless, cast iron and Taco green on Oct 9 and is signing off the new library versions; the bronze is due by Nov 20. The status of each material is in the tracker sheet below. Shared library: <a href="https://platform.vntana.com/taco/material-library/products/" target="_blank" rel="noopener">Taco Material Library workspace</a>. Before making a new material, check the library so you do not duplicate one. If a product needs a new material, build it as a Blender material, add it to the library, and tell us what it is and what it is used on.</p>
   <p class="lead"><span class="badge-new">Updated Nov 13</span> <b>Materials are no longer built in Substance.</b> They are finished Blender materials in the Taco Material Library (see section A above). Use the exact same material, by name, on every part and every SKU with that finish. A per-asset baked atlas does not count as a library material.</p>
   <p class="lead"><b>Not a complete list.</b> These are only the materials that repeat and that the catalog names. Individual assets will have additional, non-repeated materials that are not shown here. Build those per asset and flag anything you are unsure of.</p>
 
@@ -311,16 +311,16 @@
   <h2><span class="n">3</span>Rules of Delivery</h2>
   <p class="lead">Every asset, every family. If a rule cannot be met on a given part, flag it in your QA notes rather than guessing. This section is the acceptance standard: assets that miss these are returned.</p>
 
-  <div class="callout" style="background:#eef5ff;border-color:#bcd6f5;color:#14315c"><span class="badge-new">New</span> <b>Latest from Taco (Oct 2):</b> the image angle reference guide is confirmed, see <b>Render / template setup</b> below. The 007e-family <b>faceplate is being redesigned</b> across multiple departments (target end of October), so faceplate artwork is on hold. Engineering is checking whether <b>SolidWorks source files</b> are available (update expected Thursday). Contacts: <b>Ken</b> owns materials / art direction; <b>Jess &amp; Jai</b> own angles / render outputs.</div>
+  <div class="callout" style="background:#eef5ff;border-color:#bcd6f5;color:#14315c"><span class="badge-new">Updated Nov 16</span> <b>Where things stand:</b> faceplate art is final (Taco's files dated Nov 6, section A, step 3). The image angle reference guide is confirmed, see <b>Render / template setup</b> below. Materials come from the Taco Material Library. Contacts at Taco: <b>Ken</b> owns materials / art direction; <b>Jess &amp; Jai</b> own angles / render outputs.</div>
 
   <div class="card">
     <h3>What you deliver (per asset)</h3>
     <ul class="rules">
-      <li><b>GLB</b> (glTF binary, PBR metal/roughness, textures embedded). This is the primary deliverable. <span class="badge-new">New</span> <b>Export it from the delivered .blend</b>: same meshes, same names, same materials. A GLB merged into one mesh or one material is returned.</li>
+      <li><b>GLB</b> (glTF binary, PBR metal/roughness, textures embedded). This is the primary deliverable. <b>Export it from the delivered .blend</b>: same meshes, same names, same materials. A GLB merged into one mesh or one material is returned.</li>
       <li><b>Packed Blender file</b> (.blend) with all textures packed in.</li>
       <li><b>Parts manifest</b> (CSV): one row per serviceable part, with the real part name.</li>
       <li><b>Substance source files:</b> <span class="badge-new">Updated Nov 13</span> no longer needed. Do not deliver .spp, .sbs or .sbsar files.</li>
-      <li><b>Self-check renders</b> <span class="badge-new">New</span>: the hero shot plus one 4K close-up of the cast metal, as PNGs.</li>
+      <li><b>Self-check renders</b>: the hero shot plus one 4K close-up of the cast metal, as PNGs.</li>
       <li><s>4K texture maps folder</s>: no longer needed; the maps are packed in the .blend.</li>
     </ul>
   </div>
@@ -352,7 +352,7 @@
       <li><b>Upright and grounded.</b> Origin at <b>bottom-center</b> of the product.</li>
       <li><b>Real-world scale in meters.</b></li>
       <li>No animations, curves, constraints, or empties in the delivered file.</li>
-      <li><span class="badge-new">New</span> <b>No scale on any object.</b> Apply all transforms (scale 1.0 everywhere). Never scale the product to fit a camera; move the camera instead.</li>
+      <li><b>No scale on any object.</b> Apply all transforms (scale 1.0 everywhere). Never scale the product to fit a camera; move the camera instead.</li>
     </ul>
   </div>
 
@@ -360,7 +360,7 @@
     <h3>Materials &amp; UVs</h3>
     <ul class="rules">
       <li><b>glTF PBR metal/roughness</b>, textures embedded in the GLB.</li>
-      <li><b>One material per physical material.</b> Do not split one physical material across several, or merge two real materials into one. <span class="badge-new">New</span> In the .blend this means <b>separate Blender materials taken from the signed-off library</b>, named as in the library, not regions of one baked atlas. Cast metals must show real sand-cast grain at true scale.</li>
+      <li><b>One material per physical material.</b> Do not split one physical material across several, or merge two real materials into one. In the .blend this means <b>separate Blender materials taken from the signed-off library</b>, named as in the library, not regions of one baked atlas. Cast metals must show real sand-cast grain at true scale.</li>
       <li><b>Single 0 to 1 UV space per material</b>, with seams hidden on non-visible faces.</li>
       <li><b>Faceplates and labels are textures</b>, not modeled geometry. Confirm the version/label artwork before baking it in.</li>
       <li><b>Side-of-casing label.</b> <span class="badge-new">Decided Oct 9</span> For <b>0034e and 0026e</b> the side marking is a <b>sticker label</b>: deliver the <b>Flat Label</b> version only, using the <a href="refs/Taco-Side-Label-Layout.pdf" target="_blank" rel="noopener">side label layout</a> (<a href="refs/Taco-Side-Label-Layout.ai" target="_blank" rel="noopener">.ai</a>), never the old CAD text. Put the label text in <b>its own material</b> on the label part (Taco may ask for lighter text). Keep the casing shape as the CAD has it. Other families: ask before building the label; some newer products are etched.</li>
@@ -369,7 +369,7 @@
   </div>
 
   <div class="card">
-    <h3>Render / template setup <span class="badge-new">New</span></h3>
+    <h3>Render / template setup</h3>
     <p class="lead" style="margin-top:0">Taco sent a confirmed <b>image angle reference guide</b> (Oct 2). The first <b>8 angles</b> are the standard set and must be produced for <b>every</b> product. Match these camera framings, names, and the export formats exactly. <a href="refs/Taco-Image-Reference-Guide.pdf" target="_blank" rel="noopener">Open the reference guide (PDF)</a>.</p>
     <table class="track" style="margin-top:4px">
       <thead><tr><th>IMG</th><th>Angle</th><th>Role</th></tr></thead>

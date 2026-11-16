@@ -31,6 +31,8 @@
 
 <div class="wrap">
 
+<div class="callout" style="background:#fff4f4;border:1px solid #f0b8b8;color:#7a1212;margin:18px 0 0;padding:12px 16px;border-radius:8px"><b>Updated Nov 16. Read the dashboard first.</b> The current instructions are in <a href="index.html#separators">section B of the dashboard</a> (separators: approved bronze, cage and pall rings, label art). Where this page differs, the dashboard wins.</div>
+
 <!-- STEP 1 -->
 <section>
   <h2><span class="n">1</span>The Reference Model</h2>
@@ -104,9 +106,9 @@ Confirm from the catalog page:
           <tr><td>Connections</td><td>Threaded steel (T) / bronze sweat (C) / copper press (P)</td></tr>
       </tbody>
     </table>
-    <div class="note"><b>Repeatable materials:</b> build and get each shared material signed off once, then apply the exact same material across every variant and every family that uses it. Track sign-off on the <a href="index.html">delivery dashboard</a>.</div>
+    <div class="note"><b>Repeatable materials:</b> these are finished materials in the Taco Material Library. Use them by name on every variant and every family (<a href="index.html#separators">dashboard, section B</a>). Do not build them in Substance. Sign-off status is in the delivery tracker sheet.</div>
 
-    <div class="note"><b>Before baking labels:</b> the faceplate and any printed labels are textures, not geometry. Confirm the current artwork version with VNTANA before locking the texture.</div>
+    <div class="note"><b>Labels:</b> the green label band is a texture, not geometry. The first label art from Taco and the placement rules are on the <a href="index.html#sep-new">dashboard, section B</a>.</div>
   </div>
 </section>
 
@@ -127,7 +129,7 @@ Confirm from the catalog page:
   <div class="card">
     <h3>Pre-delivery QA (check every item before uploading)</h3>
     <ul class="check">
-      <li>All deliverables present per variant: GLB (exported from the delivered .blend), packed .blend, parts manifest CSV, Substance Painter project (.spp), self-check renders (hero + 4K metal close-up).</li>
+      <li>All deliverables present per variant: GLB (exported from the delivered .blend), packed .blend, parts manifest CSV, self-check renders (hero + 4K metal close-up). No Substance files.</li>
       <li>One mesh per serviceable part at scene root. No mega-part, no empty wrappers. GLB has the same meshes, names and materials as the .blend.</li>
       <li>All internal parts kept. Nested shells have 2mm clearance.</li>
       <li>Every mesh has a real part name (or a flagged catalog name). Fasteners grouped logically.</li>
@@ -144,7 +146,7 @@ Confirm from the catalog page:
   <div class="card">
     <h3>Upload to VNTANA platform</h3>
     <ul class="rules">
-      <li>Pipeline: <b>Preserve Meshes + UVs</b>. Keep the model where it is (no recentering, no rescaling).</li>
+      <li>Processing: choose the optimization preset <b>Taco Default</b> (150,000 polygons, inside parts kept, textures up to 2048). Viewer preset: <b>Taco Default</b>.</li>
       <li>Draco compression can stay <b>on</b> (default).</li>
       <li>Save as <b>Draft</b>. Do not publish.</li>
       <li>Fill the parts manifest so the platform part list matches your named meshes.</li>
