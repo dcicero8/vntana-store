@@ -90,7 +90,7 @@
   <span class="badge-new">Updated Nov 13</span> <b>What to do now</b>
   <ol class="rules" style="margin-top:8px">
     <li><b>Circulators:</b> bring every e-series circulator up to the gold standard model, the 0018e-2F4, in one revision. The six steps are in <a href="#gold">section A</a>.</li>
-    <li><b>Separators:</b> start modeling the 49-xxx separators with the approved bronze. Details and photos are in <a href="#separators">section B</a>.</li>
+    <li><b>Separators:</b> start modeling the 49-xxx separators with the approved bronze. Details and photos are in <a href="#separators">section B</a>. <span class="badge-new">New Nov 16</span> Taco sent the label art and two photos that show how the pall rings sit inside. See <a href="#sep-new">the new card in section B</a>.</li>
     <li><b>No Substance.</b> Materials are finished Blender materials in the Taco Material Library. Use them by name.</li>
     <li><b style="color:#c01818">Remove the side sticker</b> on every e-series circulator (section A, step 3).</li>
   </ol>
@@ -217,11 +217,45 @@
     <ul class="rules">
       <li><b>One bronze material does both finishes.</b> TACO_BRONZE_CAST version 2 covers the rough cast body and the smoother machined faces. On each bronze mesh add a face-corner attribute named <code>machined</code>: 1 on machined faces (pipe openings, thread ends, the vent stub, the seat under the magnet collar), 0 on cast faces. Without the attribute the whole part renders as rough cast.</li>
       <li><b>Model the threads</b> on the threaded versions, and make the seam between the cap and the body smooth. The test model had a jagged seam; that was the test mesh, not the target.</li>
-      <li><b>Something must be visible inside.</b> The separators are filled with pall rings: small stamped stainless rings with curled tabs, held in a wire cage in the larger tanks. Model one pall ring from the photos and place enough of them that the inside does not look empty through the openings. You do not need to model every ring.</li>
+      <li><b>Something must be visible inside.</b> The separators are filled with pall rings: small stamped stainless rings with curled tabs, held in a wire cage in the larger tanks. Model one pall ring from the photos and place enough of them that the inside does not look empty through the openings. You do not need to model every ring. <span class="badge-new">New Nov 16</span> The two new photos below show exactly what must be visible through a port.</li>
       <li><b>Magnetic dirt separator:</b> it has a removable black magnet collar around the neck, sitting on a smooth machined band, and a green label band on the body. See the photos.</li>
       <li><b>Bright polished parts</b> (the press fitting and the band under the magnet collar) look shinier than the library's machined setting. Mark them as machined for now and flag them in your QA notes. VNTANA will confirm whether they need their own material.</li>
-      <li><b>Labels:</b> Taco is sending the green label art. Leave the band ready for a texture, with one consistent start and end point on every size.</li>
+      <li><b>Labels:</b> <span class="badge-new">Updated Nov 16</span> Taco sent the first two label files. See the card below. Keep the label as its own texture on its own material, with one consistent start and end point on every size, so the art can be swapped later without touching the model.</li>
     </ul>
+  </div>
+
+  <div class="card" id="sep-new">
+    <h3><span class="badge-new">New Nov 16</span> From Taco: the inside view and the labels</h3>
+    <p class="lead" style="margin-top:0"><b>1. What you see through a port.</b> The pall rings do not float loose. They sit packed inside a square wire cage that fills the body. Looking into a port you see the cage wires first, then the rings behind them, turned in every direction.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;max-width:760px">
+      <figure style="margin:0"><a href="refs/separators/port-view-magnetic-dirt-separator_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/port-view-magnetic-dirt-separator_v1.jpg" alt="Magnetic dirt separator: wire cage and pall rings visible through the port" style="display:block;width:100%;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Magnetic dirt separator, 2 in: the wire cage with pall rings behind it, seen through the port. Green label band on the neck under the top chamber.</figcaption></figure>
+      <figure style="margin:0"><a href="refs/separators/port-view-air-separator_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/port-view-air-separator_v1.jpg" alt="Air separator: cage visible through the port, label band under the seam" style="display:block;width:100%;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Air separator, 3/4 in: the cage is visible through the port here too. Green label band on the lower body, directly under the seam.</figcaption></figure>
+    </div>
+    <ul class="rules" style="margin-top:12px">
+      <li><b>Model the cage.</b> A square grid of thin stainless wire, sized to fill the inside of the body. It must be visible through every open port.</li>
+      <li><b>Fill it with pall rings.</b> Use the one pall ring you modeled, copied many times, each copy turned a different way. Pack them close behind the cage where a port looks in. Deeper inside, where nothing can be seen, you can leave it empty.</li>
+      <li><b>Materials:</b> cage and rings are bright stainless, not bronze.</li>
+      <li><b>Check:</b> render a view straight into each port. If you can see through to the far wall, add more rings.</li>
+    </ul>
+    <p class="lead" style="margin-top:16px"><b>2. The label art.</b> The label is a green band that wraps all the way around the body. Two files so far, both for the 2 in size.</p>
+    <a href="refs/separators/label-air-separator-2in_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/label-air-separator-2in_v1.jpg" alt="Label: 4900 Series Air Separator 2 in, model 49-200T-2" style="display:block;width:100%;border:1px solid var(--line,#e3e7ee);border-radius:4px;margin:4px 0"></a>
+    <a href="refs/separators/label-magnetic-dirt-separator-2in_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/label-magnetic-dirt-separator-2in_v1.jpg" alt="Label: 4900 Magnetic Dirt Separator 2 in, model 49MD-200T-2" style="display:block;width:100%;border:1px solid var(--line,#e3e7ee);border-radius:4px;margin:4px 0 10px"></a>
+    <table class="track" style="margin-top:4px">
+      <thead><tr><th>Label</th><th>Model on the label</th><th>Printed size</th><th>Files in the 3D Toolkit</th></tr></thead>
+      <tbody>
+        <tr><td><b>4900 Series Air Separator 2 in</b></td><td>49-200T-2</td><td>11.93 in x 0.43 in (303 mm x 10.9 mm)</td><td><a href="https://platform.vntana.com/taco/3d-toolkit/products/details/0236357a-0fb3-4f6e-aae9-51fe0d638841" target="_blank" rel="noopener">28049-KP941601.ai</a> &middot; <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/a2e5566b-7939-4fe0-a662-4bf20208b6c1" target="_blank" rel="noopener">PDF</a></td></tr>
+        <tr><td><b>4900 Magnetic Dirt Separator 2 in</b></td><td>49MD-200T-2</td><td>11.93 in x 0.43 in (303 mm x 10.9 mm)</td><td><a href="https://platform.vntana.com/taco/3d-toolkit/products/details/8798a5a6-1e38-45dd-a578-62e234dd991a" target="_blank" rel="noopener">28059-KP942131.ai</a> &middot; <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/cfb701ad-66da-4c38-b9d7-48919d2ba85d" target="_blank" rel="noopener">PDF</a></td></tr>
+      </tbody>
+    </table>
+    <ul class="rules" style="margin-top:10px">
+      <li><b>Use the art file, not the photo.</b> Taco's note: the label files do not match the products in the two photos. The photos are only for where the label and logo sit. The photos also show an older Taco logo. Always take the logo and text from the art file.</li>
+      <li><b>Where it goes.</b> Air separator: on the lower body, directly under the seam below the cone. Magnetic dirt separator: on the neck under the top chamber, above the cone.</li>
+      <li><b>Which way it faces.</b> Turn the band so the white Taco block and the product name can be read from the front, as in the photos.</li>
+      <li><b>Do not stretch the art.</b> The label is 303 mm long, so it fits a band about 96 mm across. If the band on your model is a different size, tell us in your QA notes and do not scale the art to fit.</li>
+      <li><b>Other sizes.</b> Final labels for every size come later from Taco. For now apply these two on the 2 in models, and leave the band ready on all other sizes.</li>
+      <li><b>Export.</b> Export the label from the Illustrator file at 4096 px on the long side, sRGB, with no dimension marks.</li>
+    </ul>
+    <p style="margin:10px 0 0;font-size:13.5px">Full-size photo originals: <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/62df8326-2493-4f93-9275-ede4e3a96f93" target="_blank" rel="noopener">magnetic dirt separator</a> &middot; <a href="https://platform.vntana.com/taco/3d-toolkit/products/details/cfcf8f95-091b-4923-af82-5f3886d8e701" target="_blank" rel="noopener">air separator</a></p>
   </div>
 
   <div class="card">
