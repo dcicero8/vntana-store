@@ -94,7 +94,12 @@
     <li><b>No Substance.</b> Materials are finished Blender materials in the Taco Material Library. Use them by name.</li>
     <li><b style="color:#c01818">Remove the side sticker</b> on every e-series circulator (section A, step 3).</li>
   </ol>
-  <p style="margin:10px 0 0"><b>Walkthrough call:</b> Monday, Nov 16, at 8:00 am Pacific (16:00 UTC). We will go through this page together.</p>
+  <p style="margin:10px 0 0"><span class="badge-new">Nov 16</span> <b>Walkthrough call done.</b> What we agreed on the call is written into this page. Two things to know:</p>
+  <ul class="rules" style="margin-top:6px">
+    <li><b>Material Library access:</b> you were added to the Taco Material Library on Nov 16. If a material page still does not load, tell us in Slack the same day.</li>
+    <li><b>Target:</b> all circulators signed off in the next two weeks, then the separators, everything before mid-December. After that we move on to the larger program.</li>
+    <li><b>Stuck on anything?</b> Message Derek in Slack. He can meet early this week.</li>
+  </ul>
   <p style="margin:6px 0 0;font-size:13.5px">Where this page disagrees with the older notes further down, sections A and B win.</p>
 </div>
 
@@ -217,7 +222,7 @@
     <ul class="rules">
       <li><b>One bronze material does both finishes.</b> TACO_BRONZE_CAST version 2 covers the rough cast body and the smoother machined faces. On each bronze mesh add a face-corner attribute named <code>machined</code>: 1 on machined faces (pipe openings, thread ends, the vent stub, the seat under the magnet collar), 0 on cast faces. Without the attribute the whole part renders as rough cast.</li>
       <li><b>Model the threads</b> on the threaded versions, and make the seam between the cap and the body smooth. The test model had a jagged seam; that was the test mesh, not the target.</li>
-      <li><b>Something must be visible inside.</b> The separators are filled with pall rings: small stamped stainless rings with curled tabs, held in a wire cage in the larger tanks. Model one pall ring from the photos and place enough of them that the inside does not look empty through the openings. You do not need to model every ring. <span class="badge-new">New Nov 16</span> The two new photos below show exactly what must be visible through a port.</li>
+      <li><b>Something must be visible inside.</b> The separators are filled with pall rings: small stamped stainless rings with curled tabs, held in a wire cage in the larger tanks. It only has to look right when you look into a port. <span class="badge-new">Agreed Nov 16</span> Keep it simple: a clean cage, and try the ring detail as a texture first. The steps are in the card below.</li>
       <li><b>Magnetic dirt separator:</b> it has a removable black magnet collar around the neck, sitting on a smooth machined band, and a green label band on the body. See the photos.</li>
       <li><b>Bright polished parts</b> (the press fitting and the band under the magnet collar) look shinier than the library's machined setting. Mark them as machined for now and flag them in your QA notes. VNTANA will confirm whether they need their own material.</li>
       <li><b>Labels:</b> <span class="badge-new">Updated Nov 16</span> Taco sent the first two label files. See the card below. Keep the label as its own texture on its own material, with one consistent start and end point on every size, so the art can be swapped later without touching the model.</li>
@@ -232,10 +237,12 @@
       <figure style="margin:0"><a href="refs/separators/port-view-air-separator_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/port-view-air-separator_v1.jpg" alt="Air separator: cage visible through the port, label band under the seam" style="display:block;width:100%;border:1px solid var(--line,#e3e7ee);border-radius:8px"></a><figcaption style="font-size:12.5px;color:#667;padding:6px 2px 0">Air separator, 3/4 in: the cage is visible through the port here too. Green label band on the lower body, directly under the seam.</figcaption></figure>
     </div>
     <ul class="rules" style="margin-top:12px">
-      <li><b>Model the cage.</b> A square grid of thin stainless wire, sized to fill the inside of the body. It must be visible through every open port.</li>
-      <li><b>Fill it with pall rings.</b> Use the one pall ring you modeled, copied many times, each copy turned a different way. Pack them close behind the cage where a port looks in. Deeper inside, where nothing can be seen, you can leave it empty.</li>
+      <li><b>Keep it simple.</b> <span class="badge-new">Agreed Nov 16</span> Do not go overboard. The inside only has to look right when you look into a port.</li>
+      <li><b>Model the cage as a clean, simple part.</b> A square grid of thin stainless wire that fills the inside of the body. No weld marks, no dents. It must be visible through every open port, and it shows as its own part in the exploded view.</li>
+      <li><b>The cage is fixed to the body.</b> In the cutaway photos it is bolted to the inside wall. Place it attached to the wall, not floating.</li>
+      <li><b>Ring detail: try a texture first.</b> As you suggested on the call, use the reference photos as a texture for the rings behind the cage, and send us one model to look at before you do the rest. If it does not hold up, the fallback is a few simple pall rings copied and turned different ways.</li>
       <li><b>Materials:</b> cage and rings are bright stainless, not bronze.</li>
-      <li><b>Check:</b> render a view straight into each port. If you can see through to the far wall, add more rings.</li>
+      <li><b>Check:</b> render a view straight into each port. You must not see through to an empty far wall.</li>
     </ul>
     <p class="lead" style="margin-top:16px"><b>2. The label art.</b> The label is a green band that wraps all the way around the body. Two files so far, both for the 2 in size.</p>
     <a href="refs/separators/label-air-separator-2in_v1.jpg" target="_blank" rel="noopener"><img loading="lazy" src="refs/separators/label-air-separator-2in_v1.jpg" alt="Label: 4900 Series Air Separator 2 in, model 49-200T-2" style="display:block;width:100%;border:1px solid var(--line,#e3e7ee);border-radius:4px;margin:4px 0"></a>
