@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Xcellerex XDR 50 to 2000 single-use stirred-tank bioreactors | 3D demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@vntana/viewer@3.0.0/dist/bundle.js"></script>
+<style>
+:root{
+  --green:#00755F; --green-d:#005c4a; --ink:#18181B; --body:#5D5D5F; --btn:#464649;
+  --line:#E4E4E7; --soft:#F7F7F7; --blue:#3B6FD4; --max:1280px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:"Cytiva Aktiv",Inter,Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--green);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 32px}
+button{font:inherit;cursor:pointer}
+
+/* header */
+header.top{border-bottom:1px solid var(--line);background:#fff;position:relative;z-index:20}
+.util{display:flex;justify-content:flex-end;gap:28px;font-size:12px;font-weight:500;padding-top:14px}
+.util a{color:var(--ink)}
+.mainbar{display:flex;align-items:center;gap:32px;padding:6px 0 18px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:30px;letter-spacing:-.5px;color:var(--ink);margin-top:-30px}
+.logo .mark{width:34px;height:34px;border-radius:50%;background:conic-gradient(from 200deg,#00755F 0 50%,#2a9d7f 50% 100%);position:relative}
+.logo .mark:after{content:"";position:absolute;left:14px;top:-2px;width:7px;height:38px;background:#fff;transform:rotate(18deg);border-radius:4px}
+nav.cats{display:flex;gap:30px;font-weight:700;font-size:15px}
+nav.cats a{color:var(--ink)}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid #c9c9cc;border-radius:24px;padding:8px 16px;width:330px;color:#8a8a8e;font-size:14px}
+.pill{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;padding:8px 14px;border-radius:16px}
+.pill.cart{background:var(--soft)}
+
+/* breadcrumb */
+.crumbs{font-size:13px;padding:22px 0 30px;display:flex;flex-wrap:wrap;gap:10px;color:var(--ink)}
+.crumbs a{color:var(--ink)}
+.crumbs span.sep{color:#999}
+.crumbs b{font-weight:700}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start}
+.stage{position:relative;aspect-ratio:1/1;background:#fff;border:1px solid var(--line)}
+vntana-viewer{position:absolute;inset:0;width:100%;height:100%;display:block;background:#fff}
+vntana-viewer::part(default-progress-bar){display:none}
+.stage .badge3d{position:absolute;left:14px;top:14px;z-index:3;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:700;padding:5px 10px;display:flex;align-items:center;gap:6px}
+.stage .badge3d i{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block}
+.vtools{position:absolute;right:14px;top:14px;z-index:3;display:flex;flex-direction:column;gap:8px}
+.vtools button{width:38px;height:38px;background:#fff;border:1px solid var(--line);display:grid;place-items:center}
+.vtools button:hover{border-color:var(--green)}
+.vtools svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:1.8}
+vntana-ar-button{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:3;font-family:inherit}
+@media (max-width:960px){ .hint{display:none} }
+vntana-qr-button{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:3}
+.hint{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12px;color:var(--body);pointer-events:none;z-index:2}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font-size:13px;color:var(--body);z-index:1}
+.thumbs{display:flex;gap:12px;margin-top:16px}
+.thumb{width:72px;height:72px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink);text-align:center;line-height:1.2;padding:4px}
+.thumb.on{border:2px solid var(--blue)}
+.thumb svg{width:26px;height:26px;stroke:var(--ink);fill:none;stroke-width:1.6;display:block;margin:0 auto 2px}
+
+.buy h1{font-size:30px;line-height:36px;font-weight:700;margin:0 0 14px}
+.buy .lede{color:var(--body);font-size:16px;margin:0 0 18px}
+.pdf{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:#2d5bc4;margin-bottom:30px}
+.choose{display:flex;justify-content:space-between;font-size:15px;margin-bottom:22px}
+.choose a{color:var(--ink);font-weight:700;font-size:13px}
+label.v{font-size:14px;display:block;margin-bottom:6px}
+.sel{position:relative;margin-bottom:22px}
+.sel select{appearance:none;width:100%;border:1px solid #a7a7aa;background:#fff;padding:13px 40px 13px 14px;font:inherit;font-size:15px;color:var(--ink);border-radius:0}
+.sel:after{content:"";position:absolute;right:16px;top:50%;width:8px;height:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translateY(-70%) rotate(45deg)}
+.box{background:var(--soft);padding:24px}
+.box h3{margin:0 0 4px;font-size:18px}
+.box .sku{color:var(--body);font-size:14px;margin-bottom:22px}
+.row{display:flex;align-items:center;gap:22px;margin-bottom:18px}
+.price{font-size:18px}
+.stock{font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px}
+.stock i{width:7px;height:7px;border-radius:50%;background:#3B6FD4}
+.qty{display:flex;align-items:center;gap:6px;margin-bottom:22px;font-size:13px;color:var(--body)}
+.qty button{width:32px;height:32px;border:1px solid #a7a7aa;background:#fff;font-size:18px;color:var(--ink)}
+.qty input{width:48px;height:32px;border:1px solid #a7a7aa;text-align:center;font:inherit}
+.ctas{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{border:2px solid var(--btn);background:transparent;color:var(--btn);font-weight:700;font-size:15px;padding:12px 10px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+.btn.primary:hover{background:var(--green-d)}
+.ship{margin-top:16px;background:var(--soft);padding:14px 24px;font-size:13px;display:flex;align-items:center;gap:10px}
+.ship i{width:18px;height:18px;border-radius:50%;background:var(--green);display:grid;place-items:center;color:#fff;font-style:normal;font-size:11px}
+.ship a{color:var(--ink);text-decoration:underline}
+
+/* tabs */
+.tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:15;margin-top:56px}
+.tabs .wrap{display:flex;gap:34px;font-size:14px;font-weight:500}
+.tabs a{color:var(--ink);padding:16px 0;border-bottom:3px solid transparent}
+.tabs a.on{color:var(--green);border-color:var(--green)}
+section.blk{padding:44px 0 10px;scroll-margin-top:60px}
+section.blk h2{font-size:26px;margin:0 0 18px}
+.ov{max-width:840px;color:var(--ink)}
+.ov ul{padding-left:20px}
+.ov li{margin:6px 0}
+
+/* features (3D) */
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.feat button{border:1px solid var(--line);background:#fff;text-align:left;padding:18px;color:var(--ink)}
+.feat button:hover,.feat button.on{border-color:var(--green);box-shadow:inset 3px 0 0 var(--green)}
+.feat b{display:block;margin-bottom:4px}
+.feat span{color:var(--body);font-size:14px}
+
+table.specs{width:100%;border-collapse:collapse;font-size:14px}
+table.specs th{text-align:left;font-weight:700;padding:12px;border-bottom:1px solid var(--line)}
+table.specs td{padding:16px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.specs tr.sel td{background:#fff}
+table.specs tr.sel{outline:2px solid var(--blue)}
+.yoursel{background:var(--blue);color:#fff;font-size:12px;font-weight:700;text-align:center;padding:3px}
+.mini{border:2px solid var(--btn);background:#fff;font-size:12px;font-weight:700;padding:6px 10px;color:var(--btn)}
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--soft);padding:26px}
+.card h3{margin:0 0 8px;font-size:22px}
+.faq details{border-bottom:1px solid var(--line);padding:16px 0}
+.faq summary{font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:20px}
+.faq summary:after{content:"+";font-weight:400;font-size:22px;line-height:1}
+.faq details[open] summary:after{content:"\2212"}
+.faq p{color:var(--body);margin:10px 0 0}
+
+footer{background:#18181B;color:#cfcfd2;margin-top:70px;padding:40px 0;font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.demo-note{background:#fff8e1;border-bottom:1px solid #f1e2a8;font-size:12px;text-align:center;padding:6px 12px;color:#6b5a14}
+
+@media (max-width:960px){
+  .wrap{padding:0 16px}
+  .util,nav.cats,.search{display:none}
+  .logo{margin-top:0}
+  .mainbar{padding:14px 0}
+  .hero{grid-template-columns:1fr;gap:28px}
+  .feat,.docs{grid-template-columns:1fr}
+  .tabs .wrap{overflow-x:auto;gap:22px;white-space:nowrap}
+  table.specs .hide-m{display:none}
+}
+</style>
+</head>
+<body>
+<div class="demo-note">Demo page built by VNTANA to show interactive 3D on a product page. Not an official Cytiva page.</div>
+
+<header class="top">
+  <div class="wrap">
+    <div class="util"><a href="#">Contact Us</a><a href="#">Quick Order</a><a href="#">Track Order</a><a href="#">Register/Log in</a></div>
+    <div class="mainbar">
+      <a class="logo" href="#" aria-label="cytiva"><span class="mark"></span>cytiva</a>
+      <nav class="cats"><a href="#">Products</a><a href="#">Services</a><a href="#">Applications</a><a href="#">Resources</a><a href="#">Support</a></nav>
+      <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Search products, application or support</div>
+      <span class="pill">Quotes</span><span class="pill cart">Cart</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="crumbs"><a href="#">Home</a><span class="sep">&rsaquo;</span><a href="#">Products</a><span class="sep">&rsaquo;</span><a href="#">Cell culture and fermentation</a><span class="sep">&rsaquo;</span><a href="#">Single-use bioreactor systems</a><span class="sep">&rsaquo;</span><b>Xcellerex&trade; XDR 50 to 2000 single-use stirred-tank bioreactors</b></div>
+
+  <div class="hero">
+    <div>
+      <div class="stage" id="stage">
+        <div class="loading" id="loading">Loading 3D model&hellip;</div>
+        <span class="badge3d"><i></i>Interactive 3D</span>
+        <!-- look copied from the product's own platform viewerSettings (cytiva-demo / bens-workspace) -->
+        <vntana-viewer id="viewer" loading="eager"
+          environment-src="https://storage.googleapis.com/static-prd-mul-reg-stn-unif-vntana-com/assets/environment_maps/environment_map-f3eb3015-84fe-4010-a0c2-837175ef3b7c.hdr"
+          environment-rotation="3.2288591161895095rad 1.5707963267948966rad 3.141592653589793rad"
+          tone-mapping="reinhard" ssao-strength="0" saturation="1.3" contrast="1.5"
+          field-of-view="58deg" min-field-of-view="58deg" max-field-of-view="58deg"
+          min-camera-distance="0r" max-camera-distance="3.27r" camera-distance="1.87r"
+          shadow-intensity="0.3" camera-rotation="-16deg 36deg 0deg"
+          enable-auto-rotate auto-rotate-delay="3" auto-rotate-speed="10deg" aria-label="Xcellerex XDR bioreactor, interactive 3D">
+          <vntana-ar-button></vntana-ar-button>
+          <vntana-qr-button></vntana-qr-button>
+        </vntana-viewer>
+        <div class="vtools">
+          <button id="btnCenter" title="Reset view" aria-label="Reset view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+          <button id="btnFs" title="Full screen" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        </div>
+        <div class="hint" id="hint">Drag to rotate &middot; scroll to zoom</div>
+      </div>
+      <div class="thumbs">
+        <div class="thumb on"><div><svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>3D</div></div>
+        <div class="thumb" style="color:var(--body);font-weight:500">Photo</div>
+        <div class="thumb" style="color:var(--body);font-weight:500">Photo</div>
+        <div class="thumb" style="color:var(--body);font-weight:500">Photo</div>
+      </div>
+    </div>
+
+    <div class="buy">
+      <h1>Xcellerex&trade; XDR 50 to 2000 single-use stirred-tank bioreactors</h1>
+      <p class="lede">Robust stirred-tank performance for up to 2000 L in both cGMP and non-cGMP environments.</p>
+      <a class="pdf" href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Export page to PDF</a>
+      <div class="choose"><span>Choose your product</span><a href="#">Reset selection</a></div>
+      <label class="v" for="variant">Variant</label>
+      <div class="sel"><select id="variant">
+        <option value="29048372">Xcellerex XDR-50 to 2000 Single Vessel</option>
+        <option value="29054857">Xcellerex XDR-50 to 2000 Multi-Vessel</option>
+      </select></div>
+      <div class="box">
+        <h3 id="vName">Xcellerex XDR-50 to 2000 Single Vessel</h3>
+        <div class="sku" id="vSku">29048372</div>
+        <div class="row"><span class="price">On request</span><span class="stock"><i></i>Stock on request</span></div>
+        <div class="qty"><button id="qm" aria-label="Decrease">&minus;</button><input id="qv" value="1" aria-label="Quantity"><button id="qp" aria-label="Increase">+</button><span>Min qty: 1</span></div>
+        <div class="ctas">
+          <button class="btn primary" id="addCart">Add to cart</button>
+          <button class="btn" id="addQuote">Add to quote list</button>
+        </div>
+      </div>
+      <div class="ship"><i>&#10003;</i>Price includes standard <a href="#">shipping and handling</a></div>
+    </div>
+  </div>
+</main>
+
+<div class="tabs"><div class="wrap">
+  <a href="#overview" class="on">Overview</a><a href="#specs">Product specifications</a><a href="#documents">Documents</a><a href="#parts">Parts and accessories</a><a href="#support">Product support</a>
+</div></div>
+
+<div class="wrap">
+  <section class="blk" id="overview">
+    <h2>Overview</h2>
+    <div class="ov">
+      <p>Xcellerex XDR single-use bioreactor systems provide scalable and robust stirred-tank performance for up to 2000 L in both cGMP and non-cGMP environments.</p>
+      <ul>
+        <li>Reliable and quantifiable process performance.</li>
+        <li>Modular design enables configurability and provides added flexibility.</li>
+        <li>Adaptable to a variety of molecules, applications, or multi-drug processes.</li>
+        <li>Predictable and seamless process scalability.</li>
+        <li>XDR bioreactor platforms are available with working volumes of 50 L, 200 L, 500 L, 1000 L and 2000 L.</li>
+      </ul>
+      <p><a href="#documents"><b>Data file | Operating instructions</b></a></p>
+    </div>
+    <h2 style="margin-top:34px;font-size:22px">Explore the system in 3D</h2>
+    <p style="color:var(--body);margin:0">Pick a feature to jump the 3D view to it.</p>
+    <div class="feat" id="feat"></div>
+  </section>
+
+  <section class="blk" id="specs">
+    <h2>Product specifications</h2>
+    <table class="specs">
+      <thead><tr><th class="hide-m">Specs</th><th>Product</th><th>Availability</th><th>Price</th><th></th></tr></thead>
+      <tbody>
+        <tr class="sel" data-sku="29048372"><td class="hide-m"><a href="#">Expand</a></td><td><b>29048372</b><br>Xcellerex XDR-50 to 2000 Single Vessel</td><td><span class="stock"><i></i>Stock on request</span></td><td>On request</td><td><button class="mini">Add to quote list</button></td></tr>
+        <tr data-sku="29054857"><td class="hide-m"><a href="#">Expand</a></td><td><b>29054857</b><br>Xcellerex XDR-50 to 2000 Multi-Vessel</td><td><span class="stock"><i></i>Stock on request</span></td><td>On request</td><td><button class="mini">Add to quote list</button></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px;color:var(--body)">Product availability is not guaranteed and subject to change.</p>
+  </section>
+
+  <section class="blk" id="documents">
+    <h2>Documents</h2>
+    <div class="docs">
+      <div class="card"><h3>Need a safety data sheet (SDS)?</h3><a href="#"><b>Search SDS &rarr;</b></a></div>
+      <div class="card"><h3>Looking for product certificates?</h3><a href="#"><b>Find product certificates &rarr;</b></a></div>
+    </div>
+  </section>
+
+  <section class="blk" id="parts">
+    <h2>Parts and accessories</h2>
+    <p>Find associated spare parts and accessories for Xcellerex&trade; XDR 50 to 2000 single-use stirred-tank bioreactors.</p>
+    <button class="btn" style="display:inline-flex">View parts and accessories</button>
+  </section>
+
+  <section class="blk faq" id="support">
+    <h2>Product support</h2>
+    <details><summary>What working volume ranges are supported across the XDR-50 to XDR-2000 bioreactor models, and what is the minimum turn-down ratio?</summary><p>See the data file for working volumes and turn-down by model.</p></details>
+    <details><summary>What disposable biocontainer bag materials and design features are used in the XDR systems to support single-use operation and minimize cleaning?</summary><p>See the data file and operating instructions.</p></details>
+    <details><summary>Which culture modes are supported by the XDR line, and for what cell types or applications is the system validated?</summary><p>See the data file and application notes.</p></details>
+    <details><summary>What are the system installation and site-preparation requirements for the various bioreactors?</summary><p>See the site preparation guide.</p></details>
+    <details><summary>How does the XDR platform support scale-up from development to commercial manufacturing?</summary><p>See the scale-up application notes.</p></details>
+  </section>
+</div>
+
+<footer><div class="wrap"><span>Demo for discussion. Product content from cytivalifesciences.com.</span><span>3D experience powered by VNTANA</span></div></footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const viewer=$("viewer");
+const ORG="cytiva-demo", WS="bens-workspace";
+const PRODUCT="5283960c-69a1-4e13-b16e-85fd60e718a9", BLOB="b2f2f95e-080b-469b-a248-ccd873b719d1.glb";
+viewer.src=`https://api.vntana.com/assets/products/${PRODUCT}/organizations/${ORG}/clients/${WS}/${BLOB}`;
+viewer.addEventListener("load",()=>{ $("loading").remove(); });
+viewer.addEventListener("error",()=>{ $("loading").textContent="3D model could not load."; });
+
+/* feature tour: camera stops (documented camera setters) */
+/* yaw map of this model: 0 = control cabinet face, 90 = cabinet left of vessel, 180 = vessel, 270 = cabinet side with displays */
+const HERO="-16deg 36deg 0deg";
+const FEATURES=[
+  {t:"Full system",d:"Vessel, control cabinet and agitator on one mobile frame.",r:HERO},
+  {t:"Control cabinet",d:"Hoist up/down controls and the system power switch.",r:"-6deg 0deg 0deg"},
+  {t:"Stirred-tank vessel",d:"Stainless vessel that holds the single-use bag.",r:"-8deg 180deg 0deg"},
+  {t:"Agitator drive",d:"Top-mounted agitator motor and lift arm.",r:"-50deg 150deg 0deg"},
+  {t:"Displays and transmitters",d:"Process displays and I/O on the cabinet side.",r:"-8deg 270deg 0deg"},
+  {t:"Underside and frame",d:"Mobile frame, casters and bottom outlet.",r:"10deg 120deg 0deg"},
+];
+const feat=$("feat");
+FEATURES.forEach((f,i)=>{
+  const b=document.createElement("button");
+  b.innerHTML=`<b>${f.t}</b><span>${f.d}</span>`;
+  b.onclick=()=>{
+    feat.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+    try{ viewer.enableAutoRotate=false; viewer.setCameraRotation(f.r); }catch(e){}
+    $("stage").scrollIntoView({behavior:"smooth",block:"center"});
+  };
+  feat.appendChild(b);
+});
+
+$("btnCenter").onclick=()=>{ try{viewer.centerCamera();}catch(e){} };
+$("btnFs").onclick=()=>{ const s=$("stage"); document.fullscreenElement?document.exitFullscreen():s.requestFullscreen&&s.requestFullscreen(); };
+viewer.addEventListener("pointerdown",()=>{ const h=$("hint"); if(h) h.remove(); },{once:true});
+
+/* variant select syncs the buy box and specs table */
+const NAMES={"29048372":"Xcellerex XDR-50 to 2000 Single Vessel","29054857":"Xcellerex XDR-50 to 2000 Multi-Vessel"};
+$("variant").onchange=e=>{
+  const v=e.target.value; $("vName").textContent=NAMES[v]; $("vSku").textContent=v;
+  document.querySelectorAll("table.specs tbody tr").forEach(tr=>tr.classList.toggle("sel",tr.dataset.sku===v));
+};
+$("qm").onclick=()=>{ $("qv").value=Math.max(1,(+$("qv").value||1)-1); };
+$("qp").onclick=()=>{ $("qv").value=(+$("qv").value||1)+1; };
+$("addCart").onclick=function(){ this.textContent="Added to cart"; setTimeout(()=>this.textContent="Add to cart",1600); };
+$("addQuote").onclick=function(){ this.textContent="Added to quote list"; setTimeout(()=>this.textContent="Add to quote list",1600); };
+
+/* sticky tab highlight */
+const tabs=[...document.querySelectorAll(".tabs a")];
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) tabs.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+e.target.id)); }),{rootMargin:"-40% 0px -55% 0px"});
+document.querySelectorAll("section.blk").forEach(s=>io.observe(s));
+</script>
+</body>
+</html>
