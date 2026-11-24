@@ -168,7 +168,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
           tone-mapping="reinhard" ssao-strength="0" saturation="1.3" contrast="1.5"
           field-of-view="58deg" min-field-of-view="58deg" max-field-of-view="58deg"
           min-camera-distance="0r" max-camera-distance="3.27r" camera-distance="1.87r"
-          shadow-intensity="0.3" camera-rotation="-16deg 36deg 0deg"
+          shadow-intensity="0.3" camera-rotation="-16deg 65deg 0deg"
           enable-auto-rotate auto-rotate-delay="3" auto-rotate-speed="10deg" aria-label="Xcellerex XDR bioreactor, interactive 3D">
           <vntana-ar-button></vntana-ar-button>
           <vntana-qr-button></vntana-qr-button>
@@ -284,7 +284,7 @@ viewer.addEventListener("error",()=>{ $("loading").textContent="3D model could n
 
 /* feature tour: camera stops (documented camera setters) */
 /* yaw map of this model: 0 = control cabinet face, 90 = cabinet left of vessel, 180 = vessel, 270 = cabinet side with displays */
-const HERO="-16deg 36deg 0deg";
+const HERO="-16deg 65deg 0deg";
 const FEATURES=[
   {t:"Full system",d:"Vessel, control cabinet and agitator on one mobile frame.",r:HERO},
   {t:"Control cabinet",d:"Hoist up/down controls and the system power switch.",r:"-6deg 0deg 0deg"},
