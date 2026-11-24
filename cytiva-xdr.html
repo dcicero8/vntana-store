@@ -121,6 +121,21 @@ table.specs tr.sel{outline:2px solid var(--blue)}
 .docs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .card{background:var(--soft);padding:26px}
 .card h3{margin:0 0 8px;font-size:22px}
+/* CAD and 3D downloads */
+.cad{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;align-items:start}
+.cadlist{border:1px solid var(--line)}
+.cadrow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.cadrow:last-child{border-bottom:0}
+.cadrow b{display:block;font-size:15px}
+.cadrow small{display:block;color:var(--body);font-size:13px;margin-top:2px}
+.cadrow .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;margin-left:8px;vertical-align:2px;background:#e3f2ee;color:var(--green)}
+.cadrow.req .tag{background:#F4F4F5;color:var(--body)}
+.dl{border:2px solid var(--ink);background:#fff;color:var(--ink);font-weight:700;font-size:13px;padding:8px 14px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.dl:hover{background:var(--ink);color:#fff}
+.cadrow.req .dl{border-color:#a7a7aa;color:var(--body)}
+.cadrow.req .dl:hover{background:#F4F4F5;color:var(--ink)}
+.dl svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2}
+.cadnote{font-size:13px;color:var(--body);margin-top:10px}
 .faq details{border-bottom:1px solid var(--line);padding:16px 0}
 .faq summary{font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:20px}
 .faq summary:after{content:"+";font-weight:400;font-size:22px;line-height:1}
@@ -139,7 +154,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   .mainbar{display:none}
   .row1{padding:14px 0 14px}
   .hero{grid-template-columns:1fr;gap:28px}
-  .feat,.docs{grid-template-columns:1fr}
+  .feat,.docs,.cad{grid-template-columns:1fr}
+  .cadrow{padding:14px 14px}
   .tabs .wrap{overflow-x:auto;gap:22px;white-space:nowrap}
   table.specs .hide-m{display:none}
 }
@@ -204,6 +220,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
       <h1>Xcellerex&trade; XDR 50 to 2000 single-use stirred-tank bioreactors</h1>
       <p class="lede">Robust stirred-tank performance for up to 2000 L in both cGMP and non-cGMP environments.</p>
       <a class="pdf" href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Export page to PDF</a>
+      <a class="pdf" href="#cad" style="margin-left:18px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>Download CAD and 3D files</a>
       <div class="choose"><span>Choose your product</span><a href="#">Reset selection</a></div>
       <label class="v" for="variant">Variant</label>
       <div class="sel"><select id="variant">
@@ -226,7 +243,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 </main>
 
 <div class="tabs"><div class="wrap">
-  <a href="#overview" class="on">Overview</a><a href="#specs">Product specifications</a><a href="#documents">Documents</a><a href="#parts">Parts and accessories</a><a href="#support">Product support</a>
+  <a href="#overview" class="on">Overview</a><a href="#specs">Product specifications</a><a href="#documents">Documents</a><a href="#cad">CAD and 3D files</a><a href="#parts">Parts and accessories</a><a href="#support">Product support</a>
 </div></div>
 
 <div class="wrap">
@@ -266,6 +283,22 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
       <div class="card"><h3>Need a safety data sheet (SDS)?</h3><a href="#"><b>Search SDS &rarr;</b></a></div>
       <div class="card"><h3>Looking for product certificates?</h3><a href="#"><b>Find product certificates &rarr;</b></a></div>
     </div>
+  </section>
+
+  <section class="blk" id="cad">
+    <h2>CAD and 3D files</h2>
+    <p style="color:var(--body);margin:-6px 0 18px;max-width:760px">Download the system model for layout planning, facility fit-checks and engineering review. One upload to VNTANA generates every format below, so engineers can pull the file they need without a request to the product team.</p>
+    <div class="cad">
+      <div class="cadlist">
+        <div class="cadrow req"><div><b>STEP (.stp)<span class="tag">On request</span></b><small>Neutral CAD solid, opens in any CAD tool</small></div><button class="dl" data-fmt="STEP"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Request</button></div>
+        <div class="cadrow req"><div><b>IGES (.igs)<span class="tag">On request</span></b><small>Neutral CAD surface and solid interchange</small></div><button class="dl" data-fmt="IGES"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Request</button></div>
+        <div class="cadrow"><div><b>GLB (.glb)<span class="tag">Download</span></b><small>Web and real-time 3D, the model in the viewer above</small></div><button class="dl" data-fmt="GLB"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="cadrow"><div><b>USDZ (.usdz)<span class="tag">Download</span></b><small>Apple AR Quick Look</small></div><button class="dl" data-fmt="USDZ"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+        <div class="cadrow"><div><b>FBX (.fbx)<span class="tag">Download</span></b><small>Rendering, DCC tools and game engines</small></div><button class="dl" data-fmt="FBX"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Download</button></div>
+      </div>
+      <div class="card"><h3>Need another format?</h3><p style="color:var(--body);margin:0 0 12px">STEP, IGES and other neutral CAD formats can be generated from the same source model. Contact your Cytiva representative or add the system to your quote list and note the format you need.</p><a href="#" id="cadReq"><b>Request CAD &rarr;</b></a></div>
+    </div>
+    <p class="cadnote" id="cadMsg"></p>
   </section>
 
   <section class="blk" id="parts">
@@ -346,6 +379,22 @@ $("qm").onclick=()=>{ $("qv").value=Math.max(1,(+$("qv").value||1)-1); };
 $("qp").onclick=()=>{ $("qv").value=(+$("qv").value||1)+1; };
 $("addCart").onclick=function(){ const t=this.querySelector("span"); t.textContent="Added to cart"; setTimeout(()=>t.textContent="Add to cart",1600); };
 $("addQuote").onclick=function(){ const t=this.querySelector("span"); t.textContent="Added to quote list"; setTimeout(()=>t.textContent="Add to quote list",1600); };
+
+/* CAD and 3D downloads: real files from the Live Public asset (public API, no auth) */
+const API="https://api.vntana.com";
+const BLOBS={GLB:"b2f2f95e-080b-469b-a248-ccd873b719d1.glb",USDZ:"9bb26af8-1768-4f44-9af4-5da92d9e7286.usdz",FBX:"8c9dcbc7-7b21-409a-8e61-37af9b8eeb0c.fbx"};
+fetch(`${API}/products/${PRODUCT}/organizations/${ORG}/clients/${WS}`).then(r=>r.json()).then(d=>{
+  (((d.response||{}).asset||{}).models||[]).forEach(m=>{ if(m.conversionFormat&&m.modelBlobId) BLOBS[m.conversionFormat]=m.modelBlobId; });
+}).catch(()=>{});
+document.querySelectorAll("#cad .dl").forEach(b=>b.onclick=()=>{
+  const f=b.dataset.fmt, blob=BLOBS[f];
+  if(!blob){ $("cadMsg").textContent=`${f} is available on request for this system. In production this button opens a short request form.`; return; }
+  const a=document.createElement("a");
+  a.href=`${API}/assets/products/${PRODUCT}/organizations/${ORG}/clients/${WS}/${blob}`;
+  a.download=`Xcellerex-XDR-system.${f.toLowerCase()}`;
+  document.body.appendChild(a); a.click(); a.remove();
+});
+$("cadReq").onclick=e=>{ e.preventDefault(); $("cadMsg").textContent="In production this opens a short request form for the CAD format you need."; };
 
 /* sticky tab highlight */
 const tabs=[...document.querySelectorAll(".tabs a")];
