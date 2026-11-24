@@ -56,8 +56,13 @@ vntana-ar-button{position:absolute;left:50%;bottom:16px;transform:translateX(-50
 vntana-qr-button{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:3}
 .hint{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12px;color:var(--body);pointer-events:none;z-index:2}
 .loading{position:absolute;inset:0;display:grid;place-items:center;font-size:13px;color:var(--body);z-index:1}
-.thumbs{display:flex;gap:12px;margin-top:16px}
-.thumb{width:72px;height:72px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink);text-align:center;line-height:1.2;padding:4px}
+.thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.thumb{width:68px;height:68px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink);text-align:center;line-height:1.2;padding:4px;cursor:pointer}
+.thumb img{width:100%;height:100%;object-fit:contain;display:block}
+.thumb:hover{border-color:var(--green)}
+.photo{position:absolute;inset:0;z-index:4;background:#fff;display:none}
+.photo.on{display:block}
+.photo img{width:100%;height:100%;object-fit:contain;display:block}
 .thumb.on{border:2px solid var(--blue)}
 .thumb svg{width:26px;height:26px;stroke:var(--ink);fill:none;stroke-width:1.6;display:block;margin:0 auto 2px}
 
@@ -181,12 +186,17 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
           <button id="btnFs" title="Full screen" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
         </div>
         <div class="hint" id="hint">Drag to rotate &middot; scroll to zoom</div>
+        <div class="photo" id="photo"><img id="photoImg" alt=""></div>
       </div>
-      <div class="thumbs">
-        <div class="thumb on"><div><svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>3D</div></div>
-        <div class="thumb" style="color:var(--body);font-weight:500">Photo</div>
-        <div class="thumb" style="color:var(--body);font-weight:500">Photo</div>
-        <div class="thumb" style="color:var(--body);font-weight:500">Photo</div>
+      <!-- product images rendered in Blender (Cycles) from the same GLB the 3D viewer loads -->
+      <div class="thumbs" id="thumbs">
+        <div class="thumb on" data-src="" role="button" tabindex="0" aria-label="Interactive 3D"><div><svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>3D</div></div>
+        <div class="thumb" data-src="assets/cytiva/renders/xdr-hero.jpg" role="button" tabindex="0"><img src="assets/cytiva/renders/xdr-hero-t.jpg" alt="XDR system, three-quarter view"></div>
+        <div class="thumb" data-src="assets/cytiva/renders/xdr-displays.jpg" role="button" tabindex="0"><img src="assets/cytiva/renders/xdr-displays-t.jpg" alt="Vessel windows and cabinet displays"></div>
+        <div class="thumb" data-src="assets/cytiva/renders/xdr-vessel.jpg" role="button" tabindex="0"><img src="assets/cytiva/renders/xdr-vessel-t.jpg" alt="Stirred-tank vessel"></div>
+        <div class="thumb" data-src="assets/cytiva/renders/xdr-rear34.jpg" role="button" tabindex="0"><img src="assets/cytiva/renders/xdr-rear34-t.jpg" alt="Rear three-quarter view"></div>
+        <div class="thumb" data-src="assets/cytiva/renders/xdr-front.jpg" role="button" tabindex="0"><img src="assets/cytiva/renders/xdr-front-t.jpg" alt="Control cabinet face"></div>
+        <div class="thumb" data-src="assets/cytiva/renders/xdr-top.jpg" role="button" tabindex="0"><img src="assets/cytiva/renders/xdr-top-t.jpg" alt="Top view into the vessel"></div>
       </div>
     </div>
 
@@ -308,7 +318,21 @@ FEATURES.forEach((f,i)=>{
   feat.appendChild(b);
 });
 
-$("btnCenter").onclick=()=>{ try{viewer.centerCamera();}catch(e){} };
+/* gallery: 3D tile shows the viewer, image tiles overlay a render */
+const thumbs=[...document.querySelectorAll("#thumbs .thumb")];
+function showThumb(t){
+  thumbs.forEach(x=>x.classList.toggle("on",x===t));
+  const src=t.dataset.src, ph=$("photo");
+  if(src){ $("photoImg").src=src; $("photoImg").alt=t.querySelector("img").alt; ph.classList.add("on"); }
+  else ph.classList.remove("on");
+}
+thumbs.forEach(t=>{
+  t.onclick=()=>showThumb(t);
+  t.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); showThumb(t); } };
+});
+feat.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>showThumb(thumbs[0])));
+
+$("btnCenter").onclick=()=>{ try{showThumb(thumbs[0]); viewer.centerCamera();}catch(e){} };
 $("btnFs").onclick=()=>{ const s=$("stage"); document.fullscreenElement?document.exitFullscreen():s.requestFullscreen&&s.requestFullscreen(); };
 viewer.addEventListener("pointerdown",()=>{ const h=$("hint"); if(h) h.remove(); },{once:true});
 
