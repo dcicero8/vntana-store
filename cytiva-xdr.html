@@ -121,6 +121,17 @@ table.specs tr.sel{outline:2px solid var(--blue)}
 .docs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .card{background:var(--soft);padding:26px}
 .card h3{margin:0 0 8px;font-size:22px}
+/* platform hotspots */
+vntana-hotspot{display:block}
+.hsPin{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;border:2px solid #fff;font:700 13px/26px Inter,sans-serif;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;padding:0;transform:translate(-50%,-50%)}
+.hsPin:hover,.hsPin.on{background:var(--green-d);transform:translate(-50%,-50%) scale(1.12)}
+.hsCard{position:absolute;left:14px;bottom:64px;z-index:5;width:min(320px,calc(100% - 28px));background:#fff;border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.14);padding:16px 18px;display:none}
+.hsCard.on{display:block}
+.hsCard .x{position:absolute;right:6px;top:4px;border:0;background:none;font-size:22px;line-height:1;color:var(--body);cursor:pointer}
+.hsCard p{margin:0 0 4px;font-size:14px;color:var(--ink)}
+.hsCard img{width:100%;display:block;max-height:300px;object-fit:contain}
+.hsCard .lbl{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+
 /* CAD and 3D downloads */
 .cad{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;align-items:start}
 .cadlist{border:1px solid var(--line)}
@@ -202,6 +213,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
           <button id="btnFs" title="Full screen" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
         </div>
         <div class="hint" id="hint">Drag to rotate &middot; scroll to zoom</div>
+        <div class="hsCard" id="hsCard" role="dialog" aria-live="polite"><button class="x" id="hsX" aria-label="Close">&times;</button><div id="hsBody"></div></div>
         <div class="photo" id="photo"><img id="photoImg" alt=""></div>
       </div>
       <!-- product images rendered in Blender (Cycles) from the same GLB the 3D viewer loads -->
@@ -380,8 +392,44 @@ $("qp").onclick=()=>{ $("qv").value=(+$("qv").value||1)+1; };
 $("addCart").onclick=function(){ const t=this.querySelector("span"); t.textContent="Added to cart"; setTimeout(()=>t.textContent="Add to cart",1600); };
 $("addQuote").onclick=function(){ const t=this.querySelector("span"); t.textContent="Added to quote list"; setTimeout(()=>t.textContent="Add to quote list",1600); };
 
-/* CAD and 3D downloads: real files from the Live Public asset (public API, no auth) */
+/* hotspots authored on the VNTANA platform (public search API, no auth). Position + saved camera come from each hotspot's config. */
 const API="https://api.vntana.com";
+const HS_LABELS={IMAGE:"Single-use bag ports"};
+function closeHs(){ $("hsCard").classList.remove("on"); document.querySelectorAll(".hsPin").forEach(p=>p.classList.remove("on")); }
+$("hsX").onclick=closeHs;
+fetch(`${API}/hotspots/search/organizations/${ORG}/clients/${WS}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({productUuid:PRODUCT,page:1,size:50})})
+.then(r=>r.json()).then(d=>{
+  const list=((d.response||{}).grid||[]).slice().sort((a,b)=>a.created<b.created?-1:1);
+  list.forEach((hs,i)=>{
+    let dim={},cam=null;
+    try{ dim=JSON.parse(hs.config.dimensions||"{}"); }catch(e){}
+    try{ cam=JSON.parse(hs.config.camera||"null"); }catch(e){}
+    if(!dim.position) return;
+    const h=document.createElement("vntana-hotspot");
+    h.setAttribute("position",dim.position);
+    if(dim.normal) h.setAttribute("normal",dim.normal);
+    const pin=document.createElement("button");
+    pin.className="hsPin"; pin.textContent=i+1; pin.setAttribute("aria-label",`Hotspot ${i+1}`);
+    pin.onclick=e=>{
+      e.stopPropagation(); showThumb(thumbs[0]);
+      document.querySelectorAll(".hsPin").forEach(p=>p.classList.toggle("on",p===pin));
+      const body=$("hsBody");
+      if(hs.type==="IMAGE"&&hs.blobId){
+        body.innerHTML=`<div class="lbl">${HS_LABELS.IMAGE}</div><img alt="${HS_LABELS.IMAGE} diagram" src="${API}/hotspots/images/products/${PRODUCT}/organizations/${ORG}/clients/${WS}/${hs.blobId}">${hs.description?`<p style="margin-top:8px">${hs.description}</p>`:""}`;
+      } else body.innerHTML=hs.text||"";
+      $("hsCard").classList.add("on"); const hn=$("hint"); if(hn) hn.remove();
+      if(cam){ try{
+        if(cam.cameraTarget) viewer.setCameraTarget(cam.cameraTarget);
+        if(cam.cameraDistance) viewer.setCameraDistance(cam.cameraDistance);
+        if(cam.cameraRotation) viewer.setCameraRotation(cam.cameraRotation);
+      }catch(err){} }
+    };
+    h.appendChild(pin); viewer.appendChild(h);
+  });
+}).catch(()=>{});
+$("btnCenter").addEventListener("click",closeHs);
+
+/* CAD and 3D downloads: real files from the Live Public asset (public API, no auth) */
 const BLOBS={GLB:"b2f2f95e-080b-469b-a248-ccd873b719d1.glb",USDZ:"9bb26af8-1768-4f44-9af4-5da92d9e7286.usdz",FBX:"8c9dcbc7-7b21-409a-8e61-37af9b8eeb0c.fbx"};
 fetch(`${API}/products/${PRODUCT}/organizations/${ORG}/clients/${WS}`).then(r=>r.json()).then(d=>{
   (((d.response||{}).asset||{}).models||[]).forEach(m=>{ if(m.conversionFormat&&m.modelBlobId) BLOBS[m.conversionFormat]=m.modelBlobId; });
